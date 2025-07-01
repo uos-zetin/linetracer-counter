@@ -1,28 +1,51 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
+import js from "@eslint/js";
+import globals from "globals";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import tseslint from "typescript-eslint";
+import fsdFlugin from "eslint-plugin-fsd-lint";
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  { ignores: ["dist"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
     },
     plugins: {
-      'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh,
+      fsd: fsdFlugin,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
+      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "fsd/forbidden-imports": [
+        "error",
+        {
+          folderPattern: {
+            enabled: true,
+            regex: "^(\\d+_)?(.*)",
+            extractionGroup: 2,
+          },
+        },
       ],
+      "fsd/no-relative-imports": [
+        "error",
+        {
+          allowSameSlice: true,
+          allowTypeImports: false,
+          testFilesPatterns: ["\\.test\\.", "\\.spec\\."],
+          ignoreImportPatterns: [],
+        },
+      ],
+      "fsd/no-public-api-sidestep": "error",
+      "fsd/no-cross-slice-dependency": "error",
+      "fsd/no-ui-in-business-logic": "error",
+      "fsd/no-global-store-imports": "error",
+      "fsd/ordered-imports": "warn",
     },
   },
-)
+);
