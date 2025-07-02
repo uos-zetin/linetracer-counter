@@ -24,7 +24,7 @@ export interface Division {
 export interface Participant {
   id: string;
   divisionId: string; // 대회 부문 ID
-  name: string; // 경연자 이름
+  name: string; // 참가자 이름
   teamName: string; // 팀 이름
   robotName: string; // 로봇 이름
   comment: string; // 하고 싶은 말
@@ -35,14 +35,15 @@ export interface Participant {
 
 export interface Record {
   id: string;
-  participantId: string; // 경연자 ID
+  participantId: string; // 참가자 ID
   value: number; // 기록 값
   /**
    * 기록 출처
    * - "stopwatch": 계수기 H/W로부터 자동으로 기록된 값
-   * - "manual": 관리자가 수동으로 입력한 값
+   * - "manual": 수동 계수 기록에 의해 취합된 값
+   * - "other": 기타 다른 방법으로 기록된 값
    */
-  source: "stopwatch" | "manual";
+  source: "stopwatch" | "manual" | "other";
   status: "pending" | "approved" | "rejected"; // 기록 인정 여부
   note: string; // 비고란
   createdAt: Date; // 생성일
@@ -50,7 +51,7 @@ export interface Record {
 
 export interface ManualRecord {
   id: string;
-  participantId: string; // 경연자 ID
+  participantId: string; // 참가자 ID
   value: number; // 기록 값
   recorderName: string; // 수동 계수자 이름
   createdAt: Date; // 생성일
@@ -59,7 +60,7 @@ export interface ManualRecord {
 
 export interface TimerLog {
   id: string;
-  participantId: string; // 경연자 ID
+  participantId: string; // 참가자 ID
   startedAt: number; // 시작 시각(unix timestamp)
   stoppedAt: number | null; // 종료 시각(unix timestamp, null이면 아직 종료되지 않음을 의미함)
 }
@@ -92,7 +93,7 @@ export interface Progress {
     records: Record[]; // 현재 경연자의 기록 목록
     manualRecords: ManualRecord[]; // 현재 경연자의 수동 계수 기록 목록
   } | null;
-  nextRunner: Participant | null; // 다음 경연자 정보
 
-  topRecords: Record[]; // 경연자들의 최고 기록 목록
+  nextRunners: Participant[]; // 다음 경연자 정보(최대 5명까지, 순번에 대한 오름차순으로 정렬됨)
+  topRecords: Record[]; // 참가자들의 최고 기록 목록
 }
