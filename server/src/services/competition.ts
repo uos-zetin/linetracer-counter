@@ -162,12 +162,12 @@ export class CompetitionServiceImpl implements CompetitionService {
 
   subscribeCompetitionUpdated(
     competitionId: string,
-    callback: (competition: Competition) => void
+    callback: (competition: Competition) => Promise<void>
   ): Unsubscriber {
     const eventName = this.getCompetitionUpdatedEventName(competitionId);
-    const safeCb = (c: Competition) => {
+    const safeCb = async (c: Competition) => {
       try {
-        callback(c);
+        await callback(c);
       } catch (err) {
         console.error(
           `CompetitionUpdated listener error for ${competitionId}:`,
@@ -183,12 +183,12 @@ export class CompetitionServiceImpl implements CompetitionService {
 
   subscribeDivisionUpdated(
     divisionId: string,
-    callback: (division: Division) => void
+    callback: (division: Division) => Promise<void>
   ): Unsubscriber {
     const eventName = this.getDivisionUpdatedEventName(divisionId);
-    const safeCb = (d: Division) => {
+    const safeCb = async (d: Division) => {
       try {
-        callback(d);
+        await callback(d);
       } catch (err) {
         console.error(`DivisionUpdated listener error for ${divisionId}:`, err);
       }

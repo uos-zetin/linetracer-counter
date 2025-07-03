@@ -111,7 +111,7 @@ export interface CompetitionService {
    */
   subscribeCompetitionUpdated(
     competitionId: string,
-    callback: (competition: Competition) => void
+    callback: (competition: Competition) => Promise<void>
   ): Unsubscriber;
 
   /**
@@ -119,7 +119,7 @@ export interface CompetitionService {
    */
   subscribeDivisionUpdated(
     divisionId: string,
-    callback: (division: Division) => void
+    callback: (division: Division) => Promise<void>
   ): Unsubscriber;
 }
 
