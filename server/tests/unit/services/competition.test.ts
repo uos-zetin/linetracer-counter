@@ -58,6 +58,7 @@ describe("CompetitionService 구현체 단위 테스트", () => {
   let service: CompetitionServiceImpl;
   let adminActor: Actor;
   let anonymousActor: Actor;
+  let errorSpy: jest.SpyInstance;
 
   beforeAll(() => {
     adminActor = {
@@ -72,6 +73,11 @@ describe("CompetitionService 구현체 단위 테스트", () => {
       roles: [],
       createdAt: new Date(),
     };
+    errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    errorSpy.mockRestore();
   });
 
   beforeEach(() => {
