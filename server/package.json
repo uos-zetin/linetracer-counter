@@ -6,6 +6,7 @@
     "dev": "nodemon --watch 'src/**/*.ts' --exec ts-node src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node index.js",
+    "test": "jest",
     "test:integration": "jest tests/integration"
   },
   "author": "",
