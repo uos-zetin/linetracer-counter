@@ -36,7 +36,7 @@ export default tseslint.config(
         "error",
         {
           allowSameSlice: true,
-          allowTypeImports: false,
+          allowTypeImports: true,
           testFilesPatterns: ["\\.test\\.", "\\.spec\\."],
           ignoreImportPatterns: [],
         },
