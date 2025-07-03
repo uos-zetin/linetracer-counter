@@ -11,3 +11,10 @@ export class EntityNotFoundError extends Error {
     this.name = "EntityNotFoundError";
   }
 }
+
+export class AuthorizationError extends Error {
+  constructor(message: string = "Unauthorized access") {
+    super(message);
+    this.name = "AuthorizationError";
+  }
+}
