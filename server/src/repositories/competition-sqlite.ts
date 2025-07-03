@@ -28,7 +28,7 @@ export class CompetitionSQLiteRepository implements CompetitionRepository {
           name TEXT NOT NULL,
           description TEXT NOT NULL,
           createdAt TEXT NOT NULL,
-          idDeleted INTEGER NOT NULL
+          isDeleted INTEGER NOT NULL
         )`,
         function (err) {
           if (err) {
@@ -44,11 +44,11 @@ export class CompetitionSQLiteRepository implements CompetitionRepository {
       );
     });
 
-    // WHERE 절로 idDeleted 조건을 건 후, createdAt DESC로 정렬하는 쿼리에 대응
+    // WHERE 절로 isDeleted 조건을 건 후, createdAt DESC로 정렬하는 쿼리에 대응
     await new Promise<void>((resolve, reject) => {
       this.db.run(
-        `CREATE INDEX IF NOT EXISTS idx_competitions_idDeleted_createdAt
-        ON competitions (idDeleted, createdAt DESC)`,
+        `CREATE INDEX IF NOT EXISTS idx_competitions_isDeleted_createdAt
+        ON competitions (isDeleted, createdAt DESC)`,
         function (err) {
           if (err) {
             reject(
@@ -78,9 +78,9 @@ export class CompetitionSQLiteRepository implements CompetitionRepository {
 
     return new Promise((resolve, reject) => {
       this.db.all(
-        `SELECT id, name, description, createdAt, idDeleted
+        `SELECT id, name, description, createdAt, isDeleted
           FROM competitions
-          WHERE idDeleted = 0
+          WHERE isDeleted = 0
           ORDER BY createdAt DESC`,
         function (err, rows) {
           if (err) {
@@ -110,9 +110,9 @@ export class CompetitionSQLiteRepository implements CompetitionRepository {
 
     return new Promise((resolve, reject) => {
       this.db.get(
-        `SELECT id, name, description, createdAt, idDeleted
+        `SELECT id, name, description, createdAt, isDeleted
           FROM competitions
-          WHERE id = ? AND idDeleted = 0`,
+          WHERE id = ? AND isDeleted = 0`,
         [id],
         function (err, row) {
           if (err) {
@@ -144,7 +144,7 @@ export class CompetitionSQLiteRepository implements CompetitionRepository {
 
     return new Promise((resolve, reject) => {
       this.db.run(
-        `INSERT INTO competitions (id, name, description, createdAt, idDeleted)
+        `INSERT INTO competitions (id, name, description, createdAt, isDeleted)
           VALUES (?, ?, ?, ?, 0)`,
         [
           competition.id,
@@ -173,7 +173,7 @@ export class CompetitionSQLiteRepository implements CompetitionRepository {
     return new Promise((resolve, reject) => {
       this.db.run(
         `UPDATE competitions SET name = ?, description = ?, createdAt = ?
-          WHERE id = ? AND idDeleted = 0`,
+          WHERE id = ? AND isDeleted = 0`,
         [
           competition.name,
           competition.description,
@@ -207,7 +207,7 @@ export class CompetitionSQLiteRepository implements CompetitionRepository {
     return new Promise((resolve, reject) => {
       this.db.run(
         // soft delete
-        `UPDATE competitions SET idDeleted = 1 WHERE id = ?`,
+        `UPDATE competitions SET isDeleted = 1 WHERE id = ?`,
         [id],
         function (err) {
           if (err) {
