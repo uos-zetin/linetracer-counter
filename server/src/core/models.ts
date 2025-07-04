@@ -97,3 +97,20 @@ export interface Progress {
   nextRunners: Participant[]; // 다음 경연자 정보(최대 5명까지, 순번에 대한 오름차순으로 정렬됨)
   topRecords: Record[]; // 참가자들의 최고 기록 목록
 }
+
+/**
+ * - "administrator": 운영자/게수기 관리자
+ * - "manualRecorder": 수동 계수자
+ * - "stopwatchRecorder": 계수기(스톱워치)
+ */
+export type ActorRole =
+  | "administrator"
+  | "manualRecorder"
+  | "stopwatchRecorder";
+
+export interface Actor {
+  id: string;
+  name: string; // 액터 이름
+  roles: ActorRole[]; // 액터 역할
+  createdAt: Date; // 액터 생성 시각
+}

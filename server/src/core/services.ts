@@ -1,12 +1,13 @@
 import {
+  Actor,
   Competition,
   Division,
-  Participant,
-  Record,
   ManualRecord,
-  TimerLog,
-  Stopwatch,
+  Participant,
   Progress,
+  Record,
+  Stopwatch,
+  TimerLog,
 } from "./models";
 
 export type Unsubscriber = () => void;
@@ -16,10 +17,15 @@ export type Unsubscriber = () => void;
  */
 export interface CompetitionService {
   /**
+   * 대회 목록을 조회할 수 있다.
+   */
+  getCompetitions(actor: Actor): Promise<Competition[]>;
+
+  /**
    * 특정 대회의 그 아래의 부문들을 조회할 수 있다.
    */
-  getCompetition(
-    actorId: string,
+  getCompetitionWithDivisions(
+    actor: Actor,
     competitionId: string
   ): Promise<{
     competition: Competition;
@@ -30,7 +36,7 @@ export interface CompetitionService {
    * 대회를 생성할 수 있다.
    */
   createCompetition(
-    actorId: string,
+    actor: Actor,
     name: string,
     description: string
   ): Promise<Competition>;
@@ -39,7 +45,7 @@ export interface CompetitionService {
    * 대회 이름/설명을 수정할 수 있다.
    */
   updateCompetition(
-    actorId: string,
+    actor: Actor,
     competitionId: string,
     data: {
       name?: string;
@@ -50,13 +56,13 @@ export interface CompetitionService {
   /**
    * 대회를 삭제할 수 있다.
    */
-  deleteCompetition(actorId: string, competitionId: string): Promise<void>;
+  deleteCompetition(actor: Actor, competitionId: string): Promise<void>;
 
   /**
    * 특정 대회 부문을 생성할 수 있다.
    */
   createDivision(
-    actorId: string,
+    actor: Actor,
     competitionId: string,
     name: string,
     description: string
@@ -66,7 +72,7 @@ export interface CompetitionService {
    * 특정 대회 부문의 이름/설명을 수정할 수 있다.
    */
   updateDivision(
-    actorId: string,
+    actor: Actor,
     divisionId: string,
     data: {
       name?: string;
@@ -78,7 +84,7 @@ export interface CompetitionService {
    * 특정 경연 부문의 상태 정보를 설정할 수 있다.
    */
   setDivisionStatus(
-    actorId: string,
+    actor: Actor,
     divisionId: string,
     status: Division["status"]
   ): Promise<Division>;
@@ -87,7 +93,7 @@ export interface CompetitionService {
    * 특정 경연 부문에 스톱워치(타이머)를 지정할 수 있다.
    */
   setDivisionStopwatch(
-    actorId: string,
+    actor: Actor,
     divisionId: string,
     stopwatchId: string | null
   ): Promise<Division>;
@@ -95,7 +101,7 @@ export interface CompetitionService {
   /**
    * 특정 경연 부문을 삭제할 수 있다.
    */
-  deleteDivision(actorId: string, divisionId: string): Promise<void>;
+  deleteDivision(actor: Actor, divisionId: string): Promise<void>;
 
   // -----------------------------
   // Observable 구독 관련 메서드들
@@ -105,7 +111,7 @@ export interface CompetitionService {
    */
   subscribeCompetitionUpdated(
     competitionId: string,
-    callback: (competition: Competition) => void
+    callback: (competition: Competition) => Promise<void>
   ): Unsubscriber;
 
   /**
@@ -113,7 +119,7 @@ export interface CompetitionService {
    */
   subscribeDivisionUpdated(
     divisionId: string,
-    callback: (division: Division) => void
+    callback: (division: Division) => Promise<void>
   ): Unsubscriber;
 }
 
