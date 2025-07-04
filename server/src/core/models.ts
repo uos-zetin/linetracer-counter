@@ -61,8 +61,16 @@ export interface ManualRecord {
 export interface TimerLog {
   id: string;
   participantId: string; // 참가자 ID
-  startedAt: number; // 시작 시각(unix timestamp)
-  stoppedAt: number | null; // 종료 시각(unix timestamp, null이면 아직 종료되지 않음을 의미함)
+  value: number;
+  /**
+   * 타이머 로그 타입
+   * - "start": 타이머 시작, value는 시작 시각(unix timestamp)
+   * - "stop": 타이머 정지, value는 정지 시각(unix timestamp)
+   * - "add": 타이머에 추가 시간, value는 추가된 시간(ms)
+   * - "sub": 타이머에서 시간 차감, value는 차감된 시간(ms)
+   */
+  type: "start" | "stop" | "add" | "sub";
+  createdAt: Date;
 }
 
 export interface Stopwatch {
