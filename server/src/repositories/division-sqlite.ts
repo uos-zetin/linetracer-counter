@@ -187,7 +187,7 @@ export class DivisionSQLiteRepository implements DivisionRepository {
     return new Promise((resolve, reject) => {
       this.db.run(
         // soft delete
-        `UPDATE divisions SET isDeleted = 1 WHERE id = ?`,
+        `UPDATE divisions SET isDeleted = 1 WHERE id = ? AND isDeleted = 0`,
         [id],
         function (err) {
           if (err) {

@@ -207,7 +207,7 @@ export class CompetitionSQLiteRepository implements CompetitionRepository {
     return new Promise((resolve, reject) => {
       this.db.run(
         // soft delete
-        `UPDATE competitions SET isDeleted = 1 WHERE id = ?`,
+        `UPDATE competitions SET isDeleted = 1 WHERE id = ? AND isDeleted = 0`,
         [id],
         function (err) {
           if (err) {
