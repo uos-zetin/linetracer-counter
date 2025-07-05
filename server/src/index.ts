@@ -1,5 +1,7 @@
+import { bootstrap } from "@/http/bootstrap";
+
 async function main() {
-  console.log("Hello, world!");
+  await bootstrap();
 }
 
 main();
