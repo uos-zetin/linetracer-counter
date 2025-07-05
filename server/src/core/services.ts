@@ -403,3 +403,60 @@ export interface ProgressService {
     callback: (progress: Progress) => void
   ): Unsubscriber;
 }
+
+export interface ActorService {
+  /**
+   * 관리자는 모든 액터(사용자) 목록을 조회할 수 있다.
+   */
+  getActors(actor: Actor): Promise<Actor[]>;
+
+  /**
+   * 관리자는 사용자에 역할을 설정할 수 있다.
+   */
+  setActorRoles(
+    actor: Actor,
+    targetActorId: string,
+    roles: Actor["roles"]
+  ): Promise<Actor>;
+
+  /**
+   * ID, PW로 새로운 액터(사용자)를 등록할 수 있다.
+   */
+  registerWithIdPw(
+    name: string,
+    username: string,
+    password: string
+  ): Promise<Actor>;
+
+  /**
+   * ID가 존재하는지 확인할 수 있다.
+   */
+  checkIdPwExists(username: string): Promise<boolean>;
+
+  /**
+   * ID, PW로 액터(사용자)를 인증할 수 있다.
+   */
+  verifyIdPw(username: string, password: string): Promise<Actor>;
+
+  /**
+   * 관리자는 액터(사용자)를 등록 해제할 수 있다.
+   */
+  unregister(actor: Actor, targetActorId: string): Promise<void>;
+}
+
+export interface ActorSessionService {
+  /**
+   * 액터 세션을 생성할 수 있다.
+   */
+  createSession(actor: Actor, expiresMsIn: number): Promise<string>;
+
+  /**
+   * 세션 키가 유효하면 Actor 모델을 반환한다. 그렇지 않으면 AuthenticationError를 던진다.
+   */
+  validateSession(key: string): Promise<Actor>;
+
+  /**
+   * 세션 키로 액터 세션을 폐기할 수 있다.
+   */
+  revokeSession(key: string): Promise<void>;
+}

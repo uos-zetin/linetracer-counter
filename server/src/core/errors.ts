@@ -18,3 +18,17 @@ export class AuthorizationError extends Error {
     this.name = "AuthorizationError";
   }
 }
+
+export class AuthenticationError extends Error {
+  constructor(message: string = "Authentication failed") {
+    super(message);
+    this.name = "AuthenticationError";
+  }
+}
+
+export class UsernameAlreadyExistsError extends Error {
+  constructor(username: string) {
+    super(`Username "${username}" already exists`);
+    this.name = "UsernameAlreadyExistsError";
+  }
+}
