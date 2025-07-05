@@ -15,11 +15,13 @@
   "dependencies": {
     "@fastify/swagger": "^9.5.1",
     "@fastify/swagger-ui": "^5.2.3",
+    "bcrypt": "^6.0.0",
     "fastify": "^5.4.0",
     "sqlite3": "^5.1.7",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.8",
     "jest": "^30.0.3",
