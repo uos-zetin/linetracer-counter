@@ -1,11 +1,13 @@
 import {
+  Actor,
+  ActorIdPw,
   Competition,
   Division,
+  ManualRecord,
   Participant,
   Record,
-  ManualRecord,
-  TimerLog,
   Stopwatch,
+  TimerLog,
 } from "./models";
 
 export interface CompetitionRepository {
@@ -61,5 +63,21 @@ export interface StopwatchRepository {
   getById(id: string): Promise<Stopwatch>;
   create(stopwatch: Stopwatch): Promise<Stopwatch>;
   update(stopwatch: Stopwatch): Promise<Stopwatch>;
+  delete(id: string): Promise<void>;
+}
+
+export interface ActorRepository {
+  getAll(): Promise<Actor[]>;
+  getById(id: string): Promise<Actor>;
+  create(actor: Actor): Promise<Actor>;
+  update(actor: Actor): Promise<Actor>;
+  delete(id: string): Promise<void>;
+}
+
+export interface ActorIdPwRepository {
+  getByUsername(username: string): Promise<ActorIdPw>;
+  getByActorId(actorId: string): Promise<ActorIdPw>;
+  create(actorIdPw: ActorIdPw): Promise<ActorIdPw>;
+  update(actorIdPw: ActorIdPw): Promise<ActorIdPw>;
   delete(id: string): Promise<void>;
 }

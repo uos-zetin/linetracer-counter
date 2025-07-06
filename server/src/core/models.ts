@@ -122,3 +122,11 @@ export interface Actor {
   roles: ActorRole[]; // 액터 역할
   createdAt: Date; // 액터 생성 시각
 }
+
+export interface ActorIdPw {
+  id: string;
+  actorId: string; // 액터 ID
+  username: string; // 로그인 시 사용하는 ID
+  hashedPassword: string; // 해시된 비밀번호
+  createdAt: Date;
+}
