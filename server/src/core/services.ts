@@ -90,15 +90,6 @@ export interface CompetitionService {
   ): Promise<Division>;
 
   /**
-   * 특정 경연 부문에 스톱워치(타이머)를 지정할 수 있다.
-   */
-  setDivisionStopwatch(
-    actor: Actor,
-    divisionId: string,
-    stopwatchId: string | null
-  ): Promise<Division>;
-
-  /**
    * 특정 경연 부문을 삭제할 수 있다.
    */
   deleteDivision(actor: Actor, divisionId: string): Promise<void>;

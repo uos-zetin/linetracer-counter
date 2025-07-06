@@ -87,7 +87,6 @@ export class CompetitionServiceImpl implements CompetitionService {
       description,
       createdAt: new Date(),
       status: "ready",
-      stopwatchId: null,
     };
     return this.divisionRepo.create(data);
   }
@@ -116,20 +115,6 @@ export class CompetitionServiceImpl implements CompetitionService {
 
     const target = await this.divisionRepo.getById(divisionId);
     target.status = status;
-    const updated = await this.divisionRepo.update(target);
-    this.emitDivisionUpdated(updated);
-    return updated;
-  }
-
-  async setDivisionStopwatch(
-    actor: Actor,
-    divisionId: string,
-    stopwatchId: string | null
-  ): Promise<Division> {
-    requireAnyRole(actor, "administrator");
-
-    const target = await this.divisionRepo.getById(divisionId);
-    target.stopwatchId = stopwatchId;
     const updated = await this.divisionRepo.update(target);
     this.emitDivisionUpdated(updated);
     return updated;

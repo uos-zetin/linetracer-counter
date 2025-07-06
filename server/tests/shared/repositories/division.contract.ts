@@ -30,7 +30,6 @@ export function runDivisionRepositoryContract(
         description: `피할 수 없으면 즐겨요.`,
         createdAt: new Date(),
         status: "ready",
-        stopwatchId: index % 2 === 0 ? `test-${uuidv4()}` : null,
       };
     }
 
