@@ -87,11 +87,3 @@ export interface Actor {
   roles: ActorRole[];
   createdAt: Date;
 }
-
-export interface ActorIdPw {
-  id: string;
-  actorId: string;
-  username: string;
-  hashedPassword: string;
-  createdAt: Date;
-}
