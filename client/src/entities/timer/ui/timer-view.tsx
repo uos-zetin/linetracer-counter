@@ -1,5 +1,5 @@
 import { useTimerStore } from "../model";
-import { formatMsToTime } from "./formatTime";
+import { formatMsToTime } from "./format-time";
 
 export function TimerView() {
   const remainingTime = useTimerStore().useRemainingMs();
