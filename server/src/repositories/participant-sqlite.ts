@@ -162,7 +162,7 @@ export class ParticipantSQLiteRepository implements ParticipantRepository {
       )
       .catch((err) => {
         throw new PersistenceError(
-          `Failed to get participants by divisionId '${divisionId}': ${err.message}`
+          `Failed to get participants by divisionId '${divisionId}': ${err}`
         );
       });
     return rows.map((row) => this.recordToEntity(row));
