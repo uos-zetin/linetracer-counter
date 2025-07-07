@@ -48,7 +48,6 @@ const generateDummyDivisions = (
       description: `제${i + 1}회 부문 설명`,
       createdAt: new Date(),
       status: "ready",
-      stopwatchId: null,
     });
   }
   return dummies;
@@ -230,25 +229,6 @@ describe("CompetitionService 구현체 단위 테스트", () => {
     expect(mockDivisionRepo.update).toHaveBeenCalledTimes(1);
   });
 
-  it("관리자만 특정 대회 부문의 스톱워치를 설정할 수 있다.", async () => {
-    const division = generateDummyDivisions(1, uuidv4())[0];
-    mockDivisionRepo.getById.mockResolvedValue(division);
-    const stopwatchId = uuidv4();
-    const updatedDivision: Division = {
-      ...division,
-      stopwatchId,
-    };
-    mockDivisionRepo.update.mockResolvedValue(updatedDivision);
-
-    await expect(
-      service.setDivisionStopwatch(anonymousActor, division.id, stopwatchId)
-    ).rejects.toThrow(AuthorizationError);
-    await expect(
-      service.setDivisionStopwatch(adminActor, division.id, stopwatchId)
-    ).resolves.toEqual(updatedDivision);
-    expect(mockDivisionRepo.update).toHaveBeenCalledTimes(1);
-  });
-
   it("관리자만 특정 대회 부문을 삭제할 수 있다.", async () => {
     const division = generateDummyDivisions(1, uuidv4())[0];
     mockDivisionRepo.getById.mockResolvedValue(division);
@@ -358,24 +338,6 @@ describe("CompetitionService 구현체 단위 테스트", () => {
     });
 
     /**
-     * 3. 대회 부문 스톱워치를 설정할 때 이벤트가 발생하는지 확인한다.
-     */
-    const targetStopwatchId = uuidv4();
-    mockDivisionRepo.update.mockResolvedValue({
-      ...division,
-      stopwatchId: targetStopwatchId,
-    });
-    await service.setDivisionStopwatch(
-      adminActor,
-      division.id,
-      targetStopwatchId
-    );
-    expect(callback1).toHaveBeenNthCalledWith(3, {
-      ...division,
-      stopwatchId: targetStopwatchId,
-    });
-
-    /**
      * 이벤트 리스너 제거가 잘 되는지 확인한다.
      */
     unsubscriber1();
@@ -383,7 +345,7 @@ describe("CompetitionService 구현체 단위 테스트", () => {
     await service.updateDivision(adminActor, division.id, {
       name: targetName,
     });
-    expect(callback1).toHaveBeenCalledTimes(3); // 호출 횟수가 그대로인지 확인
-    expect(callback2).toHaveBeenCalledTimes(3);
+    expect(callback1).toHaveBeenCalledTimes(2); // 호출 횟수가 그대로인지 확인
+    expect(callback2).toHaveBeenCalledTimes(2);
   });
 });

@@ -11,7 +11,6 @@ type DivisionRecord = {
   description: string;
   createdAt: string;
   status: "ready" | "ongoing" | "closed";
-  stopwatchId: string | null;
   isDeleted: number;
 };
 
@@ -33,7 +32,6 @@ export class DivisionSQLiteRepository implements DivisionRepository {
           description TEXT NOT NULL,
           createdAt TEXT NOT NULL,
           status TEXT NOT NULL,
-          stopwatchId TEXT,
           isDeleted INTEGER NOT NULL
         )`,
         function (err) {
@@ -84,7 +82,7 @@ export class DivisionSQLiteRepository implements DivisionRepository {
 
     return new Promise((resolve, reject) => {
       this.db.get(
-        `SELECT id, competitionId, name, description, createdAt, status, stopwatchId, isDeleted
+        `SELECT *
           FROM divisions
           WHERE id = ? AND isDeleted = 0`,
         [id],
@@ -106,7 +104,6 @@ export class DivisionSQLiteRepository implements DivisionRepository {
               description: data.description,
               createdAt: new Date(data.createdAt),
               status: data.status,
-              stopwatchId: data.stopwatchId || null,
             });
           }
         }
@@ -120,8 +117,8 @@ export class DivisionSQLiteRepository implements DivisionRepository {
     return new Promise((resolve, reject) => {
       this.db.run(
         `INSERT INTO divisions
-          (id, competitionId, name, description, createdAt, status, stopwatchId, isDeleted)
-          VALUES (?, ?, ?, ?, ?, ?, ?, 0)`,
+          (id, competitionId, name, description, createdAt, status, isDeleted)
+          VALUES (?, ?, ?, ?, ?, ?, 0)`,
         [
           division.id,
           division.competitionId,
@@ -129,7 +126,6 @@ export class DivisionSQLiteRepository implements DivisionRepository {
           division.description,
           division.createdAt.toISOString(),
           division.status,
-          division.stopwatchId,
         ],
         function (err) {
           if (err) {
@@ -150,14 +146,13 @@ export class DivisionSQLiteRepository implements DivisionRepository {
     return new Promise((resolve, reject) => {
       this.db.run(
         `UPDATE divisions
-          SET name = ?, description = ?, createdAt = ?, status = ?, stopwatchId = ?
+          SET name = ?, description = ?, createdAt = ?, status = ?
           WHERE id = ? AND isDeleted = 0`,
         [
           division.name,
           division.description,
           division.createdAt.toISOString(),
           division.status,
-          division.stopwatchId,
           division.id,
         ],
         function (err) {
@@ -211,7 +206,7 @@ export class DivisionSQLiteRepository implements DivisionRepository {
 
     return new Promise((resolve, reject) => {
       this.db.all(
-        `SELECT id, competitionId, name, description, createdAt, status, stopwatchId, isDeleted
+        `SELECT id, competitionId, name, description, createdAt, status, isDeleted
          FROM divisions
          WHERE competitionId = ? AND isDeleted = 0
          ORDER BY createdAt DESC`,
@@ -233,7 +228,6 @@ export class DivisionSQLiteRepository implements DivisionRepository {
                 description: row.description,
                 createdAt: new Date(row.createdAt),
                 status: row.status,
-                stopwatchId: row.stopwatchId || null,
               }))
             );
           }

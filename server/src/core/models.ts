@@ -18,7 +18,6 @@ export interface Division {
    * - "closed": 대회 부문이 종료된 상태
    */
   status: "ready" | "ongoing" | "closed";
-  stopwatchId: string | null; // 스톱워치(계수기) ID
 }
 
 export interface Participant {
@@ -78,6 +77,7 @@ export interface Stopwatch {
   name: string; // 계수기 이름
   startedAt: number | null; // 시작 시각(unix timestamp, null이면 아직 시작되지 않음을 의미함)
   stoppedAt: number | null; // 종료 시각(unix timestamp, null이면 아직 종료되지 않음을 의미함)
+  divisionId: string | null; // 대회 부문 ID (null이면 아직 대회 부문에 연결되지 않음을 의미함)
 }
 
 /**
@@ -93,7 +93,6 @@ export interface Progress {
 
   competition: Competition; // 대회 정보
   division: Division; // 부문 정보
-  stopwatch: Stopwatch | null; // 계수기(스톱워치) 정보
 
   runner: {
     participant: Participant; // 현재 경연자 정보
