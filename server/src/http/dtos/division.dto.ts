@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsOptional, IsIn } from "class-validator";
+import { IsIn, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 const StatusTypes = ["ready", "ongoing", "closed"] as const;
 
@@ -32,6 +32,7 @@ export class DivisionResponseDto {
 
 export class CreateDivisionDto {
   @ApiProperty({ description: "대회 부문 이름", example: "Expert-DC 본선" })
+  @IsString()
   @IsNotEmpty()
   name!: string;
 
@@ -39,12 +40,14 @@ export class CreateDivisionDto {
     description: "대회 부문 설명",
     example: "멍때리면서 DC 모터 라인트레이서를 굴려보세요!",
   })
+  @IsString()
   @IsNotEmpty()
   description!: string;
 }
 
 export class UpdateDivisionDto {
   @ApiProperty({ description: "대회 부문 이름", example: "Expert-DC 본선" })
+  @IsString()
   @IsOptional()
   name?: string;
 
@@ -52,6 +55,7 @@ export class UpdateDivisionDto {
     description: "대회 부문 설명",
     example: "멍때리면서 DC 모터 라인트레이서를 굴려보세요!",
   })
+  @IsString()
   @IsOptional()
   description?: string;
 }

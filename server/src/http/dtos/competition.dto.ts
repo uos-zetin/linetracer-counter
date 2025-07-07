@@ -44,7 +44,6 @@ export class UpdateCompetitionDto {
     example: "멍때리기는 뇌를 쉬게 해준대요.",
   })
   @IsString()
-  @IsNotEmpty()
   @IsOptional()
   description?: string;
 }
