@@ -25,10 +25,9 @@ export default tseslint.config(
       "fsd/forbidden-imports": [
         "error",
         {
-          folderPattern: {
-            enabled: true,
-            regex: "^(\\d+_)?(.*)",
-            extractionGroup: 2,
+          alias: {
+            value: "@",
+            withSlash: false,
           },
         },
       ],
@@ -45,7 +44,6 @@ export default tseslint.config(
       "fsd/no-cross-slice-dependency": "error",
       "fsd/no-ui-in-business-logic": "error",
       "fsd/no-global-store-imports": "error",
-      "fsd/ordered-imports": "warn",
     },
   },
 );
