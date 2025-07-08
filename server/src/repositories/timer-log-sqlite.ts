@@ -9,7 +9,7 @@ type TimerLogRecord = {
   id: string;
   participantId: string;
   value: number;
-  type: string;
+  logType: string;
   createdAt: string;
   isDeleted: number;
 };
@@ -28,7 +28,7 @@ export class TimerLogSQLiteRepository implements TimerLogRepository {
           id TEXT PRIMARY KEY NOT NULL,
           participantId TEXT NOT NULL,
           value INTEGER NOT NULL,
-          type TEXT NOT NULL,
+          logType TEXT NOT NULL,
           createdAt TEXT NOT NULL,
           isDeleted INTEGER NOT NULL
         )`
@@ -51,7 +51,7 @@ export class TimerLogSQLiteRepository implements TimerLogRepository {
       id: record.id,
       participantId: record.participantId,
       value: record.value,
-      type: record.type as TimerLog["type"],
+      type: record.logType as TimerLog["type"],
       createdAt: new Date(record.createdAt),
     };
   }
@@ -76,7 +76,7 @@ export class TimerLogSQLiteRepository implements TimerLogRepository {
   async create(timerLog: TimerLog): Promise<TimerLog> {
     await this.db
       .run(
-        `INSERT INTO timer_logs (id, participantId, value, type, createdAt, isDeleted)
+        `INSERT INTO timer_logs (id, participantId, value, logType, createdAt, isDeleted)
           VALUES (?, ?, ?, ?, ?, 0)`,
         [
           timerLog.id,
@@ -96,7 +96,7 @@ export class TimerLogSQLiteRepository implements TimerLogRepository {
     const result = await this.db
       .run(
         `UPDATE timer_logs
-          SET participantId = ?, value = ?, type = ?, createdAt = ?
+          SET participantId = ?, value = ?, logType = ?, createdAt = ?
           WHERE id = ? AND isDeleted = 0`,
         [
           timerLog.participantId,
