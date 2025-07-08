@@ -1,12 +1,14 @@
-import { CompetitionService } from "@/core/services";
+import { CompetitionService, ParticipantService } from "@/core/services";
 import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   Inject,
   Param,
   Patch,
+  Post,
 } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import {
@@ -18,6 +20,10 @@ import {
   SetDivisionStatusDto,
   UpdateDivisionDto,
 } from "../dtos/division.dto";
+import {
+  ParticipantResponseDto,
+  CreateParticipantDto,
+} from "../dtos/participant.dto";
 import { Actor } from "@/core/models";
 
 @ApiTags("Divisions")
@@ -25,7 +31,9 @@ import { Actor } from "@/core/models";
 export class DivisionController {
   constructor(
     @Inject("CompetitionService")
-    private readonly competitionService: CompetitionService
+    private readonly competitionService: CompetitionService,
+    @Inject("ParticipantService")
+    private readonly participantService: ParticipantService
   ) {}
 
   @Patch("/:divisionId")
@@ -80,5 +88,44 @@ export class DivisionController {
       body.status
     );
     return updated;
+  }
+
+  @Get("/:divisionId/participants")
+  @ApiResponse({
+    status: 200,
+    description: "특정 부문의 모든 참가자 목록 반환",
+    type: [ParticipantResponseDto],
+  })
+  async getParticipants(
+    @CurrentActor() actor: Actor,
+    @Param("divisionId") divisionId: string
+  ): Promise<ParticipantResponseDto[]> {
+    return this.participantService.getParticipants(actor, divisionId);
+  }
+
+  @Post("/:divisionId/participants")
+  @HttpCode(201)
+  @ApiActorSecurity()
+  @ApiResponse({
+    status: 201,
+    description: "참가자 생성 성공 및 생성된 참가자 정보 반환",
+    type: ParticipantResponseDto,
+  })
+  async createParticipant(
+    @CurrentActor() actor: Actor,
+    @Param("divisionId") divisionId: string,
+    @Body() body: CreateParticipantDto
+  ): Promise<ParticipantResponseDto> {
+    const { name, teamName, robotName, comment, orderRaw, givenTime } = body;
+    return this.participantService.addParticipant(
+      actor,
+      divisionId,
+      name,
+      teamName,
+      robotName,
+      comment,
+      orderRaw,
+      givenTime
+    );
   }
 }
