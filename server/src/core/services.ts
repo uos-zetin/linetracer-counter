@@ -122,7 +122,7 @@ export interface ParticipantService {
    * 참가자를 특정 대회 부문에 추가할 수 있다.
    */
   addParticipant(
-    actorId: string,
+    actor: Actor,
     divisionId: string,
     name: string,
     teamName: string,
@@ -135,13 +135,13 @@ export interface ParticipantService {
   /**
    * 특정 부문의 모든 참가자를 조회할 수 있다.
    */
-  getParticipants(actorId: string, divisionId: string): Promise<Participant[]>;
+  getParticipants(actor: Actor, divisionId: string): Promise<Participant[]>;
 
   /**
    * 특정 참가자의 이름, 팀명, 로봇명, 하고 싶은 말, 경연 순번, 주어진 시간을 수정할 수 있다.
    */
   updateParticipant(
-    actorId: string,
+    actor: Actor,
     participantId: string,
     data: {
       name?: string;
@@ -156,7 +156,7 @@ export interface ParticipantService {
   /**
    * 특정 참가자를 삭제할 수 있다.
    */
-  deleteParticipant(actorId: string, participantId: string): Promise<void>;
+  deleteParticipant(actor: Actor, participantId: string): Promise<void>;
 
   // -----------------------------
   // Observable 구독 관련 메서드들
@@ -166,7 +166,7 @@ export interface ParticipantService {
    */
   subscribeParticipantUpdated(
     participantId: string,
-    callback: (participant: Participant) => void
+    callback: (participant: Participant) => Promise<void>
   ): Unsubscriber;
 }
 

@@ -2,16 +2,19 @@ import {
   ActorService,
   ActorSessionService,
   CompetitionService,
+  ParticipantService,
 } from "@/core/services";
 
 import { ActorIdPwSQLiteRepository } from "@/repositories/actor-id-pw-sqlite";
 import { ActorSQLiteRepository } from "@/repositories/actor-sqlite";
 import { CompetitionSQLiteRepository } from "@/repositories/competition-sqlite";
 import { DivisionSQLiteRepository } from "@/repositories/division-sqlite";
+import { ParticipantSQLiteRepository } from "@/repositories/participant-sqlite";
 
 import { ActorServiceImpl } from "@/services/actor";
 import { ActorSessionRandomService } from "@/services/actor-session-random";
 import { CompetitionServiceImpl } from "@/services/competition";
+import { ParticipantServiceImpl } from "@/services/participant";
 
 import sqlite3 from "sqlite3";
 
@@ -45,11 +48,13 @@ export class Container {
   private readonly actorSQLiteRepo: ActorSQLiteRepository;
   private readonly competitionSQLiteRepo: CompetitionSQLiteRepository;
   private readonly divisionSQLiteRepo: DivisionSQLiteRepository;
+  private readonly participantSQLiteRepo: ParticipantSQLiteRepository;
 
   // Services
   private readonly actorService: ActorService;
   private readonly actorSessionService: ActorSessionService;
   private readonly competitionService: CompetitionService;
+  private readonly participantService: ParticipantService;
 
   private constructor() {
     // SQLite Database
@@ -68,6 +73,7 @@ export class Container {
     this.actorSQLiteRepo = new ActorSQLiteRepository(this.db);
     this.competitionSQLiteRepo = new CompetitionSQLiteRepository(this.db);
     this.divisionSQLiteRepo = new DivisionSQLiteRepository(this.db);
+    this.participantSQLiteRepo = new ParticipantSQLiteRepository(this.db);
 
     this.actorService = new ActorServiceImpl({
       actorRepository: this.actorSQLiteRepo,
@@ -80,6 +86,9 @@ export class Container {
     this.competitionService = new CompetitionServiceImpl({
       competitionRepository: this.competitionSQLiteRepo,
       divisionRepository: this.divisionSQLiteRepo,
+    });
+    this.participantService = new ParticipantServiceImpl({
+      participantRepository: this.participantSQLiteRepo,
     });
   }
 
@@ -106,6 +115,7 @@ export class Container {
       this.divisionSQLiteRepo.initialize(),
       this.actorSQLiteRepo.initialize(),
       this.actorIdPwSQLiteRepo.initialize(),
+      this.participantSQLiteRepo.initialize(),
     ]);
 
     this.initialized = true;
@@ -116,6 +126,7 @@ export class Container {
       actor: this.actorService,
       actorSession: this.actorSessionService,
       competition: this.competitionService,
+      participant: this.participantService,
     };
   }
 }
