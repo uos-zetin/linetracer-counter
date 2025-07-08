@@ -1,6 +1,6 @@
 import { formatMsToTime } from "./format-time";
 
-export type TimerViewProps = {
+type TimerViewProps = {
   remainingMs: number;
   timerStatus: "running" | "stopped" | "finished";
 };
