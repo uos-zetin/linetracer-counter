@@ -4,7 +4,7 @@ import { integrateLogs } from "./reducers";
 import { getRemainingMs, getStatus } from "./selectors";
 
 import type { Timer } from "./types";
-import type { TimerLogDto } from "@/shared/api/models";
+import type { TimerLogDto } from "@/shared";
 
 interface InternalTimerSlice {
   timer: Timer;

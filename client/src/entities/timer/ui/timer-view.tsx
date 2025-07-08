@@ -1,14 +1,15 @@
-import { useTimerStore } from "../model";
 import { formatMsToTime } from "./format-time";
 
-export function TimerView() {
-  const remainingTime = useTimerStore().useRemainingMs();
-  const timerStatus = useTimerStore().useStatus();
+type TimerViewProps = {
+  remainingMs: number;
+  timerStatus: "running" | "stopped" | "finished";
+};
 
+export function TimerView({ remainingMs, timerStatus }: TimerViewProps) {
   return (
     <div className="flex flex-col items-center justify-center h-full">
       <span className="text-4xl font-bold text-gray-800" title="Remaining Time">
-        {formatMsToTime(remainingTime)}
+        {formatMsToTime(remainingMs)}
       </span>
       <span className="text-gray-500">{timerStatus}</span>
     </div>
