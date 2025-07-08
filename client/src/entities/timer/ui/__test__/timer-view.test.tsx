@@ -39,13 +39,10 @@ describe("TimerView (props version) - Time Flow", () => {
     const { rerender } = render(<TimerView {...getProps()} />);
     expect(screen.getByTitle("Remaining Time").textContent).toBe("00:00:05");
 
-    console.log("Initial Time: ", Date.now());
     // 2초 경과
     act(() => {
       vi.advanceTimersByTime(2000);
     });
-
-    console.log("After 2 seconds: ", Date.now());
 
     rerender(<TimerView {...getProps()} />);
     expect(screen.getByTitle("Remaining Time").textContent).toBe("00:00:03");
@@ -54,8 +51,6 @@ describe("TimerView (props version) - Time Flow", () => {
     act(() => {
       vi.advanceTimersByTime(3000);
     });
-
-    console.log("After 5 seconds: ", Date.now());
 
     rerender(<TimerView {...getProps()} />);
     expect(screen.getByTitle("Remaining Time").textContent).toBe("00:00:00");
