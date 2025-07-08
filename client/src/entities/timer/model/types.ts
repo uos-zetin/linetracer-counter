@@ -1,4 +1,4 @@
-import type { TimerLogDto } from "@/shared/api/models";
+import type { TimerLogDto } from "@/shared";
 
 export interface TimerState {
   initialMs: number; // 초기 시간 (ms)

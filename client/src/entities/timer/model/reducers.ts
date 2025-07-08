@@ -1,5 +1,5 @@
 import type { TimerState } from "./types";
-import type { TimerLogDto } from "@/shared/api/models";
+import type { TimerLogDto } from "@/shared";
 
 export function integrateLogs(initialMs: number, logs: TimerLogDto[]): TimerState {
   const state: TimerState = {
