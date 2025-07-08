@@ -27,7 +27,7 @@ describe("useStopwatchStore integration", () => {
   });
 
   it("measures approximately 5000ms when stopped after 5s", () => {
-    const deltaMs = 500000;
+    const deltaMs = 5000;
 
     const store = _useStopwatchStore.getState();
 
