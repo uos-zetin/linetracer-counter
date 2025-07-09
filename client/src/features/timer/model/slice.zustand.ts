@@ -4,14 +4,14 @@ import { integrateLogs } from "./reducers";
 import { getRemainingMs, getStatus } from "./selectors";
 
 import type { Timer } from "./types";
-import type { TimerLogDto } from "@/shared";
+import type { TimerLog } from "@/entities/timer-log";
 
 interface InternalTimerSlice {
   timer: Timer;
 
   // 상태 변경 함수
-  setTimer: (initialMs: number, logs: TimerLogDto[]) => void;
-  updateLogs: (logs: TimerLogDto[]) => void;
+  setTimer: (initialMs: number, logs: TimerLog[]) => void;
+  updateLogs: (logs: TimerLog[]) => void;
 
   // 파생값 계산 함수
   getRemainingMs: () => number;
