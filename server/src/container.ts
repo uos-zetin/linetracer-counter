@@ -3,6 +3,7 @@ import {
   ActorSessionService,
   CompetitionService,
   ParticipantService,
+  RecordService,
 } from "@/core/services";
 
 import { ActorIdPwSQLiteRepository } from "@/repositories/actor-id-pw-sqlite";
@@ -10,11 +11,13 @@ import { ActorSQLiteRepository } from "@/repositories/actor-sqlite";
 import { CompetitionSQLiteRepository } from "@/repositories/competition-sqlite";
 import { DivisionSQLiteRepository } from "@/repositories/division-sqlite";
 import { ParticipantSQLiteRepository } from "@/repositories/participant-sqlite";
+import { RecordSQLiteRepository } from "@/repositories/record-sqlite";
 
 import { ActorServiceImpl } from "@/services/actor";
 import { ActorSessionRandomService } from "@/services/actor-session-random";
 import { CompetitionServiceImpl } from "@/services/competition";
 import { ParticipantServiceImpl } from "@/services/participant";
+import { RecordServiceImpl } from "@/services/record";
 
 import sqlite3 from "sqlite3";
 
@@ -49,12 +52,14 @@ export class Container {
   private readonly competitionSQLiteRepo: CompetitionSQLiteRepository;
   private readonly divisionSQLiteRepo: DivisionSQLiteRepository;
   private readonly participantSQLiteRepo: ParticipantSQLiteRepository;
+  private readonly recordSQLiteRepo: RecordSQLiteRepository;
 
   // Services
   private readonly actorService: ActorService;
   private readonly actorSessionService: ActorSessionService;
   private readonly competitionService: CompetitionService;
   private readonly participantService: ParticipantService;
+  private readonly recordService: RecordService;
 
   private constructor() {
     // SQLite Database
@@ -74,6 +79,7 @@ export class Container {
     this.competitionSQLiteRepo = new CompetitionSQLiteRepository(this.db);
     this.divisionSQLiteRepo = new DivisionSQLiteRepository(this.db);
     this.participantSQLiteRepo = new ParticipantSQLiteRepository(this.db);
+    this.recordSQLiteRepo = new RecordSQLiteRepository(this.db);
 
     this.actorService = new ActorServiceImpl({
       actorRepository: this.actorSQLiteRepo,
@@ -88,6 +94,10 @@ export class Container {
       divisionRepository: this.divisionSQLiteRepo,
     });
     this.participantService = new ParticipantServiceImpl({
+      participantRepository: this.participantSQLiteRepo,
+    });
+    this.recordService = new RecordServiceImpl({
+      recordRepository: this.recordSQLiteRepo,
       participantRepository: this.participantSQLiteRepo,
     });
   }
@@ -116,6 +126,7 @@ export class Container {
       this.actorSQLiteRepo.initialize(),
       this.actorIdPwSQLiteRepo.initialize(),
       this.participantSQLiteRepo.initialize(),
+      this.recordSQLiteRepo.initialize(),
     ]);
 
     this.initialized = true;
@@ -127,6 +138,7 @@ export class Container {
       actorSession: this.actorSessionService,
       competition: this.competitionService,
       participant: this.participantService,
+      record: this.recordService,
     };
   }
 }
