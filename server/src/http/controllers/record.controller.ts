@@ -1,7 +1,7 @@
 import { Actor } from "@/core/models";
 import { RecordService } from "@/core/services";
 
-import { Body, Controller, Get, Inject, Param, Patch } from "@nestjs/common";
+import { Body, Controller, Inject, Param, Patch } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import {
@@ -50,18 +50,5 @@ export class RecordController {
     @Body() body: SetRecordStatusDto
   ): Promise<RecordResponseDto> {
     return this.recordService.setRecordStatus(actor, recordId, body.status);
-  }
-
-  @Get("/divisions/:divisionId/top")
-  @ApiResponse({
-    status: 200,
-    description: "특정 부문의 상위 기록 목록 반환",
-    type: [RecordResponseDto],
-  })
-  async getTopRecordsByDivision(
-    @CurrentActor() actor: Actor,
-    @Param("divisionId") divisionId: string
-  ): Promise<RecordResponseDto[]> {
-    return this.recordService.getTopRecordsByDivision(actor, divisionId);
   }
 }
