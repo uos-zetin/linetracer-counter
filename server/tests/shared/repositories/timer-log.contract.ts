@@ -22,17 +22,15 @@ export function runTimerLogRepositoryContract(
       }
     });
 
-    const logTypes: TimerLog["type"][] = ["start", "stop", "add", "sub"];
+    const logTypes: TimerLog["type"][] = ["start", "stop", "adjust"];
 
     function createEntity(order: number, participantId?: string): TimerLog {
       const logType = logTypes[order % logTypes.length];
       let value = Date.now();
       if (logType === "stop") {
         value = Date.now() + 10000; // 10초 뒤
-      } else if (logType === "add") {
-        value = 3000; // 3초 추가
-      } else if (logType === "sub") {
-        value = 1000; // 1초 삭감
+      } else if (logType === "adjust") {
+        value = order % 2 === 0 ? 3000 : -1000; // 3초 추가 또는 1초 차감
       }
 
       return {
@@ -73,7 +71,7 @@ export function runTimerLogRepositoryContract(
       const updated: TimerLog = {
         ...original,
         value: 2000,
-        type: "add",
+        type: "adjust",
       };
       await repo.update(updated);
       const loaded = await repo.getById(original.id);
