@@ -7,6 +7,7 @@ import {
   CompetitionService,
   ParticipantService,
   RecordService,
+  TimerLogService,
 } from "@/core/services";
 
 import { ActorController } from "./controllers/actor.controller";
@@ -42,6 +43,10 @@ const recordService: CustomProvider<RecordService> = {
   provide: "RecordService",
   useValue: di.services.record,
 };
+const timerLogService: CustomProvider<TimerLogService> = {
+  provide: "TimerLogService",
+  useValue: di.services.timerLog,
+};
 
 @Module({
   controllers: [
@@ -57,6 +62,7 @@ const recordService: CustomProvider<RecordService> = {
     competitionService,
     participantService,
     recordService,
+    timerLogService,
   ],
 })
 export class AppModule {
