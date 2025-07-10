@@ -32,3 +32,10 @@ export class UsernameAlreadyExistsError extends Error {
     this.name = "UsernameAlreadyExistsError";
   }
 }
+
+export class TimerLogConsecutiveError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "TimerLogConsecutiveError";
+  }
+}
