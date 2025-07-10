@@ -6,13 +6,15 @@ import {
   ActorSessionService,
   CompetitionService,
   ParticipantService,
+  RecordService,
 } from "@/core/services";
 
 import { ActorController } from "./controllers/actor.controller";
-import { ActorSessionMiddleware } from "./middlewares/actor-session.middleware";
 import { CompetitionController } from "./controllers/competition.controller";
 import { DivisionController } from "./controllers/division.controller";
 import { ParticipantController } from "./controllers/participant.controller";
+import { RecordController } from "./controllers/record.controller";
+import { ActorSessionMiddleware } from "./middlewares/actor-session.middleware";
 
 type CustomProvider<T> = {
   provide: string;
@@ -36,6 +38,10 @@ const participantService: CustomProvider<ParticipantService> = {
   provide: "ParticipantService",
   useValue: di.services.participant,
 };
+const recordService: CustomProvider<RecordService> = {
+  provide: "RecordService",
+  useValue: di.services.record,
+};
 
 @Module({
   controllers: [
@@ -43,12 +49,14 @@ const participantService: CustomProvider<ParticipantService> = {
     CompetitionController,
     DivisionController,
     ParticipantController,
+    RecordController,
   ],
   providers: [
     actorService,
     actorSessionService,
     competitionService,
     participantService,
+    recordService,
   ],
 })
 export class AppModule {

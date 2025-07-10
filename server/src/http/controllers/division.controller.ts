@@ -1,4 +1,10 @@
-import { CompetitionService, ParticipantService } from "@/core/services";
+import { Actor } from "@/core/models";
+import {
+  CompetitionService,
+  ParticipantService,
+  RecordService,
+} from "@/core/services";
+
 import {
   Body,
   Controller,
@@ -11,6 +17,7 @@ import {
   Post,
 } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
+
 import {
   ApiActorSecurity,
   CurrentActor,
@@ -21,10 +28,10 @@ import {
   UpdateDivisionDto,
 } from "../dtos/division.dto";
 import {
-  ParticipantResponseDto,
   CreateParticipantDto,
+  ParticipantResponseDto,
 } from "../dtos/participant.dto";
-import { Actor } from "@/core/models";
+import { RecordResponseDto } from "../dtos/record.dto";
 
 @ApiTags("Divisions")
 @Controller("divisions")
@@ -33,7 +40,9 @@ export class DivisionController {
     @Inject("CompetitionService")
     private readonly competitionService: CompetitionService,
     @Inject("ParticipantService")
-    private readonly participantService: ParticipantService
+    private readonly participantService: ParticipantService,
+    @Inject("RecordService")
+    private readonly recordService: RecordService
   ) {}
 
   @Patch("/:divisionId")
@@ -127,5 +136,18 @@ export class DivisionController {
       orderRaw,
       givenTime
     );
+  }
+
+  @Get("/:divisionId/top-records")
+  @ApiResponse({
+    status: 200,
+    description: "특정 부문의 상위 기록 목록 반환",
+    type: [RecordResponseDto],
+  })
+  async getTopRecordsByDivision(
+    @CurrentActor() actor: Actor,
+    @Param("divisionId") divisionId: string
+  ): Promise<RecordResponseDto[]> {
+    return this.recordService.getTopRecordsByDivision(actor, divisionId);
   }
 }

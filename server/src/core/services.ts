@@ -208,33 +208,29 @@ export interface RecordService {
   /**
    * 특정 참가자의 대회 기록을 조회할 수 있다.
    */
-  getRecords(actorId: string, participantId: string): Promise<Record[]>;
+  getRecords(actor: Actor, participantId: string): Promise<Record[]>;
 
   /**
    * 특정 참가자에 대회 기록을 추가할 수 있다.
    */
   addRecord(
-    actorId: string,
+    actor: Actor,
     participantId: string,
     value: number,
     source: Record["source"],
-    note?: string
+    note: string
   ): Promise<Record>;
 
   /**
    * 특정 참가자의 대회 기록에 비고란을 수정할 수 있다.
    */
-  setRecordNote(
-    actorId: string,
-    recordId: string,
-    note: string
-  ): Promise<Record>;
+  setRecordNote(actor: Actor, recordId: string, note: string): Promise<Record>;
 
   /**
    * 특정 참가자의 대회 기록의 상태(승인/거절)를 변경할 수 있다.
    */
   setRecordStatus(
-    actorId: string,
+    actor: Actor,
     recordId: string,
     status: Record["status"]
   ): Promise<Record>;
@@ -242,28 +238,18 @@ export interface RecordService {
   /**
    * 특정 부문의 상위 대회 기록을 조회할 수 있다.
    */
-  getTopRecordsByDivision(
-    actorId: string,
-    divisionId: string
-  ): Promise<Record[]>;
+  getTopRecordsByDivision(actor: Actor, divisionId: string): Promise<Record[]>;
 
   // -----------------------------
   // Observable 구독 관련 메서드들
   // -----------------------------
   /**
-   * 특정 참가자의 대회 기록 추가 이벤트를 구독할 수 있다.
+   * 특정 참가자의 기록 상태(승인/거절)가 변경된 경우를 구독할 수 있다.
+   * addRecord() 호출로 인한 기록 추가 또는 setRecordStatus() 호출로 인한 상태 변경 시에 이벤트가 발생한다.
    */
-  subscribeRecordAdded(
+  subscribeRecordStatusChanged(
     participantId: string,
-    callback: (record: Record) => void
-  ): Unsubscriber;
-
-  /**
-   * 특정 경연에서 경연자들의 최고 기록이 갱신됐을 때 구독할 수 있다.
-   */
-  subscribeTopRecordsUpdated(
-    divisionId: string,
-    callback: (records: Record[]) => void
+    callback: (record: Record) => Promise<void>
   ): Unsubscriber;
 }
 
