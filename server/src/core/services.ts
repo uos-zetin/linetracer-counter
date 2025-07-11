@@ -267,7 +267,7 @@ export interface ManualRecordService {
    * 특정 참가자에 대한 수동 계수 기록을 조회할 수 있다.
    */
   getManualRecords(
-    actorId: string,
+    actor: Actor,
     participantId: string
   ): Promise<ManualRecord[]>;
 
@@ -275,18 +275,10 @@ export interface ManualRecordService {
    * 특정 참가자에 대한 수동 계수 기록을 추가할 수 있다.
    */
   addManualRecord(
-    actorId: string,
+    actor: Actor,
     participantId: string,
     value: number,
     recorderName: string
-  ): Promise<ManualRecord>;
-
-  /**
-   * 특정 수동 계수 기록을 무효화할 수 있다.
-   */
-  invalidateManualRecord(
-    actorId: string,
-    manualRecordId: string
   ): Promise<ManualRecord>;
 
   // -----------------------------
@@ -297,7 +289,7 @@ export interface ManualRecordService {
    */
   subscribeManualRecordAdded(
     participantId: string,
-    callback: (manualRecord: ManualRecord) => void
+    callback: (manualRecord: ManualRecord) => Promise<void>
   ): Unsubscriber;
 }
 
