@@ -5,6 +5,7 @@ import {
   ActorService,
   ActorSessionService,
   CompetitionService,
+  ManualRecordService,
   ParticipantService,
   RecordService,
   TimerLogService,
@@ -47,6 +48,10 @@ const timerLogService: CustomProvider<TimerLogService> = {
   provide: "TimerLogService",
   useValue: di.services.timerLog,
 };
+const manualRecordService: CustomProvider<ManualRecordService> = {
+  provide: "ManualRecordService",
+  useValue: di.services.manualRecord,
+};
 
 @Module({
   controllers: [
@@ -60,6 +65,7 @@ const timerLogService: CustomProvider<TimerLogService> = {
     actorService,
     actorSessionService,
     competitionService,
+    manualRecordService,
     participantService,
     recordService,
     timerLogService,
