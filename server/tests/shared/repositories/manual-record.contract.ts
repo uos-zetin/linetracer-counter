@@ -29,7 +29,6 @@ export function runManualRecordRepositoryContract(
         value: Math.floor(Math.random() * 10000),
         recorderName: "테스트 계수자",
         createdAt: new Date(),
-        invalidatedAt: null,
       };
     }
 
@@ -63,7 +62,6 @@ export function runManualRecordRepositoryContract(
         ...original,
         value: 100000,
         recorderName: "수정된 계수자",
-        invalidatedAt: new Date(),
       };
       await repo.update(updated);
       const loaded = await repo.getById(original.id);

@@ -11,7 +11,6 @@ type ManualRecordRecord = {
   value: number;
   recorderName: string;
   createdAt: string;
-  invalidatedAt: string | null;
   isDeleted: number;
 };
 
@@ -31,7 +30,6 @@ export class ManualRecordSQLiteRepository implements ManualRecordRepository {
           value INTEGER NOT NULL,
           recorderName TEXT NOT NULL,
           createdAt TEXT NOT NULL,
-          invalidatedAt TEXT,
           isDeleted INTEGER NOT NULL
         )`
       );
@@ -55,9 +53,6 @@ export class ManualRecordSQLiteRepository implements ManualRecordRepository {
       value: record.value,
       recorderName: record.recorderName,
       createdAt: new Date(record.createdAt),
-      invalidatedAt: record.invalidatedAt
-        ? new Date(record.invalidatedAt)
-        : null,
     };
   }
 
@@ -81,15 +76,14 @@ export class ManualRecordSQLiteRepository implements ManualRecordRepository {
   async create(manualRecord: ManualRecord): Promise<ManualRecord> {
     await this.db
       .run(
-        `INSERT INTO manual_records (id, participantId, value, recorderName, createdAt, invalidatedAt, isDeleted)
-          VALUES (?, ?, ?, ?, ?, ?, 0)`,
+        `INSERT INTO manual_records (id, participantId, value, recorderName, createdAt, isDeleted)
+          VALUES (?, ?, ?, ?, ?, 0)`,
         [
           manualRecord.id,
           manualRecord.participantId,
           manualRecord.value,
           manualRecord.recorderName,
           manualRecord.createdAt.toISOString(),
-          manualRecord.invalidatedAt?.toISOString() || null,
         ]
       )
       .catch((err) => {
@@ -102,14 +96,13 @@ export class ManualRecordSQLiteRepository implements ManualRecordRepository {
     const result = await this.db
       .run(
         `UPDATE manual_records
-          SET participantId = ?, value = ?, recorderName = ?, createdAt = ?, invalidatedAt = ?
+          SET participantId = ?, value = ?, recorderName = ?, createdAt = ?
           WHERE id = ? AND isDeleted = 0`,
         [
           manualRecord.participantId,
           manualRecord.value,
           manualRecord.recorderName,
           manualRecord.createdAt.toISOString(),
-          manualRecord.invalidatedAt?.toISOString() || null,
           manualRecord.id,
         ]
       )
