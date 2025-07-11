@@ -1,4 +1,4 @@
-import type { TimerLogDto } from "@/shared";
+import type { TimerLog } from "@/entities/timer-log";
 
 export interface TimerState {
   initialMs: number; // 초기 시간 (ms)
@@ -9,12 +9,12 @@ export interface TimerState {
 
 export interface Timer {
   current: TimerState;
-  timerLogs: TimerLogDto[];
+  timerLogs: TimerLog[];
 }
 
 export interface TimerStore {
-  setTimer: (initialMs: number, timerLogs: TimerLogDto[]) => void;
-  updateLogs: (logs: TimerLogDto[]) => void;
+  setTimer: (initialMs: number, timerLogs: TimerLog[]) => void;
+  updateLogs: (logs: TimerLog[]) => void;
   useRemainingMs: () => number;
   useStatus: () => "running" | "stopped" | "finished";
 }

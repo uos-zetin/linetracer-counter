@@ -1,7 +1,7 @@
 import type { TimerState } from "./types";
-import type { TimerLogDto } from "@/shared";
+import type { TimerLog } from "@/entities/timer-log";
 
-export function integrateLogs(initialMs: number, logs: TimerLogDto[]): TimerState {
+export function integrateLogs(initialMs: number, logs: TimerLog[]): TimerState {
   const state: TimerState = {
     initialMs: initialMs,
     offsetMs: 0,

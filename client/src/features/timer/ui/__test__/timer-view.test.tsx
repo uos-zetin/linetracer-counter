@@ -1,7 +1,7 @@
 import { render, screen, act } from "@testing-library/react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { TimerView } from "../timer-view";
-import { useTimerStore as _useTimerStore } from "@/entities/timer/model/slice.zustand";
+import { useTimerStore as _useTimerStore } from "@/features/timer/model/slice.zustand";
 
 describe("TimerView (props version) - Time Flow", () => {
   const now = 1_000_000_000_000;

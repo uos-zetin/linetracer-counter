@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { useTimerStore as _useTimerStore } from "../slice.zustand"; // 내부 store
-import type { TimerLogDto } from "@/shared/api/models";
+import type { TimerLog } from "@/entities/timer-log";
 
 // helper: zustand 상태 초기화 (테스트 간 state 공유 방지)
 beforeEach(() => {
@@ -11,7 +11,7 @@ describe("useTimerStore integration", () => {
   const base = Date.now();
 
   it("sets timer correctly and updates state", () => {
-    const logs: TimerLogDto[] = [
+    const logs: TimerLog[] = [
       {
         id: "1",
         participantId: "abc",
@@ -39,7 +39,7 @@ describe("useTimerStore integration", () => {
 
   it("getStatus returns 'running' if startedAt is set", () => {
     const now = Date.now();
-    const logs: TimerLogDto[] = [
+    const logs: TimerLog[] = [
       {
         id: "1",
         participantId: "abc",
@@ -55,7 +55,7 @@ describe("useTimerStore integration", () => {
   });
 
   it("updateLogs overrides logs and updates timer state", () => {
-    const logs1: TimerLogDto[] = [
+    const logs1: TimerLog[] = [
       {
         id: "1",
         participantId: "abc",
@@ -72,7 +72,7 @@ describe("useTimerStore integration", () => {
       },
     ];
 
-    const logs2: TimerLogDto[] = [
+    const logs2: TimerLog[] = [
       ...logs1,
       {
         id: "3",
