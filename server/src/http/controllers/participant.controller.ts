@@ -1,5 +1,6 @@
-import { Actor, TimerLog } from "@/core/models";
+import { Actor, ManualRecord, TimerLog } from "@/core/models";
 import {
+  ManualRecordService,
   ParticipantService,
   RecordService,
   TimerLogService,
@@ -28,6 +29,10 @@ import {
 } from "../dtos/participant.dto";
 import { AddRecordDto, RecordResponseDto } from "../dtos/record.dto";
 import { AdjustTimerDto, TimerLogResponseDto } from "../dtos/timer-log.dto";
+import {
+  AddManualRecordDto,
+  ManualRecordResponseDto,
+} from "../dtos/manual-record.dto";
 
 @ApiTags("Participants")
 @Controller("participants")
@@ -38,7 +43,9 @@ export class ParticipantController {
     @Inject("RecordService")
     private readonly recordService: RecordService,
     @Inject("TimerLogService")
-    private readonly timerLogService: TimerLogService
+    private readonly timerLogService: TimerLogService,
+    @Inject("ManualRecordService")
+    private readonly manualRecordService: ManualRecordService
   ) {}
 
   @Patch("/:participantId")
@@ -105,6 +112,40 @@ export class ParticipantController {
       body.value,
       body.source,
       body.note
+    );
+  }
+
+  @Get("/:participantId/manual-records")
+  @ApiResponse({
+    status: 200,
+    description: "특정 참가자의 모든 수동 계수 기록 목록 반환",
+    type: [ManualRecordResponseDto],
+  })
+  async getManualRecords(
+    @CurrentActor() actor: Actor,
+    @Param("participantId") participantId: string
+  ): Promise<ManualRecord[]> {
+    return this.manualRecordService.getManualRecords(actor, participantId);
+  }
+
+  @Post("/:participantId/manual-records")
+  @HttpCode(201)
+  @ApiActorSecurity()
+  @ApiResponse({
+    status: 201,
+    description: "수동 계수 기록 추가 성공 및 추가된 기록 정보 반환",
+    type: ManualRecordResponseDto,
+  })
+  async addManualRecord(
+    @CurrentActor() actor: Actor,
+    @Param("participantId") participantId: string,
+    @Body() body: AddManualRecordDto
+  ): Promise<ManualRecord> {
+    return this.manualRecordService.addManualRecord(
+      actor,
+      participantId,
+      body.value,
+      body.recorderName
     );
   }
 

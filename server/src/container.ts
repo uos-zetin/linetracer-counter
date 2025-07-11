@@ -2,6 +2,7 @@ import {
   ActorService,
   ActorSessionService,
   CompetitionService,
+  ManualRecordService,
   ParticipantService,
   RecordService,
   TimerLogService,
@@ -11,6 +12,7 @@ import { ActorIdPwSQLiteRepository } from "@/repositories/actor-id-pw-sqlite";
 import { ActorSQLiteRepository } from "@/repositories/actor-sqlite";
 import { CompetitionSQLiteRepository } from "@/repositories/competition-sqlite";
 import { DivisionSQLiteRepository } from "@/repositories/division-sqlite";
+import { ManualRecordSQLiteRepository } from "@/repositories/manual-record-sqlite";
 import { ParticipantSQLiteRepository } from "@/repositories/participant-sqlite";
 import { RecordSQLiteRepository } from "@/repositories/record-sqlite";
 import { TimerLogSQLiteRepository } from "@/repositories/timer-log-sqlite";
@@ -18,6 +20,7 @@ import { TimerLogSQLiteRepository } from "@/repositories/timer-log-sqlite";
 import { ActorServiceImpl } from "@/services/actor";
 import { ActorSessionRandomService } from "@/services/actor-session-random";
 import { CompetitionServiceImpl } from "@/services/competition";
+import { ManualRecordServiceImpl } from "@/services/manual-record";
 import { ParticipantServiceImpl } from "@/services/participant";
 import { RecordServiceImpl } from "@/services/record";
 import { TimerLogServiceImpl } from "@/services/timer-log";
@@ -54,6 +57,7 @@ export class Container {
   private readonly actorSQLiteRepo: ActorSQLiteRepository;
   private readonly competitionSQLiteRepo: CompetitionSQLiteRepository;
   private readonly divisionSQLiteRepo: DivisionSQLiteRepository;
+  private readonly manualRecordSQLiteRepo: ManualRecordSQLiteRepository;
   private readonly participantSQLiteRepo: ParticipantSQLiteRepository;
   private readonly recordSQLiteRepo: RecordSQLiteRepository;
   private readonly timerLogSQLiteRepo: TimerLogSQLiteRepository;
@@ -62,6 +66,7 @@ export class Container {
   private readonly actorService: ActorService;
   private readonly actorSessionService: ActorSessionService;
   private readonly competitionService: CompetitionService;
+  private readonly manualRecordService: ManualRecordService;
   private readonly participantService: ParticipantService;
   private readonly recordService: RecordService;
   private readonly timerLogService: TimerLogService;
@@ -83,6 +88,7 @@ export class Container {
     this.actorSQLiteRepo = new ActorSQLiteRepository(this.db);
     this.competitionSQLiteRepo = new CompetitionSQLiteRepository(this.db);
     this.divisionSQLiteRepo = new DivisionSQLiteRepository(this.db);
+    this.manualRecordSQLiteRepo = new ManualRecordSQLiteRepository(this.db);
     this.participantSQLiteRepo = new ParticipantSQLiteRepository(this.db);
     this.recordSQLiteRepo = new RecordSQLiteRepository(this.db);
     this.timerLogSQLiteRepo = new TimerLogSQLiteRepository(this.db);
@@ -105,6 +111,9 @@ export class Container {
     this.recordService = new RecordServiceImpl({
       recordRepository: this.recordSQLiteRepo,
       participantRepository: this.participantSQLiteRepo,
+    });
+    this.manualRecordService = new ManualRecordServiceImpl({
+      manualRecordRepository: this.manualRecordSQLiteRepo,
     });
     this.timerLogService = new TimerLogServiceImpl({
       timerLogRepository: this.timerLogSQLiteRepo,
@@ -134,6 +143,7 @@ export class Container {
       this.divisionSQLiteRepo.initialize(),
       this.actorSQLiteRepo.initialize(),
       this.actorIdPwSQLiteRepo.initialize(),
+      this.manualRecordSQLiteRepo.initialize(),
       this.participantSQLiteRepo.initialize(),
       this.recordSQLiteRepo.initialize(),
       this.timerLogSQLiteRepo.initialize(),
@@ -147,6 +157,7 @@ export class Container {
       actor: this.actorService,
       actorSession: this.actorSessionService,
       competition: this.competitionService,
+      manualRecord: this.manualRecordService,
       participant: this.participantService,
       record: this.recordService,
       timerLog: this.timerLogService,

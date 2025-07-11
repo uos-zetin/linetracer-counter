@@ -54,7 +54,6 @@ export interface ManualRecord {
   value: number; // 기록 값
   recorderName: string; // 수동 계수자 이름
   createdAt: Date; // 생성일
-  invalidatedAt: Date | null; // 무효화된(사용 또는 무시를 의미함) 시각
 }
 
 export interface TimerLog {
