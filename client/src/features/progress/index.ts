@@ -1,4 +1,4 @@
-import { useProgressStore as _useProgressStore } from "./model/store.zustand";
+import { useProgressStore as _useProgressStore } from "./model/slice.zustand";
 import type { Progress, ProgressStore, Runner } from "./model/types";
 
 export const useProgressStore: () => ProgressStore = () => ({

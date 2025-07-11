@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-import { useProgressStore } from "../store.zustand";
+import { useProgressStore } from "../slice.zustand";
 import type { Progress } from "../types";
 import type { Competition } from "@/entities/competition";
 import type { Division } from "@/entities/division";
