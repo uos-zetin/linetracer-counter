@@ -65,10 +65,9 @@ export interface TimerLog {
    * 타이머 로그 타입
    * - "start": 타이머 시작, value는 시작 시각(unix timestamp)
    * - "stop": 타이머 정지, value는 정지 시각(unix timestamp)
-   * - "add": 타이머에 추가 시간, value는 추가된 시간(ms)
-   * - "sub": 타이머에서 시간 차감, value는 차감된 시간(ms)
+   * - "adjust": 타이머 시간 조정, value는 조정된 시간(ms, 양수는 추가, 음수는 차감)
    */
-  type: "start" | "stop" | "add" | "sub";
+  type: "start" | "stop" | "adjust";
   createdAt: Date;
 }
 

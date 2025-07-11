@@ -177,27 +177,36 @@ export interface TimerLogService {
   /**
    * 특정 참가자의 경연 타이머를 시작할 수 있다. 현재 시각을 기준으로 타이머가 시작된다.
    */
-  startTimer(actorId: string, participantId: string): Promise<TimerLog>;
+  startTimer(actor: Actor, participantId: string): Promise<TimerLog>;
 
   /**
    * 특정 참가자의 경연 타이머를 중지할 수 있다. 현재 시각을 기준으로 타이머가 중지된다.
    */
-  stopTimer(actorId: string, participantId: string): Promise<void>;
+  stopTimer(actor: Actor, participantId: string): Promise<TimerLog>;
+
+  /**
+   * 특정 참가자의 타이머 시간을 조정할 수 있다. 양수는 시간 추가, 음수는 시간 차감을 의미한다.
+   */
+  adjustTimer(
+    actor: Actor,
+    participantId: string,
+    adjustmentMs: number
+  ): Promise<TimerLog>;
 
   /**
    * 특정 참가자의 타이머 기록을 조회할 수 있다.
    */
-  getTimerLogs(actorId: string, participantId: string): Promise<TimerLog[]>;
+  getTimerLogs(actor: Actor, participantId: string): Promise<TimerLog[]>;
 
   // -----------------------------
   // Observable 구독 관련 메서드들
   // -----------------------------
   /**
-   * 특정 참가자의 남은 경연 시간 타이머 변경 이벤트를 구독할 수 있다.
+   * 특정 참가자에 대한 타이머 기록 추가 이벤트를 구독할 수 있다.
    */
   subscribeTimerLogsChanged(
     participantId: string,
-    callback: (timerLogs: TimerLog[]) => void
+    callback: (timerLog: TimerLog) => Promise<void>
   ): Unsubscriber;
 }
 

@@ -1,8 +1,9 @@
 import {
-  PersistenceError,
-  EntityNotFoundError,
-  AuthorizationError,
   AuthenticationError,
+  AuthorizationError,
+  EntityNotFoundError,
+  PersistenceError,
+  TimerLogConsecutiveError,
   UsernameAlreadyExistsError,
 } from "@/core/errors";
 import {
@@ -72,6 +73,13 @@ export class CustomExceptionFilter implements ExceptionFilter {
         error = {
           statusCode: HttpStatus.CONFLICT,
           type: "UsernameAlreadyExistsError",
+          message: exception.message,
+        };
+        break;
+      case exception instanceof TimerLogConsecutiveError:
+        error = {
+          statusCode: HttpStatus.BAD_REQUEST,
+          type: "TimerLogConsecutiveError",
           message: exception.message,
         };
         break;

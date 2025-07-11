@@ -1,5 +1,9 @@
-import { Actor } from "@/core/models";
-import { ParticipantService, RecordService } from "@/core/services";
+import { Actor, TimerLog } from "@/core/models";
+import {
+  ParticipantService,
+  RecordService,
+  TimerLogService,
+} from "@/core/services";
 
 import {
   Body,
@@ -23,6 +27,7 @@ import {
   UpdateParticipantDto,
 } from "../dtos/participant.dto";
 import { AddRecordDto, RecordResponseDto } from "../dtos/record.dto";
+import { AdjustTimerDto, TimerLogResponseDto } from "../dtos/timer-log.dto";
 
 @ApiTags("Participants")
 @Controller("participants")
@@ -31,7 +36,9 @@ export class ParticipantController {
     @Inject("ParticipantService")
     private readonly participantService: ParticipantService,
     @Inject("RecordService")
-    private readonly recordService: RecordService
+    private readonly recordService: RecordService,
+    @Inject("TimerLogService")
+    private readonly timerLogService: TimerLogService
   ) {}
 
   @Patch("/:participantId")
@@ -99,5 +106,68 @@ export class ParticipantController {
       body.source,
       body.note
     );
+  }
+
+  @Post("/:participantId/timer/start")
+  @HttpCode(201)
+  @ApiActorSecurity()
+  @ApiResponse({
+    status: 201,
+    description: "타이머 시작 성공 및 생성된 타이머 로그 반환",
+    type: TimerLogResponseDto,
+  })
+  async startTimer(
+    @CurrentActor() actor: Actor,
+    @Param("participantId") participantId: string
+  ): Promise<TimerLog> {
+    return this.timerLogService.startTimer(actor, participantId);
+  }
+
+  @Post("/:participantId/timer/stop")
+  @HttpCode(201)
+  @ApiActorSecurity()
+  @ApiResponse({
+    status: 201,
+    description: "타이머 중지 성공 및 생성된 타이머 로그 반환",
+    type: TimerLogResponseDto,
+  })
+  async stopTimer(
+    @CurrentActor() actor: Actor,
+    @Param("participantId") participantId: string
+  ): Promise<TimerLog> {
+    return this.timerLogService.stopTimer(actor, participantId);
+  }
+
+  @Post("/:participantId/timer/adjust")
+  @HttpCode(201)
+  @ApiActorSecurity()
+  @ApiResponse({
+    status: 201,
+    description: "타이머 조정 성공 및 생성된 타이머 로그 반환",
+    type: TimerLogResponseDto,
+  })
+  async adjustTimer(
+    @CurrentActor() actor: Actor,
+    @Param("participantId") participantId: string,
+    @Body() body: AdjustTimerDto
+  ): Promise<TimerLog> {
+    return this.timerLogService.adjustTimer(
+      actor,
+      participantId,
+      body.adjustmentMs
+    );
+  }
+
+  @Get("/:participantId/timer/logs")
+  @ApiResponse({
+    status: 200,
+    description: "특정 참가자의 모든 타이머 로그 목록 반환",
+    type: [TimerLogResponseDto],
+  })
+  async getTimerLogs(
+    @CurrentActor() actor: Actor,
+    @Param("participantId") participantId: string
+  ): Promise<TimerLog[]> {
+    return this.timerLogService.getTimerLogs(actor, participantId);
   }
 }

@@ -4,6 +4,7 @@ import {
   CompetitionService,
   ParticipantService,
   RecordService,
+  TimerLogService,
 } from "@/core/services";
 
 import { ActorIdPwSQLiteRepository } from "@/repositories/actor-id-pw-sqlite";
@@ -12,12 +13,14 @@ import { CompetitionSQLiteRepository } from "@/repositories/competition-sqlite";
 import { DivisionSQLiteRepository } from "@/repositories/division-sqlite";
 import { ParticipantSQLiteRepository } from "@/repositories/participant-sqlite";
 import { RecordSQLiteRepository } from "@/repositories/record-sqlite";
+import { TimerLogSQLiteRepository } from "@/repositories/timer-log-sqlite";
 
 import { ActorServiceImpl } from "@/services/actor";
 import { ActorSessionRandomService } from "@/services/actor-session-random";
 import { CompetitionServiceImpl } from "@/services/competition";
 import { ParticipantServiceImpl } from "@/services/participant";
 import { RecordServiceImpl } from "@/services/record";
+import { TimerLogServiceImpl } from "@/services/timer-log";
 
 import sqlite3 from "sqlite3";
 
@@ -53,6 +56,7 @@ export class Container {
   private readonly divisionSQLiteRepo: DivisionSQLiteRepository;
   private readonly participantSQLiteRepo: ParticipantSQLiteRepository;
   private readonly recordSQLiteRepo: RecordSQLiteRepository;
+  private readonly timerLogSQLiteRepo: TimerLogSQLiteRepository;
 
   // Services
   private readonly actorService: ActorService;
@@ -60,6 +64,7 @@ export class Container {
   private readonly competitionService: CompetitionService;
   private readonly participantService: ParticipantService;
   private readonly recordService: RecordService;
+  private readonly timerLogService: TimerLogService;
 
   private constructor() {
     // SQLite Database
@@ -80,6 +85,7 @@ export class Container {
     this.divisionSQLiteRepo = new DivisionSQLiteRepository(this.db);
     this.participantSQLiteRepo = new ParticipantSQLiteRepository(this.db);
     this.recordSQLiteRepo = new RecordSQLiteRepository(this.db);
+    this.timerLogSQLiteRepo = new TimerLogSQLiteRepository(this.db);
 
     this.actorService = new ActorServiceImpl({
       actorRepository: this.actorSQLiteRepo,
@@ -99,6 +105,9 @@ export class Container {
     this.recordService = new RecordServiceImpl({
       recordRepository: this.recordSQLiteRepo,
       participantRepository: this.participantSQLiteRepo,
+    });
+    this.timerLogService = new TimerLogServiceImpl({
+      timerLogRepository: this.timerLogSQLiteRepo,
     });
   }
 
@@ -127,6 +136,7 @@ export class Container {
       this.actorIdPwSQLiteRepo.initialize(),
       this.participantSQLiteRepo.initialize(),
       this.recordSQLiteRepo.initialize(),
+      this.timerLogSQLiteRepo.initialize(),
     ]);
 
     this.initialized = true;
@@ -139,6 +149,7 @@ export class Container {
       competition: this.competitionService,
       participant: this.participantService,
       record: this.recordService,
+      timerLog: this.timerLogService,
     };
   }
 }
