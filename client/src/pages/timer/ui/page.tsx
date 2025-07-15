@@ -9,6 +9,8 @@ import { StopwatchView } from "./stopwatch-view";
 import { NextRunnerInfo } from "./next-runner-info";
 import { TopRecordView } from "./top-record-info";
 import { CurrentRecordView } from "./current-record-view";
+import { useNavigate, useParams, useSearchParams } from "react-router";
+import { useEffect } from "react";
 
 import type { Progress } from "@/features/progress";
 import { SponsorView } from "./sponsor-view";
@@ -145,8 +147,20 @@ const mockTopRecords = [
 ];
 
 export function TimerPage() {
+  const navigate = useNavigate();
+  const { competitionId } = useParams();
+  const [searchParams] = useSearchParams();
+  const stopwatchName = searchParams.get("name");
+
   const progressStore = useProgressStore();
   const stopwatchStore = useStopwatchStore();
+
+  // stopwatchName이 없으면 계수기 선택으로 리다이렉트
+  useEffect(() => {
+    if (!stopwatchName && competitionId) {
+      navigate(`/${competitionId}/timer/select`);
+    }
+  }, [stopwatchName, competitionId, navigate]);
 
   const competition = progressStore.useCompetition();
   const division = progressStore.useDivision();
@@ -155,18 +169,17 @@ export function TimerPage() {
   const stopwatch = stopwatchStore.useStopwatchState();
 
   const timerState = integrateLogs(runner?.participant.givenTime ?? 4 * 60 * 1000, runner?.timerLogs ?? []);
-  // const topRecords = progressStore.useTopRecords();
 
-  // useEffect(() => {
-  //   if (runner) {
-  //     timerStore.setTimer(runner.participant.givenTime, runner.timerLogs);
-  //   } else {
-  //     timerStore.setTimer(0, []);
-  //   }
-  // }, [runner, timerStore]);
+  // stopwatchName이 없으면 로딩 상태 표시
+  if (!stopwatchName) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-uos-gray-mist">
+        <div className="text-2xl font-bold text-gray-600">로딩 중...</div>
+      </div>
+    );
+  }
 
   progressStore.setProgress(mockProgress);
-  // stopwatchStore.start(Date.now());
 
   return (
     <main className="flex flex-col min-h-screen h-full bg-uos-gray-mist">
@@ -176,7 +189,7 @@ export function TimerPage() {
         className="grid gap-x-[1.5vw] gap-y-[1vw] grid-cols-1 md:grid-cols-2 px-[1vw] md:px-[1.5vw] py-[2vw] md:py-[3vw] h-full"
       >
         <div className="order-1 md:row-start-1 md:col-start-1">
-          <DivisionInfo divisionName={division?.name ?? "No Division"} />
+          <DivisionInfo divisionName={division?.name ?? "No Division"} stopwatchName={stopwatchName} />
         </div>
         <div className="order-2 md:row-start-1 md:col-start-2">
           <RunnerInfo
