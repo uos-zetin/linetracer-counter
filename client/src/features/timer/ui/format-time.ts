@@ -5,11 +5,13 @@ export function formatMsToTime(ms: number) {
   const seconds = totalSeconds % 60;
 
   const pad = (num: number) => num.toString().padStart(2, "0");
+  const timeString = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 
   return {
     hours: pad(hours),
     minutes: pad(minutes),
     seconds: pad(seconds),
-    toString: () => `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`,
+    toString: () => timeString,
+    valueOf: () => timeString,
   };
 }

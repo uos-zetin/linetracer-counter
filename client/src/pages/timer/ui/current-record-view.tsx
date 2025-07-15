@@ -36,7 +36,7 @@ export function CurrentRecordView({ currentRecords }: CurrentRecordViewProps) {
 
               {/* 기록(초) 셀 */}
               <span className="flex items-center justify-center truncate px-[0.5vw]">
-                {rec ? formatElapsedMs(rec.value) : <span className="text-gray-400">—</span>}
+                {rec ? formatElapsedMs(rec.value).toString() : <span className="text-gray-400">—</span>}
               </span>
             </li>
           );

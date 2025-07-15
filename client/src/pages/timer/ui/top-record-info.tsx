@@ -61,10 +61,10 @@ export function TopRecordView({ topRecords }: TopRecordViewProps) {
                   flex items-center justify-center truncate px-[0.5vw]
                   ${rankBg(rowIdx + 1) || `${bgLeft} text-gray-800`}
                 `}
-                title={left ? `${left.participantName} - ${formatElapsedMs(left.timeMs)}s` : undefined}
+                title={left ? `${left.participantName} - ${formatElapsedMs(left.timeMs).toString()}s` : undefined}
               >
                 {left ? (
-                  `${left.participantName} - ${formatElapsedMs(left.timeMs)}`
+                  `${left.participantName} - ${formatElapsedMs(left.timeMs).toString()}`
                 ) : (
                   <span className="text-gray-400">—</span>
                 )}
@@ -82,10 +82,10 @@ export function TopRecordView({ topRecords }: TopRecordViewProps) {
                   flex items-center justify-center truncate px-[0.5vw]
                   ${bgRight} text-gray-800
                 `}
-                title={right ? `${right.participantName} - ${formatElapsedMs(right.timeMs)}s` : undefined}
+                title={right ? `${right.participantName} - ${formatElapsedMs(right.timeMs).toString()}s` : undefined}
               >
                 {right ? (
-                  `${right.participantName} - ${formatElapsedMs(right.timeMs)}`
+                  `${right.participantName} - ${formatElapsedMs(right.timeMs).toString()}`
                 ) : (
                   <span className="text-gray-400">—</span>
                 )}
