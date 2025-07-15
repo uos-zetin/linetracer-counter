@@ -31,9 +31,17 @@ export function StopwatchView({ stopwatch }: StopwatchViewProps) {
     };
   }, [stopwatch]);
 
+  const timeComponents = formatElapsedMs(elapsedMs);
+
   return (
     <div className="flex flex-col items-center justify-center -mt-4">
-      <span className="text-[9vw] font-bold text-gray-800">{formatElapsedMs(elapsedMs)}</span>
+      <div className="text-[9vw] leading-none font-bold text-gray-800 flex items-baseline">
+        <span>{timeComponents.minutes}</span>
+        <span className="transform -translate-y-[0.45vw]">:</span>
+        <span>{timeComponents.seconds}</span>
+        <span>.</span>
+        <span>{timeComponents.milliseconds}</span>
+      </div>
     </div>
   );
 }

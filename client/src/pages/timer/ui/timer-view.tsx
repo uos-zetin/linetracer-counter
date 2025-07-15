@@ -28,9 +28,17 @@ export function TimerView({ timerState }: { timerState: TimerState }) {
     };
   }, [timerState]);
 
+  const timeComponents = formatMsToTime(remainingMs);
+
   return (
     <div className="flex flex-col items-center justify-center -mt-4">
-      <span className="text-[9vw] font-bold text-gray-800">{formatMsToTime(remainingMs)}</span>
+      <div className="text-[9vw] leading-none font-bold text-gray-800 flex items-baseline">
+        <span>{timeComponents.hours}</span>
+        <span className="transform -translate-y-[0.45vw]">:</span>
+        <span>{timeComponents.minutes}</span>
+        <span className="transform -translate-y-[0.45vw]">:</span>
+        <span>{timeComponents.seconds}</span>
+      </div>
     </div>
   );
 }
