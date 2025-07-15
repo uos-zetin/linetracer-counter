@@ -4,7 +4,7 @@ export interface TimerLogDto {
   id: string;
   participantId: string;
   value: number;
-  type: "start" | "stop" | "add" | "sub";
+  type: "start" | "stop" | "adjust";
   createdAt: string;
 }
 
