@@ -1,1 +1,35 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap");
 @import "tailwindcss";
+
+@theme {
+  --color-uos-primary-blue: #004090;
+
+  --color-uos-blue: #005eb8;
+  --color-uos-blue-light: #0077c8;
+  --color-uos-blue-soft: #9bcbeb;
+  --color-uos-blue-mist: #b9d9eb;
+
+  --color-uos-emerald: #00b398;
+  --color-uos-emerald-light: #2cd5c4;
+  --color-uos-emerald-soft: #9cdbd9;
+  --color-uos-emerald-mist: #dcebec;
+
+  --color-uos-gray: #63666a;
+  --color-uos-gray-light: #bbbcbc;
+  --color-uos-gray-soft: #d9d9d6;
+  --color-uos-gray-mist: #e7e7e0;
+
+  --color-uos-gold: #85714d;
+  --color-uos-silver: #8a8d8f;
+  --color-uos-bronze: #8b634b;
+
+  --font-uos: "Noto Sans KR", sans-serif;
+
+  --aspect-banner: 6050 / 600;
+}
+
+@layer base {
+  html {
+    @apply font-uos;
+  }
+}
