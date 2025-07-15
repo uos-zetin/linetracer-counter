@@ -7,10 +7,11 @@ export const useStopwatchStore: () => StopwatchStore = () => ({
   start: _useStopwatchStore.getState().start,
   stop: _useStopwatchStore.getState().stop,
   reset: _useStopwatchStore.getState().reset,
-  useElapsedMs: () => _useStopwatchStore((s) => s.getElapsedMs()),
-  useIsRunning: () => _useStopwatchStore((s) => s.getIsRunning()),
+  useStopwatchState: _useStopwatchStore((state) => state.getStopwatchState),
 });
 
-export * from "./model/types";
-export * from "./lib/parse-dto";
 export * from "./api/types";
+export * from "./lib/parse-dto";
+export * from "./model/types";
+export * from "./model/selectors";
+export { formatElapsedMs } from "./ui/format";

@@ -10,8 +10,8 @@ interface InternalStopwatchSlice {
   start: (current?: number) => void; // 타이머 시작
   stop: (current?: number) => void; // 타이머 정지
   reset: () => void; // 타이머 초기화
-  getElapsedMs: () => number; // 경과 시간 (ms)
-  getIsRunning: () => boolean; // 타이머가 실행 중인지 여부
+
+  getStopwatchState: () => StopwatchState; // 현재 타이머 상태 가져오기
 }
 
 export const useStopwatchStore = create<InternalStopwatchSlice>()(
@@ -46,16 +46,9 @@ export const useStopwatchStore = create<InternalStopwatchSlice>()(
         s.stopwatch.stoppedAt = null;
       });
     },
-    getElapsedMs: () => {
-      const { startedAt, stoppedAt } = get().stopwatch;
-      if (startedAt === null) return 0; // 타이머가 시작되지 않았으면 0 반환
-      const now = Date.now();
-      const elapsed = (stoppedAt ?? now) - startedAt;
-      return Math.max(elapsed, 0); // 음수는 반환하지 않음
-    },
-    getIsRunning: () => {
-      const { startedAt, stoppedAt } = get().stopwatch;
-      return startedAt !== null && stoppedAt === null; // 시작되었고 아직 정지되지 않았으면 true
+
+    getStopwatchState: () => {
+      return get().stopwatch;
     },
   })),
 );
