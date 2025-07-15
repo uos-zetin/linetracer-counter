@@ -34,7 +34,7 @@ export function StopwatchView({ stopwatch }: StopwatchViewProps) {
   const timeComponents = formatElapsedMs(elapsedMs);
 
   return (
-    <div className="flex flex-col items-center justify-center -mt-4">
+    <div className="flex flex-col items-center justify-center">
       <div className="text-[9vw] leading-none font-bold text-gray-800 flex items-baseline">
         <span>{timeComponents.minutes}</span>
         <span className="transform -translate-y-[0.45vw]">:</span>

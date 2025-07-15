@@ -173,7 +173,7 @@ export function TimerPage() {
       <TimerPageHeader content={competition?.name ?? "No Competition"} type="text" />
       <section
         id="timer-content"
-        className="grid gap-x-[1.5vw] gap-y-[0.75vw] grid-cols-1 md:grid-cols-2 px-[1vw] md:px-[1.5vw] py-[2vw] md:py-[3vw] h-full"
+        className="grid gap-x-[1.5vw] gap-y-[1vw] grid-cols-1 md:grid-cols-2 px-[1vw] md:px-[1.5vw] py-[2vw] md:py-[3vw] h-full"
       >
         <div className="order-1 md:row-start-1 md:col-start-1">
           <DivisionInfo divisionName={division?.name ?? "No Division"} />
