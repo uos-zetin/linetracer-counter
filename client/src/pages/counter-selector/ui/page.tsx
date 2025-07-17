@@ -44,7 +44,7 @@ export function CounterSelectorPage() {
   return (
     <main className="flex flex-col min-h-screen h-full bg-uos-gray-mist">
       <header className="sticky top-0 z-20 w-full flex items-center justify-center text-center bg-uos-primary-blue text-white">
-        <h1 className="text-[3.5vw] py-3 font-bold text-center tracking-tight">계수기 선택</h1>
+        <h1 className="text-[3.5vw] py-[0.75vw] font-bold text-center tracking-tight">계수기 선택</h1>
       </header>
 
       <section className="flex-1 flex items-center justify-center p-[2vw]">
@@ -68,12 +68,12 @@ export function CounterSelectorPage() {
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="0.2vw" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
               {isDropdownOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-[20vw] overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-[0.25vw] bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-[20vw] overflow-y-auto">
                   {mockCounterNames.map((counterName) => (
                     <button
                       key={counterName}

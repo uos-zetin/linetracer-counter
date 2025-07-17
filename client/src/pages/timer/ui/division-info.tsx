@@ -11,7 +11,7 @@ export function DivisionInfo({ divisionName, stopwatchName }: DivisionInfoProps)
       <span
         className={`
           min-w-[10ch] min-h-[2.75rem] w-full inline-block align-top 
-          px-4
+          px-[1vw]
           text-[4vw] font-bold tracking-tight text-center
           ${isLoading ? "animate-pulse bg-uos-gray-soft text-transparent" : "text-gray-800"}
           rounded
@@ -22,7 +22,7 @@ export function DivisionInfo({ divisionName, stopwatchName }: DivisionInfoProps)
         {isLoading ? "Loading..." : divisionName}
       </span>
       {stopwatchName && (
-        <span className="text-[2vw] font-medium text-blue-600 mt-1" title="Stopwatch Name">
+        <span className="text-[2vw] font-medium text-blue-600 mt-[0.25vw]" title="Stopwatch Name">
           계수기: {stopwatchName}
         </span>
       )}

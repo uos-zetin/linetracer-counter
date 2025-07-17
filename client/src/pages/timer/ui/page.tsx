@@ -174,7 +174,7 @@ export function TimerPage() {
   if (!stopwatchName) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-uos-gray-mist">
-        <div className="text-2xl font-bold text-gray-600">로딩 중...</div>
+        <div className="text-[2vw] font-bold text-gray-600">로딩 중...</div>
       </div>
     );
   }

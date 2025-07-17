@@ -54,7 +54,7 @@ export function SponsorView() {
                  flex flex-col overflow-hidden"
       onClick={() => inputRef.current?.click()}
     >
-      <div className="bg-gray-100 py-1">
+      <div className="bg-gray-100 py-[0.25vw]">
         <h2 className="text-center text-[1.5vw] font-semibold">스폰서</h2>
       </div>
       <div className="relative flex-1 cursor-pointer group flex items-center justify-center overflow-hidden">
@@ -93,7 +93,7 @@ export function SponsorView() {
         <div
           className="absolute inset-0 bg-black/40 backdrop-blur-sm
                      opacity-0 group-hover:opacity-100 transition-opacity duration-200
-                     flex flex-col items-center justify-center gap-2 pointer-events-none"
+                     flex flex-col items-center justify-center gap-[0.5vw] pointer-events-none"
         >
           <svg
             data-slot="icon"

@@ -17,7 +17,7 @@ export function TimerPageHeader({ type = "text", content, alt = "Competition Hea
       {type === "text" ? (
         <h1
           className="
-            text-[5vw] py-4
+            text-[5vw] py-[1vw]
             font-bold text-center tracking-tight
             aspect-banner
           "
