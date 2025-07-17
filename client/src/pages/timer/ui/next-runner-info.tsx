@@ -4,8 +4,10 @@ interface NextRunnerInfoProps {
   nextRunners: Participant[];
 }
 
+const ROW_COUNT = 5;
+
 export function NextRunnerInfo({ nextRunners }: NextRunnerInfoProps) {
-  const rows = Array.from({ length: 5 }, (_, i) => i);
+  const rows = Array.from({ length: ROW_COUNT }, (_, i) => i);
 
   return (
     <div className="w-full border border-gray-300 rounded-lg overflow-hidden shadow-sm">

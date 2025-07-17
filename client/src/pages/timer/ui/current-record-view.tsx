@@ -5,21 +5,19 @@ interface CurrentRecordViewProps {
   currentRecords: Record[];
 }
 
+const ROW_COUNT = 5;
+
 export function CurrentRecordView({ currentRecords }: CurrentRecordViewProps) {
-  const visible = (currentRecords ?? []).slice(0, 5); // 최대 5개
-  const rows = Array.from({ length: 5 }, (_, i) => i); // 5행 고정
+  const rows = Array.from({ length: ROW_COUNT }, (_, i) => i);
 
   return (
     <div className="w-full border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-      {/* 헤더 */}
       <div className="bg-gray-100 py-[0.25vw]">
         <h2 className="text-center text-[1.5vw] font-semibold">현재 경연자 기록</h2>
       </div>
-
-      {/* 본문 ― 5행 × 2열 (20 % · 80 %) */}
       <ul>
         {rows.map((idx) => {
-          const rec = visible[idx];
+          const rec = currentRecords[idx];
           const bg = idx % 2 === 0 ? "bg-gray-50" : "bg-white";
 
           return (

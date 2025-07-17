@@ -23,8 +23,12 @@ const rankBg = (rank: number) => {
   }
 };
 
+const ROW_COUNT = 5;
+const RIGHT_COLUMN_OFFSET = ROW_COUNT; // 5
+const RIGHT_COLUMN_START_RANK = ROW_COUNT + 1; // 6
+
 export function TopRecordView({ topRecords }: TopRecordViewProps) {
-  const rows = Array.from({ length: 5 }, (_, i) => i);
+  const rows = Array.from({ length: ROW_COUNT }, (_, i) => i);
 
   return (
     <div className="w-full border border-gray-300 rounded-lg overflow-hidden shadow-sm">
@@ -35,10 +39,10 @@ export function TopRecordView({ topRecords }: TopRecordViewProps) {
       <ul>
         {rows.map((rowIdx) => {
           const left = topRecords[rowIdx];
-          const right = topRecords[rowIdx + 5];
+          const right = topRecords[rowIdx + RIGHT_COLUMN_OFFSET];
 
           const bgLeft = (rowIdx + 1) % 2 ? "bg-gray-50" : "bg-white";
-          const bgRight = (rowIdx + 6) % 2 ? "bg-gray-50" : "bg-white";
+          const bgRight = (rowIdx + RIGHT_COLUMN_START_RANK) % 2 ? "bg-gray-50" : "bg-white";
 
           return (
             <li
@@ -72,10 +76,10 @@ export function TopRecordView({ topRecords }: TopRecordViewProps) {
               <span
                 className={`
                   flex items-center justify-center aspect-[3/4] border-x border-gray-200
-                  ${rankBg(rowIdx + 6) || `${bgRight} text-gray-800`}
+                  ${rankBg(rowIdx + RIGHT_COLUMN_START_RANK) || `${bgRight} text-gray-800`}
                 `}
               >
-                {rowIdx + 6}
+                {rowIdx + RIGHT_COLUMN_START_RANK}
               </span>
               <span
                 className={`
