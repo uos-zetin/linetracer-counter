@@ -224,7 +224,7 @@ export function TimerPage() {
                 <SponsorView />
               </div>
               <div className="flex flex-1 w-full">
-                <QRViewer />
+                <QRViewer url={window.location.href} />
               </div>
             </div>
           </div>
