@@ -14,4 +14,4 @@ export * from "./api/types";
 export * from "./lib/parse-dto";
 export * from "./model/types";
 export * from "./model/selectors";
-export { formatElapsedMs } from "./ui/format";
+export { formatElapsedMs } from "./ui/formatters";
