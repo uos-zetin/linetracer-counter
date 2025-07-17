@@ -148,7 +148,7 @@ const mockTopRecords = [
 
 export function TimerPage() {
   const navigate = useNavigate();
-  const { competitionId } = useParams();
+  const { counterId } = useParams();
   const [searchParams] = useSearchParams();
   const stopwatchName = searchParams.get("name");
 
@@ -157,10 +157,10 @@ export function TimerPage() {
 
   // stopwatchName이 없으면 계수기 선택으로 리다이렉트
   useEffect(() => {
-    if (!stopwatchName && competitionId) {
-      navigate(`/${competitionId}/timer/select`);
+    if (!stopwatchName && counterId) {
+      navigate(`/counter`);
     }
-  }, [stopwatchName, competitionId, navigate]);
+  }, [stopwatchName, counterId, navigate]);
 
   const competition = progressStore.useCompetition();
   const division = progressStore.useDivision();

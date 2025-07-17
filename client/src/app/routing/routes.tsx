@@ -1,14 +1,15 @@
 import { createBrowserRouter, type RouteObject } from "react-router";
-import { TimerPage, NameSelector } from "@/pages/timer";
+import { TimerPage } from "@/pages/timer";
+import { CounterSelectorPage } from "@/pages/counter-selector";
 
 const routes: RouteObject[] = [
   {
-    path: "/:competitionId/timer",
-    element: <TimerPage />,
+    path: "/counter",
+    element: <CounterSelectorPage />,
   },
   {
-    path: "/:competitionId/timer/select",
-    element: <NameSelector />,
+    path: "/counter/:counterId/timer",
+    element: <TimerPage />,
   },
   {
     path: "/",
