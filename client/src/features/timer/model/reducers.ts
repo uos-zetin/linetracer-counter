@@ -1,5 +1,5 @@
-import type { TimerState } from "./types";
 import type { TimerLog } from "@/entities/timer-log";
+import type { TimerState } from "./types";
 
 export function integrateLogs(initialMs: number, logs: TimerLog[]): TimerState {
   const state: TimerState = {

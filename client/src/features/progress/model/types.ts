@@ -14,8 +14,8 @@ export interface Runner {
 
 export interface Progress {
   id: string;
-  competition: Competition;
-  division: Division;
+  competition: Competition | null;
+  division: Division | null;
   runner: Runner | null;
   nextRunners: Participant[];
   topRecords: Record[];
@@ -29,7 +29,11 @@ export interface ProgressActions {
 
 export interface ProgressSelectors {
   useProgress: () => Progress | null;
+  useCompetition: () => Competition | null;
+  useDivision: () => Division | null;
   useRunner: () => Runner | null;
+  useNextRunners: () => Participant[];
+  useTopRecords: () => Record[];
 }
 
 export type ProgressStore = ProgressActions & ProgressSelectors;

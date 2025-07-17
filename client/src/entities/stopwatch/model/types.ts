@@ -8,6 +8,5 @@ export interface StopwatchStore {
   start: (current: number) => void; // 타이머 시작
   stop: (current: number) => void; // 타이머 정지
   reset: () => void; // 타이머 초기화
-  useElapsedMs: () => number; // 경과 시간 (ms)
-  useIsRunning: () => boolean; // 타이머가 실행 중인지 여부
+  useStopwatchState: () => StopwatchState; // 현재 타이머 상태 가져오기
 }
