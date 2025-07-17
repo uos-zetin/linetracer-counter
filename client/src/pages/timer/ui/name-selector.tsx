@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from "react-router";
 import { useState } from "react";
 
-// 임시 데이터 - 실제로는 API에서 가져와야 함
 const mockStopwatchNames = [
   "계수기-A",
   "계수기-B",
@@ -34,23 +33,19 @@ export function NameSelector() {
         <div className="bg-white rounded-lg shadow-lg p-[3vw] max-w-[60vw] w-full">
           <h2 className="text-[2.5vw] font-bold text-center mb-[2vw] text-gray-800">사용할 계수기를 선택하세요</h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[1vw] mb-[3vw]">
-            {mockStopwatchNames.map((stopwatchName) => (
-              <button
-                key={stopwatchName}
-                onClick={() => setSelectedStopwatch(stopwatchName)}
-                className={`
-                  p-[1vw] rounded-lg text-[1.5vw] font-medium transition-all duration-200
-                  ${
-                    selectedStopwatch === stopwatchName
-                      ? "bg-uos-primary-blue text-white shadow-lg"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }
-                `}
-              >
-                {stopwatchName}
-              </button>
-            ))}
+          <div className="mb-[3vw]">
+            <select
+              value={selectedStopwatch}
+              onChange={(e) => setSelectedStopwatch(e.target.value)}
+              className="w-full p-[1.5vw] text-[1.5vw] border border-gray-300 rounded-lg focus:ring-2 focus:ring-uos-primary-blue focus:border-transparent outline-none transition-all duration-200"
+            >
+              <option value="">계수기를 선택하세요</option>
+              {mockStopwatchNames.map((stopwatchName) => (
+                <option key={stopwatchName} value={stopwatchName}>
+                  {stopwatchName}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="flex justify-center gap-[1vw]">
