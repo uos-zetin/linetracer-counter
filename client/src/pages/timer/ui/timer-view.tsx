@@ -6,7 +6,6 @@ import type { TimerState } from "@/features/timer";
 
 export function TimerView({ timerState }: { timerState: TimerState }) {
   const [remainingMs, setRemainingMs] = useState(timerState.initialMs);
-  const startRef = useRef<number | null>(null);
   const frameRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -24,7 +23,6 @@ export function TimerView({ timerState }: { timerState: TimerState }) {
       if (frameRef.current !== null) {
         cancelAnimationFrame(frameRef.current);
       }
-      startRef.current = null;
     };
   }, [timerState]);
 
