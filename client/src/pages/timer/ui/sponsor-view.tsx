@@ -28,9 +28,10 @@ export function SponsorView() {
 
   useEffect(() => {
     if (images.length <= 1) return;
+    let timeoutId: ReturnType<typeof setTimeout>;
     const id = setInterval(() => {
       setFade(true);
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         setFade(false);
         setCurrIdx((p) => {
           const nc = (p + 1) % images.length;
@@ -39,7 +40,10 @@ export function SponsorView() {
         });
       }, FADE_MS);
     }, INTERVAL);
-    return () => clearInterval(id);
+    return () => {
+      clearInterval(id);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [images.length]);
 
   useEffect(() => () => images.forEach((u) => URL.revokeObjectURL(u)), [images]);
