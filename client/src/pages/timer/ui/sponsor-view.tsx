@@ -40,7 +40,7 @@ export function SponsorView() {
       }, FADE_MS);
     }, INTERVAL);
     return () => clearInterval(id);
-  }, [images.length, currIdx]);
+  }, [images.length]);
 
   useEffect(() => () => images.forEach((u) => URL.revokeObjectURL(u)), [images]);
 
