@@ -9,7 +9,6 @@ type StopwatchViewProps = {
 
 export function StopwatchView({ stopwatch }: StopwatchViewProps) {
   const [elapsedMs, setElapsedMs] = useState(getElapsedMs(stopwatch));
-  const startRef = useRef<number | null>(null);
   const frameRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -27,7 +26,6 @@ export function StopwatchView({ stopwatch }: StopwatchViewProps) {
       if (frameRef.current !== null) {
         cancelAnimationFrame(frameRef.current);
       }
-      startRef.current = null;
     };
   }, [stopwatch]);
 
