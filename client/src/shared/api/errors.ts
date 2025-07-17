@@ -1,13 +1,16 @@
 export class ServerError extends Error {
-  constructor(message: string) {
+  public statusCode: number;
+  constructor(message: string, statusCode: number = 500) {
     super(message);
     this.name = "ServerError";
+    this.statusCode = statusCode;
   }
 }
-
 export class ClientError extends Error {
-  constructor(message: string) {
+  public statusCode: number;
+  constructor(message: string, statusCode: number = 400) {
     super(message);
     this.name = "ClientError";
+    this.statusCode = statusCode;
   }
 }
