@@ -22,8 +22,6 @@ const nameSchema = z
   .max(50, "이름은 50자 이하여야 합니다.")
   .transform((str) => str.trim());
 
-const emailSchema = z.email("올바른 이메일 형식을 입력해주세요.").min(1, "이메일을 입력해주세요.");
-
 // 로그인 폼 스키마
 const loginFormSchema = z.object({
   userName: userNameSchema,
@@ -51,20 +49,6 @@ const zodErrorToValidationErrors = (error: z.ZodError): ValidationError[] => {
     field: issue.path.join("."),
     message: issue.message,
   }));
-};
-
-/**
- * 이메일 형식 검증
- */
-export const validateEmail = (email: string): ValidationError | null => {
-  const result = emailSchema.safeParse(email);
-  if (!result.success) {
-    return {
-      field: "email",
-      message: result.error.issues[0]?.message || "이메일이 올바르지 않습니다.",
-    };
-  }
-  return null;
 };
 
 /**
@@ -169,4 +153,4 @@ export const parseLoginForm = (data: unknown) => loginFormSchema.parse(data);
 export const parseRegisterForm = (data: unknown) => registerFormSchema.parse(data);
 
 // 추가: 스키마 export (다른 곳에서 재사용 가능)
-export { loginFormSchema, registerFormSchema, userNameSchema, passwordSchema, nameSchema, emailSchema };
+export { loginFormSchema, registerFormSchema, userNameSchema, passwordSchema, nameSchema };
