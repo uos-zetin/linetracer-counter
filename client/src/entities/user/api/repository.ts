@@ -43,8 +43,12 @@ export class UserRepositoryImpl implements UserRepository {
 
     // 세션 키를 받았으면 해당 세션으로 사용자 정보 조회
     if (sessionKeyResponse.data) {
-      // authenticatedFetcher를 사용해서 whoami 호출
-      const userResponse = await this.authenticatedFetcher.get<User>("/actors/whoami");
+      // 임시로 세션 키를 헤더에 추가해서 whoami 호출
+      const userResponse = await this.publicFetcher.get<User>("/actors/whoami", {
+        headers: {
+          Authorization: `Session ${sessionKeyResponse.data}`,
+        },
+      });
 
       return {
         user: userResponse.data,
