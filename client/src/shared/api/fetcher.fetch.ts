@@ -97,7 +97,8 @@ export class FetchApiFetcher implements Fetcher {
         throw new ClientError("네트워크 연결에 실패했습니다.", 0);
       }
 
-      if (error instanceof Error && error.name === "AbortError") {
+      // AbortError 확인 - DOMException 타입과 name 속성 모두 확인
+      if (error instanceof DOMException && error.name === "AbortError") {
         throw new ClientError("요청 시간이 초과되었습니다.", 408);
       }
 
