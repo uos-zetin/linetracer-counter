@@ -6,7 +6,6 @@ import {
   validateUserName,
   validatePassword,
   validateName,
-  validateEmail,
 } from "../validation";
 import type { LoginFormData, RegisterFormData } from "../../types";
 
@@ -82,21 +81,6 @@ describe("Auth Validation with Zod", () => {
     it("should trim whitespace", () => {
       const result = validateName("  홍길동  ");
       expect(result).toBeNull();
-    });
-  });
-
-  describe("validateEmail", () => {
-    it("should pass valid email", () => {
-      const result = validateEmail("test@example.com");
-      expect(result).toBeNull();
-    });
-
-    it("should fail with invalid email", () => {
-      const result = validateEmail("invalid-email");
-      expect(result).toEqual({
-        field: "email",
-        message: "올바른 이메일 형식을 입력해주세요.",
-      });
     });
   });
 
