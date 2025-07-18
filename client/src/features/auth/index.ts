@@ -1,6 +1,10 @@
 // 타입 exports
 export * from "./types";
 
+// UI exports
+export { LoginForm } from "./ui/login-form";
+export { AuthDebugWrapper } from "./ui/auth-debug";
+
 // 로그인 관련 exports
 export { loginUser, logoutUser, checkAuthStatus, restoreSession } from "./lib/login";
 
