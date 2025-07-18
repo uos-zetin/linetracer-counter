@@ -1,20 +1,20 @@
 import { useStopwatchStore } from "@/entities/stopwatch";
 import { integrateLogs } from "@/entities/timer-log";
 import { useProgressStore } from "@/features/progress";
-import { TimerView } from "./timer-view";
-import { TimerPageHeader } from "./header";
-import { DivisionInfo } from "./division-info";
-import { RunnerInfo } from "./runner-info";
-import { StopwatchView } from "./stopwatch-view";
-import { NextRunnerInfo } from "./next-runner-info";
-import { TopRecordView } from "./top-record-info";
-import { CurrentRecordView } from "./current-record-view";
+import { TimerView } from "./ui/timer-view";
+import { TimerPageHeader } from "./ui/timer-header";
+import { DivisionInfo } from "./ui/division-info";
+import { RunnerInfo } from "./ui/runner-info";
+import { StopwatchView } from "./ui/stopwatch-view";
+import { NextRunnerInfo } from "./ui/next-runner-info";
+import { TopRecordView } from "./ui/top-record-info";
+import { CurrentRecordView } from "./ui/current-record-view";
 import { useNavigate, useParams } from "react-router";
 import { useEffect } from "react";
 
 import type { Progress } from "@/features/progress";
-import { SponsorView } from "./sponsor-view";
-import { QRViewer } from "./qr-viewer";
+import { SponsorView } from "./ui/sponsor-view";
+import { QRViewer } from "./ui/qr-viewer";
 
 const mockProgress: Progress = {
   id: "progress-1",
@@ -180,8 +180,8 @@ export function TimerPage() {
   progressStore.setProgress(mockProgress);
 
   return (
-    <main className="flex flex-col min-h-screen h-full bg-uos-gray-mist">
-      <TimerPageHeader content={competition?.name ?? "No Competition"} type="text" />
+    <main className="flex flex-col min-h-screen h-full w-full bg-gray-200">
+      <TimerPageHeader competitionName={competition?.name ?? "No Competition"} />
       <section
         id="timer-content"
         className="grid gap-x-[1.5vw] gap-y-[1vw] grid-cols-1 md:grid-cols-2 px-[1vw] md:px-[1.5vw] py-[2vw] md:py-[3vw] h-full"
@@ -217,11 +217,11 @@ export function TimerPage() {
             <div className="order-3 md:order-3">
               <CurrentRecordView currentRecords={runner?.records ?? []} />
             </div>
-            <div className="order-4 md:order-4 col-span-2 md:col-span-1 flex flex-row md:flex-col items-center gap-[1vw] md:h-full">
-              <div className="flex flex-1 w-full">
+            <div className="order-4 md:order-4 col-span-2 md:col-span-1 flex flex-row md:flex-col items-stretch gap-[1vw] md:h-full">
+              <div className="flex flex-1 w-full md:flex-1">
                 <SponsorView />
               </div>
-              <div className="flex flex-1 w-full">
+              <div className="flex flex-1 w-full md:flex-[0_0_auto]">
                 <QRViewer url={window.location.href} />
               </div>
             </div>

@@ -1,1 +1,1 @@
-export { TimerPage } from "./ui/page";
+export { TimerPage } from "./ui";

@@ -1,56 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useImageSlider } from "../lib/use-image-upload";
 
 const INTERVAL = 8_000;
 const FADE_MS = 2_000;
 
 export function SponsorView() {
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const [images, setImages] = useState<string[]>([]);
-  const [currIdx, setCurrIdx] = useState(0);
-  const [nextIdx, setNextIdx] = useState(1);
-  const [fade, setFade] = useState(false);
-
-  const handleFiles = (fl: FileList | null) => {
-    if (!fl?.length) return;
-    const urls = Array.from(fl)
-      .filter((f) => f.type.startsWith("image/"))
-      .map((f) => URL.createObjectURL(f));
-
-    setImages((prev) => {
-      if (prev.length === 0) {
-        setCurrIdx(0);
-        setNextIdx(urls.length > 1 ? 1 : 0);
-      }
-      return [...prev, ...urls];
-    });
-  };
-
-  useEffect(() => {
-    if (images.length <= 1) return;
-    let timeoutId: ReturnType<typeof setTimeout>;
-    const id = setInterval(() => {
-      setFade(true);
-      timeoutId = setTimeout(() => {
-        setFade(false);
-        setCurrIdx((p) => {
-          const nc = (p + 1) % images.length;
-          setNextIdx((nc + 1) % images.length);
-          return nc;
-        });
-      }, FADE_MS);
-    }, INTERVAL);
-    return () => {
-      clearInterval(id);
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [images.length]);
-
-  useEffect(() => () => images.forEach((u) => URL.revokeObjectURL(u)), [images]);
+  const { images, currentIndex, nextIndex, isTransitioning, handleFiles, inputRef } = useImageSlider(INTERVAL, FADE_MS);
 
   return (
     <div
-      className="w-full h-full aspect-auto bg-gray-50 border border-gray-300 rounded-lg shadow-sm
+      className="w-full h-full bg-gray-50 border border-gray-300 rounded-lg shadow-sm
                  flex flex-col overflow-hidden"
       onClick={() => inputRef.current?.click()}
     >
@@ -61,25 +19,25 @@ export function SponsorView() {
         {images.length > 0 && (
           <>
             <img
-              key={currIdx}
-              src={images[currIdx]}
+              key={currentIndex}
+              src={images[currentIndex]}
               alt="sponsor-current"
               style={{ transitionDuration: `${FADE_MS}ms` }}
               className={`
                 absolute inset-0 m-auto max-w-full max-h-full object-contain
                 transition-opacity ease-in-out
-                ${fade ? "opacity-0" : "opacity-100"}
+                ${isTransitioning ? "opacity-0" : "opacity-100"}
               `}
             />
             <img
-              key={nextIdx}
-              src={images[nextIdx]}
+              key={nextIndex}
+              src={images[nextIndex]}
               alt="sponsor-next"
               style={{ transitionDuration: `${FADE_MS}ms` }}
               className={`
                 absolute inset-0 m-auto max-w-full max-h-full object-contain
                 transition-opacity ease-in-out
-                ${fade ? "opacity-100" : "opacity-0"}
+                ${isTransitioning ? "opacity-100" : "opacity-0"}
               `}
             />
           </>
