@@ -15,7 +15,6 @@ export { registerUser, checkUserNameAvailability } from "./lib/register";
 export {
   validateLoginForm,
   validateRegisterForm,
-  validateEmail,
   validateUserName,
   validatePassword,
   validateName,
@@ -27,5 +26,4 @@ export {
   userNameSchema,
   passwordSchema,
   nameSchema,
-  emailSchema,
 } from "./lib/validation";
