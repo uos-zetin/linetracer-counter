@@ -1,105 +1,78 @@
 # `entities/` 디렉터리
 
-`entities` 레이어는 **도메인 객체(데이터 모델)** 를 표현하고 관리합니다.
-데이터 구조, 전역(또는 장기) 상태, API 쿼리, **원시(primitives) UI** 까지 “한 객체의 모든 핵심 요소”를 이곳에 모읍니다.
-
-> **계층 규칙** `features / widgets / pages / app` → **entities** → shared
->
-> - `entities/*` 는 오직 **`shared/*`만** import할 수 있습니다.
-> - 상위 레이어( features·widgets·pages·app )를 역-참조하면 `eslint-plugin-fsd-lint/layer-imports` 오류가 납니다.
+**도메인 엔티티**를 표현하는 레이어입니다.
+비즈니스 도메인의 핵심 개념들(User, Competition, Record 등)을 데이터 모델, 상태, API, UI로 구현합니다.
 
 ---
 
-## 1. 책임 (Responsibilities)
+## 1. 역할 · 책임
 
-| 항목                 | 설명                                                              |
-| -------------------- | ----------------------------------------------------------------- |
-| **데이터 모델**      | 타입·스키마·DTO·normalizer 등                                     |
-| **전역/도메인 상태** | Zustand slice, Redux slice, TanStack Query atom 등                |
-| **API 통신**         | CRUD 쿼리·mutation, 캐싱 키 정의                                  |
-| **원시 UI**          | 단독으로 의미가 있는 **작은 컴포넌트** (숫자 값, 아바타, 태그 등) |
-| **셀렉터 & 헬퍼**    | 파생 데이터 계산, 포맷 변환                                       |
-
-`entities`는 **비즈니스 로직이나 사용자 액션 처리는 갖지 않습니다.**
-(그 부분은 `features`에 맡기세요.)
+| 구분              | 설명                         |
+| ----------------- | ---------------------------- |
+| **데이터 모델**   | 도메인 타입, 스키마, DTO     |
+| **상태 관리**     | 도메인 상태 저장소 (Store)   |
+| **API 계층**      | 도메인 관련 서버 통신        |
+| **UI 프리미티브** | 도메인 전용 기본 UI 컴포넌트 |
+| **도메인 로직**   | 비즈니스 규칙, 검증, 계산    |
 
 ---
 
-## 2. 구조 & 명명 규칙
+## 2. 구조 · 파일 설명
 
 ```
 entities/
-└─ counter/                    ← kebab-case (도메인 명)
-   ├─ model.ts                 ← Zustand slice / selectors
-   ├─ api.ts                   ← (선택) 서버 쿼리
-   ├─ types.ts                 ← Counter 타입 정의
-   ├─ ui/                      ← 원시 UI 모음
-   │   ├─ counter-value.tsx    ← <CounterValue />
-   │   └─ index.ts
-   ├─ index.ts                 ← Public API
-   ├─ counter.test.ts          ← (선택) 테스트
-   └─ README.md                ← (선택) 세부 가이드
+└─ [entity-name]/
+   ├─ api/               # API 통신 로직
+   ├─ model/             # 상태 관리, 비즈니스 규칙
+   ├─ lib/               # 도메인 전용 유틸리티
+   ├─ ui/                # 도메인 전용 UI 컴포넌트
+   └─ index.ts           # Public API (필수)
 ```
 
-| 규칙                   | 내용                                                          |
-| ---------------------- | ------------------------------------------------------------- |
-| **폴더**               | 항상 `kebab-case` (`user`, `score-board`, `competition-info`) |
-| **핵심 파일**          | `model.ts` + `index.ts` (Public API)                          |
-| **옵션 파일**          | `api.ts`, `types.ts`, `selectors.ts`, 테스트 등               |
-| **UI 서브폴더**        | `ui/` 내부 파일 역시 `kebab-case` (`counter-value.tsx`)       |
-| **컴포넌트·타입 이름** | 코드 안에서는 `PascalCase` (`CounterValue`, `CounterState`)   |
+| 파일/폴더      | 역할 및 제약사항                                   |
+| -------------- | -------------------------------------------------- |
+| **폴더명**     | kebab-case 사용 (`user`, `competition` 등)         |
+| **`api/`**     | 외부 API 통신, 쿼리 관리                           |
+| **`model/`**   | 상태 관리, 비즈니스 규칙                           |
+| **`lib/`**     | 도메인 전용 유틸리티 함수                          |
+| **`ui/`**      | 도메인 전용 UI 컴포넌트                            |
+| **`index.ts`** | **Public API 정의. 외부에서는 이것만 import 허용** |
 
 ---
 
-## 3. Public API (예시)
+## 3. import 규칙
 
-```ts
-// entities/counter/index.ts
-export type { CounterState } from "./types";
-export { useCounterStore, selectCounter } from "./model";
-export { CounterValue } from "./ui";
-```
-
-외부 사용
-
-```tsx
-import { CounterValue, useCounterStore } from "@entities/counter";
-```
+- **허용**: `shared/*`
+- **금지**: `app/*`, `pages/*`, `widgets/*`, `features/*`, `entities/*` (다른 entity)
 
 ---
 
-## 4. 생성 가이드
+## 4. Entity 생성 기준
 
-1. **폴더 이름** `entities/<domain>/` – kebab-case
-2. **필수 파일**
-   - `model.ts` : 상태·셀렉터
-   - `index.ts` : Public API re-export
+### 언제 Entity로 만들까?
 
-3. **UI가 필요하면** `ui/` 폴더와 파일 추가 → `index.ts`에서 export
-4. API 통신이 있으면 `api.ts`에 정의하고, `model.ts`나 `features`에서 호출
-5. ESLint 오류가 없으면 완료
+- **비즈니스 도메인의 핵심 개념**인 경우
+- **독립적인 생명주기**를 갖는 경우
+- **고유한 식별자**가 있는 경우
+- 예: User, Competition, Record, Participant
 
----
+### 언제 다른 곳에 구현할까?
 
-## 5. import 허용 · 금지
-
-| 허용(✓)    | 금지(✗)                                             |
-| ---------- | --------------------------------------------------- |
-| `shared/*` | `features/*`<br>`widgets/*`<br>`pages/*`<br>`app/*` |
+- **값 객체 (Value Object)**: `shared/lib/`에 구현
+- **UI 상태**: 해당 컴포넌트 내부에 구현
+- **열거형/상수**: `shared/lib/`에 구현
 
 ---
 
-## 6. FAQ
+## 5. Entity 간 관계
 
-| 질문                                                  | 답변                                                                                                                             |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **엔티티 안에서 또 다른 엔티티를 import해도 될까요?** | 가급적 피하세요. 교차 의존이 생기면 도메인 경계가 흐려집니다. 필요한 경우 `shared` 헬퍼로 추출하거나 상위 레이어에서 조합하세요. |
-| **엔티티가 화면(UI) 없이도 되나요?**                  | 가능합니다. API + 상태만 가진 데이터 전용 엔티티도 흔합니다.                                                                     |
-| **API 호출과 상태를 분리할 때 기준은?**               | CRUD 요청·캐싱 키는 `api.ts`, 그 결과를 저장·가공하는 로직은 `model.ts`에 둡니다.                                                |
+### 원칙
 
----
+- **Entity 간 직접 import 금지**: 순환 의존성과 강결합 방지
+- **상위 레이어에서 조합**: Features에서 여러 Entity를 조합하여 사용
 
-## 7. 업데이트 지침
+### 관계 처리 방법
 
-- 새 엔티티를 만들 때는 **폴더 = 도메인 명(kebab-case)**, `model.ts` + `index.ts`부터 작성하세요.
-- 공통 규칙이 바뀌면 README – **역할·구조·제약** 항목을 함께 갱신해 주세요.
+- **ID 기반 참조**: 다른 Entity의 ID만 저장 (`userId`, `competitionId`)
+- **Shared Layer 활용**: 공통 타입이나 유틸리티는 `shared/lib/`에 정의
+- **조합은 상위에서**: Features나 Pages에서 필요한 Entity들을 조합
