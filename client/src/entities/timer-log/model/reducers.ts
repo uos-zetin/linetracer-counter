@@ -1,4 +1,4 @@
-import type { TimerLog } from "@/entities/timer-log";
+import type { TimerLog } from "./types";
 import type { TimerState } from "./types";
 
 export function integrateLogs(initialMs: number, logs: TimerLog[]): TimerState {

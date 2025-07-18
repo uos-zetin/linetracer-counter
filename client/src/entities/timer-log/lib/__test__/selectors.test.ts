@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getRemainingMs, getStatus } from "../selectors";
+import { getRemainingMs, getStatus } from "../../../../entities/timer-log/lib/selectors";
 import type { TimerState } from "../types";
 
 describe("getRemainingMs", () => {

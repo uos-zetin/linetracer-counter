@@ -1,6 +1,6 @@
 import { useStopwatchStore } from "@/entities/stopwatch";
+import { integrateLogs } from "@/entities/timer-log";
 import { useProgressStore } from "@/features/progress";
-import { integrateLogs } from "@/features/timer";
 import { TimerView } from "./timer-view";
 import { TimerPageHeader } from "./header";
 import { DivisionInfo } from "./division-info";

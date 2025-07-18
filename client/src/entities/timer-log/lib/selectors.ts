@@ -1,4 +1,4 @@
-import type { TimerState } from "./types";
+import type { TimerState } from "../model/types";
 
 export function getRemainingMs(s: TimerState, now = Date.now()): number {
   const base = s.initialMs + s.offsetMs;
