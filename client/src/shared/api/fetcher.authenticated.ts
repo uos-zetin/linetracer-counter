@@ -46,7 +46,7 @@ export class AuthenticatedFetcher implements Fetcher {
     const headers: Record<string, string> = { ...options?.headers };
 
     if (sessionKey) {
-      headers["Authorization"] = `Bearer ${sessionKey}`;
+      headers["Authorization"] = `Session ${sessionKey}`;
     }
 
     const requestOptions: RequestOptions = {
