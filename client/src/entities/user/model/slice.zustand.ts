@@ -90,6 +90,7 @@ class ZustandUserStore implements UserStore {
  */
 export const createZustandUserStore = (userRepository: UserRepository): ZustandUserStore => {
   const storageKey = "user_session";
+  const SESSION_EXPIRY = 24 * 60 * 60 * 1000; // 24시간 후 만료
 
   /**
    * 세션 정보를 localStorage에 저장
@@ -98,7 +99,7 @@ export const createZustandUserStore = (userRepository: UserRepository): ZustandU
     try {
       const sessionData: SessionCredential = {
         sessionKey,
-        expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24시간 후 만료
+        expiresAt: Date.now() + SESSION_EXPIRY,
       };
       localStorage.setItem(storageKey, JSON.stringify(sessionData));
     } catch (error) {
