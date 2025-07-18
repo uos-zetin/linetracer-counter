@@ -1,5 +1,6 @@
 import { userStore } from "@/entities/user";
 import { validateRegisterForm } from "./validation";
+import { ClientError, ServerError, NetworkError } from "@/shared/api/errors";
 import type { RegisterFormData } from "../types";
 import type { User } from "@/entities/user";
 
@@ -20,21 +21,29 @@ export const registerUser = async (formData: RegisterFormData): Promise<User> =>
     const user = await userStore.register(formData.name, formData.userName, formData.password);
     return user;
   } catch (error) {
-    // 서버 에러를 사용자 친화적 메시지로 변환
-    if (error instanceof Error) {
-      // 일반적인 회원가입 실패 케이스들을 처리
-      if (error.message.includes("already exists") || error.message.includes("duplicate")) {
+    // 타입 기반 에러 처리
+    if (error instanceof ClientError) {
+      // 클라이언트 에러 (400번대)
+      if (error.statusCode === 409) {
         throw new Error("이미 사용 중인 사용자명입니다.");
       }
-      if (error.message.includes("400") || error.message.includes("Bad Request")) {
+      if (error.statusCode === 400) {
         throw new Error("입력된 정보가 올바르지 않습니다.");
       }
-      if (error.message.includes("Network") || error.message.includes("fetch")) {
-        throw new Error("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-      }
-      // 기타 에러는 그대로 전달
-      throw error;
+      throw new Error("회원가입 요청에 문제가 있습니다.");
     }
+
+    if (error instanceof ServerError) {
+      // 서버 에러 (500번대)
+      throw new Error("서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
+
+    if (error instanceof NetworkError) {
+      // 네트워크 에러
+      throw new Error(error.message);
+    }
+
+    // 기타 에러
     throw new Error("회원가입 중 알 수 없는 오류가 발생했습니다.");
   }
 };

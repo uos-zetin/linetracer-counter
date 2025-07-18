@@ -1,4 +1,4 @@
-import { ClientError, ServerError } from "./errors";
+import { ClientError, ServerError, NetworkError } from "./errors";
 import type { Fetcher, HttpMethod, RequestOptions, ApiResponse } from "./fetcher";
 
 /**
@@ -88,18 +88,18 @@ export class FetchApiFetcher implements Fetcher {
         headers: responseHeaders,
       };
     } catch (error) {
-      if (error instanceof ClientError || error instanceof ServerError) {
+      if (error instanceof ClientError || error instanceof ServerError || error instanceof NetworkError) {
         throw error;
       }
 
       // 네트워크 에러, 타임아웃 등
       if (error instanceof TypeError) {
-        throw new ClientError("네트워크 연결에 실패했습니다.", 0);
+        throw new NetworkError("네트워크 연결에 실패했습니다.");
       }
 
       // AbortError 확인 - DOMException 타입과 name 속성 모두 확인
       if (error instanceof DOMException && error.name === "AbortError") {
-        throw new ClientError("요청 시간이 초과되었습니다.", 408);
+        throw new NetworkError("요청 시간이 초과되었습니다.");
       }
 
       throw new ServerError("알 수 없는 에러가 발생했습니다.", 500);
