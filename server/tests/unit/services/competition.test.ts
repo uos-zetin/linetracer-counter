@@ -2,7 +2,7 @@ import { AuthorizationError } from "@/core/errors";
 import { Actor, Competition, Division } from "@/core/models";
 import { CompetitionRepository, DivisionRepository } from "@/core/repositories";
 
-import { CompetitionServiceImpl } from "@/services/competition";
+import { CompetitionServiceImpl } from "@/core/services/competition";
 
 import { v4 as uuidv4 } from "uuid";
 

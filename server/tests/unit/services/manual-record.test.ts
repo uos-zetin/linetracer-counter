@@ -3,7 +3,7 @@ import { Actor, ManualRecord } from "@/core/models";
 import { ManualRecordRepository } from "@/core/repositories";
 import { Unsubscriber } from "@/core/services";
 
-import { ManualRecordServiceImpl } from "@/services/manual-record";
+import { ManualRecordServiceImpl } from "@/core/services/manual-record";
 
 import { v4 as uuidv4 } from "uuid";
 

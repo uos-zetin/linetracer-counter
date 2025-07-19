@@ -19,12 +19,12 @@ import { TimerLogSQLiteRepository } from "@/infrastructure/repositories/timer-lo
 
 import { ActorSessionRandomStore } from "@/infrastructure/session/actor-session-random-store";
 
-import { ActorServiceImpl } from "@/services/actor";
-import { CompetitionServiceImpl } from "@/services/competition";
-import { ManualRecordServiceImpl } from "@/services/manual-record";
-import { ParticipantServiceImpl } from "@/services/participant";
-import { RecordServiceImpl } from "@/services/record";
-import { TimerLogServiceImpl } from "@/services/timer-log";
+import { ActorServiceImpl } from "@/core/services/actor";
+import { CompetitionServiceImpl } from "@/core/services/competition";
+import { ManualRecordServiceImpl } from "@/core/services/manual-record";
+import { ParticipantServiceImpl } from "@/core/services/participant";
+import { RecordServiceImpl } from "@/core/services/record";
+import { TimerLogServiceImpl } from "@/core/services/timer-log";
 
 import sqlite3 from "sqlite3";
 

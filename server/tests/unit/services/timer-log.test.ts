@@ -2,7 +2,7 @@ import { AuthorizationError, TimerLogConsecutiveError } from "@/core/errors";
 import { Actor, TimerLog } from "@/core/models";
 import { TimerLogRepository } from "@/core/repositories";
 
-import { TimerLogServiceImpl } from "@/services/timer-log";
+import { TimerLogServiceImpl } from "@/core/services/timer-log";
 
 import { v4 as uuidv4 } from "uuid";
 

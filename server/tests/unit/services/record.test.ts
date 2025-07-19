@@ -2,7 +2,7 @@ import { AuthorizationError } from "@/core/errors";
 import { Actor, Participant, Record } from "@/core/models";
 import { ParticipantRepository, RecordRepository } from "@/core/repositories";
 
-import { RecordServiceImpl } from "@/services/record";
+import { RecordServiceImpl } from "@/core/services/record";
 
 import { v4 as uuidv4 } from "uuid";
 
