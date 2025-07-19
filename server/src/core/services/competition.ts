@@ -1,6 +1,11 @@
 import { Unsubscriber } from "@/core/interfaces";
-import { Competition, Division } from "@/core/models";
-import { CompetitionRepository, DivisionRepository } from "@/core/repositories";
+import { Competition, Division, Record } from "@/core/models";
+import {
+  CompetitionRepository,
+  DivisionRepository,
+  ParticipantRepository,
+  RecordRepository,
+} from "@/core/repositories";
 
 import { EventEmitter } from "events";
 import { v4 as uuidv4 } from "uuid";
@@ -8,16 +13,22 @@ import { v4 as uuidv4 } from "uuid";
 export class CompetitionService {
   private competitionRepo: CompetitionRepository;
   private divisionRepo: DivisionRepository;
+  private recordRepo: RecordRepository;
+  private participantRepo: ParticipantRepository;
 
   constructor(
     // 의존성 주입
     di: {
       competitionRepository: CompetitionRepository;
       divisionRepository: DivisionRepository;
+      participantRepository: ParticipantRepository;
+      recordRepository: RecordRepository;
     }
   ) {
     this.competitionRepo = di.competitionRepository;
     this.divisionRepo = di.divisionRepository;
+    this.participantRepo = di.participantRepository;
+    this.recordRepo = di.recordRepository;
   }
 
   /**
@@ -129,6 +140,35 @@ export class CompetitionService {
    */
   public async deleteDivision(divisionId: string): Promise<void> {
     await this.divisionRepo.delete(divisionId);
+  }
+
+  /**
+   * 특정 부문의 상위 기록을 가져올 수 있어야 한다.
+   *
+   * 1. divisionId에 대한 참가자 목록을 조회한다. -> ParticipantRepository.getByDivisionId()
+   * 2. participantId에 대한 최고 기록을 조회한다. -> RecordRepository.getByParticipantId()
+   * 3. 승인된 기록 중 최고 기록을 찾는다. -> filter Record.status === "approved" && max(Record.value)
+   * 4. 참가자의 최고 기록을 오름차순으로 정렬한다.
+   */
+  async getTopRecordsByDivision(divisionId: string): Promise<Record[]> {
+    // 해당 부문의 모든 참가자 조회
+    const participants = await this.participantRepo.getByDivisionId(divisionId);
+
+    // 각 참가자의 최고 기록을 찾는다.
+    const bestRecordByParticipant: Map<string, Record> = new Map();
+    for (const participant of participants) {
+      const records = await this.recordRepo.getByParticipantId(participant.id);
+      const bestRecord = records
+        .filter((record) => record.status === "approved")
+        .sort((a, b) => a.value - b.value);
+      if (bestRecord.length > 0) {
+        bestRecordByParticipant.set(participant.id, bestRecord[0]);
+      }
+    }
+
+    // 참가자의 최고 기록을 오름차순으로 정렬한다.
+    const bestRecords = Array.from(bestRecordByParticipant.values());
+    return bestRecords.sort((a, b) => a.value - b.value);
   }
 
   // ------------------------------

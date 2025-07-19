@@ -15,7 +15,6 @@ import { ActorService } from "@/core/services/actor";
 import { CompetitionService } from "@/core/services/competition";
 import { ManualRecordService } from "@/core/services/manual-record";
 import { ParticipantService } from "@/core/services/participant";
-import { RecordService } from "@/core/services/record";
 import { TimerLogService } from "@/core/services/timer-log";
 
 import { CompetitionActorService } from "@/core/services/competition.actor";
@@ -68,7 +67,6 @@ export class Container {
   private readonly manualRecordService: ManualRecordService;
   private readonly participantService: ParticipantService;
   private readonly participantActorService: ParticipantActorService;
-  private readonly recordService: RecordService;
   private readonly timerLogService: TimerLogService;
 
   private constructor() {
@@ -107,20 +105,19 @@ export class Container {
     this.competitionService = new CompetitionService({
       competitionRepository: this.competitionSQLiteRepo,
       divisionRepository: this.divisionSQLiteRepo,
+      participantRepository: this.participantSQLiteRepo,
+      recordRepository: this.recordSQLiteRepo,
     });
     this.competitionActorService = new CompetitionActorService(
       this.competitionService
     );
     this.participantService = new ParticipantService({
       participantRepository: this.participantSQLiteRepo,
+      recordRepository: this.recordSQLiteRepo,
     });
     this.participantActorService = new ParticipantActorService(
       this.participantService
     );
-    this.recordService = new RecordService({
-      recordRepository: this.recordSQLiteRepo,
-      participantRepository: this.participantSQLiteRepo,
-    });
     this.manualRecordService = new ManualRecordService({
       manualRecordRepository: this.manualRecordSQLiteRepo,
     });
@@ -167,7 +164,6 @@ export class Container {
       competition: this.competitionActorService,
       manualRecord: this.manualRecordService,
       participant: this.participantActorService,
-      record: this.recordService,
       timerLog: this.timerLogService,
     };
   }

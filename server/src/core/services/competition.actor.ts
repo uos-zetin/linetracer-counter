@@ -72,4 +72,8 @@ export class CompetitionActorService {
     requireAnyRole(actor, "administrator");
     return this.service.setDivisionStatus(divisionId, status);
   }
+
+  public async getTopRecordsByDivision(actor: Actor, divisionId: string) {
+    return this.service.getTopRecordsByDivision(divisionId);
+  }
 }

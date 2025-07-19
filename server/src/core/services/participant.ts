@@ -1,15 +1,20 @@
 import { Unsubscriber } from "@/core/interfaces";
-import { Participant } from "@/core/models";
-import { ParticipantRepository } from "@/core/repositories";
+import { Participant, Record } from "@/core/models";
+import { ParticipantRepository, RecordRepository } from "@/core/repositories";
 
 import { EventEmitter } from "events";
 import { v4 as uuidv4 } from "uuid";
 
 export class ParticipantService {
   private readonly participantRepo: ParticipantRepository;
+  private readonly recordRepo: RecordRepository;
 
-  constructor(di: { participantRepository: ParticipantRepository }) {
+  constructor(di: {
+    participantRepository: ParticipantRepository;
+    recordRepository: RecordRepository;
+  }) {
     this.participantRepo = di.participantRepository;
+    this.recordRepo = di.recordRepository;
   }
 
   /**
@@ -82,6 +87,66 @@ export class ParticipantService {
     await this.participantRepo.delete(participantId);
   }
 
+  /**
+   * 특정 참가자의 모든 기록을 조회할 수 있다.
+   */
+  async getRecords(participantId: string): Promise<Record[]> {
+    return this.recordRepo.getByParticipantId(participantId);
+  }
+
+  /**
+   * 특정 참가자에 대한 기록을 추가할 수 있다.
+   */
+  async addRecord(
+    participantId: string,
+    value: number,
+    source: Record["source"],
+    note: string
+  ): Promise<Record> {
+    const record: Record = {
+      id: uuidv4(),
+      participantId,
+      value,
+      source,
+      status: "pending",
+      note,
+      createdAt: new Date(),
+    };
+    const result = await this.recordRepo.create(record);
+    this.emitRecordStatusChanged(result);
+    return result;
+  }
+
+  /**
+   * 특정 참가자의 기록에 비고란을 수정할 수 있다.
+   */
+  async setRecordNote(recordId: string, note: string): Promise<Record> {
+    const record = await this.recordRepo.getById(recordId);
+    const updated = {
+      ...record,
+      note,
+    };
+    const result = await this.recordRepo.update(updated);
+    return result;
+  }
+
+  /**
+   * 특정 참가자의 기록의 상태(승인/거절)를 변경할 수 있다.
+   */
+  async setRecordStatus(
+    recordId: string,
+    status: Record["status"]
+  ): Promise<Record> {
+    const record = await this.recordRepo.getById(recordId);
+    const updated = {
+      ...record,
+      status,
+    };
+    const result = await this.recordRepo.update(updated);
+    this.emitRecordStatusChanged(result);
+    return result;
+  }
+
   // ------------------------------
   // 이벤트 핸들링 관련 로직
   // ------------------------------
@@ -108,6 +173,40 @@ export class ParticipantService {
       } catch (err) {
         console.error(
           `ParticipantUpdated listener error for ${participantId}:`,
+          err
+        );
+      }
+    };
+    this.eventEmitter.on(eventName, safeCb);
+    return () => {
+      this.eventEmitter.off(eventName, safeCb);
+    };
+  }
+
+  private getRecordStatusChangedEventName = (participantId: string) =>
+    `record:status:changed:${participantId}`;
+
+  private emitRecordStatusChanged(record: Record) {
+    this.eventEmitter.emit(
+      this.getRecordStatusChangedEventName(record.participantId),
+      record
+    );
+  }
+
+  /**
+   * 특정 참가자의 기록 상태(승인/거절)가 변경된 경우를 구독할 수 있다.
+   */
+  subscribeRecordStatusChanged(
+    participantId: string,
+    callback: (record: Record) => Promise<void>
+  ): Unsubscriber {
+    const eventName = this.getRecordStatusChangedEventName(participantId);
+    const safeCb = async (record: Record) => {
+      try {
+        await callback(record);
+      } catch (err) {
+        console.error(
+          `Record status changed listener error for ${participantId}:`,
           err
         );
       }

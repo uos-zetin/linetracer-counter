@@ -1,5 +1,10 @@
-import { Competition, Division } from "@/core/models";
-import { CompetitionRepository, DivisionRepository } from "@/core/repositories";
+import { Competition, Division, Participant, Record } from "@/core/models";
+import {
+  CompetitionRepository,
+  DivisionRepository,
+  ParticipantRepository,
+  RecordRepository,
+} from "@/core/repositories";
 import { CompetitionService } from "@/core/services/competition";
 
 import { v4 as uuidv4 } from "uuid";
@@ -18,6 +23,22 @@ const mockDivisionRepo: jest.Mocked<DivisionRepository> = {
   create: jest.fn(),
   update: jest.fn(),
   delete: jest.fn(),
+};
+
+const mockParticipantRepo: jest.Mocked<ParticipantRepository> = {
+  getById: jest.fn(),
+  create: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+  getByDivisionId: jest.fn(),
+};
+
+const mockRecordRepo: jest.Mocked<RecordRepository> = {
+  getById: jest.fn(),
+  create: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+  getByParticipantId: jest.fn(),
 };
 
 const generateDummyCompetitions = (count: number): Competition[] => {
@@ -51,6 +72,34 @@ const generateDummyDivisions = (
   return dummies;
 };
 
+const generateDummyParticipant = (
+  divisionId: string,
+  name: string = "테스트 참가자"
+): Participant => ({
+  id: uuidv4(),
+  divisionId,
+  name,
+  teamName: "테스트 팀",
+  robotName: "테스트 로봇",
+  comment: "테스트 코멘트",
+  orderRaw: 1,
+  givenTime: 4 * 60 * 1000, // 4분
+  createdAt: new Date(),
+});
+
+const generateDummyRecord = (
+  participantId: string,
+  value: number = Math.floor(Math.random() * 10000)
+): Record => ({
+  id: uuidv4(),
+  participantId,
+  value,
+  source: "stopwatch" as const,
+  status: "pending" as const,
+  note: "테스트 기록",
+  createdAt: new Date(),
+});
+
 describe("CompetitionService 구현체 단위 테스트", () => {
   let service: CompetitionService;
   let errorSpy: jest.SpyInstance;
@@ -68,6 +117,8 @@ describe("CompetitionService 구현체 단위 테스트", () => {
     service = new CompetitionService({
       competitionRepository: mockCompetitionRepo,
       divisionRepository: mockDivisionRepo,
+      participantRepository: mockParticipantRepo,
+      recordRepository: mockRecordRepo,
     });
   });
 
@@ -223,6 +274,44 @@ describe("CompetitionService 구현체 단위 테스트", () => {
 
     // Assert
     expect(mockDivisionRepo.delete).toHaveBeenCalledWith(division.id);
+  });
+
+  it("특정 부문의 상위 기록을 조회할 수 있다.", async () => {
+    // arrange
+    const divisionId = uuidv4();
+    const mockParticipants = [
+      generateDummyParticipant(divisionId, "참가자1"),
+      generateDummyParticipant(divisionId, "참가자2"),
+    ];
+    mockParticipantRepo.getByDivisionId.mockResolvedValue(mockParticipants);
+    const mockRecords: Record[] = [
+      generateDummyRecord(mockParticipants[0].id, 13000),
+      generateDummyRecord(mockParticipants[0].id, 3000),
+      generateDummyRecord(mockParticipants[1].id, 1000),
+      generateDummyRecord(mockParticipants[1].id, 2000),
+    ].map((r) => ({ ...r, status: "approved" }));
+    mockRecords.push({
+      // 무효화된 기록은 상위 기록에 포함되지 않는다.
+      ...generateDummyRecord(mockParticipants[0].id, 1000),
+      status: "rejected",
+    });
+    mockRecordRepo.getByParticipantId.mockImplementation(
+      (participantId: string) => {
+        const records = mockRecords.filter(
+          (r) => r.participantId === participantId
+        );
+        return Promise.resolve(records);
+      }
+    );
+
+    // act
+    const result = await service.getTopRecordsByDivision(divisionId);
+
+    // assert
+    expect(result.map((r) => [r.participantId, r.value])).toEqual([
+      [mockParticipants[1].id, 1000],
+      [mockParticipants[0].id, 3000],
+    ]);
   });
 
   it("대회가 갱신되었을 때 구독자에게 알림을 보낸다.", async () => {

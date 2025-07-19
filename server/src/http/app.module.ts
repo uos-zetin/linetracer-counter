@@ -7,7 +7,6 @@ import { ActorService } from "@/core/services/actor";
 import { CompetitionActorService } from "@/core/services/competition.actor";
 import { ManualRecordService } from "@/core/services/manual-record";
 import { ParticipantActorService } from "@/core/services/participant.actor";
-import { RecordService } from "@/core/services/record";
 import { TimerLogService } from "@/core/services/timer-log";
 
 import { ActorController } from "./controllers/actor.controller";
@@ -41,10 +40,6 @@ const participantService: CustomProvider<ParticipantActorService> = {
   provide: "ParticipantService",
   useValue: di.services.participant,
 };
-const recordService: CustomProvider<RecordService> = {
-  provide: "RecordService",
-  useValue: di.services.record,
-};
 const timerLogService: CustomProvider<TimerLogService> = {
   provide: "TimerLogService",
   useValue: di.services.timerLog,
@@ -68,7 +63,6 @@ const manualRecordService: CustomProvider<ManualRecordService> = {
     competitionService,
     manualRecordService,
     participantService,
-    recordService,
     timerLogService,
   ],
 })

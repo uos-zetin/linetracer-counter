@@ -1,7 +1,6 @@
 import { Actor, ManualRecord, TimerLog } from "@/core/models";
 import { ManualRecordService } from "@/core/services/manual-record";
 import { ParticipantActorService } from "@/core/services/participant.actor";
-import { RecordService } from "@/core/services/record";
 import { TimerLogService } from "@/core/services/timer-log";
 
 import {
@@ -38,8 +37,6 @@ export class ParticipantController {
   constructor(
     @Inject("ParticipantService")
     private readonly participantService: ParticipantActorService,
-    @Inject("RecordService")
-    private readonly recordService: RecordService,
     @Inject("TimerLogService")
     private readonly timerLogService: TimerLogService,
     @Inject("ManualRecordService")
@@ -89,7 +86,7 @@ export class ParticipantController {
     @CurrentActor() actor: Actor,
     @Param("participantId") participantId: string
   ): Promise<RecordResponseDto[]> {
-    return this.recordService.getRecords(actor, participantId);
+    return this.participantService.getRecords(actor, participantId);
   }
 
   @Post("/:participantId/records")
@@ -104,7 +101,7 @@ export class ParticipantController {
     @Param("participantId") participantId: string,
     @Body() body: AddRecordDto
   ): Promise<RecordResponseDto> {
-    return this.recordService.addRecord(
+    return this.participantService.addRecord(
       actor,
       participantId,
       body.value,

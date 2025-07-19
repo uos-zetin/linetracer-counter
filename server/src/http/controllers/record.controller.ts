@@ -1,5 +1,5 @@
 import { Actor } from "@/core/models";
-import { RecordService } from "@/core/services/record";
+import { ParticipantActorService } from "@/core/services/participant.actor";
 
 import { Body, Controller, Inject, Param, Patch } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -18,8 +18,8 @@ import {
 @Controller("records")
 export class RecordController {
   constructor(
-    @Inject("RecordService")
-    private readonly recordService: RecordService
+    @Inject("ParticipantService")
+    private readonly participantService: ParticipantActorService
   ) {}
 
   @Patch("/:recordId/note")
@@ -34,7 +34,7 @@ export class RecordController {
     @Param("recordId") recordId: string,
     @Body() body: SetRecordNoteDto
   ): Promise<RecordResponseDto> {
-    return this.recordService.setRecordNote(actor, recordId, body.note);
+    return this.participantService.setRecordNote(actor, recordId, body.note);
   }
 
   @Patch("/:recordId/status")
@@ -49,6 +49,10 @@ export class RecordController {
     @Param("recordId") recordId: string,
     @Body() body: SetRecordStatusDto
   ): Promise<RecordResponseDto> {
-    return this.recordService.setRecordStatus(actor, recordId, body.status);
+    return this.participantService.setRecordStatus(
+      actor,
+      recordId,
+      body.status
+    );
   }
 }

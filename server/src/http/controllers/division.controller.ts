@@ -1,7 +1,6 @@
 import { Actor } from "@/core/models";
 import { CompetitionActorService } from "@/core/services/competition.actor";
 import { ParticipantActorService } from "@/core/services/participant.actor";
-import { RecordService } from "@/core/services/record";
 
 import {
   Body,
@@ -38,9 +37,7 @@ export class DivisionController {
     @Inject("CompetitionService")
     private readonly competitionService: CompetitionActorService,
     @Inject("ParticipantService")
-    private readonly participantService: ParticipantActorService,
-    @Inject("RecordService")
-    private readonly recordService: RecordService
+    private readonly participantService: ParticipantActorService
   ) {}
 
   @Patch("/:divisionId")
@@ -146,6 +143,6 @@ export class DivisionController {
     @CurrentActor() actor: Actor,
     @Param("divisionId") divisionId: string
   ): Promise<RecordResponseDto[]> {
-    return this.recordService.getTopRecordsByDivision(actor, divisionId);
+    return this.competitionService.getTopRecordsByDivision(actor, divisionId);
   }
 }

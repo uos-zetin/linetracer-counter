@@ -1,5 +1,5 @@
-import { Participant } from "@/core/models";
-import { ParticipantRepository } from "@/core/repositories";
+import { Participant, Record } from "@/core/models";
+import { ParticipantRepository, RecordRepository } from "@/core/repositories";
 import { ParticipantService } from "@/core/services/participant";
 
 import { v4 as uuidv4 } from "uuid";
@@ -10,6 +10,14 @@ const mockParticipantRepo: jest.Mocked<ParticipantRepository> = {
   update: jest.fn(),
   delete: jest.fn(),
   getByDivisionId: jest.fn(),
+};
+
+const mockRecordRepo: jest.Mocked<RecordRepository> = {
+  getById: jest.fn(),
+  create: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+  getByParticipantId: jest.fn(),
 };
 
 const generateDummyParticipant = (
@@ -24,6 +32,19 @@ const generateDummyParticipant = (
   comment: "멍때리면서 라인트레이서를 굴려보겠습니다!",
   orderRaw: 1,
   givenTime: 4 * 60 * 1000, // 4분
+  createdAt: new Date(),
+});
+
+const generateDummyRecord = (
+  participantId: string,
+  value: number = Math.floor(Math.random() * 10000)
+): Record => ({
+  id: uuidv4(),
+  participantId,
+  value,
+  source: "stopwatch" as const,
+  status: "pending" as const,
+  note: "테스트 기록",
   createdAt: new Date(),
 });
 
@@ -43,6 +64,7 @@ describe("ParticipantService 구현체 단위 테스트", () => {
     jest.clearAllMocks();
     service = new ParticipantService({
       participantRepository: mockParticipantRepo,
+      recordRepository: mockRecordRepo,
     });
   });
 
@@ -124,6 +146,74 @@ describe("ParticipantService 구현체 단위 테스트", () => {
     expect(mockParticipantRepo.delete).toHaveBeenCalledWith(participantId);
   });
 
+  it("특정 참가자의 기록을 조회할 수 있다.", async () => {
+    // Arrange
+    const participantId = uuidv4();
+    const records: Record[] = [];
+    for (let i = 0; i < 5; i++) {
+      records.push(generateDummyRecord(participantId));
+    }
+    mockRecordRepo.getByParticipantId.mockResolvedValue(records);
+
+    // Act
+    const result = await service.getRecords(participantId);
+
+    // Assert
+    expect(result).toEqual(records);
+    expect(mockRecordRepo.getByParticipantId).toHaveBeenCalledWith(
+      participantId
+    );
+  });
+
+  it("참가자에 대한 기록을 추가할 수 있다.", async () => {
+    // Arrange
+    const participantId = uuidv4();
+    const record = generateDummyRecord(participantId);
+    mockRecordRepo.create.mockResolvedValue(record);
+
+    // Act
+    const result = await service.addRecord(
+      participantId,
+      record.value,
+      record.source,
+      record.note
+    );
+
+    // Assert
+    expect(result).toEqual(record);
+    expect(mockRecordRepo.create).toHaveBeenCalledTimes(1);
+  });
+
+  it("기록의 비고를 수정할 수 있다.", async () => {
+    // Arrange
+    const record = generateDummyRecord(uuidv4());
+    const updatedRecord = { ...record, note: "수정된 비고" };
+    mockRecordRepo.getById.mockResolvedValue(record);
+    mockRecordRepo.update.mockResolvedValue(updatedRecord);
+
+    // Act
+    const result = await service.setRecordNote(record.id, "수정된 비고");
+
+    // Assert
+    expect(result).toEqual(updatedRecord);
+    expect(mockRecordRepo.update).toHaveBeenCalledTimes(1);
+  });
+
+  it("기록의 상태를 변경할 수 있다.", async () => {
+    // Arrange
+    const record = generateDummyRecord(uuidv4());
+    const updatedRecord = { ...record, status: "approved" as const };
+    mockRecordRepo.getById.mockResolvedValue(record);
+    mockRecordRepo.update.mockResolvedValue(updatedRecord);
+
+    // Act
+    const result = await service.setRecordStatus(record.id, "approved");
+
+    // Assert
+    expect(result).toEqual(updatedRecord);
+    expect(mockRecordRepo.update).toHaveBeenCalledTimes(1);
+  });
+
   it("참가자가 업데이트되었을 때 구독자에게 알림을 보낸다.", async () => {
     // Arrange
     const participant = generateDummyParticipant(0, uuidv4());
@@ -167,5 +257,108 @@ describe("ParticipantService 구현체 단위 테스트", () => {
     });
     expect(callback1).toHaveBeenCalledTimes(2);
     expect(callback2).toHaveBeenCalledTimes(1);
+  });
+
+  describe("기록 상태 변경 이벤트 구독 테스트", () => {
+    let participantId: string;
+    let callback1: jest.Mock;
+    let callback2: jest.Mock;
+    let callback1Unsubscriber: () => void;
+    let callback2Unsubscriber: () => void;
+
+    beforeEach(() => {
+      // Arrange
+      participantId = uuidv4();
+      callback1 = jest.fn();
+      callback2 = jest.fn();
+      callback1Unsubscriber = service.subscribeRecordStatusChanged(
+        participantId,
+        callback1
+      );
+      callback2Unsubscriber = service.subscribeRecordStatusChanged(
+        participantId,
+        callback2
+      );
+    });
+
+    afterEach(() => {
+      callback1Unsubscriber();
+      callback2Unsubscriber();
+      jest.clearAllMocks();
+    });
+
+    it("기록이 추가되었을 때 모든 구독자에게 알림을 보낸다.", async () => {
+      // Arrange
+      const record = generateDummyRecord(participantId);
+      mockRecordRepo.create.mockResolvedValue(record);
+
+      // Act
+      await service.addRecord(
+        participantId,
+        record.value,
+        record.source,
+        record.note
+      );
+
+      // Assert
+      expect(callback1).toHaveBeenCalledWith(record);
+      expect(callback2).toHaveBeenCalledWith(record);
+    });
+
+    it("기록 상태가 변경되었을 때 모든 구독자에게 알림을 보낸다.", async () => {
+      // Arrange
+      const record = generateDummyRecord(participantId);
+      mockRecordRepo.getById.mockResolvedValue(record);
+      const updatedRecord = { ...record, status: "approved" as const };
+      mockRecordRepo.update.mockResolvedValue(updatedRecord);
+
+      // Act
+      await service.setRecordStatus(record.id, "approved");
+
+      // Assert
+      expect(callback1).toHaveBeenCalledWith(updatedRecord);
+      expect(callback2).toHaveBeenCalledWith(updatedRecord);
+    });
+
+    it("구독 함수에서 오류가 발생해도 서비스 로직은 정상적으로 동작한다.", async () => {
+      // Arrange
+      const record = generateDummyRecord(participantId);
+      mockRecordRepo.create.mockResolvedValue(record);
+      callback1.mockRejectedValue(
+        new Error("에러가 발생해도 서비스 로직은 정상적으로 동작해야 해요.")
+      );
+
+      // Act
+      const asyncTask = service.addRecord(
+        participantId,
+        record.value,
+        record.source,
+        record.note
+      );
+
+      // Assert
+      await expect(asyncTask).resolves.toBe(record);
+      expect(callback1).toHaveBeenCalledWith(record);
+      expect(callback2).toHaveBeenCalledWith(record);
+    });
+
+    it("구독을 해제하면 더 이상 이벤트를 받지 않는다.", async () => {
+      // Arrange
+      const record = generateDummyRecord(participantId);
+      mockRecordRepo.create.mockResolvedValue(record);
+      callback1Unsubscriber();
+
+      // Act
+      await service.addRecord(
+        participantId,
+        record.value,
+        record.source,
+        record.note
+      );
+
+      // Assert
+      expect(callback1).not.toHaveBeenCalled();
+      expect(callback2).toHaveBeenCalledWith(record);
+    });
   });
 });
