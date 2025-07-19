@@ -1,5 +1,9 @@
-import { Participant, Record } from "@/core/models";
-import { ParticipantRepository, RecordRepository } from "@/core/repositories";
+import { ManualRecord, Participant, Record } from "@/core/models";
+import {
+  ManualRecordRepository,
+  ParticipantRepository,
+  RecordRepository,
+} from "@/core/repositories";
 import { ParticipantService } from "@/core/services/participant";
 
 import { v4 as uuidv4 } from "uuid";
@@ -13,6 +17,14 @@ const mockParticipantRepo: jest.Mocked<ParticipantRepository> = {
 };
 
 const mockRecordRepo: jest.Mocked<RecordRepository> = {
+  getById: jest.fn(),
+  create: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+  getByParticipantId: jest.fn(),
+};
+
+const mockManualRecordRepo: jest.Mocked<ManualRecordRepository> = {
   getById: jest.fn(),
   create: jest.fn(),
   update: jest.fn(),
@@ -48,6 +60,18 @@ const generateDummyRecord = (
   createdAt: new Date(),
 });
 
+const generateDummyManualRecord = (
+  participantId: string,
+  value: number = Math.floor(Math.random() * 10000),
+  recorderName: string = "테스트 계수자"
+): ManualRecord => ({
+  id: uuidv4(),
+  participantId,
+  value,
+  recorderName,
+  createdAt: new Date(),
+});
+
 describe("ParticipantService 구현체 단위 테스트", () => {
   let service: ParticipantService;
   let errorSpy: jest.SpyInstance;
@@ -65,6 +89,7 @@ describe("ParticipantService 구현체 단위 테스트", () => {
     service = new ParticipantService({
       participantRepository: mockParticipantRepo,
       recordRepository: mockRecordRepo,
+      manualRecordRepository: mockManualRecordRepo,
     });
   });
 
@@ -214,6 +239,49 @@ describe("ParticipantService 구현체 단위 테스트", () => {
     expect(mockRecordRepo.update).toHaveBeenCalledTimes(1);
   });
 
+  it("특정 참가자의 수동 계수 기록을 조회할 수 있다.", async () => {
+    // Arrange
+    const participantId = uuidv4();
+    const manualRecords: ManualRecord[] = [];
+    for (let i = 0; i < 5; i++) {
+      manualRecords.push(generateDummyManualRecord(participantId));
+    }
+    mockManualRecordRepo.getByParticipantId.mockResolvedValue(manualRecords);
+
+    // Act
+    const result = await service.getManualRecords(participantId);
+
+    // Assert
+    expect(result).toEqual(manualRecords);
+    expect(mockManualRecordRepo.getByParticipantId).toHaveBeenCalledWith(
+      participantId
+    );
+  });
+
+  it("참가자에 대한 수동 계수 기록을 추가할 수 있다.", async () => {
+    // Arrange
+    const participantId = uuidv4();
+    const value = 5000;
+    const recorderName = "테스트 계수자";
+    const manualRecord = generateDummyManualRecord(
+      participantId,
+      value,
+      recorderName
+    );
+    mockManualRecordRepo.create.mockResolvedValue(manualRecord);
+
+    // Act
+    const result = await service.addManualRecord(
+      participantId,
+      value,
+      recorderName
+    );
+
+    // Assert
+    expect(result).toEqual(manualRecord);
+    expect(mockManualRecordRepo.create).toHaveBeenCalledTimes(1);
+  });
+
   it("참가자가 업데이트되었을 때 구독자에게 알림을 보낸다.", async () => {
     // Arrange
     const participant = generateDummyParticipant(0, uuidv4());
@@ -359,6 +427,83 @@ describe("ParticipantService 구현체 단위 테스트", () => {
       // Assert
       expect(callback1).not.toHaveBeenCalled();
       expect(callback2).toHaveBeenCalledWith(record);
+    });
+  });
+
+  describe("수동 계수 기록 추가 이벤트 구독 테스트", () => {
+    let participantId: string;
+    let callback1: jest.Mock;
+    let callback2: jest.Mock;
+    let callback1Unsubscriber: () => void;
+    let callback2Unsubscriber: () => void;
+
+    beforeEach(() => {
+      // Arrange
+      participantId = uuidv4();
+      callback1 = jest.fn();
+      callback2 = jest.fn();
+      callback1Unsubscriber = service.subscribeManualRecordAdded(
+        participantId,
+        callback1
+      );
+      callback2Unsubscriber = service.subscribeManualRecordAdded(
+        participantId,
+        callback2
+      );
+    });
+
+    afterEach(() => {
+      callback1Unsubscriber();
+      callback2Unsubscriber();
+      jest.clearAllMocks();
+    });
+
+    it("수동 계수 기록이 추가되면 모든 구독자에게 알림을 보낸다.", async () => {
+      // Arrange
+      const manualRecord = generateDummyManualRecord(participantId);
+      mockManualRecordRepo.create.mockResolvedValue(manualRecord);
+
+      // Act
+      await service.addManualRecord(participantId, 1000, "테스트 계수자");
+
+      // Assert
+      expect(callback1).toHaveBeenCalledWith(manualRecord);
+      expect(callback2).toHaveBeenCalledWith(manualRecord);
+    });
+
+    it("구독 함수에서 오류가 발생해도 서비스 로직은 정상적으로 동작한다.", async () => {
+      // Arrange
+      const manualRecord = generateDummyManualRecord(participantId);
+      mockManualRecordRepo.create.mockResolvedValue(manualRecord);
+      callback1.mockRejectedValue(
+        new Error("에러가 발생해도 서비스 로직은 정상적으로 동작해야 해요.")
+      );
+
+      // Act
+      const asyncTask = service.addManualRecord(
+        participantId,
+        1000,
+        "테스트 계수자"
+      );
+
+      // Assert
+      await expect(asyncTask).resolves.toBe(manualRecord);
+      expect(callback1).toHaveBeenCalledWith(manualRecord);
+      expect(callback2).toHaveBeenCalledWith(manualRecord);
+    });
+
+    it("구독을 해제하면 더 이상 이벤트를 받지 않는다.", async () => {
+      // Arrange
+      const manualRecord = generateDummyManualRecord(participantId);
+      mockManualRecordRepo.create.mockResolvedValue(manualRecord);
+      callback1Unsubscriber();
+
+      // Act
+      await service.addManualRecord(participantId, 1000, "테스트 계수자");
+
+      // Assert
+      expect(callback1).not.toHaveBeenCalled();
+      expect(callback2).toHaveBeenCalledWith(manualRecord);
     });
   });
 });

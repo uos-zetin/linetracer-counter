@@ -1,6 +1,10 @@
 import { Unsubscriber } from "@/core/interfaces";
-import { Participant, Record } from "@/core/models";
-import { ParticipantRepository, RecordRepository } from "@/core/repositories";
+import { ManualRecord, Participant, Record } from "@/core/models";
+import {
+  ManualRecordRepository,
+  ParticipantRepository,
+  RecordRepository,
+} from "@/core/repositories";
 
 import { EventEmitter } from "events";
 import { v4 as uuidv4 } from "uuid";
@@ -8,13 +12,16 @@ import { v4 as uuidv4 } from "uuid";
 export class ParticipantService {
   private readonly participantRepo: ParticipantRepository;
   private readonly recordRepo: RecordRepository;
+  private readonly manualRecordRepo: ManualRecordRepository;
 
   constructor(di: {
     participantRepository: ParticipantRepository;
+    manualRecordRepository: ManualRecordRepository;
     recordRepository: RecordRepository;
   }) {
     this.participantRepo = di.participantRepository;
     this.recordRepo = di.recordRepository;
+    this.manualRecordRepo = di.manualRecordRepository;
   }
 
   /**
@@ -147,6 +154,33 @@ export class ParticipantService {
     return result;
   }
 
+  /**
+   * 특정 참가자의 수동 계수 기록을 조회할 수 있다.
+   */
+  async getManualRecords(participantId: string): Promise<ManualRecord[]> {
+    return this.manualRecordRepo.getByParticipantId(participantId);
+  }
+
+  /**
+   * 특정 참가자에 대한 수동 계수 기록을 추가할 수 있다.
+   */
+  async addManualRecord(
+    participantId: string,
+    value: number,
+    recorderName: string
+  ): Promise<ManualRecord> {
+    const manualRecord: ManualRecord = {
+      id: uuidv4(),
+      participantId,
+      value,
+      recorderName,
+      createdAt: new Date(),
+    };
+    const result = await this.manualRecordRepo.create(manualRecord);
+    this.emitManualRecordAdded(result);
+    return result;
+  }
+
   // ------------------------------
   // 이벤트 핸들링 관련 로직
   // ------------------------------
@@ -207,6 +241,40 @@ export class ParticipantService {
       } catch (err) {
         console.error(
           `Record status changed listener error for ${participantId}:`,
+          err
+        );
+      }
+    };
+    this.eventEmitter.on(eventName, safeCb);
+    return () => {
+      this.eventEmitter.off(eventName, safeCb);
+    };
+  }
+
+  private getManualRecordAddedEventName = (participantId: string) =>
+    `manual-record:added:${participantId}`;
+
+  private emitManualRecordAdded(manualRecord: ManualRecord) {
+    this.eventEmitter.emit(
+      this.getManualRecordAddedEventName(manualRecord.participantId),
+      manualRecord
+    );
+  }
+
+  /**
+   * 특정 참가자에 대한 수동 계수 기록 추가 이벤트를 구독할 수 있다.
+   */
+  subscribeManualRecordAdded(
+    participantId: string,
+    callback: (manualRecord: ManualRecord) => Promise<void>
+  ): Unsubscriber {
+    const eventName = this.getManualRecordAddedEventName(participantId);
+    const safeCb = async (manualRecord: ManualRecord) => {
+      try {
+        await callback(manualRecord);
+      } catch (err) {
+        console.error(
+          `Manual record added listener error for ${participantId}:`,
           err
         );
       }

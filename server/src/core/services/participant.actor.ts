@@ -1,4 +1,4 @@
-import { Actor, Participant, Record } from "@/core/models";
+import { Actor, ManualRecord, Participant, Record } from "@/core/models";
 import { requireAnyRole } from "@/core/utils/auth";
 
 import { ParticipantService } from "./participant";
@@ -87,5 +87,22 @@ export class ParticipantActorService {
   ): Promise<Record> {
     requireAnyRole(actor, "administrator");
     return this.service.setRecordStatus(recordId, status);
+  }
+
+  async getManualRecords(
+    actor: Actor,
+    participantId: string
+  ): Promise<ManualRecord[]> {
+    return this.service.getManualRecords(participantId);
+  }
+
+  async addManualRecord(
+    actor: Actor,
+    participantId: string,
+    value: number,
+    recorderName: string
+  ): Promise<ManualRecord> {
+    requireAnyRole(actor, "administrator", "manualRecorder");
+    return this.service.addManualRecord(participantId, value, recorderName);
   }
 }

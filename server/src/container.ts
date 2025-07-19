@@ -13,7 +13,6 @@ import { ActorSessionRandomStore } from "@/infrastructure/session/actor-session-
 
 import { ActorService } from "@/core/services/actor";
 import { CompetitionService } from "@/core/services/competition";
-import { ManualRecordService } from "@/core/services/manual-record";
 import { ParticipantService } from "@/core/services/participant";
 import { TimerLogService } from "@/core/services/timer-log";
 
@@ -64,7 +63,6 @@ export class Container {
   private readonly actorService: ActorService;
   private readonly competitionService: CompetitionService;
   private readonly competitionActorService: CompetitionActorService;
-  private readonly manualRecordService: ManualRecordService;
   private readonly participantService: ParticipantService;
   private readonly participantActorService: ParticipantActorService;
   private readonly timerLogService: TimerLogService;
@@ -114,13 +112,11 @@ export class Container {
     this.participantService = new ParticipantService({
       participantRepository: this.participantSQLiteRepo,
       recordRepository: this.recordSQLiteRepo,
+      manualRecordRepository: this.manualRecordSQLiteRepo,
     });
     this.participantActorService = new ParticipantActorService(
       this.participantService
     );
-    this.manualRecordService = new ManualRecordService({
-      manualRecordRepository: this.manualRecordSQLiteRepo,
-    });
     this.timerLogService = new TimerLogService({
       timerLogRepository: this.timerLogSQLiteRepo,
     });
@@ -162,7 +158,6 @@ export class Container {
     return {
       actor: this.actorService,
       competition: this.competitionActorService,
-      manualRecord: this.manualRecordService,
       participant: this.participantActorService,
       timerLog: this.timerLogService,
     };
