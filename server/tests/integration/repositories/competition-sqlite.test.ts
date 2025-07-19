@@ -1,4 +1,4 @@
-import { CompetitionSQLiteRepository } from "@/repositories/competition-sqlite";
+import { CompetitionSQLiteRepository } from "@/infrastructure/repositories/competition-sqlite";
 import { runCompetitionRepositoryContract } from "@tests/shared/repositories/competition.contract";
 
 import sqlite3 from "sqlite3";

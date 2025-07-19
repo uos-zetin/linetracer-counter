@@ -8,14 +8,14 @@ import {
   TimerLogService,
 } from "@/core/services";
 
-import { ActorIdPwSQLiteRepository } from "@/repositories/actor-id-pw-sqlite";
-import { ActorSQLiteRepository } from "@/repositories/actor-sqlite";
-import { CompetitionSQLiteRepository } from "@/repositories/competition-sqlite";
-import { DivisionSQLiteRepository } from "@/repositories/division-sqlite";
-import { ManualRecordSQLiteRepository } from "@/repositories/manual-record-sqlite";
-import { ParticipantSQLiteRepository } from "@/repositories/participant-sqlite";
-import { RecordSQLiteRepository } from "@/repositories/record-sqlite";
-import { TimerLogSQLiteRepository } from "@/repositories/timer-log-sqlite";
+import { ActorIdPwSQLiteRepository } from "@/infrastructure/repositories/actor-id-pw-sqlite";
+import { ActorSQLiteRepository } from "@/infrastructure/repositories/actor-sqlite";
+import { CompetitionSQLiteRepository } from "@/infrastructure/repositories/competition-sqlite";
+import { DivisionSQLiteRepository } from "@/infrastructure/repositories/division-sqlite";
+import { ManualRecordSQLiteRepository } from "@/infrastructure/repositories/manual-record-sqlite";
+import { ParticipantSQLiteRepository } from "@/infrastructure/repositories/participant-sqlite";
+import { RecordSQLiteRepository } from "@/infrastructure/repositories/record-sqlite";
+import { TimerLogSQLiteRepository } from "@/infrastructure/repositories/timer-log-sqlite";
 
 import { ActorSessionRandomStore } from "@/infrastructure/session/actor-session-random-store";
 
