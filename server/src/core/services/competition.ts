@@ -1,7 +1,6 @@
 import { Unsubscriber } from "@/core/interfaces";
-import { Actor, Competition, Division } from "@/core/models";
+import { Competition, Division } from "@/core/models";
 import { CompetitionRepository, DivisionRepository } from "@/core/repositories";
-import { requireAnyRole } from "@/core/utils/auth";
 
 import { EventEmitter } from "events";
 import { v4 as uuidv4 } from "uuid";
@@ -22,17 +21,16 @@ export class CompetitionService {
   }
 
   /**
-   * 모든 대회 목록을 조회할 수 있다.
+   * 모든 대회 목록을 조회한다.
    */
-  public async getCompetitions(actor: Actor): Promise<Competition[]> {
+  public async getCompetitions(): Promise<Competition[]> {
     return this.competitionRepo.getAll();
   }
 
   /**
-   * 특정 대회의 그 아래의 부문들을 조회할 수 있다.
+   * 특정 대회의 그 아래의 부문들을 조회한다.
    */
-  async getCompetitionWithDivisions(
-    actor: Actor,
+  public async getCompetitionWithDivisions(
     competitionId: string
   ): Promise<{ competition: Competition; divisions: Division[] }> {
     const competition = await this.competitionRepo.getById(competitionId);
@@ -41,15 +39,12 @@ export class CompetitionService {
   }
 
   /**
-   * 대회를 생성할 수 있다.
+   * 대회를 생성한다.
    */
-  async createCompetition(
-    actor: Actor,
+  public async createCompetition(
     name: string,
     description: string
   ): Promise<Competition> {
-    requireAnyRole(actor, "administrator");
-
     const entity: Competition = {
       id: uuidv4(),
       name,
@@ -60,15 +55,12 @@ export class CompetitionService {
   }
 
   /**
-   * 대회 이름/설명을 수정할 수 있다.
+   * 대회 이름/설명을 수정한다.
    */
-  async updateCompetition(
-    actor: Actor,
+  public async updateCompetition(
     competitionId: string,
     data: { name?: string; description?: string }
   ): Promise<Competition> {
-    requireAnyRole(actor, "administrator");
-
     const target = await this.competitionRepo.getById(competitionId);
     if (data.name) target.name = data.name;
     if (data.description) target.description = data.description;
@@ -78,25 +70,20 @@ export class CompetitionService {
   }
 
   /**
-   * 대회를 삭제할 수 있다.
+   * 대회를 삭제한다.
    */
-  async deleteCompetition(actor: Actor, competitionId: string): Promise<void> {
-    requireAnyRole(actor, "administrator");
-
+  public async deleteCompetition(competitionId: string): Promise<void> {
     await this.competitionRepo.delete(competitionId);
   }
 
   /**
-   * 대회 부문을 생성할 수 있다.
+   * 대회 부문을 생성한다.
    */
-  async createDivision(
-    actor: Actor,
+  public async createDivision(
     competitionId: string,
     name: string,
     description: string
   ): Promise<Division> {
-    requireAnyRole(actor, "administrator");
-
     const data: Division = {
       id: uuidv4(),
       competitionId,
@@ -109,15 +96,12 @@ export class CompetitionService {
   }
 
   /**
-   * 대회 부문의 이름/설명을 수정할 수 있다.
+   * 대회 부문의 이름/설명을 수정한다.
    */
-  async updateDivision(
-    actor: Actor,
+  public async updateDivision(
     divisionId: string,
     data: { name?: string; description?: string }
   ): Promise<Division> {
-    requireAnyRole(actor, "administrator");
-
     const target = await this.divisionRepo.getById(divisionId);
     if (data.name) target.name = data.name;
     if (data.description) target.description = data.description;
@@ -127,15 +111,12 @@ export class CompetitionService {
   }
 
   /**
-   * 대회 부문의 상태 정보를 설정할 수 있다.
+   * 대회 부문의 상태 정보를 설정한다.
    */
-  async setDivisionStatus(
-    actor: Actor,
+  public async setDivisionStatus(
     divisionId: string,
     status: Division["status"]
   ): Promise<Division> {
-    requireAnyRole(actor, "administrator");
-
     const target = await this.divisionRepo.getById(divisionId);
     target.status = status;
     const updated = await this.divisionRepo.update(target);
@@ -144,11 +125,9 @@ export class CompetitionService {
   }
 
   /**
-   * 대회 부문을 삭제할 수 있다.
+   * 대회 부문을 삭제한다.
    */
-  async deleteDivision(actor: Actor, divisionId: string): Promise<void> {
-    requireAnyRole(actor, "administrator");
-
+  public async deleteDivision(divisionId: string): Promise<void> {
     await this.divisionRepo.delete(divisionId);
   }
 
@@ -174,7 +153,7 @@ export class CompetitionService {
   /**
    * 특정 대회의 변경 이벤트를 구독할 수 있다.
    */
-  subscribeCompetitionUpdated(
+  public subscribeCompetitionUpdated(
     competitionId: string,
     callback: (competition: Competition) => Promise<void>
   ): Unsubscriber {
@@ -198,7 +177,7 @@ export class CompetitionService {
   /**
    * 특정 대회 부문의 변경 이벤트를 구독할 수 있다.
    */
-  subscribeDivisionUpdated(
+  public subscribeDivisionUpdated(
     divisionId: string,
     callback: (division: Division) => Promise<void>
   ): Unsubscriber {

@@ -18,6 +18,9 @@ import { ParticipantService } from "@/core/services/participant";
 import { RecordService } from "@/core/services/record";
 import { TimerLogService } from "@/core/services/timer-log";
 
+import { CompetitionActorService } from "@/core/services/competition.actor";
+import { ParticipantActorService } from "@/core/services/participant.actor";
+
 import sqlite3 from "sqlite3";
 
 import { env } from "./env";
@@ -61,8 +64,10 @@ export class Container {
   // Services
   private readonly actorService: ActorService;
   private readonly competitionService: CompetitionService;
+  private readonly competitionActorService: CompetitionActorService;
   private readonly manualRecordService: ManualRecordService;
   private readonly participantService: ParticipantService;
+  private readonly participantActorService: ParticipantActorService;
   private readonly recordService: RecordService;
   private readonly timerLogService: TimerLogService;
 
@@ -103,9 +108,15 @@ export class Container {
       competitionRepository: this.competitionSQLiteRepo,
       divisionRepository: this.divisionSQLiteRepo,
     });
+    this.competitionActorService = new CompetitionActorService(
+      this.competitionService
+    );
     this.participantService = new ParticipantService({
       participantRepository: this.participantSQLiteRepo,
     });
+    this.participantActorService = new ParticipantActorService(
+      this.participantService
+    );
     this.recordService = new RecordService({
       recordRepository: this.recordSQLiteRepo,
       participantRepository: this.participantSQLiteRepo,
@@ -153,9 +164,9 @@ export class Container {
   public get services() {
     return {
       actor: this.actorService,
-      competition: this.competitionService,
+      competition: this.competitionActorService,
       manualRecord: this.manualRecordService,
-      participant: this.participantService,
+      participant: this.participantActorService,
       record: this.recordService,
       timerLog: this.timerLogService,
     };

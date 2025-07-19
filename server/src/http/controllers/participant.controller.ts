@@ -1,6 +1,6 @@
 import { Actor, ManualRecord, TimerLog } from "@/core/models";
 import { ManualRecordService } from "@/core/services/manual-record";
-import { ParticipantService } from "@/core/services/participant";
+import { ParticipantActorService } from "@/core/services/participant.actor";
 import { RecordService } from "@/core/services/record";
 import { TimerLogService } from "@/core/services/timer-log";
 
@@ -37,7 +37,7 @@ import { AdjustTimerDto, TimerLogResponseDto } from "../dtos/timer-log.dto";
 export class ParticipantController {
   constructor(
     @Inject("ParticipantService")
-    private readonly participantService: ParticipantService,
+    private readonly participantService: ParticipantActorService,
     @Inject("RecordService")
     private readonly recordService: RecordService,
     @Inject("TimerLogService")

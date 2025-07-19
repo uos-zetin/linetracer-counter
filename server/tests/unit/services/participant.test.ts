@@ -1,5 +1,4 @@
-import { AuthorizationError } from "@/core/errors";
-import { Actor, Participant } from "@/core/models";
+import { Participant } from "@/core/models";
 import { ParticipantRepository } from "@/core/repositories";
 import { ParticipantService } from "@/core/services/participant";
 
@@ -30,23 +29,9 @@ const generateDummyParticipant = (
 
 describe("ParticipantService 구현체 단위 테스트", () => {
   let service: ParticipantService;
-  let adminActor: Actor;
-  let anonymousActor: Actor;
   let errorSpy: jest.SpyInstance;
 
   beforeAll(() => {
-    adminActor = {
-      id: uuidv4(),
-      name: "김태환",
-      roles: ["administrator"],
-      createdAt: new Date(),
-    };
-    anonymousActor = {
-      id: uuidv4(),
-      name: "익명의 러볼리",
-      roles: [],
-      createdAt: new Date(),
-    };
     errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
@@ -61,7 +46,8 @@ describe("ParticipantService 구현체 단위 테스트", () => {
     });
   });
 
-  it("아무나 특정 부문의 참가자 목록을 조회할 수 있다.", async () => {
+  it("특정 부문의 참가자 목록을 조회할 수 있다.", async () => {
+    // Arrange
     const divisionId = uuidv4();
     const participants: Participant[] = [];
     for (let i = 0; i < 10; i++) {
@@ -69,45 +55,41 @@ describe("ParticipantService 구현체 단위 테스트", () => {
     }
     mockParticipantRepo.getByDivisionId.mockResolvedValue(participants);
 
-    await expect(
-      service.getParticipants(anonymousActor, divisionId)
-    ).resolves.toEqual(participants);
+    // Act
+    const result = await service.getParticipants(divisionId);
+
+    // Assert
+    expect(result).toEqual(participants);
+    expect(mockParticipantRepo.getByDivisionId).toHaveBeenCalledWith(
+      divisionId
+    );
   });
 
-  it("관리자만 참가자를 추가할 수 있다.", async () => {
+  it("참가자를 추가할 수 있다.", async () => {
+    // Arrange
     const participant = generateDummyParticipant(0, uuidv4());
     mockParticipantRepo.create.mockResolvedValue(participant);
 
-    await expect(
-      service.addParticipant(
-        anonymousActor,
-        participant.divisionId,
-        participant.name,
-        participant.teamName,
-        participant.robotName,
-        participant.comment,
-        participant.orderRaw,
-        participant.givenTime
-      )
-    ).rejects.toThrow(AuthorizationError);
-    await expect(
-      service.addParticipant(
-        adminActor,
-        participant.divisionId,
-        participant.name,
-        participant.teamName,
-        participant.robotName,
-        participant.comment,
-        participant.orderRaw,
-        participant.givenTime
-      )
-    ).resolves.toEqual(participant);
+    // Act
+    const result = await service.addParticipant(
+      participant.divisionId,
+      participant.name,
+      participant.teamName,
+      participant.robotName,
+      participant.comment,
+      participant.orderRaw,
+      participant.givenTime
+    );
+
+    // Assert
+    expect(result).toEqual(participant);
     expect(mockParticipantRepo.create).toHaveBeenCalledTimes(1);
   });
 
-  it("관리자만 참가자를 수정할 수 있다.", async () => {
+  it("참가자를 수정할 수 있다.", async () => {
+    // Arrange
     const participant = generateDummyParticipant(0, uuidv4());
-    mockParticipantRepo.update.mockResolvedValue(participant);
+    mockParticipantRepo.getById.mockResolvedValue(participant);
     const data = {
       name: "수정된 이름",
       teamName: "수정된 팀명",
@@ -122,31 +104,30 @@ describe("ParticipantService 구현체 단위 테스트", () => {
     };
     mockParticipantRepo.update.mockResolvedValue(updatedParticipant);
 
-    await expect(
-      service.updateParticipant(anonymousActor, participant.id, data)
-    ).rejects.toThrow(AuthorizationError);
-    await expect(
-      service.updateParticipant(adminActor, participant.id, data)
-    ).resolves.toEqual(updatedParticipant);
+    // Act
+    const result = await service.updateParticipant(participant.id, data);
+
+    // Assert
+    expect(result).toEqual(updatedParticipant);
     expect(mockParticipantRepo.update).toHaveBeenCalledTimes(1);
   });
 
-  it("관리자만 참가자를 삭제할 수 있다.", async () => {
+  it("참가자를 삭제할 수 있다.", async () => {
+    // Arrange
     const participantId = uuidv4();
     mockParticipantRepo.delete.mockResolvedValue();
 
-    await expect(
-      service.deleteParticipant(anonymousActor, participantId)
-    ).rejects.toThrow(AuthorizationError);
-    await expect(
-      service.deleteParticipant(adminActor, participantId)
-    ).resolves.toBeUndefined();
+    // Act
+    await service.deleteParticipant(participantId);
+
+    // Assert
     expect(mockParticipantRepo.delete).toHaveBeenCalledWith(participantId);
   });
 
   it("참가자가 업데이트되었을 때 구독자에게 알림을 보낸다.", async () => {
+    // Arrange
     const participant = generateDummyParticipant(0, uuidv4());
-    mockParticipantRepo.update.mockResolvedValue(participant);
+    mockParticipantRepo.getById.mockResolvedValue(participant);
 
     const callback1 = jest.fn();
     const unsubscriber1 = service.subscribeParticipantUpdated(
@@ -163,29 +144,25 @@ describe("ParticipantService 구현체 단위 테스트", () => {
       callback2
     );
 
-    /**
-     * 1. 참가자 정보가 업데이트되었을 때 구독자에게 알림을 보낸다.
-     */
+    // Act & Assert - 참가자 정보가 업데이트되었을 때 구독자에게 알림을 보낸다.
     const updatedParticipant: Participant = {
       ...participant,
       name: "수정된 이름 1",
     };
     mockParticipantRepo.update.mockResolvedValue(updatedParticipant);
-    await service.updateParticipant(adminActor, participant.id, {
+    await service.updateParticipant(participant.id, {
       name: "수정된 이름 1",
     });
     expect(callback1).toHaveBeenNthCalledWith(1, updatedParticipant);
     expect(callback2).toHaveBeenNthCalledWith(1, updatedParticipant);
 
-    /**
-     * 2. 이벤트 리스너 제거가 잘 되는지 확인한다.
-     */
+    // 이벤트 리스너 제거가 잘 되는지 확인한다.
     unsubscriber2();
     mockParticipantRepo.update.mockResolvedValue({
       ...participant,
       name: "수정된 이름 2",
     });
-    await service.updateParticipant(adminActor, participant.id, {
+    await service.updateParticipant(participant.id, {
       name: "수정된 이름 2",
     });
     expect(callback1).toHaveBeenCalledTimes(2);

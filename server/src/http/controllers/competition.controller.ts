@@ -1,5 +1,5 @@
 import { Actor } from "@/core/models";
-import { CompetitionService } from "@/core/services/competition";
+import { CompetitionActorService } from "@/core/services/competition.actor";
 
 import {
   Body,
@@ -30,7 +30,7 @@ import { CreateDivisionDto, DivisionResponseDto } from "../dtos/division.dto";
 export class CompetitionController {
   constructor(
     @Inject("CompetitionService")
-    private readonly competitionService: CompetitionService
+    private readonly competitionService: CompetitionActorService
   ) {}
 
   @Get("/")

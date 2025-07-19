@@ -1,5 +1,4 @@
-import { AuthorizationError } from "@/core/errors";
-import { Actor, Competition, Division } from "@/core/models";
+import { Competition, Division } from "@/core/models";
 import { CompetitionRepository, DivisionRepository } from "@/core/repositories";
 import { CompetitionService } from "@/core/services/competition";
 
@@ -54,23 +53,9 @@ const generateDummyDivisions = (
 
 describe("CompetitionService 구현체 단위 테스트", () => {
   let service: CompetitionService;
-  let adminActor: Actor;
-  let anonymousActor: Actor;
   let errorSpy: jest.SpyInstance;
 
   beforeAll(() => {
-    adminActor = {
-      id: uuidv4(),
-      name: "김태환",
-      roles: ["administrator"],
-      createdAt: new Date(),
-    };
-    anonymousActor = {
-      id: uuidv4(),
-      name: "익명의 러블리",
-      roles: [],
-      createdAt: new Date(),
-    };
     errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
@@ -86,51 +71,58 @@ describe("CompetitionService 구현체 단위 테스트", () => {
     });
   });
 
-  it("아무나 대회 목록을 조회할 수 있다.", async () => {
+  it("대회 목록을 조회할 수 있다.", async () => {
+    // Arrange
     const competitions = generateDummyCompetitions(5);
     mockCompetitionRepo.getAll.mockResolvedValue(competitions);
 
-    await expect(service.getCompetitions(anonymousActor)).resolves.toEqual(
-      competitions
-    );
+    // Act
+    const result = await service.getCompetitions();
+
+    // Assert
+    expect(result).toEqual(competitions);
+    expect(mockCompetitionRepo.getAll).toHaveBeenCalledTimes(1);
   });
 
-  it("아무나 특정 대회의 부문들을 조회할 수 있다.", async () => {
+  it("특정 대회의 부문들을 조회할 수 있다.", async () => {
+    // Arrange
     const competition = generateDummyCompetitions(1)[0];
     mockCompetitionRepo.getById.mockResolvedValue(competition);
     const divisions = generateDummyDivisions(3, competition.id);
     mockDivisionRepo.getByCompetitionId.mockResolvedValue(divisions);
 
-    await expect(
-      service.getCompetitionWithDivisions(anonymousActor, competition.id)
-    ).resolves.toEqual({
+    // Act
+    const result = await service.getCompetitionWithDivisions(competition.id);
+
+    // Assert
+    expect(result).toEqual({
       competition: competition,
       divisions: divisions,
     });
+    expect(mockCompetitionRepo.getById).toHaveBeenCalledWith(competition.id);
+    expect(mockDivisionRepo.getByCompetitionId).toHaveBeenCalledWith(
+      competition.id
+    );
   });
 
-  it("관리자만 대회를 생성할 수 있다.", async () => {
+  it("대회를 생성할 수 있다.", async () => {
+    // Arrange
     const competition = generateDummyCompetitions(1)[0];
     mockCompetitionRepo.create.mockResolvedValue(competition);
 
-    await expect(
-      service.createCompetition(
-        anonymousActor,
-        competition.name,
-        competition.description
-      )
-    ).rejects.toThrow(AuthorizationError);
-    await expect(
-      service.createCompetition(
-        adminActor,
-        competition.name,
-        competition.description
-      )
-    ).resolves.toEqual(competition);
+    // Act
+    const result = await service.createCompetition(
+      competition.name,
+      competition.description
+    );
+
+    // Assert
+    expect(result).toEqual(competition);
     expect(mockCompetitionRepo.create).toHaveBeenCalledTimes(1);
   });
 
-  it("관리자만 대회 정보를 수정할 수 있다.", async () => {
+  it("대회 정보를 수정할 수 있다.", async () => {
+    // Arrange
     const competition = generateDummyCompetitions(1)[0];
     mockCompetitionRepo.getById.mockResolvedValue(competition);
     const data = {
@@ -143,52 +135,45 @@ describe("CompetitionService 구현체 단위 테스트", () => {
     };
     mockCompetitionRepo.update.mockResolvedValue(updatedCompetition);
 
-    await expect(
-      service.updateCompetition(anonymousActor, competition.id, data)
-    ).rejects.toThrow(AuthorizationError);
-    await expect(
-      service.updateCompetition(adminActor, competition.id, data)
-    ).resolves.toEqual(updatedCompetition);
+    // Act
+    const result = await service.updateCompetition(competition.id, data);
+
+    // Assert
+    expect(result).toEqual(updatedCompetition);
     expect(mockCompetitionRepo.update).toHaveBeenCalledTimes(1);
   });
 
-  it("관리자만 대회를 삭제할 수 있다.", async () => {
+  it("대회를 삭제할 수 있다.", async () => {
+    // Arrange
     mockCompetitionRepo.delete.mockResolvedValue();
     const competition = generateDummyCompetitions(1)[0];
 
-    await expect(
-      service.deleteCompetition(anonymousActor, competition.id)
-    ).rejects.toThrow(AuthorizationError);
-    await expect(
-      service.deleteCompetition(adminActor, competition.id)
-    ).resolves.toBeUndefined();
-    expect(mockCompetitionRepo.delete).toHaveBeenCalledTimes(1);
+    // Act
+    await service.deleteCompetition(competition.id);
+
+    // Assert
+    expect(mockCompetitionRepo.delete).toHaveBeenCalledWith(competition.id);
   });
 
-  it("관리자만 특정 대회 부문을 생성할 수 있다.", async () => {
+  it("특정 대회 부문을 생성할 수 있다.", async () => {
+    // Arrange
     const division = generateDummyDivisions(1, uuidv4())[0];
     mockDivisionRepo.create.mockResolvedValue(division);
 
-    await expect(
-      service.createDivision(
-        anonymousActor,
-        division.competitionId,
-        division.name,
-        division.description
-      )
-    ).rejects.toThrow(AuthorizationError);
-    await expect(
-      service.createDivision(
-        adminActor,
-        division.competitionId,
-        division.name,
-        division.description
-      )
-    ).resolves.toEqual(division);
+    // Act
+    const result = await service.createDivision(
+      division.competitionId,
+      division.name,
+      division.description
+    );
+
+    // Assert
+    expect(result).toEqual(division);
     expect(mockDivisionRepo.create).toHaveBeenCalledTimes(1);
   });
 
-  it("관리자만 특정 대회 부문을 수정할 수 있다.", async () => {
+  it("특정 대회 부문을 수정할 수 있다.", async () => {
+    // Arrange
     const division = generateDummyDivisions(1, uuidv4())[0];
     mockDivisionRepo.getById.mockResolvedValue(division);
     const data = {
@@ -201,16 +186,16 @@ describe("CompetitionService 구현체 단위 테스트", () => {
     };
     mockDivisionRepo.update.mockResolvedValue(updatedDivision);
 
-    await expect(
-      service.updateDivision(anonymousActor, division.id, data)
-    ).rejects.toThrow(AuthorizationError);
-    await expect(
-      service.updateDivision(adminActor, division.id, data)
-    ).resolves.toEqual(updatedDivision);
+    // Act
+    const result = await service.updateDivision(division.id, data);
+
+    // Assert
+    expect(result).toEqual(updatedDivision);
     expect(mockDivisionRepo.update).toHaveBeenCalledTimes(1);
   });
 
-  it("관리자만 특정 대회 부문의 상태를 설정할 수 있다.", async () => {
+  it("특정 대회 부문의 상태를 설정할 수 있다.", async () => {
+    // Arrange
     const division = generateDummyDivisions(1, uuidv4())[0];
     mockDivisionRepo.getById.mockResolvedValue(division);
     const updatedDivision: Division = {
@@ -219,30 +204,29 @@ describe("CompetitionService 구현체 단위 테스트", () => {
     };
     mockDivisionRepo.update.mockResolvedValue(updatedDivision);
 
-    await expect(
-      service.setDivisionStatus(anonymousActor, division.id, "ongoing")
-    ).rejects.toThrow(AuthorizationError);
-    await expect(
-      service.setDivisionStatus(adminActor, division.id, "ongoing")
-    ).resolves.toEqual(updatedDivision);
+    // Act
+    const result = await service.setDivisionStatus(division.id, "ongoing");
+
+    // Assert
+    expect(result).toEqual(updatedDivision);
     expect(mockDivisionRepo.update).toHaveBeenCalledTimes(1);
   });
 
-  it("관리자만 특정 대회 부문을 삭제할 수 있다.", async () => {
+  it("특정 대회 부문을 삭제할 수 있다.", async () => {
+    // Arrange
     const division = generateDummyDivisions(1, uuidv4())[0];
     mockDivisionRepo.getById.mockResolvedValue(division);
     mockDivisionRepo.delete.mockResolvedValue();
 
-    await expect(
-      service.deleteDivision(anonymousActor, division.id)
-    ).rejects.toThrow(AuthorizationError);
-    await expect(
-      service.deleteDivision(adminActor, division.id)
-    ).resolves.toBeUndefined();
-    expect(mockDivisionRepo.delete).toHaveBeenCalledTimes(1);
+    // Act
+    await service.deleteDivision(division.id);
+
+    // Assert
+    expect(mockDivisionRepo.delete).toHaveBeenCalledWith(division.id);
   });
 
   it("대회가 갱신되었을 때 구독자에게 알림을 보낸다.", async () => {
+    // Arrange
     const competition = generateDummyCompetitions(1)[0];
     mockCompetitionRepo.getById.mockResolvedValue(competition);
 
@@ -261,9 +245,7 @@ describe("CompetitionService 구현체 단위 테스트", () => {
       callback2
     );
 
-    /**
-     * 대회를 갱신할 때 이벤트가 발생하는지 확인한다.
-     */
+    // Act
     const target = {
       name: "수정된 대회 이름",
       description: "수정된 대회 설명",
@@ -273,21 +255,22 @@ describe("CompetitionService 구현체 단위 테스트", () => {
       ...target,
     };
     mockCompetitionRepo.update.mockResolvedValue(updatedCompetition);
-    await service.updateCompetition(adminActor, competition.id, target);
+    await service.updateCompetition(competition.id, target);
+
+    // Assert
     expect(callback1).toHaveBeenNthCalledWith(1, updatedCompetition);
     expect(callback2).toHaveBeenNthCalledWith(1, updatedCompetition);
 
-    /**
-     * 이벤트 리스너 제거가 잘 되는지 확인한다.
-     */
+    // 이벤트 리스너 제거가 잘 되는지 확인한다.
     unsubscriber1();
     unsubscriber2();
-    await service.updateCompetition(adminActor, competition.id, target);
+    await service.updateCompetition(competition.id, target);
     expect(callback1).toHaveBeenCalledTimes(1); // 호출 횟수가 그대로인지 확인
     expect(callback2).toHaveBeenCalledTimes(1);
   });
 
   it("대회 부문이 갱신되었을 때 구독자에게 알림을 보낸다.", async () => {
+    // Arrange
     const division = generateDummyDivisions(1, uuidv4())[0];
     mockDivisionRepo.getById.mockResolvedValue(division);
 
@@ -306,15 +289,13 @@ describe("CompetitionService 구현체 단위 테스트", () => {
       callback2
     );
 
-    /**
-     * 1. 대회 부문을 갱신할 때 이벤트가 발생하는지 확인한다.
-     */
+    // Act & Assert - 대회 부문을 갱신할 때 이벤트가 발생하는지 확인한다.
     const targetName = "수정된 부문 이름";
     mockDivisionRepo.update.mockResolvedValue({
       ...division,
       name: targetName,
     });
-    await service.updateDivision(adminActor, division.id, {
+    await service.updateDivision(division.id, {
       name: targetName,
     });
     expect(callback1).toHaveBeenNthCalledWith(1, {
@@ -322,26 +303,22 @@ describe("CompetitionService 구현체 단위 테스트", () => {
       name: targetName,
     });
 
-    /**
-     * 2. 대회 부문 상태를 설정할 때 이벤트가 발생하는지 확인한다.
-     */
+    // 대회 부문 상태를 설정할 때 이벤트가 발생하는지 확인한다.
     const targetStatus: Division["status"] = "ongoing";
     mockDivisionRepo.update.mockResolvedValue({
       ...division,
       status: targetStatus,
     });
-    await service.setDivisionStatus(adminActor, division.id, targetStatus);
+    await service.setDivisionStatus(division.id, targetStatus);
     expect(callback2).toHaveBeenNthCalledWith(2, {
       ...division,
       status: targetStatus,
     });
 
-    /**
-     * 이벤트 리스너 제거가 잘 되는지 확인한다.
-     */
+    // 이벤트 리스너 제거가 잘 되는지 확인한다.
     unsubscriber1();
     unsubscriber2();
-    await service.updateDivision(adminActor, division.id, {
+    await service.updateDivision(division.id, {
       name: targetName,
     });
     expect(callback1).toHaveBeenCalledTimes(2); // 호출 횟수가 그대로인지 확인

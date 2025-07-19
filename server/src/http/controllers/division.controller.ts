@@ -1,6 +1,6 @@
 import { Actor } from "@/core/models";
-import { CompetitionService } from "@/core/services/competition";
-import { ParticipantService } from "@/core/services/participant";
+import { CompetitionActorService } from "@/core/services/competition.actor";
+import { ParticipantActorService } from "@/core/services/participant.actor";
 import { RecordService } from "@/core/services/record";
 
 import {
@@ -36,9 +36,9 @@ import { RecordResponseDto } from "../dtos/record.dto";
 export class DivisionController {
   constructor(
     @Inject("CompetitionService")
-    private readonly competitionService: CompetitionService,
+    private readonly competitionService: CompetitionActorService,
     @Inject("ParticipantService")
-    private readonly participantService: ParticipantService,
+    private readonly participantService: ParticipantActorService,
     @Inject("RecordService")
     private readonly recordService: RecordService
   ) {}
