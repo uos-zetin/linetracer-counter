@@ -6,7 +6,6 @@ import { ActorSessionStore } from "@/core/interfaces";
 import { ActorService } from "@/core/services/actor";
 import { CompetitionActorService } from "@/core/services/competition.actor";
 import { ParticipantActorService } from "@/core/services/participant.actor";
-import { TimerLogService } from "@/core/services/timer-log";
 
 import { ActorController } from "./controllers/actor.controller";
 import { CompetitionController } from "./controllers/competition.controller";
@@ -39,10 +38,6 @@ const participantService: CustomProvider<ParticipantActorService> = {
   provide: "ParticipantService",
   useValue: di.services.participant,
 };
-const timerLogService: CustomProvider<TimerLogService> = {
-  provide: "TimerLogService",
-  useValue: di.services.timerLog,
-};
 
 @Module({
   controllers: [
@@ -57,7 +52,6 @@ const timerLogService: CustomProvider<TimerLogService> = {
     actorService,
     competitionService,
     participantService,
-    timerLogService,
   ],
 })
 export class AppModule {

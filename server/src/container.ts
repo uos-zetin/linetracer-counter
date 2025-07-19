@@ -13,10 +13,8 @@ import { ActorSessionRandomStore } from "@/infrastructure/session/actor-session-
 
 import { ActorService } from "@/core/services/actor";
 import { CompetitionService } from "@/core/services/competition";
-import { ParticipantService } from "@/core/services/participant";
-import { TimerLogService } from "@/core/services/timer-log";
-
 import { CompetitionActorService } from "@/core/services/competition.actor";
+import { ParticipantService } from "@/core/services/participant";
 import { ParticipantActorService } from "@/core/services/participant.actor";
 
 import sqlite3 from "sqlite3";
@@ -65,7 +63,6 @@ export class Container {
   private readonly competitionActorService: CompetitionActorService;
   private readonly participantService: ParticipantService;
   private readonly participantActorService: ParticipantActorService;
-  private readonly timerLogService: TimerLogService;
 
   private constructor() {
     // SQLite Database
@@ -113,13 +110,11 @@ export class Container {
       participantRepository: this.participantSQLiteRepo,
       recordRepository: this.recordSQLiteRepo,
       manualRecordRepository: this.manualRecordSQLiteRepo,
+      timerLogRepository: this.timerLogSQLiteRepo,
     });
     this.participantActorService = new ParticipantActorService(
       this.participantService
     );
-    this.timerLogService = new TimerLogService({
-      timerLogRepository: this.timerLogSQLiteRepo,
-    });
   }
 
   private initialized = false;
@@ -159,7 +154,6 @@ export class Container {
       actor: this.actorService,
       competition: this.competitionActorService,
       participant: this.participantActorService,
-      timerLog: this.timerLogService,
     };
   }
 

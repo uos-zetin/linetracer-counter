@@ -1,6 +1,5 @@
 import { Actor, ManualRecord, TimerLog } from "@/core/models";
 import { ParticipantActorService } from "@/core/services/participant.actor";
-import { TimerLogService } from "@/core/services/timer-log";
 
 import {
   Body,
@@ -35,9 +34,7 @@ import { AdjustTimerDto, TimerLogResponseDto } from "../dtos/timer-log.dto";
 export class ParticipantController {
   constructor(
     @Inject("ParticipantService")
-    private readonly participantService: ParticipantActorService,
-    @Inject("TimerLogService")
-    private readonly timerLogService: TimerLogService
+    private readonly participantService: ParticipantActorService
   ) {}
 
   @Patch("/:participantId")
@@ -153,7 +150,7 @@ export class ParticipantController {
     @CurrentActor() actor: Actor,
     @Param("participantId") participantId: string
   ): Promise<TimerLog> {
-    return this.timerLogService.startTimer(actor, participantId);
+    return this.participantService.startTimer(actor, participantId);
   }
 
   @Post("/:participantId/timer/stop")
@@ -168,7 +165,7 @@ export class ParticipantController {
     @CurrentActor() actor: Actor,
     @Param("participantId") participantId: string
   ): Promise<TimerLog> {
-    return this.timerLogService.stopTimer(actor, participantId);
+    return this.participantService.stopTimer(actor, participantId);
   }
 
   @Post("/:participantId/timer/adjust")
@@ -184,7 +181,7 @@ export class ParticipantController {
     @Param("participantId") participantId: string,
     @Body() body: AdjustTimerDto
   ): Promise<TimerLog> {
-    return this.timerLogService.adjustTimer(
+    return this.participantService.adjustTimer(
       actor,
       participantId,
       body.adjustmentMs
@@ -201,6 +198,6 @@ export class ParticipantController {
     @CurrentActor() actor: Actor,
     @Param("participantId") participantId: string
   ): Promise<TimerLog[]> {
-    return this.timerLogService.getTimerLogs(actor, participantId);
+    return this.participantService.getTimerLogs(actor, participantId);
   }
 }

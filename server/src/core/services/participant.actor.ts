@@ -1,4 +1,10 @@
-import { Actor, ManualRecord, Participant, Record } from "@/core/models";
+import {
+  Actor,
+  ManualRecord,
+  Participant,
+  Record,
+  TimerLog,
+} from "@/core/models";
 import { requireAnyRole } from "@/core/utils/auth";
 
 import { ParticipantService } from "./participant";
@@ -104,5 +110,28 @@ export class ParticipantActorService {
   ): Promise<ManualRecord> {
     requireAnyRole(actor, "administrator", "manualRecorder");
     return this.service.addManualRecord(participantId, value, recorderName);
+  }
+
+  async startTimer(actor: Actor, participantId: string): Promise<TimerLog> {
+    requireAnyRole(actor, "administrator");
+    return this.service.startTimer(participantId);
+  }
+
+  async stopTimer(actor: Actor, participantId: string): Promise<TimerLog> {
+    requireAnyRole(actor, "administrator");
+    return this.service.stopTimer(participantId);
+  }
+
+  async adjustTimer(
+    actor: Actor,
+    participantId: string,
+    adjustmentMs: number
+  ): Promise<TimerLog> {
+    requireAnyRole(actor, "administrator");
+    return this.service.adjustTimer(participantId, adjustmentMs);
+  }
+
+  async getTimerLogs(actor: Actor, participantId: string): Promise<TimerLog[]> {
+    return this.service.getTimerLogs(participantId);
   }
 }

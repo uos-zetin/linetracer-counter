@@ -1,8 +1,9 @@
-import { ManualRecord, Participant, Record } from "@/core/models";
+import { ManualRecord, Participant, Record, TimerLog } from "@/core/models";
 import {
   ManualRecordRepository,
   ParticipantRepository,
   RecordRepository,
+  TimerLogRepository,
 } from "@/core/repositories";
 import { ParticipantService } from "@/core/services/participant";
 
@@ -25,6 +26,14 @@ const mockRecordRepo: jest.Mocked<RecordRepository> = {
 };
 
 const mockManualRecordRepo: jest.Mocked<ManualRecordRepository> = {
+  getById: jest.fn(),
+  create: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+  getByParticipantId: jest.fn(),
+};
+
+const mockTimerLogRepo: jest.Mocked<TimerLogRepository> = {
   getById: jest.fn(),
   create: jest.fn(),
   update: jest.fn(),
@@ -72,6 +81,18 @@ const generateDummyManualRecord = (
   createdAt: new Date(),
 });
 
+const generateDummyTimerLog = (
+  participantId: string,
+  type: TimerLog["type"],
+  value: number
+): TimerLog => ({
+  id: uuidv4(),
+  participantId,
+  value,
+  type,
+  createdAt: new Date(),
+});
+
 describe("ParticipantService 구현체 단위 테스트", () => {
   let service: ParticipantService;
   let errorSpy: jest.SpyInstance;
@@ -90,6 +111,7 @@ describe("ParticipantService 구현체 단위 테스트", () => {
       participantRepository: mockParticipantRepo,
       recordRepository: mockRecordRepo,
       manualRecordRepository: mockManualRecordRepo,
+      timerLogRepository: mockTimerLogRepo,
     });
   });
 
@@ -280,6 +302,95 @@ describe("ParticipantService 구현체 단위 테스트", () => {
     // Assert
     expect(result).toEqual(manualRecord);
     expect(mockManualRecordRepo.create).toHaveBeenCalledTimes(1);
+  });
+
+  it("특정 참가자의 타이머 로그를 조회할 수 있다.", async () => {
+    // Arrange
+    const participantId = uuidv4();
+    const timerLogs: TimerLog[] = [
+      generateDummyTimerLog(participantId, "start", Date.now()),
+      generateDummyTimerLog(participantId, "stop", Date.now()),
+    ];
+    mockTimerLogRepo.getByParticipantId.mockResolvedValue(timerLogs);
+
+    // Act
+    const result = await service.getTimerLogs(participantId);
+
+    // Assert
+    expect(result).toEqual(timerLogs);
+    expect(mockTimerLogRepo.getByParticipantId).toHaveBeenCalledWith(
+      participantId
+    );
+  });
+
+  it("타이머를 시작할 수 있다.", async () => {
+    // Arrange
+    const participantId = uuidv4();
+    const timerLog = generateDummyTimerLog(participantId, "start", Date.now());
+    mockTimerLogRepo.create.mockResolvedValue(timerLog);
+    mockTimerLogRepo.getByParticipantId.mockResolvedValue([]); // 빈 배열로 시작 상태
+
+    // Act
+    const result = await service.startTimer(participantId);
+
+    // Assert
+    expect(result).toEqual(timerLog);
+    expect(mockTimerLogRepo.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        participantId,
+        type: "start",
+      })
+    );
+  });
+
+  it("타이머를 중지할 수 있다.", async () => {
+    // Arrange
+    const participantId = uuidv4();
+    const startLog = generateDummyTimerLog(
+      participantId,
+      "start",
+      Date.now() - 1000
+    );
+    const timerLog = generateDummyTimerLog(participantId, "stop", Date.now());
+    mockTimerLogRepo.create.mockResolvedValue(timerLog);
+    mockTimerLogRepo.getByParticipantId.mockResolvedValue([startLog]); // 시작 로그만 있음
+
+    // Act
+    const result = await service.stopTimer(participantId);
+
+    // Assert
+    expect(result).toEqual(timerLog);
+    expect(mockTimerLogRepo.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        participantId,
+        type: "stop",
+      })
+    );
+  });
+
+  it("타이머를 조정할 수 있다.", async () => {
+    // Arrange
+    const participantId = uuidv4();
+    const adjustmentMs = 5000;
+    const timerLog = generateDummyTimerLog(
+      participantId,
+      "adjust",
+      adjustmentMs
+    );
+    mockTimerLogRepo.create.mockResolvedValue(timerLog);
+
+    // Act
+    const result = await service.adjustTimer(participantId, adjustmentMs);
+
+    // Assert
+    expect(result).toEqual(timerLog);
+    expect(mockTimerLogRepo.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        participantId,
+        type: "adjust",
+        value: adjustmentMs,
+      })
+    );
   });
 
   it("참가자가 업데이트되었을 때 구독자에게 알림을 보낸다.", async () => {
@@ -504,6 +615,131 @@ describe("ParticipantService 구현체 단위 테스트", () => {
       // Assert
       expect(callback1).not.toHaveBeenCalled();
       expect(callback2).toHaveBeenCalledWith(manualRecord);
+    });
+  });
+
+  describe("타이머 로그 이벤트 구독 테스트", () => {
+    let participantId: string;
+    let callback1: jest.Mock;
+    let callback2: jest.Mock;
+    let callback1Unsubscriber: () => void;
+    let callback2Unsubscriber: () => void;
+
+    beforeEach(() => {
+      // Arrange
+      participantId = uuidv4();
+      callback1 = jest.fn();
+      callback2 = jest.fn();
+      callback1Unsubscriber = service.subscribeTimerLogsChanged(
+        participantId,
+        callback1
+      );
+      callback2Unsubscriber = service.subscribeTimerLogsChanged(
+        participantId,
+        callback2
+      );
+    });
+
+    afterEach(() => {
+      callback1Unsubscriber();
+      callback2Unsubscriber();
+      jest.clearAllMocks();
+    });
+
+    it("타이머가 시작되었을 때 모든 구독자에게 알림을 보낸다.", async () => {
+      // Arrange
+      const timerLog = generateDummyTimerLog(
+        participantId,
+        "start",
+        Date.now()
+      );
+      mockTimerLogRepo.create.mockResolvedValue(timerLog);
+      mockTimerLogRepo.getByParticipantId.mockResolvedValue([]); // 빈 배열로 시작 상태
+
+      // Act
+      await service.startTimer(participantId);
+
+      // Assert
+      expect(callback1).toHaveBeenCalledWith(timerLog);
+      expect(callback2).toHaveBeenCalledWith(timerLog);
+    });
+
+    it("타이머가 중지되었을 때 모든 구독자에게 알림을 보낸다.", async () => {
+      // Arrange
+      const startLog = generateDummyTimerLog(
+        participantId,
+        "start",
+        Date.now() - 1000
+      );
+      const timerLog = generateDummyTimerLog(participantId, "stop", Date.now());
+      mockTimerLogRepo.create.mockResolvedValue(timerLog);
+      mockTimerLogRepo.getByParticipantId.mockResolvedValue([startLog]); // 시작 로그만 있음
+
+      // Act
+      await service.stopTimer(participantId);
+
+      // Assert
+      expect(callback1).toHaveBeenCalledWith(timerLog);
+      expect(callback2).toHaveBeenCalledWith(timerLog);
+    });
+
+    it("타이머가 조정되었을 때 모든 구독자에게 알림을 보낸다.", async () => {
+      // Arrange
+      const adjustmentMs = -3000;
+      const timerLog = generateDummyTimerLog(
+        participantId,
+        "adjust",
+        adjustmentMs
+      );
+      mockTimerLogRepo.create.mockResolvedValue(timerLog);
+
+      // Act
+      await service.adjustTimer(participantId, adjustmentMs);
+
+      // Assert
+      expect(callback1).toHaveBeenCalledWith(timerLog);
+      expect(callback2).toHaveBeenCalledWith(timerLog);
+    });
+
+    it("구독 함수에서 오류가 발생해도 서비스 로직은 정상적으로 동작한다.", async () => {
+      // Arrange
+      const timerLog = generateDummyTimerLog(
+        participantId,
+        "start",
+        Date.now()
+      );
+      mockTimerLogRepo.create.mockResolvedValue(timerLog);
+      mockTimerLogRepo.getByParticipantId.mockResolvedValue([]); // 빈 배열로 시작 상태
+      callback1.mockRejectedValue(
+        new Error("에러가 발생해도 서비스 로직은 정상적으로 동작해야 해요.")
+      );
+
+      // Act
+      const asyncTask = service.startTimer(participantId);
+
+      // Assert
+      await expect(asyncTask).resolves.toBe(timerLog);
+      expect(callback1).toHaveBeenCalledWith(timerLog);
+      expect(callback2).toHaveBeenCalledWith(timerLog);
+    });
+
+    it("구독을 해제하면 더 이상 이벤트를 받지 않는다.", async () => {
+      // Arrange
+      const timerLog = generateDummyTimerLog(
+        participantId,
+        "start",
+        Date.now()
+      );
+      mockTimerLogRepo.create.mockResolvedValue(timerLog);
+      mockTimerLogRepo.getByParticipantId.mockResolvedValue([]); // 빈 배열로 시작 상태
+      callback1Unsubscriber();
+
+      // Act
+      await service.startTimer(participantId);
+
+      // Assert
+      expect(callback1).not.toHaveBeenCalled();
+      expect(callback2).toHaveBeenCalledWith(timerLog);
     });
   });
 });
