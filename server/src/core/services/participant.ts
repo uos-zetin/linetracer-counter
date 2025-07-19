@@ -11,6 +11,27 @@ import {
 import { EventEmitter } from "events";
 import { v4 as uuidv4 } from "uuid";
 
+export type ParticipantEvent =
+  | {
+      type: "updated";
+      participant: Participant;
+    }
+  | {
+      type: "record-updated";
+      record: Record;
+    }
+  | {
+      type: "manual-record-added";
+      manualRecord: ManualRecord;
+    }
+  | {
+      type: "timer-log-added";
+      timerLog: TimerLog;
+    }
+  | {
+      type: "deleted";
+    };
+
 export class ParticipantService {
   private readonly participantRepo: ParticipantRepository;
   private readonly recordRepo: RecordRepository;
@@ -56,6 +77,13 @@ export class ParticipantService {
   }
 
   /**
+   * 특정 참가자를 조회할 수 있다.
+   */
+  async getParticipant(participantId: string): Promise<Participant> {
+    return this.participantRepo.getById(participantId);
+  }
+
+  /**
    * 특정 부문의 모든 참가자를 조회할 수 있다.
    */
   async getParticipants(divisionId: string): Promise<Participant[]> {
@@ -88,7 +116,11 @@ export class ParticipantService {
       ...filteredData,
     };
     const result = await this.participantRepo.update(updated);
-    this.emitParticipantUpdated(result);
+
+    this.emitParticipantEvent(result.id, {
+      type: "updated",
+      participant: result,
+    });
     return result;
   }
 
@@ -97,6 +129,10 @@ export class ParticipantService {
    */
   async deleteParticipant(participantId: string): Promise<void> {
     await this.participantRepo.delete(participantId);
+
+    this.emitParticipantEvent(participantId, {
+      type: "deleted",
+    });
   }
 
   /**
@@ -125,7 +161,11 @@ export class ParticipantService {
       createdAt: new Date(),
     };
     const result = await this.recordRepo.create(record);
-    this.emitRecordStatusChanged(result);
+
+    this.emitParticipantEvent(participantId, {
+      type: "record-updated",
+      record: result,
+    });
     return result;
   }
 
@@ -139,6 +179,11 @@ export class ParticipantService {
       note,
     };
     const result = await this.recordRepo.update(updated);
+
+    this.emitParticipantEvent(record.participantId, {
+      type: "record-updated",
+      record: result,
+    });
     return result;
   }
 
@@ -155,7 +200,11 @@ export class ParticipantService {
       status,
     };
     const result = await this.recordRepo.update(updated);
-    this.emitRecordStatusChanged(result);
+
+    this.emitParticipantEvent(record.participantId, {
+      type: "record-updated",
+      record: result,
+    });
     return result;
   }
 
@@ -182,7 +231,11 @@ export class ParticipantService {
       createdAt: new Date(),
     };
     const result = await this.manualRecordRepo.create(manualRecord);
-    this.emitManualRecordAdded(result);
+
+    this.emitParticipantEvent(result.participantId, {
+      type: "manual-record-added",
+      manualRecord: result,
+    });
     return result;
   }
 
@@ -217,7 +270,6 @@ export class ParticipantService {
     if (isRunning === true) {
       throw new TimerLogConsecutiveError("Timer is already running");
     }
-
     const now = Date.now();
     const timerLog: TimerLog = {
       id: uuidv4(),
@@ -226,9 +278,12 @@ export class ParticipantService {
       type: "start",
       createdAt: new Date(now),
     };
-
     const result = await this.timerLogRepo.create(timerLog);
-    this.emitTimerLogsChanged(result);
+
+    this.emitParticipantEvent(result.participantId, {
+      type: "timer-log-added",
+      timerLog: result,
+    });
     return result;
   }
 
@@ -240,7 +295,6 @@ export class ParticipantService {
     if (isRunning === false) {
       throw new TimerLogConsecutiveError("Timer is not running");
     }
-
     const now = Date.now();
     const timerLog: TimerLog = {
       id: uuidv4(),
@@ -249,9 +303,12 @@ export class ParticipantService {
       type: "stop",
       createdAt: new Date(now),
     };
-
     const result = await this.timerLogRepo.create(timerLog);
-    this.emitTimerLogsChanged(result);
+
+    this.emitParticipantEvent(result.participantId, {
+      type: "timer-log-added",
+      timerLog: result,
+    });
     return result;
   }
 
@@ -269,9 +326,12 @@ export class ParticipantService {
       type: "adjust",
       createdAt: new Date(),
     };
-
     const result = await this.timerLogRepo.create(timerLog);
-    this.emitTimerLogsChanged(result);
+
+    this.emitParticipantEvent(result.participantId, {
+      type: "timer-log-added",
+      timerLog: result,
+    });
     return result;
   }
 
@@ -282,141 +342,29 @@ export class ParticipantService {
     return this.timerLogRepo.getByParticipantId(participantId);
   }
 
-  // ------------------------------
-  // 이벤트 핸들링 관련 로직
-  // ------------------------------
-  private eventEmitter = new EventEmitter();
+  private _participantEventEmitter = new EventEmitter();
 
-  private getParticipantUpdatedEventName = (id: string) =>
-    `participant:update:${id}`;
-
-  private emitParticipantUpdated(p: Participant) {
-    this.eventEmitter.emit(this.getParticipantUpdatedEventName(p.id), p);
+  private emitParticipantEvent(participantId: string, event: ParticipantEvent) {
+    this._participantEventEmitter.emit(participantId, event);
   }
 
   /**
-   * 특정 참가자의 변경 이벤트를 구독할 수 있다.
+   * 특정 참가자의 이벤트를 구독할 수 있다.
    */
-  subscribeParticipantUpdated(
+  public subscribeParticipantEvent(
     participantId: string,
-    callback: (participant: Participant) => Promise<void>
+    callback: (event: ParticipantEvent) => Promise<void>
   ): Unsubscriber {
-    const eventName = this.getParticipantUpdatedEventName(participantId);
-    const safeCb = async (p: Participant) => {
+    const safeCb = async (event: ParticipantEvent) => {
       try {
-        await callback(p);
+        await callback(event);
       } catch (err) {
-        console.error(
-          `ParticipantUpdated listener error for ${participantId}:`,
-          err
-        );
+        console.error(err);
       }
     };
-    this.eventEmitter.on(eventName, safeCb);
+    this._participantEventEmitter.on(participantId, safeCb);
     return () => {
-      this.eventEmitter.off(eventName, safeCb);
-    };
-  }
-
-  private getRecordStatusChangedEventName = (participantId: string) =>
-    `record:status:changed:${participantId}`;
-
-  private emitRecordStatusChanged(record: Record) {
-    this.eventEmitter.emit(
-      this.getRecordStatusChangedEventName(record.participantId),
-      record
-    );
-  }
-
-  /**
-   * 특정 참가자의 기록 상태(승인/거절)가 변경된 경우를 구독할 수 있다.
-   */
-  subscribeRecordStatusChanged(
-    participantId: string,
-    callback: (record: Record) => Promise<void>
-  ): Unsubscriber {
-    const eventName = this.getRecordStatusChangedEventName(participantId);
-    const safeCb = async (record: Record) => {
-      try {
-        await callback(record);
-      } catch (err) {
-        console.error(
-          `Record status changed listener error for ${participantId}:`,
-          err
-        );
-      }
-    };
-    this.eventEmitter.on(eventName, safeCb);
-    return () => {
-      this.eventEmitter.off(eventName, safeCb);
-    };
-  }
-
-  private getManualRecordAddedEventName = (participantId: string) =>
-    `manual-record:added:${participantId}`;
-
-  private emitManualRecordAdded(manualRecord: ManualRecord) {
-    this.eventEmitter.emit(
-      this.getManualRecordAddedEventName(manualRecord.participantId),
-      manualRecord
-    );
-  }
-
-  /**
-   * 특정 참가자에 대한 수동 계수 기록 추가 이벤트를 구독할 수 있다.
-   */
-  subscribeManualRecordAdded(
-    participantId: string,
-    callback: (manualRecord: ManualRecord) => Promise<void>
-  ): Unsubscriber {
-    const eventName = this.getManualRecordAddedEventName(participantId);
-    const safeCb = async (manualRecord: ManualRecord) => {
-      try {
-        await callback(manualRecord);
-      } catch (err) {
-        console.error(
-          `Manual record added listener error for ${participantId}:`,
-          err
-        );
-      }
-    };
-    this.eventEmitter.on(eventName, safeCb);
-    return () => {
-      this.eventEmitter.off(eventName, safeCb);
-    };
-  }
-
-  private getTimerLogsChangedEventName = (participantId: string) =>
-    `timerLogs:changed:${participantId}`;
-
-  private emitTimerLogsChanged(timerLog: TimerLog) {
-    this.eventEmitter.emit(
-      this.getTimerLogsChangedEventName(timerLog.participantId),
-      timerLog
-    );
-  }
-
-  /**
-   * 특정 참가자에 대한 타이머 기록 추가 이벤트를 구독할 수 있다.
-   */
-  subscribeTimerLogsChanged(
-    participantId: string,
-    callback: (timerLog: TimerLog) => Promise<void>
-  ): Unsubscriber {
-    const eventName = this.getTimerLogsChangedEventName(participantId);
-    const safeCb = async (timerLog: TimerLog) => {
-      try {
-        await callback(timerLog);
-      } catch (err) {
-        console.error(
-          `TimerLogsChanged listener error for ${participantId}:`,
-          err
-        );
-      }
-    };
-    this.eventEmitter.on(eventName, safeCb);
-    return () => {
-      this.eventEmitter.off(eventName, safeCb);
+      this._participantEventEmitter.off(participantId, safeCb);
     };
   }
 }
