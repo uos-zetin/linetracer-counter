@@ -5,13 +5,12 @@ import {
 } from "@/core/errors";
 import { Actor } from "@/core/models";
 import { ActorIdPwRepository, ActorRepository } from "@/core/repositories";
-import { ActorService } from "@/core/services";
 
 import { requireAnyRole } from "@/utils/auth";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 
-export class ActorServiceImpl implements ActorService {
+export class ActorService {
   private readonly actorRepo: ActorRepository;
   private readonly actorIdPwRepo: ActorIdPwRepository;
 
@@ -25,12 +24,18 @@ export class ActorServiceImpl implements ActorService {
     this.actorIdPwRepo = di.actorIdPwRepository;
   }
 
-  async getActors(actor: Actor): Promise<Actor[]> {
+  /**
+   * 관리자는 모든 액터 목록을 조회할 수 있다.
+   */
+  public async getActors(actor: Actor): Promise<Actor[]> {
     requireAnyRole(actor, "administrator");
     return this.actorRepo.getAll();
   }
 
-  async setActorRoles(
+  /**
+   * 관리자는 액터 역할을 설정할 수 있다.
+   */
+  public async setActorRoles(
     actor: Actor,
     targetActorId: string,
     roles: Actor["roles"]
@@ -42,7 +47,10 @@ export class ActorServiceImpl implements ActorService {
     return this.actorRepo.update(targetActor);
   }
 
-  async registerWithIdPw(
+  /**
+   * 아무나 ID, PW로 권한이 없는 액터를 등록할 수 있다.
+   */
+  public async registerWithIdPw(
     name: string,
     username: string,
     password: string
@@ -71,7 +79,10 @@ export class ActorServiceImpl implements ActorService {
     return newActor;
   }
 
-  async checkIdPwExists(username: string): Promise<boolean> {
+  /**
+   * 아무나 ID가 존재하는지 확인할 수 있다.
+   */
+  public async checkIdPwExists(username: string): Promise<boolean> {
     return await this.actorIdPwRepo
       .getByUsername(username)
       .then(() => true)
@@ -83,7 +94,10 @@ export class ActorServiceImpl implements ActorService {
       });
   }
 
-  async verifyIdPw(username: string, password: string): Promise<Actor> {
+  /**
+   * 아무나 ID, PW로 자신이 특정 액터임을 증명할 수 있다.
+   */
+  public async verifyIdPw(username: string, password: string): Promise<Actor> {
     const actorIdPw = await this.actorIdPwRepo.getByUsername(username);
     const isValid = await bcrypt.compare(password, actorIdPw.hashedPassword);
 
@@ -94,7 +108,10 @@ export class ActorServiceImpl implements ActorService {
     return this.actorRepo.getById(actorIdPw.actorId);
   }
 
-  async unregister(actor: Actor, targetActorId: string): Promise<void> {
+  /**
+   * 관리자는 액터를 등록 해제할 수 있다.
+   */
+  public async unregister(actor: Actor, targetActorId: string): Promise<void> {
     requireAnyRole(actor, "administrator");
 
     const targetActor = await this.actorRepo.getById(targetActorId);

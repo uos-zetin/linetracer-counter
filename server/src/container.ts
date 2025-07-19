@@ -1,6 +1,5 @@
 import { ActorSessionStore } from "@/core/interfaces";
 import {
-  ActorService,
   CompetitionService,
   ManualRecordService,
   ParticipantService,
@@ -19,7 +18,7 @@ import { TimerLogSQLiteRepository } from "@/infrastructure/repositories/timer-lo
 
 import { ActorSessionRandomStore } from "@/infrastructure/session/actor-session-random-store";
 
-import { ActorServiceImpl } from "@/core/services/actor";
+import { ActorService } from "@/core/services/actor";
 import { CompetitionServiceImpl } from "@/core/services/competition";
 import { ManualRecordServiceImpl } from "@/core/services/manual-record";
 import { ParticipantServiceImpl } from "@/core/services/participant";
@@ -103,7 +102,7 @@ export class Container {
     );
 
     // Instantiate Services
-    this.actorService = new ActorServiceImpl({
+    this.actorService = new ActorService({
       actorRepository: this.actorSQLiteRepo,
       actorIdPwRepository: this.actorIdPwSQLiteRepo,
     });

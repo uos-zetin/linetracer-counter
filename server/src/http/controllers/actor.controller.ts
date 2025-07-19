@@ -14,7 +14,7 @@ import { Request } from "express";
 
 import { ActorSessionStore } from "@/core/interfaces";
 import { Actor } from "@/core/models";
-import { ActorService } from "@/core/services";
+import { ActorService } from "@/core/services/actor";
 
 import {
   ApiActorSecurity,

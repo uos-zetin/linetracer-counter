@@ -3,13 +3,14 @@ import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
 import di from "@/container";
 import { ActorSessionStore } from "@/core/interfaces";
 import {
-  ActorService,
   CompetitionService,
   ManualRecordService,
   ParticipantService,
   RecordService,
   TimerLogService,
 } from "@/core/services";
+
+import { ActorService } from "@/core/services/actor";
 
 import { ActorController } from "./controllers/actor.controller";
 import { CompetitionController } from "./controllers/competition.controller";
