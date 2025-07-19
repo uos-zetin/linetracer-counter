@@ -1,5 +1,7 @@
 import { Actor } from "./models";
 
+export type Unsubscriber = () => void;
+
 export interface ActorSessionStore {
   /**
    * 액터 세션을 생성할 수 있다.

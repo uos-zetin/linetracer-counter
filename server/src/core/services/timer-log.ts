@@ -1,14 +1,13 @@
+import { TimerLogConsecutiveError } from "@/core/errors";
+import { Unsubscriber } from "@/core/interfaces";
 import { Actor, TimerLog } from "@/core/models";
 import { TimerLogRepository } from "@/core/repositories";
-import { TimerLogService, Unsubscriber } from "@/core/services";
+import { requireAnyRole } from "@/core/utils/auth";
 
 import { EventEmitter } from "events";
 import { v4 as uuidv4 } from "uuid";
 
-import { requireAnyRole } from "@/utils/auth";
-import { TimerLogConsecutiveError } from "@/core/errors";
-
-export class TimerLogServiceImpl implements TimerLogService {
+export class TimerLogService {
   private readonly timerLogRepo: TimerLogRepository;
 
   constructor(di: { timerLogRepository: TimerLogRepository }) {
@@ -38,6 +37,9 @@ export class TimerLogServiceImpl implements TimerLogService {
     return lastStartLog.createdAt > lastStopLog.createdAt;
   }
 
+  /**
+   * 특정 참가자의 경연 타이머를 시작할 수 있다. 현재 시각을 기준으로 타이머가 시작된다.
+   */
   async startTimer(actor: Actor, participantId: string): Promise<TimerLog> {
     requireAnyRole(actor, "administrator");
     const isRunning = await this.checkTimerIsRunning(participantId);
@@ -59,6 +61,9 @@ export class TimerLogServiceImpl implements TimerLogService {
     return result;
   }
 
+  /**
+   * 특정 참가자의 경연 타이머를 중지할 수 있다. 현재 시각을 기준으로 타이머가 중지된다.
+   */
   async stopTimer(actor: Actor, participantId: string): Promise<TimerLog> {
     requireAnyRole(actor, "administrator");
     const isRunning = await this.checkTimerIsRunning(participantId);
@@ -80,6 +85,9 @@ export class TimerLogServiceImpl implements TimerLogService {
     return result;
   }
 
+  /**
+   * 특정 참가자의 타이머 시간을 조정할 수 있다. 양수는 시간 추가, 음수는 시간 차감을 의미한다.
+   */
   async adjustTimer(
     actor: Actor,
     participantId: string,
@@ -100,6 +108,9 @@ export class TimerLogServiceImpl implements TimerLogService {
     return result;
   }
 
+  /**
+   * 특정 참가자의 타이머 기록을 조회할 수 있다.
+   */
   async getTimerLogs(actor: Actor, participantId: string): Promise<TimerLog[]> {
     return this.timerLogRepo.getByParticipantId(participantId);
   }
@@ -119,6 +130,9 @@ export class TimerLogServiceImpl implements TimerLogService {
     );
   }
 
+  /**
+   * 특정 참가자에 대한 타이머 기록 추가 이벤트를 구독할 수 있다.
+   */
   subscribeTimerLogsChanged(
     participantId: string,
     callback: (timerLog: TimerLog) => Promise<void>

@@ -1,5 +1,5 @@
 import { Actor } from "@/core/models";
-import { CompetitionService } from "@/core/services";
+import { CompetitionService } from "@/core/services/competition";
 
 import {
   Body,

@@ -1,8 +1,7 @@
 import { AuthorizationError } from "@/core/errors";
 import { Actor, Participant } from "@/core/models";
 import { ParticipantRepository } from "@/core/repositories";
-
-import { ParticipantServiceImpl } from "@/core/services/participant";
+import { ParticipantService } from "@/core/services/participant";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -30,7 +29,7 @@ const generateDummyParticipant = (
 });
 
 describe("ParticipantService 구현체 단위 테스트", () => {
-  let service: ParticipantServiceImpl;
+  let service: ParticipantService;
   let adminActor: Actor;
   let anonymousActor: Actor;
   let errorSpy: jest.SpyInstance;
@@ -57,7 +56,7 @@ describe("ParticipantService 구현체 단위 테스트", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new ParticipantServiceImpl({
+    service = new ParticipantService({
       participantRepository: mockParticipantRepo,
     });
   });

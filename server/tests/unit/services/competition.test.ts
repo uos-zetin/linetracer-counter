@@ -1,8 +1,7 @@
 import { AuthorizationError } from "@/core/errors";
 import { Actor, Competition, Division } from "@/core/models";
 import { CompetitionRepository, DivisionRepository } from "@/core/repositories";
-
-import { CompetitionServiceImpl } from "@/core/services/competition";
+import { CompetitionService } from "@/core/services/competition";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -54,7 +53,7 @@ const generateDummyDivisions = (
 };
 
 describe("CompetitionService 구현체 단위 테스트", () => {
-  let service: CompetitionServiceImpl;
+  let service: CompetitionService;
   let adminActor: Actor;
   let anonymousActor: Actor;
   let errorSpy: jest.SpyInstance;
@@ -81,7 +80,7 @@ describe("CompetitionService 구현체 단위 테스트", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new CompetitionServiceImpl({
+    service = new CompetitionService({
       competitionRepository: mockCompetitionRepo,
       divisionRepository: mockDivisionRepo,
     });

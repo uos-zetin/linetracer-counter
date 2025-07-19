@@ -1,9 +1,7 @@
 import { Actor } from "@/core/models";
-import {
-  CompetitionService,
-  ParticipantService,
-  RecordService,
-} from "@/core/services";
+import { CompetitionService } from "@/core/services/competition";
+import { ParticipantService } from "@/core/services/participant";
+import { RecordService } from "@/core/services/record";
 
 import {
   Body,

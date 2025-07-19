@@ -1,8 +1,7 @@
 import { AuthorizationError, TimerLogConsecutiveError } from "@/core/errors";
 import { Actor, TimerLog } from "@/core/models";
 import { TimerLogRepository } from "@/core/repositories";
-
-import { TimerLogServiceImpl } from "@/core/services/timer-log";
+import { TimerLogService } from "@/core/services/timer-log";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -27,7 +26,7 @@ const generateDummyTimerLog = (
 });
 
 describe("TimerLogService 구현체 단위 테스트", () => {
-  let service: TimerLogServiceImpl;
+  let service: TimerLogService;
   let adminActor: Actor;
   let anonymousActor: Actor;
 
@@ -49,7 +48,7 @@ describe("TimerLogService 구현체 단위 테스트", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new TimerLogServiceImpl({
+    service = new TimerLogService({
       timerLogRepository: mockTimerLogRepo,
     });
   });

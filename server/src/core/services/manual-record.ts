@@ -1,19 +1,21 @@
+import { Unsubscriber } from "@/core/interfaces";
 import { Actor, ManualRecord } from "@/core/models";
 import { ManualRecordRepository } from "@/core/repositories";
-import { ManualRecordService, Unsubscriber } from "@/core/services";
+import { requireAnyRole } from "@/core/utils/auth";
 
 import { EventEmitter } from "events";
 import { v4 as uuidv4 } from "uuid";
 
-import { requireAnyRole } from "@/utils/auth";
-
-export class ManualRecordServiceImpl implements ManualRecordService {
+export class ManualRecordService {
   private readonly manualRecordRepo: ManualRecordRepository;
 
   constructor(di: { manualRecordRepository: ManualRecordRepository }) {
     this.manualRecordRepo = di.manualRecordRepository;
   }
 
+  /**
+   * 특정 참가자의 수동 계수 기록을 조회할 수 있다.
+   */
   async getManualRecords(
     actor: Actor,
     participantId: string
@@ -21,6 +23,9 @@ export class ManualRecordServiceImpl implements ManualRecordService {
     return this.manualRecordRepo.getByParticipantId(participantId);
   }
 
+  /**
+   * 특정 참가자에 대한 수동 계수 기록을 추가할 수 있다.
+   */
   async addManualRecord(
     actor: Actor,
     participantId: string,
@@ -56,6 +61,9 @@ export class ManualRecordServiceImpl implements ManualRecordService {
     );
   }
 
+  /**
+   * 특정 참가자에 대한 수동 계수 기록 추가 이벤트를 구독할 수 있다.
+   */
   subscribeManualRecordAdded(
     participantId: string,
     callback: (manualRecord: ManualRecord) => Promise<void>

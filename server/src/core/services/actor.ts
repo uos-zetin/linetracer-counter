@@ -5,8 +5,8 @@ import {
 } from "@/core/errors";
 import { Actor } from "@/core/models";
 import { ActorIdPwRepository, ActorRepository } from "@/core/repositories";
+import { requireAnyRole } from "@/core/utils/auth";
 
-import { requireAnyRole } from "@/utils/auth";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 

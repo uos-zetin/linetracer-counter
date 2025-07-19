@@ -1,13 +1,12 @@
+import { Unsubscriber } from "@/core/interfaces";
 import { Actor, Competition, Division } from "@/core/models";
 import { CompetitionRepository, DivisionRepository } from "@/core/repositories";
-import { CompetitionService, Unsubscriber } from "@/core/services";
+import { requireAnyRole } from "@/core/utils/auth";
 
 import { EventEmitter } from "events";
 import { v4 as uuidv4 } from "uuid";
 
-import { requireAnyRole } from "@/utils/auth";
-
-export class CompetitionServiceImpl implements CompetitionService {
+export class CompetitionService {
   private competitionRepo: CompetitionRepository;
   private divisionRepo: DivisionRepository;
 
@@ -22,10 +21,16 @@ export class CompetitionServiceImpl implements CompetitionService {
     this.divisionRepo = di.divisionRepository;
   }
 
-  async getCompetitions(actor: Actor): Promise<Competition[]> {
+  /**
+   * 모든 대회 목록을 조회할 수 있다.
+   */
+  public async getCompetitions(actor: Actor): Promise<Competition[]> {
     return this.competitionRepo.getAll();
   }
 
+  /**
+   * 특정 대회의 그 아래의 부문들을 조회할 수 있다.
+   */
   async getCompetitionWithDivisions(
     actor: Actor,
     competitionId: string
@@ -35,6 +40,9 @@ export class CompetitionServiceImpl implements CompetitionService {
     return { competition, divisions };
   }
 
+  /**
+   * 대회를 생성할 수 있다.
+   */
   async createCompetition(
     actor: Actor,
     name: string,
@@ -51,6 +59,9 @@ export class CompetitionServiceImpl implements CompetitionService {
     return this.competitionRepo.create(entity);
   }
 
+  /**
+   * 대회 이름/설명을 수정할 수 있다.
+   */
   async updateCompetition(
     actor: Actor,
     competitionId: string,
@@ -66,12 +77,18 @@ export class CompetitionServiceImpl implements CompetitionService {
     return updated;
   }
 
+  /**
+   * 대회를 삭제할 수 있다.
+   */
   async deleteCompetition(actor: Actor, competitionId: string): Promise<void> {
     requireAnyRole(actor, "administrator");
 
     await this.competitionRepo.delete(competitionId);
   }
 
+  /**
+   * 대회 부문을 생성할 수 있다.
+   */
   async createDivision(
     actor: Actor,
     competitionId: string,
@@ -91,6 +108,9 @@ export class CompetitionServiceImpl implements CompetitionService {
     return this.divisionRepo.create(data);
   }
 
+  /**
+   * 대회 부문의 이름/설명을 수정할 수 있다.
+   */
   async updateDivision(
     actor: Actor,
     divisionId: string,
@@ -106,6 +126,9 @@ export class CompetitionServiceImpl implements CompetitionService {
     return updated;
   }
 
+  /**
+   * 대회 부문의 상태 정보를 설정할 수 있다.
+   */
   async setDivisionStatus(
     actor: Actor,
     divisionId: string,
@@ -120,6 +143,9 @@ export class CompetitionServiceImpl implements CompetitionService {
     return updated;
   }
 
+  /**
+   * 대회 부문을 삭제할 수 있다.
+   */
   async deleteDivision(actor: Actor, divisionId: string): Promise<void> {
     requireAnyRole(actor, "administrator");
 
@@ -145,6 +171,9 @@ export class CompetitionServiceImpl implements CompetitionService {
     this.eventEmitter.emit(this.getDivisionUpdatedEventName(d.id), d);
   }
 
+  /**
+   * 특정 대회의 변경 이벤트를 구독할 수 있다.
+   */
   subscribeCompetitionUpdated(
     competitionId: string,
     callback: (competition: Competition) => Promise<void>
@@ -166,6 +195,9 @@ export class CompetitionServiceImpl implements CompetitionService {
     };
   }
 
+  /**
+   * 특정 대회 부문의 변경 이벤트를 구독할 수 있다.
+   */
   subscribeDivisionUpdated(
     divisionId: string,
     callback: (division: Division) => Promise<void>

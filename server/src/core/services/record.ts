@@ -1,13 +1,12 @@
+import { Unsubscriber } from "@/core/interfaces";
 import { Actor, Record } from "@/core/models";
 import { ParticipantRepository, RecordRepository } from "@/core/repositories";
-import { RecordService, Unsubscriber } from "@/core/services";
+import { requireAnyRole } from "@/core/utils/auth";
 
 import { EventEmitter } from "events";
 import { v4 as uuidv4 } from "uuid";
 
-import { requireAnyRole } from "@/utils/auth";
-
-export class RecordServiceImpl implements RecordService {
+export class RecordService {
   private readonly recordRepo: RecordRepository;
   private readonly participantRepo: ParticipantRepository;
 
@@ -19,10 +18,16 @@ export class RecordServiceImpl implements RecordService {
     this.participantRepo = di.participantRepository;
   }
 
+  /**
+   * 특정 참가자의 모든 기록을 조회할 수 있다.
+   */
   async getRecords(actor: Actor, participantId: string): Promise<Record[]> {
     return this.recordRepo.getByParticipantId(participantId);
   }
 
+  /**
+   * 특정 참가자에 대한 기록을 추가할 수 있다.
+   */
   async addRecord(
     actor: Actor,
     participantId: string,
@@ -46,6 +51,9 @@ export class RecordServiceImpl implements RecordService {
     return result;
   }
 
+  /**
+   * 특정 참가자의 기록에 비고란을 수정할 수 있다.
+   */
   async setRecordNote(
     actor: Actor,
     recordId: string,
@@ -62,6 +70,9 @@ export class RecordServiceImpl implements RecordService {
     return result;
   }
 
+  /**
+   * 특정 참가자의 기록의 상태(승인/거절)를 변경할 수 있다.
+   */
   async setRecordStatus(
     actor: Actor,
     recordId: string,
@@ -126,6 +137,9 @@ export class RecordServiceImpl implements RecordService {
     );
   }
 
+  /**
+   * 특정 참가자의 기록 상태(승인/거절)가 변경된 경우를 구독할 수 있다.
+   */
   subscribeRecordStatusChanged(
     participantId: string,
     callback: (record: Record) => Promise<void>

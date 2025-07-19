@@ -1,10 +1,8 @@
 import { Actor, ManualRecord, TimerLog } from "@/core/models";
-import {
-  ManualRecordService,
-  ParticipantService,
-  RecordService,
-  TimerLogService,
-} from "@/core/services";
+import { ManualRecordService } from "@/core/services/manual-record";
+import { ParticipantService } from "@/core/services/participant";
+import { RecordService } from "@/core/services/record";
+import { TimerLogService } from "@/core/services/timer-log";
 
 import {
   Body,
@@ -24,15 +22,15 @@ import {
   CurrentActor,
 } from "../decorators/current-actor.decorator";
 import {
+  AddManualRecordDto,
+  ManualRecordResponseDto,
+} from "../dtos/manual-record.dto";
+import {
   ParticipantResponseDto,
   UpdateParticipantDto,
 } from "../dtos/participant.dto";
 import { AddRecordDto, RecordResponseDto } from "../dtos/record.dto";
 import { AdjustTimerDto, TimerLogResponseDto } from "../dtos/timer-log.dto";
-import {
-  AddManualRecordDto,
-  ManualRecordResponseDto,
-} from "../dtos/manual-record.dto";
 
 @ApiTags("Participants")
 @Controller("participants")

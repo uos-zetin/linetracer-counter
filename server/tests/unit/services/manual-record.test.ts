@@ -1,9 +1,8 @@
 import { AuthorizationError } from "@/core/errors";
+import { Unsubscriber } from "@/core/interfaces";
 import { Actor, ManualRecord } from "@/core/models";
 import { ManualRecordRepository } from "@/core/repositories";
-import { Unsubscriber } from "@/core/services";
-
-import { ManualRecordServiceImpl } from "@/core/services/manual-record";
+import { ManualRecordService } from "@/core/services/manual-record";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -28,7 +27,7 @@ const generateDummyManualRecord = (
 });
 
 describe("ManualRecordService 구현체 단위 테스트", () => {
-  let service: ManualRecordServiceImpl;
+  let service: ManualRecordService;
   let adminActor: Actor;
   let manualRecorderActor: Actor;
   let anonymousActor: Actor;
@@ -58,7 +57,7 @@ describe("ManualRecordService 구현체 단위 테스트", () => {
   beforeEach(() => {
     // Arrange - 각 테스트 전에 모의 객체 초기화
     jest.clearAllMocks();
-    service = new ManualRecordServiceImpl({
+    service = new ManualRecordService({
       manualRecordRepository: mockManualRecordRepo,
     });
   });

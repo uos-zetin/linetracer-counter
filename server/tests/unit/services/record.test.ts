@@ -1,8 +1,7 @@
 import { AuthorizationError } from "@/core/errors";
 import { Actor, Participant, Record } from "@/core/models";
 import { ParticipantRepository, RecordRepository } from "@/core/repositories";
-
-import { RecordServiceImpl } from "@/core/services/record";
+import { RecordService } from "@/core/services/record";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -51,7 +50,7 @@ const generateDummyParticipant = (
 });
 
 describe("RecordService 구현체 단위 테스트", () => {
-  let service: RecordServiceImpl;
+  let service: RecordService;
   let adminActor: Actor;
   let stopwatchRecorderActor: Actor;
   let anonymousActor: Actor;
@@ -79,7 +78,7 @@ describe("RecordService 구현체 단위 테스트", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new RecordServiceImpl({
+    service = new RecordService({
       recordRepository: mockRecordRepo,
       participantRepository: mockParticipantRepo,
     });

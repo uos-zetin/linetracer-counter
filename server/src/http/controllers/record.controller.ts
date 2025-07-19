@@ -1,5 +1,5 @@
 import { Actor } from "@/core/models";
-import { RecordService } from "@/core/services";
+import { RecordService } from "@/core/services/record";
 
 import { Body, Controller, Inject, Param, Patch } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";

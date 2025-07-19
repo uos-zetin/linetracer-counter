@@ -1,19 +1,21 @@
+import { Unsubscriber } from "@/core/interfaces";
 import { Actor, Participant } from "@/core/models";
 import { ParticipantRepository } from "@/core/repositories";
-import { ParticipantService, Unsubscriber } from "@/core/services";
+import { requireAnyRole } from "@/core/utils/auth";
 
 import { EventEmitter } from "events";
 import { v4 as uuidv4 } from "uuid";
 
-import { requireAnyRole } from "@/utils/auth";
-
-export class ParticipantServiceImpl implements ParticipantService {
+export class ParticipantService {
   private readonly participantRepo: ParticipantRepository;
 
   constructor(di: { participantRepository: ParticipantRepository }) {
     this.participantRepo = di.participantRepository;
   }
 
+  /**
+   * 참가자를 특정 대회 부문에 추가할 수 있다.
+   */
   async addParticipant(
     actor: Actor,
     divisionId: string,
@@ -40,6 +42,9 @@ export class ParticipantServiceImpl implements ParticipantService {
     return this.participantRepo.create(participant);
   }
 
+  /**
+   * 특정 부문의 모든 참가자를 조회할 수 있다.
+   */
   async getParticipants(
     actor: Actor,
     divisionId: string
@@ -47,6 +52,9 @@ export class ParticipantServiceImpl implements ParticipantService {
     return this.participantRepo.getByDivisionId(divisionId);
   }
 
+  /**
+   * 특정 참가자의 이름, 팀명, 로봇명, 하고 싶은 말, 경연 순번, 주어진 시간을 수정할 수 있다.
+   */
   async updateParticipant(
     actor: Actor,
     participantId: string,
@@ -77,6 +85,9 @@ export class ParticipantServiceImpl implements ParticipantService {
     return result;
   }
 
+  /**
+   * 특정 참가자를 삭제할 수 있다.
+   */
   async deleteParticipant(actor: Actor, participantId: string): Promise<void> {
     requireAnyRole(actor, "administrator");
 
@@ -95,6 +106,9 @@ export class ParticipantServiceImpl implements ParticipantService {
     this.eventEmitter.emit(this.getParticipantUpdatedEventName(p.id), p);
   }
 
+  /**
+   * 특정 참가자의 변경 이벤트를 구독할 수 있다.
+   */
   subscribeParticipantUpdated(
     participantId: string,
     callback: (participant: Participant) => Promise<void>

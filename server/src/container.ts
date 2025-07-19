@@ -1,11 +1,4 @@
 import { ActorSessionStore } from "@/core/interfaces";
-import {
-  CompetitionService,
-  ManualRecordService,
-  ParticipantService,
-  RecordService,
-  TimerLogService,
-} from "@/core/services";
 
 import { ActorIdPwSQLiteRepository } from "@/infrastructure/repositories/actor-id-pw-sqlite";
 import { ActorSQLiteRepository } from "@/infrastructure/repositories/actor-sqlite";
@@ -19,11 +12,11 @@ import { TimerLogSQLiteRepository } from "@/infrastructure/repositories/timer-lo
 import { ActorSessionRandomStore } from "@/infrastructure/session/actor-session-random-store";
 
 import { ActorService } from "@/core/services/actor";
-import { CompetitionServiceImpl } from "@/core/services/competition";
-import { ManualRecordServiceImpl } from "@/core/services/manual-record";
-import { ParticipantServiceImpl } from "@/core/services/participant";
-import { RecordServiceImpl } from "@/core/services/record";
-import { TimerLogServiceImpl } from "@/core/services/timer-log";
+import { CompetitionService } from "@/core/services/competition";
+import { ManualRecordService } from "@/core/services/manual-record";
+import { ParticipantService } from "@/core/services/participant";
+import { RecordService } from "@/core/services/record";
+import { TimerLogService } from "@/core/services/timer-log";
 
 import sqlite3 from "sqlite3";
 
@@ -106,21 +99,21 @@ export class Container {
       actorRepository: this.actorSQLiteRepo,
       actorIdPwRepository: this.actorIdPwSQLiteRepo,
     });
-    this.competitionService = new CompetitionServiceImpl({
+    this.competitionService = new CompetitionService({
       competitionRepository: this.competitionSQLiteRepo,
       divisionRepository: this.divisionSQLiteRepo,
     });
-    this.participantService = new ParticipantServiceImpl({
+    this.participantService = new ParticipantService({
       participantRepository: this.participantSQLiteRepo,
     });
-    this.recordService = new RecordServiceImpl({
+    this.recordService = new RecordService({
       recordRepository: this.recordSQLiteRepo,
       participantRepository: this.participantSQLiteRepo,
     });
-    this.manualRecordService = new ManualRecordServiceImpl({
+    this.manualRecordService = new ManualRecordService({
       manualRecordRepository: this.manualRecordSQLiteRepo,
     });
-    this.timerLogService = new TimerLogServiceImpl({
+    this.timerLogService = new TimerLogService({
       timerLogRepository: this.timerLogSQLiteRepo,
     });
   }
