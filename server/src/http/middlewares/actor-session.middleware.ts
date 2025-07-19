@@ -1,8 +1,8 @@
 import { Inject, Injectable, NestMiddleware } from "@nestjs/common";
 import { NextFunction, Request, Response } from "express";
 
+import { ActorSessionStore } from "@/core/interfaces";
 import { Actor } from "@/core/models";
-import { ActorSessionService } from "@/core/services";
 
 declare module "express" {
   export interface Request {
@@ -14,8 +14,8 @@ declare module "express" {
 @Injectable()
 export class ActorSessionMiddleware implements NestMiddleware {
   constructor(
-    @Inject("ActorSessionService")
-    private readonly actorSessionService: ActorSessionService
+    @Inject("ActorSessionStore")
+    private readonly actorSessionStore: ActorSessionStore
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
@@ -31,7 +31,7 @@ export class ActorSessionMiddleware implements NestMiddleware {
         createdAt: new Date(),
       };
       if (sessionKey) {
-        actor = await this.actorSessionService.validateSession(sessionKey);
+        actor = await this.actorSessionStore.validateSession(sessionKey);
         req.actorSessionKey = sessionKey;
       }
 

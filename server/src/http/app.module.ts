@@ -1,9 +1,9 @@
 import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
 
 import di from "@/container";
+import { ActorSessionStore } from "@/core/interfaces";
 import {
   ActorService,
-  ActorSessionService,
   CompetitionService,
   ManualRecordService,
   ParticipantService,
@@ -23,14 +23,16 @@ type CustomProvider<T> = {
   useValue: T;
 };
 
+// interface providers
+const actorSessionStore: CustomProvider<ActorSessionStore> = {
+  provide: "ActorSessionStore",
+  useValue: di.sessionStore,
+};
+
 // service providers
 const actorService: CustomProvider<ActorService> = {
   provide: "ActorService",
   useValue: di.services.actor,
-};
-const actorSessionService: CustomProvider<ActorSessionService> = {
-  provide: "ActorSessionService",
-  useValue: di.services.actorSession,
 };
 const competitionService: CustomProvider<CompetitionService> = {
   provide: "CompetitionService",
@@ -62,8 +64,8 @@ const manualRecordService: CustomProvider<ManualRecordService> = {
     RecordController,
   ],
   providers: [
+    actorSessionStore,
     actorService,
-    actorSessionService,
     competitionService,
     manualRecordService,
     participantService,

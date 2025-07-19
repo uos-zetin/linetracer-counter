@@ -1,6 +1,6 @@
+import { ActorSessionStore } from "@/core/interfaces";
 import {
   ActorService,
-  ActorSessionService,
   CompetitionService,
   ManualRecordService,
   ParticipantService,
@@ -17,8 +17,9 @@ import { ParticipantSQLiteRepository } from "@/repositories/participant-sqlite";
 import { RecordSQLiteRepository } from "@/repositories/record-sqlite";
 import { TimerLogSQLiteRepository } from "@/repositories/timer-log-sqlite";
 
+import { ActorSessionRandomStore } from "@/infrastructure/session/actor-session-random-store";
+
 import { ActorServiceImpl } from "@/services/actor";
-import { ActorSessionRandomService } from "@/services/actor-session-random";
 import { CompetitionServiceImpl } from "@/services/competition";
 import { ManualRecordServiceImpl } from "@/services/manual-record";
 import { ParticipantServiceImpl } from "@/services/participant";
@@ -62,9 +63,11 @@ export class Container {
   private readonly recordSQLiteRepo: RecordSQLiteRepository;
   private readonly timerLogSQLiteRepo: TimerLogSQLiteRepository;
 
+  // Interfaces
+  private readonly actorSessionStore: ActorSessionStore;
+
   // Services
   private readonly actorService: ActorService;
-  private readonly actorSessionService: ActorSessionService;
   private readonly competitionService: CompetitionService;
   private readonly manualRecordService: ManualRecordService;
   private readonly participantService: ParticipantService;
@@ -83,7 +86,7 @@ export class Container {
       }
     });
 
-    // Inject Repositories into Services
+    // Inject Repositories
     this.actorIdPwSQLiteRepo = new ActorIdPwSQLiteRepository(this.db);
     this.actorSQLiteRepo = new ActorSQLiteRepository(this.db);
     this.competitionSQLiteRepo = new CompetitionSQLiteRepository(this.db);
@@ -93,14 +96,17 @@ export class Container {
     this.recordSQLiteRepo = new RecordSQLiteRepository(this.db);
     this.timerLogSQLiteRepo = new TimerLogSQLiteRepository(this.db);
 
+    // Inject Interfaces
+    this.actorSessionStore = new ActorSessionRandomStore(
+      { actorRepository: this.actorSQLiteRepo },
+      32 // 256 bits
+    );
+
+    // Instantiate Services
     this.actorService = new ActorServiceImpl({
       actorRepository: this.actorSQLiteRepo,
       actorIdPwRepository: this.actorIdPwSQLiteRepo,
     });
-    this.actorSessionService = new ActorSessionRandomService(
-      { actorRepository: this.actorSQLiteRepo },
-      32 // 256 bits
-    );
     this.competitionService = new CompetitionServiceImpl({
       competitionRepository: this.competitionSQLiteRepo,
       divisionRepository: this.divisionSQLiteRepo,
@@ -155,13 +161,16 @@ export class Container {
   public get services() {
     return {
       actor: this.actorService,
-      actorSession: this.actorSessionService,
       competition: this.competitionService,
       manualRecord: this.manualRecordService,
       participant: this.participantService,
       record: this.recordService,
       timerLog: this.timerLogService,
     };
+  }
+
+  public get sessionStore() {
+    return this.actorSessionStore;
   }
 }
 
