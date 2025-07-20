@@ -12,8 +12,9 @@ import {
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 
+import { ActorSessionStore } from "@/core/interfaces";
 import { Actor } from "@/core/models";
-import { ActorService, ActorSessionService } from "@/core/services";
+import { ActorService } from "@/core/services/actor";
 
 import {
   ApiActorSecurity,
@@ -32,8 +33,8 @@ export class ActorController {
   constructor(
     @Inject("ActorService")
     private readonly actorService: ActorService,
-    @Inject("ActorSessionService")
-    private readonly actorSessionService: ActorSessionService
+    @Inject("ActorSessionStore")
+    private readonly actorSessionStore: ActorSessionStore
   ) {}
 
   @Get("/")
@@ -82,7 +83,7 @@ export class ActorController {
   ): Promise<string> {
     const { username, password } = body;
     const actor = await this.actorService.verifyIdPw(username, password);
-    const session = await this.actorSessionService.createSession(
+    const session = await this.actorSessionStore.createSession(
       actor,
       12 * 60 * 60 * 1000
     ); // 12 hours
@@ -117,7 +118,7 @@ export class ActorController {
   ) {
     const sessionKey = request.actorSessionKey;
     if (sessionKey) {
-      await this.actorSessionService.revokeSession(sessionKey);
+      await this.actorSessionStore.revokeSession(sessionKey);
     }
   }
 

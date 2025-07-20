@@ -1,4 +1,4 @@
-import { DivisionSQLiteRepository } from "@/repositories/division-sqlite";
+import { DivisionSQLiteRepository } from "@/infrastructure/repositories/division-sqlite";
 import { runDivisionRepositoryContract } from "@tests/shared/repositories/division.contract";
 
 import sqlite3 from "sqlite3";

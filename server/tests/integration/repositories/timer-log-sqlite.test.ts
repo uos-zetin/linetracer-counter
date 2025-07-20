@@ -1,4 +1,4 @@
-import { TimerLogSQLiteRepository } from "@/repositories/timer-log-sqlite";
+import { TimerLogSQLiteRepository } from "@/infrastructure/repositories/timer-log-sqlite";
 import { runTimerLogRepositoryContract } from "@tests/shared/repositories/timer-log.contract";
 
 import sqlite3 from "sqlite3";

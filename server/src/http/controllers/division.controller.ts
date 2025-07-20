@@ -1,9 +1,6 @@
 import { Actor } from "@/core/models";
-import {
-  CompetitionService,
-  ParticipantService,
-  RecordService,
-} from "@/core/services";
+import { CompetitionActorService } from "@/core/services/competition.actor";
+import { ParticipantActorService } from "@/core/services/participant.actor";
 
 import {
   Body,
@@ -38,11 +35,9 @@ import { RecordResponseDto } from "../dtos/record.dto";
 export class DivisionController {
   constructor(
     @Inject("CompetitionService")
-    private readonly competitionService: CompetitionService,
+    private readonly competitionService: CompetitionActorService,
     @Inject("ParticipantService")
-    private readonly participantService: ParticipantService,
-    @Inject("RecordService")
-    private readonly recordService: RecordService
+    private readonly participantService: ParticipantActorService
   ) {}
 
   @Patch("/:divisionId")
@@ -148,6 +143,6 @@ export class DivisionController {
     @CurrentActor() actor: Actor,
     @Param("divisionId") divisionId: string
   ): Promise<RecordResponseDto[]> {
-    return this.recordService.getTopRecordsByDivision(actor, divisionId);
+    return this.competitionService.getTopRecordsByDivision(actor, divisionId);
   }
 }

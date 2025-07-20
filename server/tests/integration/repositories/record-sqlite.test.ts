@@ -1,4 +1,4 @@
-import { RecordSQLiteRepository } from "@/repositories/record-sqlite";
+import { RecordSQLiteRepository } from "@/infrastructure/repositories/record-sqlite";
 import { runRecordRepositoryContract } from "@tests/shared/repositories/record.contract";
 
 import sqlite3 from "sqlite3";

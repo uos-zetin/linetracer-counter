@@ -1,4 +1,4 @@
-import { ManualRecordSQLiteRepository } from "@/repositories/manual-record-sqlite";
+import { ManualRecordSQLiteRepository } from "@/infrastructure/repositories/manual-record-sqlite";
 import { runManualRecordRepositoryContract } from "@tests/shared/repositories/manual-record.contract";
 
 import sqlite3 from "sqlite3";

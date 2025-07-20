@@ -1,4 +1,4 @@
-import { ActorSQLiteRepository } from "@/repositories/actor-sqlite";
+import { ActorSQLiteRepository } from "@/infrastructure/repositories/actor-sqlite";
 import { runActorRepositoryContract } from "@tests/shared/repositories/actor.contract";
 
 import sqlite3 from "sqlite3";

@@ -1,29 +1,21 @@
-import {
-  ActorService,
-  ActorSessionService,
-  CompetitionService,
-  ManualRecordService,
-  ParticipantService,
-  RecordService,
-  TimerLogService,
-} from "@/core/services";
+import { ActorSessionStore } from "@/core/interfaces";
 
-import { ActorIdPwSQLiteRepository } from "@/repositories/actor-id-pw-sqlite";
-import { ActorSQLiteRepository } from "@/repositories/actor-sqlite";
-import { CompetitionSQLiteRepository } from "@/repositories/competition-sqlite";
-import { DivisionSQLiteRepository } from "@/repositories/division-sqlite";
-import { ManualRecordSQLiteRepository } from "@/repositories/manual-record-sqlite";
-import { ParticipantSQLiteRepository } from "@/repositories/participant-sqlite";
-import { RecordSQLiteRepository } from "@/repositories/record-sqlite";
-import { TimerLogSQLiteRepository } from "@/repositories/timer-log-sqlite";
+import { ActorIdPwSQLiteRepository } from "@/infrastructure/repositories/actor-id-pw-sqlite";
+import { ActorSQLiteRepository } from "@/infrastructure/repositories/actor-sqlite";
+import { CompetitionSQLiteRepository } from "@/infrastructure/repositories/competition-sqlite";
+import { DivisionSQLiteRepository } from "@/infrastructure/repositories/division-sqlite";
+import { ManualRecordSQLiteRepository } from "@/infrastructure/repositories/manual-record-sqlite";
+import { ParticipantSQLiteRepository } from "@/infrastructure/repositories/participant-sqlite";
+import { RecordSQLiteRepository } from "@/infrastructure/repositories/record-sqlite";
+import { TimerLogSQLiteRepository } from "@/infrastructure/repositories/timer-log-sqlite";
 
-import { ActorServiceImpl } from "@/services/actor";
-import { ActorSessionRandomService } from "@/services/actor-session-random";
-import { CompetitionServiceImpl } from "@/services/competition";
-import { ManualRecordServiceImpl } from "@/services/manual-record";
-import { ParticipantServiceImpl } from "@/services/participant";
-import { RecordServiceImpl } from "@/services/record";
-import { TimerLogServiceImpl } from "@/services/timer-log";
+import { ActorSessionRandomStore } from "@/infrastructure/session/actor-session-random-store";
+
+import { ActorService } from "@/core/services/actor";
+import { CompetitionService } from "@/core/services/competition";
+import { CompetitionActorService } from "@/core/services/competition.actor";
+import { ParticipantService } from "@/core/services/participant";
+import { ParticipantActorService } from "@/core/services/participant.actor";
 
 import sqlite3 from "sqlite3";
 
@@ -62,14 +54,15 @@ export class Container {
   private readonly recordSQLiteRepo: RecordSQLiteRepository;
   private readonly timerLogSQLiteRepo: TimerLogSQLiteRepository;
 
+  // Interfaces
+  private readonly actorSessionStore: ActorSessionStore;
+
   // Services
   private readonly actorService: ActorService;
-  private readonly actorSessionService: ActorSessionService;
   private readonly competitionService: CompetitionService;
-  private readonly manualRecordService: ManualRecordService;
+  private readonly competitionActorService: CompetitionActorService;
   private readonly participantService: ParticipantService;
-  private readonly recordService: RecordService;
-  private readonly timerLogService: TimerLogService;
+  private readonly participantActorService: ParticipantActorService;
 
   private constructor() {
     // SQLite Database
@@ -83,7 +76,7 @@ export class Container {
       }
     });
 
-    // Inject Repositories into Services
+    // Inject Repositories
     this.actorIdPwSQLiteRepo = new ActorIdPwSQLiteRepository(this.db);
     this.actorSQLiteRepo = new ActorSQLiteRepository(this.db);
     this.competitionSQLiteRepo = new CompetitionSQLiteRepository(this.db);
@@ -93,31 +86,35 @@ export class Container {
     this.recordSQLiteRepo = new RecordSQLiteRepository(this.db);
     this.timerLogSQLiteRepo = new TimerLogSQLiteRepository(this.db);
 
-    this.actorService = new ActorServiceImpl({
-      actorRepository: this.actorSQLiteRepo,
-      actorIdPwRepository: this.actorIdPwSQLiteRepo,
-    });
-    this.actorSessionService = new ActorSessionRandomService(
+    // Inject Interfaces
+    this.actorSessionStore = new ActorSessionRandomStore(
       { actorRepository: this.actorSQLiteRepo },
       32 // 256 bits
     );
-    this.competitionService = new CompetitionServiceImpl({
+
+    // Instantiate Services
+    this.actorService = new ActorService({
+      actorRepository: this.actorSQLiteRepo,
+      actorIdPwRepository: this.actorIdPwSQLiteRepo,
+    });
+    this.competitionService = new CompetitionService({
       competitionRepository: this.competitionSQLiteRepo,
       divisionRepository: this.divisionSQLiteRepo,
-    });
-    this.participantService = new ParticipantServiceImpl({
       participantRepository: this.participantSQLiteRepo,
-    });
-    this.recordService = new RecordServiceImpl({
       recordRepository: this.recordSQLiteRepo,
+    });
+    this.competitionActorService = new CompetitionActorService(
+      this.competitionService
+    );
+    this.participantService = new ParticipantService({
       participantRepository: this.participantSQLiteRepo,
-    });
-    this.manualRecordService = new ManualRecordServiceImpl({
+      recordRepository: this.recordSQLiteRepo,
       manualRecordRepository: this.manualRecordSQLiteRepo,
-    });
-    this.timerLogService = new TimerLogServiceImpl({
       timerLogRepository: this.timerLogSQLiteRepo,
     });
+    this.participantActorService = new ParticipantActorService(
+      this.participantService
+    );
   }
 
   private initialized = false;
@@ -155,13 +152,13 @@ export class Container {
   public get services() {
     return {
       actor: this.actorService,
-      actorSession: this.actorSessionService,
-      competition: this.competitionService,
-      manualRecord: this.manualRecordService,
-      participant: this.participantService,
-      record: this.recordService,
-      timerLog: this.timerLogService,
+      competition: this.competitionActorService,
+      participant: this.participantActorService,
     };
+  }
+
+  public get sessionStore() {
+    return this.actorSessionStore;
   }
 }
 

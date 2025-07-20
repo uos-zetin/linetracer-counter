@@ -1,15 +1,11 @@
 import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
 
 import di from "@/container";
-import {
-  ActorService,
-  ActorSessionService,
-  CompetitionService,
-  ManualRecordService,
-  ParticipantService,
-  RecordService,
-  TimerLogService,
-} from "@/core/services";
+import { ActorSessionStore } from "@/core/interfaces";
+
+import { ActorService } from "@/core/services/actor";
+import { CompetitionActorService } from "@/core/services/competition.actor";
+import { ParticipantActorService } from "@/core/services/participant.actor";
 
 import { ActorController } from "./controllers/actor.controller";
 import { CompetitionController } from "./controllers/competition.controller";
@@ -23,34 +19,24 @@ type CustomProvider<T> = {
   useValue: T;
 };
 
+// interface providers
+const actorSessionStore: CustomProvider<ActorSessionStore> = {
+  provide: "ActorSessionStore",
+  useValue: di.sessionStore,
+};
+
 // service providers
 const actorService: CustomProvider<ActorService> = {
   provide: "ActorService",
   useValue: di.services.actor,
 };
-const actorSessionService: CustomProvider<ActorSessionService> = {
-  provide: "ActorSessionService",
-  useValue: di.services.actorSession,
-};
-const competitionService: CustomProvider<CompetitionService> = {
+const competitionService: CustomProvider<CompetitionActorService> = {
   provide: "CompetitionService",
   useValue: di.services.competition,
 };
-const participantService: CustomProvider<ParticipantService> = {
+const participantService: CustomProvider<ParticipantActorService> = {
   provide: "ParticipantService",
   useValue: di.services.participant,
-};
-const recordService: CustomProvider<RecordService> = {
-  provide: "RecordService",
-  useValue: di.services.record,
-};
-const timerLogService: CustomProvider<TimerLogService> = {
-  provide: "TimerLogService",
-  useValue: di.services.timerLog,
-};
-const manualRecordService: CustomProvider<ManualRecordService> = {
-  provide: "ManualRecordService",
-  useValue: di.services.manualRecord,
 };
 
 @Module({
@@ -62,13 +48,10 @@ const manualRecordService: CustomProvider<ManualRecordService> = {
     RecordController,
   ],
   providers: [
+    actorSessionStore,
     actorService,
-    actorSessionService,
     competitionService,
-    manualRecordService,
     participantService,
-    recordService,
-    timerLogService,
   ],
 })
 export class AppModule {

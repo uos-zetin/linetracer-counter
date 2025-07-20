@@ -1,4 +1,4 @@
-import { ParticipantSQLiteRepository } from "@/repositories/participant-sqlite";
+import { ParticipantSQLiteRepository } from "@/infrastructure/repositories/participant-sqlite";
 import { runParticipantRepositoryContract } from "@tests/shared/repositories/participant.contract";
 
 import sqlite3 from "sqlite3";

@@ -1,11 +1,11 @@
 import { AuthenticationError } from "@/core/errors";
+import { ActorSessionStore } from "@/core/interfaces";
 import { Actor } from "@/core/models";
 import { ActorRepository } from "@/core/repositories";
-import { ActorSessionService } from "@/core/services";
 
 import crypto from "crypto";
 
-export class ActorSessionRandomService implements ActorSessionService {
+export class ActorSessionRandomStore implements ActorSessionStore {
   private readonly actorRepo: ActorRepository;
   private readonly keyByteLength: number;
   private readonly sessions: Map<

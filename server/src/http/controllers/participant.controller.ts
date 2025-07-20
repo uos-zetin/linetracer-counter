@@ -1,10 +1,5 @@
 import { Actor, ManualRecord, TimerLog } from "@/core/models";
-import {
-  ManualRecordService,
-  ParticipantService,
-  RecordService,
-  TimerLogService,
-} from "@/core/services";
+import { ParticipantActorService } from "@/core/services/participant.actor";
 
 import {
   Body,
@@ -24,28 +19,22 @@ import {
   CurrentActor,
 } from "../decorators/current-actor.decorator";
 import {
+  AddManualRecordDto,
+  ManualRecordResponseDto,
+} from "../dtos/manual-record.dto";
+import {
   ParticipantResponseDto,
   UpdateParticipantDto,
 } from "../dtos/participant.dto";
 import { AddRecordDto, RecordResponseDto } from "../dtos/record.dto";
 import { AdjustTimerDto, TimerLogResponseDto } from "../dtos/timer-log.dto";
-import {
-  AddManualRecordDto,
-  ManualRecordResponseDto,
-} from "../dtos/manual-record.dto";
 
 @ApiTags("Participants")
 @Controller("participants")
 export class ParticipantController {
   constructor(
     @Inject("ParticipantService")
-    private readonly participantService: ParticipantService,
-    @Inject("RecordService")
-    private readonly recordService: RecordService,
-    @Inject("TimerLogService")
-    private readonly timerLogService: TimerLogService,
-    @Inject("ManualRecordService")
-    private readonly manualRecordService: ManualRecordService
+    private readonly participantService: ParticipantActorService
   ) {}
 
   @Patch("/:participantId")
@@ -91,7 +80,7 @@ export class ParticipantController {
     @CurrentActor() actor: Actor,
     @Param("participantId") participantId: string
   ): Promise<RecordResponseDto[]> {
-    return this.recordService.getRecords(actor, participantId);
+    return this.participantService.getRecords(actor, participantId);
   }
 
   @Post("/:participantId/records")
@@ -106,7 +95,7 @@ export class ParticipantController {
     @Param("participantId") participantId: string,
     @Body() body: AddRecordDto
   ): Promise<RecordResponseDto> {
-    return this.recordService.addRecord(
+    return this.participantService.addRecord(
       actor,
       participantId,
       body.value,
@@ -125,7 +114,7 @@ export class ParticipantController {
     @CurrentActor() actor: Actor,
     @Param("participantId") participantId: string
   ): Promise<ManualRecord[]> {
-    return this.manualRecordService.getManualRecords(actor, participantId);
+    return this.participantService.getManualRecords(actor, participantId);
   }
 
   @Post("/:participantId/manual-records")
@@ -141,7 +130,7 @@ export class ParticipantController {
     @Param("participantId") participantId: string,
     @Body() body: AddManualRecordDto
   ): Promise<ManualRecord> {
-    return this.manualRecordService.addManualRecord(
+    return this.participantService.addManualRecord(
       actor,
       participantId,
       body.value,
@@ -161,7 +150,7 @@ export class ParticipantController {
     @CurrentActor() actor: Actor,
     @Param("participantId") participantId: string
   ): Promise<TimerLog> {
-    return this.timerLogService.startTimer(actor, participantId);
+    return this.participantService.startTimer(actor, participantId);
   }
 
   @Post("/:participantId/timer/stop")
@@ -176,7 +165,7 @@ export class ParticipantController {
     @CurrentActor() actor: Actor,
     @Param("participantId") participantId: string
   ): Promise<TimerLog> {
-    return this.timerLogService.stopTimer(actor, participantId);
+    return this.participantService.stopTimer(actor, participantId);
   }
 
   @Post("/:participantId/timer/adjust")
@@ -192,7 +181,7 @@ export class ParticipantController {
     @Param("participantId") participantId: string,
     @Body() body: AdjustTimerDto
   ): Promise<TimerLog> {
-    return this.timerLogService.adjustTimer(
+    return this.participantService.adjustTimer(
       actor,
       participantId,
       body.adjustmentMs
@@ -209,6 +198,6 @@ export class ParticipantController {
     @CurrentActor() actor: Actor,
     @Param("participantId") participantId: string
   ): Promise<TimerLog[]> {
-    return this.timerLogService.getTimerLogs(actor, participantId);
+    return this.participantService.getTimerLogs(actor, participantId);
   }
 }
