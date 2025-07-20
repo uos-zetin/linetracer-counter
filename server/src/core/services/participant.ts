@@ -32,6 +32,10 @@ export type ParticipantEvent =
       type: "deleted";
     };
 
+export type ParticipantEventCallback = (
+  event: ParticipantEvent
+) => Promise<void>;
+
 export class ParticipantService {
   private readonly participantRepo: ParticipantRepository;
   private readonly recordRepo: RecordRepository;
@@ -353,7 +357,7 @@ export class ParticipantService {
    */
   public subscribeParticipantEvent(
     participantId: string,
-    callback: (event: ParticipantEvent) => Promise<void>
+    callback: ParticipantEventCallback
   ): Unsubscriber {
     const safeCb = async (event: ParticipantEvent) => {
       try {

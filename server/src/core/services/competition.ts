@@ -19,6 +19,8 @@ export type DivisionEvent =
       type: "deleted";
     };
 
+export type DivisionEventCallback = (event: DivisionEvent) => Promise<void>;
+
 export class CompetitionService {
   private competitionRepo: CompetitionRepository;
   private divisionRepo: DivisionRepository;
@@ -213,7 +215,7 @@ export class CompetitionService {
    */
   public subscribeDivisionEvent(
     divisionId: string,
-    callback: (event: DivisionEvent) => Promise<void>
+    callback: DivisionEventCallback
   ): Unsubscriber {
     const safeCb = async (event: DivisionEvent) => {
       try {
