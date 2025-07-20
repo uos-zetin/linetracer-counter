@@ -1,9 +1,9 @@
-import { useUserStoreHook } from "@/entities/user";
+import { useUser } from "entities/user";
 
 export function AuthDebugInfo() {
-  const userStoreHook = useUserStoreHook();
-  const user = userStoreHook((state) => state.user);
-  const isAuthenticated = userStoreHook((state) => state.isAuthenticated);
+  const userStore = useUser();
+  const user = userStore((state) => state.user);
+  const isAuthenticated = userStore((state) => state.isAuthenticated);
 
   return (
     <div className="fixed top-[5vw] right-[1vw] bg-black bg-opacity-75 text-white p-[0.5vw] rounded-lg text-[1.5vw] max-w-[20vw] z-40">

@@ -5,12 +5,6 @@ export * from "./types";
 export { LoginForm } from "./ui/login-form";
 export { AuthDebugWrapper } from "./ui/auth-debug";
 
-// 로그인 관련 exports
-export { loginUser, logoutUser, checkAuthStatus, restoreSession } from "./lib/login";
-
-// 회원가입 관련 exports
-export { registerUser, checkUserNameAvailability } from "./lib/register";
-
 // 검증 관련 exports
 export {
   validateLoginForm,

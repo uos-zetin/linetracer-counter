@@ -1,4 +1,4 @@
-import { useStopwatchStore } from "@/entities/stopwatch";
+import { useStopwatch } from "@/entities/stopwatch";
 import { integrateLogs } from "@/entities/timer-log";
 import { useProgressStore } from "@/features/progress";
 import { TimerView } from "./ui/timer-view";
@@ -151,7 +151,7 @@ export function TimerPage() {
   const { counterId } = useParams();
 
   const progressStore = useProgressStore();
-  const stopwatchStore = useStopwatchStore();
+  const stopwatchStore = useStopwatch();
 
   // counterId가 없으면 계수기 선택으로 리다이렉트
   useEffect(() => {
@@ -164,7 +164,10 @@ export function TimerPage() {
   const division = progressStore.useDivision();
   const runner = progressStore.useRunner();
   const nextRunners = progressStore.useNextRunners();
-  const stopwatch = stopwatchStore.useStopwatchState();
+  const startedAt = stopwatchStore((state) => state.startedAt);
+  const stoppedAt = stopwatchStore((state) => state.stoppedAt);
+
+  const stopwatch = { startedAt, stoppedAt };
 
   const timerState = integrateLogs(runner?.participant.givenTime ?? 4 * 60 * 1000, runner?.timerLogs ?? []);
 
