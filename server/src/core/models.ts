@@ -78,19 +78,9 @@ export interface Stopwatch {
   divisionId: string | null; // 대회 부문 ID (null이면 아직 대회 부문에 연결되지 않음을 의미함)
 }
 
-/**
- * Progress(대회 부문 진행 상태)
- *
- * - 하나의 대회 부문에 하나의 Progress가 존재한다.
- * - 대회 부문이 시작되면(ongoing) Progres가 생성된다.
- * - 대회 부문이 진행되는 동안, 필요한 모든 상태 정보를 포함한다.
- * - 해당 모델의 상태가 변경되면, 실시간으로 전파할 수 있도록 한다.
- */
-export interface Progress {
-  id: string;
-
+export interface DivisionProgress {
   competition: Competition; // 대회 정보
-  division: Division; // 부문 정보
+  division: Division; // 대회 부문 정보
 
   runner: {
     participant: Participant; // 현재 경연자 정보
