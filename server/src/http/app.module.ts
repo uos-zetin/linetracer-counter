@@ -5,6 +5,7 @@ import { ActorSessionStore } from "@/core/interfaces";
 
 import { ActorService } from "@/core/services/actor";
 import { CompetitionActorService } from "@/core/services/competition.actor";
+import { DivisionProgressActorService } from "@/core/services/division-progress.actor";
 import { ParticipantActorService } from "@/core/services/participant.actor";
 
 import { ActorController } from "./controllers/actor.controller";
@@ -13,6 +14,7 @@ import { DivisionController } from "./controllers/division.controller";
 import { ParticipantController } from "./controllers/participant.controller";
 import { RecordController } from "./controllers/record.controller";
 import { ActorSessionMiddleware } from "./middlewares/actor-session.middleware";
+import { DivisionProgressGateway } from "./gateway/division-progress.gateway";
 
 type CustomProvider<T> = {
   provide: string;
@@ -38,6 +40,10 @@ const participantService: CustomProvider<ParticipantActorService> = {
   provide: "ParticipantService",
   useValue: di.services.participant,
 };
+const divisionProgressService: CustomProvider<DivisionProgressActorService> = {
+  provide: "DivisionProgressService",
+  useValue: di.services.divisionProgress,
+};
 
 @Module({
   controllers: [
@@ -52,6 +58,8 @@ const participantService: CustomProvider<ParticipantActorService> = {
     actorService,
     competitionService,
     participantService,
+    divisionProgressService,
+    DivisionProgressGateway,
   ],
 })
 export class AppModule {
