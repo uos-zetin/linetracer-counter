@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 
 import { createZustandStopwatchStore } from "../model/slice.zustand";
 import { createReactStopwatchStore } from "../model/slice.react";
@@ -35,7 +35,7 @@ export const createStopwatchProvider = () => {
     case "react": {
       // React 방식 - 컴포넌트 내부에서 hooks 사용
       return ({ children }: { children: React.ReactNode }) => {
-        const store = createReactStopwatchStore()(); // 컴포넌트 내부에서 호출
+        const store = useMemo(() => createReactStopwatchStore()(), []); // 컴포넌트 내부에서 호출
 
         return <StopwatchContext.Provider value={store}>{children}</StopwatchContext.Provider>;
       };

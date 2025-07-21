@@ -9,3 +9,10 @@ export interface StopwatchActions {
   stop: (current?: number) => void; // 타이머 정지
   reset: () => void; // 타이머 리셋
 }
+
+export interface StopwatchGetters {
+  getIsRunning: () => boolean; // 타이머가 실행 중인지 여부
+  getElapsedMs: (now?: number) => number; // 경과 시간(ms) 계산
+}
+
+export type StopwatchStore = StopwatchState & StopwatchActions & StopwatchGetters;

@@ -1,14 +1,15 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
-import type { StopwatchState, StopwatchActions } from "./types";
+import type { StopwatchStore } from "./types";
+import { getElapsedMs, isRunning } from "../lib/selectors";
 
 /**
  * Zustand 기반 Stopwatch Store를 생성하는 팩토리 함수
  */
 export const createZustandStopwatchStore = () => {
-  return create<StopwatchState & StopwatchActions>()(
-    immer((set) => ({
+  return create<StopwatchStore>()(
+    immer((set, get) => ({
       // Initial state
       startedAt: null,
       stoppedAt: null,
@@ -40,6 +41,11 @@ export const createZustandStopwatchStore = () => {
           state.stoppedAt = null;
         });
       },
+
+      // Getters
+      getIsRunning: () => isRunning(get()),
+
+      getElapsedMs: (now: number = Date.now()) => getElapsedMs(get(), now),
     })),
   );
 };

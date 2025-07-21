@@ -25,5 +25,6 @@ dist-ssr
 
 *.md
 !README.md
+!docs/*
 
 .env*

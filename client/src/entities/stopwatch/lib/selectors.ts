@@ -1,4 +1,7 @@
-import type { StopwatchState } from "../model/types";
+import type { Selector } from "@/shared/lib/selector";
+import type { StopwatchState, StopwatchStore } from "../model/types";
+
+export type StopwatchSelector = Selector<StopwatchStore>;
 
 /**
  * 스톱워치/랩 구간의 경과 시간(ms) 계산
@@ -12,4 +15,8 @@ export function getElapsedMs(stopwatch: StopwatchState, end: number = Date.now()
   const start = stopwatch.startedAt;
   const stop = stopwatch.stoppedAt ?? end;
   return Math.max(0, stop - start);
+}
+
+export function isRunning(stopwatch: StopwatchState): boolean {
+  return stopwatch.startedAt !== null && stopwatch.stoppedAt === null;
 }
