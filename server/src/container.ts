@@ -1,4 +1,7 @@
-import { ActorSessionStore } from "@/core/interfaces";
+import {
+  ActorSessionStore,
+  DivisionProgressStateStore,
+} from "@/core/interfaces";
 
 import { ActorIdPwSQLiteRepository } from "@/infrastructure/repositories/actor-id-pw-sqlite";
 import { ActorSQLiteRepository } from "@/infrastructure/repositories/actor-sqlite";
@@ -10,10 +13,13 @@ import { RecordSQLiteRepository } from "@/infrastructure/repositories/record-sql
 import { TimerLogSQLiteRepository } from "@/infrastructure/repositories/timer-log-sqlite";
 
 import { ActorSessionRandomStore } from "@/infrastructure/session/actor-session-random-store";
+import { DivisionProgressStateFsStore } from "@/infrastructure/stores/division-progress-state-fs-store";
 
 import { ActorService } from "@/core/services/actor";
 import { CompetitionService } from "@/core/services/competition";
 import { CompetitionActorService } from "@/core/services/competition.actor";
+import { DivisionProgressService } from "@/core/services/division-progress";
+import { DivisionProgressActorService } from "@/core/services/division-progress.actor";
 import { ParticipantService } from "@/core/services/participant";
 import { ParticipantActorService } from "@/core/services/participant.actor";
 
@@ -56,6 +62,7 @@ export class Container {
 
   // Interfaces
   private readonly actorSessionStore: ActorSessionStore;
+  private readonly divisionProgressStateStore: DivisionProgressStateStore;
 
   // Services
   private readonly actorService: ActorService;
@@ -63,6 +70,8 @@ export class Container {
   private readonly competitionActorService: CompetitionActorService;
   private readonly participantService: ParticipantService;
   private readonly participantActorService: ParticipantActorService;
+  private readonly divisionProgressService: DivisionProgressService;
+  private readonly divisionProgressActorService: DivisionProgressActorService;
 
   private constructor() {
     // SQLite Database
@@ -91,6 +100,9 @@ export class Container {
       { actorRepository: this.actorSQLiteRepo },
       32 // 256 bits
     );
+    this.divisionProgressStateStore = new DivisionProgressStateFsStore(
+      env.PROGRESS_STATE_DIR
+    );
 
     // Instantiate Services
     this.actorService = new ActorService({
@@ -114,6 +126,14 @@ export class Container {
     });
     this.participantActorService = new ParticipantActorService(
       this.participantService
+    );
+    this.divisionProgressService = new DivisionProgressService({
+      competitionService: this.competitionService,
+      participantService: this.participantService,
+      divisionProgressStateStore: this.divisionProgressStateStore,
+    });
+    this.divisionProgressActorService = new DivisionProgressActorService(
+      this.divisionProgressService
     );
   }
 
@@ -154,6 +174,7 @@ export class Container {
       actor: this.actorService,
       competition: this.competitionActorService,
       participant: this.participantActorService,
+      divisionProgress: this.divisionProgressActorService,
     };
   }
 

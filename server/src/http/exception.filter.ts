@@ -1,8 +1,11 @@
 import {
   AuthenticationError,
   AuthorizationError,
+  DivisionNotOngoingError,
   EntityNotFoundError,
   PersistenceError,
+  RunnerNotParticipatedError,
+  RunnerNotSetError,
   TimerLogConsecutiveError,
   UsernameAlreadyExistsError,
 } from "@/core/errors";
@@ -80,6 +83,27 @@ export class CustomExceptionFilter implements ExceptionFilter {
         error = {
           statusCode: HttpStatus.BAD_REQUEST,
           type: "TimerLogConsecutiveError",
+          message: exception.message,
+        };
+        break;
+      case exception instanceof DivisionNotOngoingError:
+        error = {
+          statusCode: HttpStatus.BAD_REQUEST,
+          type: "DivisionNotOngoingError",
+          message: exception.message,
+        };
+        break;
+      case exception instanceof RunnerNotParticipatedError:
+        error = {
+          statusCode: HttpStatus.BAD_REQUEST,
+          type: "RunnerNotParticipatedError",
+          message: exception.message,
+        };
+        break;
+      case exception instanceof RunnerNotSetError:
+        error = {
+          statusCode: HttpStatus.BAD_REQUEST,
+          type: "RunnerNotSetError",
           message: exception.message,
         };
         break;

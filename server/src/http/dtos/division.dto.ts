@@ -1,6 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsIn, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
+import { CompetitionResponseDto } from "./competition.dto";
+import { ManualRecordResponseDto } from "./manual-record.dto";
+import { ParticipantResponseDto } from "./participant.dto";
+import { RecordResponseDto } from "./record.dto";
+import { TimerLogResponseDto } from "./timer-log.dto";
+
 const StatusTypes = ["ready", "ongoing", "closed"] as const;
 
 export class DivisionResponseDto {
@@ -68,4 +74,36 @@ export class SetDivisionStatusDto {
   })
   @IsIn(StatusTypes)
   status!: (typeof StatusTypes)[number];
+}
+
+export class DivisionProgressResponseDto {
+  @ApiProperty({ description: "대회 부문 정보" })
+  division!: DivisionResponseDto;
+
+  @ApiProperty({ description: "대회 정보" })
+  competition!: CompetitionResponseDto;
+
+  @ApiProperty({ description: "현재 경연자 정보", nullable: true })
+  runner!: {
+    participant: ParticipantResponseDto;
+    timerLogs: TimerLogResponseDto[];
+    records: RecordResponseDto[];
+    manualRecords: ManualRecordResponseDto[];
+  } | null;
+
+  @ApiProperty({
+    description: "다음 경연자 정보",
+    type: [ParticipantResponseDto],
+  })
+  nextRunners!: ParticipantResponseDto[];
+
+  @ApiProperty({ description: "최고 기록 정보", type: [RecordResponseDto] })
+  topRecords!: RecordResponseDto[];
+}
+
+export class SetCurrentRunnerDto {
+  @ApiProperty({ description: "설정할 경연자의 참가자 ID" })
+  @IsString()
+  @IsNotEmpty()
+  participantId!: string;
 }

@@ -1,3 +1,5 @@
+import os from "os";
+import path from "path";
 import dotenv from "dotenv";
 
 dotenv.config({
@@ -6,8 +8,12 @@ dotenv.config({
 
 export type Env = {
   SQLITE_DB_PATH: string;
+  PROGRESS_STATE_DIR: string;
 };
 
 export const env: Env = {
   SQLITE_DB_PATH: process.env.SQLITE_DB_PATH || ":memory:",
+  PROGRESS_STATE_DIR:
+    process.env.PROGRESS_STATE_DIR ||
+    path.join(os.tmpdir(), "division-progress-state"),
 };

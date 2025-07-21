@@ -39,3 +39,24 @@ export class TimerLogConsecutiveError extends Error {
     this.name = "TimerLogConsecutiveError";
   }
 }
+
+export class DivisionNotOngoingError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "DivisionNotOngoingError";
+  }
+}
+
+export class RunnerNotParticipatedError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "RunnerNotParticipatedError";
+  }
+}
+
+export class RunnerNotSetError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "RunnerNotSetError";
+  }
+}
