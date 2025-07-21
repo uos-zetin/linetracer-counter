@@ -563,7 +563,7 @@ describe("DivisionProgressService 단위 테스트", () => {
       );
     });
 
-    it("경연자를 바꿨을 때 기존 경연자에 대한 구독을 헤제한다.", async () => {
+    it("경연자를 바꿨을 때 기존 경연자에 대한 구독을 해제한다.", async () => {
       // Arrange
       const callback = jest.fn();
       const mockUnsubscribe = jest.fn();
