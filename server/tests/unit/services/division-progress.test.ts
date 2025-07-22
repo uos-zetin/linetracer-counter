@@ -40,6 +40,7 @@ const mockParticipantService: jest.Mocked<ParticipantService> = {
   getParticipant: jest.fn(),
   getTimerLogs: jest.fn(),
   getRecords: jest.fn(),
+  addRecord: jest.fn(),
   getManualRecords: jest.fn(),
   subscribeParticipantEvent: jest.fn(),
 } as any;
@@ -278,6 +279,36 @@ describe("DivisionProgressService 단위 테스트", () => {
 
       // Assert
       await expect(asyncTask).rejects.toThrow(DivisionNotOngoingError);
+    });
+  });
+
+  describe("addRecordToRunner", () => {
+    it("현재 경연자에 기록을 추가할 수 있다.", async () => {
+      // Arrange
+      const division = generateDummyDivision(uuidv4(), "ongoing");
+      const participant = generateDummyParticipant(division.id);
+      const meta = {
+        runnerId: participant.id,
+        participantOrder: [uuidv4(), participant.id, uuidv4()],
+      };
+      mockCompetitionService.getDivision.mockResolvedValue(division);
+      mockStateStore.getState.mockResolvedValue(meta);
+
+      // Act
+      await service.addRecordToRunner(
+        division.id,
+        1000,
+        "stopwatch",
+        "테스트 기록"
+      );
+
+      // Assert
+      expect(mockParticipantService.addRecord).toHaveBeenCalledWith(
+        participant.id,
+        1000,
+        "stopwatch",
+        "테스트 기록"
+      );
     });
   });
 
