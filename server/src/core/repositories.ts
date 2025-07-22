@@ -6,7 +6,6 @@ import {
   ManualRecord,
   Participant,
   Record,
-  Stopwatch,
   TimerLog,
 } from "./models";
 
@@ -56,14 +55,6 @@ export interface TimerLogRepository {
   update(timerLog: TimerLog): Promise<TimerLog>;
   delete(id: string): Promise<void>;
   getByParticipantId(participantId: string): Promise<TimerLog[]>;
-}
-
-export interface StopwatchRepository {
-  getAll(): Promise<Stopwatch[]>;
-  getById(id: string): Promise<Stopwatch>;
-  create(stopwatch: Stopwatch): Promise<Stopwatch>;
-  update(stopwatch: Stopwatch): Promise<Stopwatch>;
-  delete(id: string): Promise<void>;
 }
 
 export interface ActorRepository {
