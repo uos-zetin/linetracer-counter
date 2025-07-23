@@ -1,8 +1,10 @@
 import {
   AuthenticationError,
   AuthorizationError,
+  CounterNotRegisteredError,
   DivisionNotOngoingError,
   EntityNotFoundError,
+  ParameterInvalidError,
   PersistenceError,
   RunnerNotParticipatedError,
   RunnerNotSetError,
@@ -58,6 +60,13 @@ export class CustomExceptionFilter implements ExceptionFilter {
           message: exception.message,
         };
         break;
+      case exception instanceof ParameterInvalidError:
+        error = {
+          statusCode: HttpStatus.BAD_REQUEST,
+          type: "ParameterInvalidError",
+          message: exception.message,
+        };
+        break;
       case exception instanceof AuthorizationError:
         error = {
           statusCode: HttpStatus.UNAUTHORIZED,
@@ -104,6 +113,13 @@ export class CustomExceptionFilter implements ExceptionFilter {
         error = {
           statusCode: HttpStatus.BAD_REQUEST,
           type: "RunnerNotSetError",
+          message: exception.message,
+        };
+        break;
+      case exception instanceof CounterNotRegisteredError:
+        error = {
+          statusCode: HttpStatus.NOT_FOUND,
+          type: "CounterNotRegisteredError",
           message: exception.message,
         };
         break;
