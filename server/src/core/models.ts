@@ -70,7 +70,7 @@ export interface TimerLog {
   createdAt: Date;
 }
 
-export interface Stopwatch {
+export interface Counter {
   id: string; // 계수기 ID
   name: string; // 계수기 이름
   startedAt: number | null; // 시작 시각(unix timestamp, null이면 아직 시작되지 않음을 의미함)

@@ -8,7 +8,7 @@ import {
   DivisionProgressStateStore,
   Unsubscriber,
 } from "@/core/interfaces";
-import { Division, DivisionProgress } from "@/core/models";
+import { Division, DivisionProgress, Record } from "@/core/models";
 import { CompetitionService } from "@/core/services/competition";
 import {
   ParticipantEvent,
@@ -129,6 +129,29 @@ export class DivisionProgressService {
     const newState = { ...state, runnerId };
     await this.stateStore.setState(divisionId, newState);
     await this.onStateChanged(divisionId, newState);
+  }
+
+  public async addRecordToRunner(
+    divisionId: string,
+    value: number,
+    source: Record["source"],
+    note: string
+  ): Promise<Record> {
+    await this.getDivisionAndCheckOngoing(divisionId);
+
+    const state = await this.stateStore.getState(divisionId);
+    if (state.runnerId === null) {
+      throw new RunnerNotSetError(
+        `Runner is not set in the division ${divisionId}`
+      );
+    }
+
+    return await this.participantSrv.addRecord(
+      state.runnerId,
+      value,
+      source,
+      note
+    );
   }
 
   /**

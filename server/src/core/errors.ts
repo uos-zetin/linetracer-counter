@@ -12,6 +12,13 @@ export class EntityNotFoundError extends Error {
   }
 }
 
+export class ParameterInvalidError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ParameterInvalidError";
+  }
+}
+
 export class AuthorizationError extends Error {
   constructor(message: string = "Unauthorized access") {
     super(message);
@@ -58,5 +65,12 @@ export class RunnerNotSetError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "RunnerNotSetError";
+  }
+}
+
+export class CounterNotRegisteredError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "CounterNotRegisteredError";
   }
 }

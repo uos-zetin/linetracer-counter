@@ -18,10 +18,15 @@ import { DivisionProgressStateFsStore } from "@/infrastructure/stores/division-p
 import { ActorService } from "@/core/services/actor";
 import { CompetitionService } from "@/core/services/competition";
 import { CompetitionActorService } from "@/core/services/competition.actor";
+import { CounterService } from "@/core/services/counter";
+import { CounterActorService } from "@/core/services/counter.actor";
 import { DivisionProgressService } from "@/core/services/division-progress";
 import { DivisionProgressActorService } from "@/core/services/division-progress.actor";
 import { ParticipantService } from "@/core/services/participant";
 import { ParticipantActorService } from "@/core/services/participant.actor";
+
+import { CounterDeviceManager } from "@/infrastructure/counters/counter-device-manager";
+import { CounterDeviceActorManager } from "@/infrastructure/counters/counter-device-manager.actor";
 
 import sqlite3 from "sqlite3";
 
@@ -68,10 +73,16 @@ export class Container {
   private readonly actorService: ActorService;
   private readonly competitionService: CompetitionService;
   private readonly competitionActorService: CompetitionActorService;
-  private readonly participantService: ParticipantService;
-  private readonly participantActorService: ParticipantActorService;
+  private readonly counterService: CounterService;
+  private readonly counterActorService: CounterActorService;
   private readonly divisionProgressService: DivisionProgressService;
   private readonly divisionProgressActorService: DivisionProgressActorService;
+  private readonly participantService: ParticipantService;
+  private readonly participantActorService: ParticipantActorService;
+
+  // Managers
+  private readonly counterDeviceManager: CounterDeviceManager;
+  private readonly counterDeviceManagerActor: CounterDeviceActorManager;
 
   private constructor() {
     // SQLite Database
@@ -102,6 +113,10 @@ export class Container {
     );
     this.divisionProgressStateStore = new DivisionProgressStateFsStore(
       env.PROGRESS_STATE_DIR
+    );
+    this.counterDeviceManager = new CounterDeviceManager();
+    this.counterDeviceManagerActor = new CounterDeviceActorManager(
+      this.counterDeviceManager
     );
 
     // Instantiate Services
@@ -135,6 +150,12 @@ export class Container {
     this.divisionProgressActorService = new DivisionProgressActorService(
       this.divisionProgressService
     );
+
+    this.counterService = new CounterService({
+      counterRegistry: this.counterDeviceManager,
+      divisionProgressService: this.divisionProgressService,
+    });
+    this.counterActorService = new CounterActorService(this.counterService);
   }
 
   private initialized = false;
@@ -175,6 +196,13 @@ export class Container {
       competition: this.competitionActorService,
       participant: this.participantActorService,
       divisionProgress: this.divisionProgressActorService,
+      counter: this.counterActorService,
+    };
+  }
+
+  public get managers() {
+    return {
+      counterDevice: this.counterDeviceManagerActor,
     };
   }
 
