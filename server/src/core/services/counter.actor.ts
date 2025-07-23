@@ -3,6 +3,8 @@ import { Actor, Counter } from "@/core/models";
 import { CounterEvent, CounterService } from "@/core/services/counter";
 import { requireAnyRole } from "@/core/utils/auth";
 
+export type { CounterEvent };
+
 export class CounterActorService {
   private readonly service: CounterService;
 
