@@ -67,3 +67,10 @@ export class RunnerNotSetError extends Error {
     this.name = "RunnerNotSetError";
   }
 }
+
+export class CounterNotRegisteredError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "CounterNotRegisteredError";
+  }
+}
