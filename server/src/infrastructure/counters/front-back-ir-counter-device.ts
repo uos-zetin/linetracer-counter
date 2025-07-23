@@ -15,9 +15,9 @@ type FrontBackIrCounterDeviceState =
   | "end";
 
 interface FrontBackIrCounterDeviceEventEmitter extends EventEmitter {
-  on(deviceId: "event", listener: (event: CounterDeviceEvent) => void): this;
-  off(deviceId: "event", listener: (event: CounterDeviceEvent) => void): this;
-  emit(deviceId: "event", event: CounterDeviceEvent): boolean;
+  on(eventName: "event", listener: (event: CounterDeviceEvent) => void): this;
+  off(eventName: "event", listener: (event: CounterDeviceEvent) => void): this;
+  emit(eventName: "event", event: CounterDeviceEvent): boolean;
 }
 
 /**
