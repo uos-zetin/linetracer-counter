@@ -1,5 +1,3 @@
-import { integrateLogs } from "@/entities/timer-log";
-import { useProgressStore } from "@/features/progress";
 import { TimerView } from "./ui/timer-view";
 import { TimerPageHeader } from "./ui/timer-header";
 import { DivisionInfo } from "./ui/division-info";
@@ -11,12 +9,13 @@ import { CurrentRecordView } from "./ui/current-record-view";
 import { useNavigate, useParams } from "react-router";
 import { useEffect } from "react";
 
-import type { Progress } from "@/features/progress";
+import { type ProgressState, useProgressService } from "@/features/progress";
 import { SponsorView } from "./ui/sponsor-view";
 import { QRViewer } from "./ui/qr-viewer";
 import { useCounterChannel, useCounterRepo, useCounterService } from "@/features/counter";
+import { integrateLogs } from "@/entities/timer-log";
 
-const mockProgress: Progress = {
+const mockProgress: ProgressState = {
   id: "progress-1",
   competition: {
     id: "competition-1",
@@ -150,8 +149,6 @@ export function TimerPage() {
   const navigate = useNavigate();
   const { counterId } = useParams();
 
-  const progressStore = useProgressStore();
-
   // counterId가 없으면 계수기 선택으로 리다이렉트
   useEffect(() => {
     if (!counterId) {
@@ -159,18 +156,22 @@ export function TimerPage() {
     }
   }, [counterId, navigate]);
 
-  const competition = progressStore.useCompetition();
-  const division = progressStore.useDivision();
-  const runner = progressStore.useRunner();
-  const nextRunners = progressStore.useNextRunners();
-
-  const timerState = integrateLogs(runner?.participant.givenTime ?? 4 * 60 * 1000, runner?.timerLogs ?? []);
-
   const counterRepository = useCounterRepo();
   const counterChannel = useCounterChannel();
 
-  const counter = useCounterService(counterRepository, counterChannel);
-  const stopwatch = counter.useStopwatch();
+  const counterService = useCounterService(counterRepository, counterChannel);
+  const stopwatch = counterService.useStopwatch();
+
+  const progressService = useProgressService();
+  progressService.setProgress(mockProgress);
+
+  const competition = progressService.useCompetition();
+  const division = progressService.useDivision();
+  const runner = progressService.useRunner();
+  const nextRunners = progressService.useNextRunners();
+  const timerLogs = runner?.timerLogs ?? [];
+
+  const timerState = integrateLogs(runner?.participant.givenTime ?? 0, timerLogs);
 
   // counterId가 없으면 로딩 상태 표시
   if (!counterId) {
@@ -180,8 +181,6 @@ export function TimerPage() {
       </div>
     );
   }
-
-  progressStore.setProgress(mockProgress);
 
   return (
     <main className="flex flex-col min-h-screen h-full w-full bg-gray-200">
