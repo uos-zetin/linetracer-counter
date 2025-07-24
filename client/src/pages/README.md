@@ -50,9 +50,9 @@ pages/
 | URL 경로                             | 폴더             | 설명                                             |
 | ------------------------------------ | ---------------- | ------------------------------------------------ |
 | `/`                                  | home             | [홈 페이지](./home/README.md) (로그인/대시보드)  |
+| `/admin`                             | admin            | [참가자 관리 페이지](./admin/README.md)          |
 | `/counter`                           | counter-selector | [계수 선택 페이지](./counter-selector/README.md) |
 | `/counter/:counterId/timer`          | timer            | [타이머 페이지](./timer/README.md)               |
-| `/admin`                             | admin            | [참가자 관리 페이지](./admin/README.md)          |
+| `/counter/:counterId/manual-counter` | manual-counter   | [수동 계수 페이지](./manual-counter/README.md)   |
 | `/counter/:counterId/controller`     | controller       | [컨트롤러 페이지](./controller/README.md)        |
 | `/:competitionId/dashboard`          | dashboard        | [대시보드 페이지](./dashboard/README.md)         |
-| `/counter/:counterId/manual-counter` | manual-counter   | [수동 계수 페이지](./manual-counter/README.md)   |

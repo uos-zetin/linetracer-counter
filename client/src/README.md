@@ -62,34 +62,6 @@
 - Feature별 타입은 해당 **features** slice에서 정의
 - 공통 타입은 **shared/types**에서 관리
 
-### Selector 사용 규칙
-
-> **Selector 시그니처**  
-> `type Selector<S> = <T>(selector: (state: S) => T, equality?: (a: T, b: T) => boolean) => T`
-
-1. **필요한 값만 선택 구독 (전체 구독 금지)**
-   - 전체 상태 구독 대신, 반드시 필요한 값만 selector로 구독
-   - 예시:
-     ```ts
-     // ❌ 전체 구독: 리렌더 많음
-     const st = useStore();
-     // ✅ 선택 구독: 리렌더 최소화
-     const count = useStore((s) => s.count);
-     ```
-
-2. **equality 함수(shallow 등) 적극 활용**
-   - 여러 함수/객체를 selector로 묶을 때는 반드시 shallow 등 비교 함수를 사용
-   - 예시:
-     ```ts
-     const { add, remove } = useTodoStore((s) => ({ add: s.add, remove: s.remove }), shallow);
-     ```
-
-3. **순수 selector 함수에서 Date.now() 등 변동 값 사용 금지**
-   - selector 함수 내에서 Date.now() 등 매번 값이 바뀌는 코드는 사용 금지
-   - 값이 매 렌더마다 달라져 불필요한 리렌더가 발생
-
-> 자세한 예시는 [selector-guideline.md]() 참고.
-
 ---
 
 ### 업데이트 방법
