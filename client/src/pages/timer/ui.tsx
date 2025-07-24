@@ -1,4 +1,3 @@
-import { useStopwatch } from "@/entities/stopwatch";
 import { integrateLogs } from "@/entities/timer-log";
 import { useProgressStore } from "@/features/progress";
 import { TimerView } from "./ui/timer-view";
@@ -15,6 +14,7 @@ import { useEffect } from "react";
 import type { Progress } from "@/features/progress";
 import { SponsorView } from "./ui/sponsor-view";
 import { QRViewer } from "./ui/qr-viewer";
+import { useCounterChannel, useCounterRepo, useCounterService } from "@/features/counter";
 
 const mockProgress: Progress = {
   id: "progress-1",
@@ -151,7 +151,6 @@ export function TimerPage() {
   const { counterId } = useParams();
 
   const progressStore = useProgressStore();
-  const stopwatchStore = useStopwatch();
 
   // counterId가 없으면 계수기 선택으로 리다이렉트
   useEffect(() => {
@@ -164,12 +163,14 @@ export function TimerPage() {
   const division = progressStore.useDivision();
   const runner = progressStore.useRunner();
   const nextRunners = progressStore.useNextRunners();
-  const startedAt = stopwatchStore((state) => state.startedAt);
-  const stoppedAt = stopwatchStore((state) => state.stoppedAt);
-
-  const stopwatch = { startedAt, stoppedAt };
 
   const timerState = integrateLogs(runner?.participant.givenTime ?? 4 * 60 * 1000, runner?.timerLogs ?? []);
+
+  const counterRepository = useCounterRepo();
+  const counterChannel = useCounterChannel();
+
+  const counter = useCounterService(counterRepository, counterChannel);
+  const stopwatch = counter.useStopwatch();
 
   // counterId가 없으면 로딩 상태 표시
   if (!counterId) {
@@ -203,7 +204,7 @@ export function TimerPage() {
           <TimerView timerState={timerState} />
         </div>
         <div className="order-4 md:row-start-2 md:col-start-2">
-          <StopwatchView stopwatch={stopwatch} />
+          <StopwatchView startedAt={stopwatch.startedAt} stoppedAt={stopwatch.stoppedAt} />
         </div>
         <div className="order-5 md:col-span-2 mt-[1.5vw] mx-[20vw] md:mx-[2vw]">
           <div
