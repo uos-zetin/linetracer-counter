@@ -7,16 +7,18 @@ export interface CounterState {
 }
 
 export interface CounterActions {
-  init: (initialState: CounterState) => void; // 계수기 초기화
-  start: (startedAt: number) => void; // 계수기 시작
-  stop: (stoppedAt: number) => void; // 계수기 정지
-  reset: () => void; // 계수기 리셋
+  init: (counterId: string, initialState: CounterState) => void; // 계수기 초기화
+  start: (counterId: string, startedAt: number) => void; // 계수기 시작
+  stop: (counterId: string, stoppedAt: number) => void; // 계수기 정지
+  reset: (counterId: string) => void; // 계수기 리셋
 }
 
 export interface CounterGetters {
-  getIsRunning: () => boolean; // 계수기가 실행 중인지 여부
-  getElapsedMs: (now?: number) => number; // 경과 시간(ms) 계산
-  getDivisionId: () => string | null; // 계수기가 속한 종목 ID 반환
+  getIsRunning: (counterId: string) => boolean; // 계수기가 실행 중인지 여부
+  getElapsedMs: (counterId: string, now?: number) => number; // 경과 시간(ms) 계산
+  getDivisionId: (counterId: string) => string | null; // 계수기가 속한 종목 ID 반환
 }
 
-export type CounterStore = CounterState & CounterActions & CounterGetters;
+export interface CounterStore extends CounterActions, CounterGetters {
+  counters: Map<string, CounterState>; // 계수기 상태를 저장하는 맵
+}

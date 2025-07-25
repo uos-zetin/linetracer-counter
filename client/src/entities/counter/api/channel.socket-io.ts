@@ -25,12 +25,11 @@ export class CounterSocketIOChannel implements CounterChannel {
     });
   }
 
-  async disconnect(counterId: string): Promise<void> {
+  async disconnect(): Promise<void> {
     if (!this.socket) {
       throw new Error("Socket is not connected");
     }
 
-    this.socket.emit("counter:disconnect", counterId);
     this.socket.disconnect();
     this.socket = null;
   }

@@ -12,7 +12,7 @@ import { useEffect } from "react";
 import { type ProgressState, useProgressService } from "@/features/progress";
 import { SponsorView } from "./ui/sponsor-view";
 import { QRViewer } from "./ui/qr-viewer";
-import { useCounterChannel, useCounterRepo, useCounterService } from "@/features/counter";
+import { useCounterService } from "@/features/counter";
 import { integrateLogs } from "@/entities/timer-log";
 
 const mockProgress: ProgressState = {
@@ -156,10 +156,7 @@ export function TimerPage() {
     }
   }, [counterId, navigate]);
 
-  const counterRepository = useCounterRepo();
-  const counterChannel = useCounterChannel();
-
-  const counterService = useCounterService(counterRepository, counterChannel);
+  const counterService = useCounterService();
   const stopwatch = counterService.useStopwatch();
 
   const progressService = useProgressService();

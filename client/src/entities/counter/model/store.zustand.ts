@@ -1,26 +1,58 @@
+// features/counter/model/store.zustand.ts
 import { create } from "zustand";
-import type { CounterStore } from "./types";
 import { immer } from "zustand/middleware/immer";
+import type { CounterState, CounterStore } from "./types";
 import { getElapsedMs, isRunning } from "../lib/selectors";
 
+/** 테스트 편의를 위해 그대로 export */
 export const useZustandCounterStore = create<CounterStore>()(
   immer((set, get) => ({
-    // Initial state
-    id: "",
-    name: "",
-    startedAt: null,
-    stoppedAt: null,
-    divisionId: null,
+    counters: new Map<string, CounterState>(),
 
-    // Actions
-    init: (initialState) => set({ ...initialState }),
-    start: (startedAt) => set({ startedAt, stoppedAt: null }),
-    stop: (stoppedAt) => set({ stoppedAt }),
-    reset: () => set({ startedAt: null, stoppedAt: null }),
+    init: (counterId, initialState) =>
+      set((state) => {
+        state.counters.set(counterId, initialState);
+      }),
 
-    // Getters
-    getIsRunning: () => isRunning(get().startedAt, get().stoppedAt),
-    getElapsedMs: (now?) => getElapsedMs(get().startedAt, now ?? get().stoppedAt),
-    getDivisionId: () => get().divisionId,
+    start: (counterId, startedAt) =>
+      set((state) => {
+        const counter = state.counters.get(counterId);
+        if (counter) {
+          counter.startedAt = startedAt;
+          counter.stoppedAt = null;
+        }
+      }),
+
+    stop: (counterId, stoppedAt) =>
+      set((state) => {
+        const counter = state.counters.get(counterId);
+        if (counter) {
+          counter.stoppedAt = stoppedAt;
+        }
+      }),
+
+    reset: (counterId) =>
+      set((state) => {
+        const counter = state.counters.get(counterId);
+        if (counter) {
+          counter.startedAt = null;
+          counter.stoppedAt = null;
+        }
+      }),
+
+    getIsRunning: (counterId) => {
+      const counter = get().counters.get(counterId);
+      return counter ? isRunning(counter.startedAt, counter.stoppedAt) : false;
+    },
+
+    getElapsedMs: (counterId, now) => {
+      const counter = get().counters.get(counterId);
+      return counter ? getElapsedMs(counter.startedAt, now ?? counter.stoppedAt) : 0;
+    },
+
+    getDivisionId: (counterId) => {
+      const counter = get().counters.get(counterId);
+      return counter?.divisionId ?? null;
+    },
   })),
 );

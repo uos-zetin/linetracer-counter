@@ -18,6 +18,6 @@ export interface CounterRepository {
 
 export interface CounterChannel {
   connect: (counterId: string) => Promise<void>;
-  disconnect: (counterId: string) => Promise<void>;
+  disconnect: () => Promise<void>;
   subscribe: (callback: (state: CounterState) => void) => () => void;
 }
