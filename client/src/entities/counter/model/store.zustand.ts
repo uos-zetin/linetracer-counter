@@ -1,8 +1,12 @@
 // features/counter/model/store.zustand.ts
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { enableMapSet } from "immer";
 import type { CounterState, CounterStore } from "./types";
 import { getElapsedMs, isRunning } from "../lib/selectors";
+
+// Immer MapSet 플러그인 활성화
+enableMapSet();
 
 /** 테스트 편의를 위해 그대로 export */
 export const useZustandCounterStore = create<CounterStore>()(
@@ -54,5 +58,10 @@ export const useZustandCounterStore = create<CounterStore>()(
       const counter = get().counters.get(counterId);
       return counter?.divisionId ?? null;
     },
+
+    clearAll: () =>
+      set((state) => {
+        state.counters.clear();
+      }),
   })),
 );
