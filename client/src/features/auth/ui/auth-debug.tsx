@@ -1,9 +1,8 @@
-import { useUser } from "entities/user";
+import { useAuthService } from "../model/context";
 
 export function AuthDebugInfo() {
-  const userStore = useUser();
-  const user = userStore((state) => state.user);
-  const isAuthenticated = userStore((state) => state.isAuthenticated);
+  const authService = useAuthService();
+  const { user, isAuthenticated } = authService.useAuth();
 
   return (
     <div className="fixed top-[5vw] right-[1vw] bg-black bg-opacity-75 text-white p-[0.5vw] rounded-lg text-[1.5vw] max-w-[20vw] z-40">

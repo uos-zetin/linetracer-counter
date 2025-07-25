@@ -1,5 +1,26 @@
 import { z } from "zod";
-import type { ValidationResult, ValidationError, LoginFormData, RegisterFormData } from "../types";
+
+export type ValidationError = {
+  field: string;
+  message: string;
+};
+
+export type LoginFormData = {
+  userName: string;
+  password: string;
+};
+
+export type RegisterFormData = {
+  name: string;
+  userName: string;
+  password: string;
+  confirmPassword: string;
+};
+
+export type ValidationResult = {
+  isValid: boolean;
+  errors: ValidationError[];
+};
 
 // Zod 스키마 정의
 const userNameSchema = z

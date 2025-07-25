@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { useUser } from "entities/user";
-import { validateLoginForm } from "../lib/validation";
-import type { LoginFormData } from "../types";
+import { useAuthService } from "../model/context";
+import { validateLoginForm, type LoginFormData } from "../lib/validation";
 
 export function LoginForm() {
   const [formData, setFormData] = useState<LoginFormData>({
@@ -11,8 +10,7 @@ export function LoginForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const userStore = useUser();
-  const login = userStore((state) => state.login);
+  const authService = useAuthService();
 
   const handleInputChange = (field: keyof LoginFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -43,7 +41,7 @@ export function LoginForm() {
     setErrors({});
 
     try {
-      await login(formData.userName, formData.password);
+      await authService.login(formData.userName, formData.password);
     } catch (error) {
       setErrors({
         general: error instanceof Error ? error.message : "로그인에 실패했습니다.",

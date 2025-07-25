@@ -1,10 +1,10 @@
-import { useUser } from "entities/user";
+import { useAuthService } from "@/features/auth";
 import { LoginForm, AuthDebugWrapper } from "@/features/auth";
 import { RootDashboard } from "./ui/root-dashboard";
 
 export function HomePage() {
-  const user = useUser();
-  const isAuthenticated = user((state) => state.isAuthenticated);
+  const authService = useAuthService();
+  const { isAuthenticated } = authService.useAuth();
 
   return (
     <AuthDebugWrapper>

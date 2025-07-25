@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { useUser } from "entities/user";
+import { useAuthService } from "@/features/auth";
 
 interface AppHeaderProps {
   title: string;
@@ -9,13 +9,12 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ title, showBackButton = false, backPath = "/", showLogout = true }: AppHeaderProps) {
-  const userStore = useUser();
-  const user = userStore((state) => state.user);
-  const logout = userStore((state) => state.logout);
+  const authService = useAuthService();
+  const { user } = authService.useAuth();
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await authService.logout();
     } catch (error) {
       console.error("로그아웃 실패:", error);
     }
