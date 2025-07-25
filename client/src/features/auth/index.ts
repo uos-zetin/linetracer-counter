@@ -1,15 +1,6 @@
-// 타입 exports
-export * from "./types";
-
 // UI exports
 export { LoginForm } from "./ui/login-form";
 export { AuthDebugWrapper } from "./ui/auth-debug";
-
-// 로그인 관련 exports
-export { loginUser, logoutUser, checkAuthStatus, restoreSession } from "./lib/login";
-
-// 회원가입 관련 exports
-export { registerUser, checkUserNameAvailability } from "./lib/register";
 
 // 검증 관련 exports
 export {
@@ -27,3 +18,9 @@ export {
   passwordSchema,
   nameSchema,
 } from "./lib/validation";
+
+// Auth Service exports
+export { createAuthService } from "./model/auth-service";
+export { useAuthService, authServiceContext } from "./model/context";
+export { AuthServiceSessionProvider } from "./lib/session-provider";
+export type { AuthService, AuthState, LoginCredentials, RegisterData } from "./model/types";

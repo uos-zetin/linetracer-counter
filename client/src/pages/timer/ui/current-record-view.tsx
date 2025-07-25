@@ -1,5 +1,5 @@
 import type { Record } from "@/entities/record";
-import { formatElapsedMs } from "@/entities/stopwatch";
+import { formatElapsedMs } from "@/entities/counter";
 
 interface CurrentRecordViewProps {
   currentRecords: Record[];

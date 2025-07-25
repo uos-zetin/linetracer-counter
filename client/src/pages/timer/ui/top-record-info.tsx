@@ -1,4 +1,4 @@
-import { formatElapsedMs } from "@/entities/stopwatch";
+import { formatElapsedMs } from "@/entities/counter";
 
 export interface TopRecord {
   id: string;

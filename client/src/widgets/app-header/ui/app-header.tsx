@@ -1,6 +1,5 @@
 import { Link } from "react-router";
-import { useUserStoreHook } from "@/entities/user";
-import { logoutUser } from "@/features/auth";
+import { useAuthService } from "@/features/auth";
 
 interface AppHeaderProps {
   title: string;
@@ -10,12 +9,12 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ title, showBackButton = false, backPath = "/", showLogout = true }: AppHeaderProps) {
-  const userStoreHook = useUserStoreHook();
-  const user = userStoreHook((state) => state.user);
+  const authService = useAuthService();
+  const { user } = authService.useAuth();
 
   const handleLogout = async () => {
     try {
-      await logoutUser();
+      await authService.logout();
     } catch (error) {
       console.error("로그아웃 실패:", error);
     }

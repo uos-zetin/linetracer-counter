@@ -13,10 +13,17 @@ export interface SessionProvider {
  */
 export class AuthenticatedFetcher implements Fetcher {
   private readonly baseFetcher: Fetcher;
-  private readonly sessionProvider: SessionProvider;
+  private sessionProvider: SessionProvider | null;
 
-  constructor(baseFetcher: Fetcher, sessionProvider: SessionProvider) {
+  constructor(baseFetcher: Fetcher, sessionProvider?: SessionProvider) {
     this.baseFetcher = baseFetcher;
+    this.sessionProvider = sessionProvider || null;
+  }
+
+  /**
+   * SessionProvider를 설정합니다.
+   */
+  setSessionProvider(sessionProvider: SessionProvider): void {
     this.sessionProvider = sessionProvider;
   }
 
@@ -42,7 +49,7 @@ export class AuthenticatedFetcher implements Fetcher {
 
   async request<T = unknown>(method: HttpMethod, url: string, options?: RequestOptions): Promise<ApiResponse<T>> {
     // 세션 키가 있으면 Authorization 헤더에 추가
-    const sessionKey = this.sessionProvider.getSessionKey();
+    const sessionKey = this.sessionProvider?.getSessionKey();
     const headers: Record<string, string> = { ...options?.headers };
 
     if (sessionKey) {

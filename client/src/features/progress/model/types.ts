@@ -12,7 +12,7 @@ export interface Runner {
   manualRecords: ManualRecord[];
 }
 
-export interface Progress {
+export interface ProgressState {
   id: string;
   competition: Competition | null;
   division: Division | null;
@@ -22,18 +22,30 @@ export interface Progress {
 }
 
 export interface ProgressActions {
-  setProgress: (progress: Progress) => void;
-  patchProgress: (partial: Partial<Progress>) => void;
+  setProgress: (progress: ProgressState) => void;
+  patchProgress: (partial: Partial<ProgressState>) => void;
   reset: () => void;
 }
 
-export interface ProgressSelectors {
-  useProgress: () => Progress | null;
+export interface ProgressGetters {
+  getProgress: () => ProgressState;
+  getCompetition: () => Competition | null;
+  getDivision: () => Division | null;
+  getRunner: () => Runner | null;
+  getNextRunners: () => Participant[];
+  getTopRecords: () => Record[];
+}
+
+export type ProgressStore = ProgressState & ProgressActions & ProgressGetters;
+
+export interface ProgressService {
+  connect: (divisionId: string) => void;
+  disconnect: () => void;
+  setProgress: (progress: ProgressState) => void;
+  useProgress: () => ProgressState;
   useCompetition: () => Competition | null;
   useDivision: () => Division | null;
   useRunner: () => Runner | null;
   useNextRunners: () => Participant[];
   useTopRecords: () => Record[];
 }
-
-export type ProgressStore = ProgressActions & ProgressSelectors;

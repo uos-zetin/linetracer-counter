@@ -1,7 +1,6 @@
 // Model exports
 export * from "./model/types";
-export { createUserStore, userStore, useUserStoreHook } from "./model/factory";
 
-// API exports - 인터페이스와 팩토리만 공개
+// API exports
 export * from "./api/types";
-export { createUserRepository, userRepository } from "./api/factory";
+export * from "./api/repository";

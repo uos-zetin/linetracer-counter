@@ -1,23 +1,23 @@
-import { getElapsedMs, formatElapsedMs } from "@/entities/stopwatch";
+import { getElapsedMs, formatElapsedMs } from "@/entities/counter";
 
-import type { StopwatchState } from "@/entities/stopwatch";
 import { useEffect, useRef, useState } from "react";
 
 type StopwatchViewProps = {
-  stopwatch: StopwatchState;
+  startedAt: number | null;
+  stoppedAt: number | null;
 };
 
-export function StopwatchView({ stopwatch }: StopwatchViewProps) {
-  const [elapsedMs, setElapsedMs] = useState(getElapsedMs(stopwatch));
+export function StopwatchView({ startedAt, stoppedAt }: StopwatchViewProps) {
+  const [elapsedTime, setElapsedTime] = useState(getElapsedMs(startedAt, stoppedAt ?? Date.now()));
   const frameRef = useRef<number | null>(null);
 
   useEffect(() => {
     const tick = () => {
       const now = Date.now();
-      const elapsed = getElapsedMs(stopwatch, now);
 
-      setElapsedMs(elapsed);
-      if (elapsed > 0) frameRef.current = requestAnimationFrame(tick);
+      const newElapsedTime = getElapsedMs(startedAt, now);
+      setElapsedTime(newElapsedTime);
+      if (newElapsedTime > 0) frameRef.current = requestAnimationFrame(tick);
     };
 
     frameRef.current = requestAnimationFrame(tick);
@@ -27,9 +27,9 @@ export function StopwatchView({ stopwatch }: StopwatchViewProps) {
         cancelAnimationFrame(frameRef.current);
       }
     };
-  }, [stopwatch]);
+  }, [startedAt]);
 
-  const timeComponents = formatElapsedMs(elapsedMs);
+  const timeComponents = formatElapsedMs(elapsedTime);
 
   return (
     <div className="flex flex-col items-center justify-center">
