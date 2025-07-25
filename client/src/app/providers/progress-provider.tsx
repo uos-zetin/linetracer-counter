@@ -1,6 +1,6 @@
-import type { ProgressChannel, ProgressRepository, ProgressService } from "@/features/progress";
+import type { ProgressChannel, ProgressService } from "@/features/progress";
 // import { useFetcher } from "./fetcher-provider";
-import { createProgressService, ProgressFetcherRepository, progressServiceContext } from "@/features/progress";
+import { createProgressService, progressServiceContext } from "@/features/progress";
 import { ProgressSocketIOChannel } from "@/features/progress";
 
 export const ProgressProvider = ({ children }: { children: React.ReactNode }) => {
