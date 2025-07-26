@@ -25,7 +25,6 @@ import {
   DivisionProgressResponseDto,
   DivisionResponseDto,
   SetCurrentRunnerDto,
-  SetDivisionStatusDto,
   UpdateDivisionDto,
 } from "../dtos/division.dto";
 import {
@@ -45,6 +44,20 @@ export class DivisionController {
     @Inject("DivisionProgressService")
     private readonly divisionProgressService: DivisionProgressActorService
   ) {}
+
+  @Get("/:divisionId")
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: "특정 대회 부문 정보 반환",
+    type: DivisionResponseDto,
+  })
+  async getDivision(
+    @CurrentActor() actor: Actor,
+    @Param("divisionId") divisionId: string
+  ): Promise<DivisionResponseDto> {
+    return this.competitionService.getDivision(actor, divisionId);
+  }
 
   @Patch("/:divisionId")
   @ApiActorSecurity()
