@@ -80,26 +80,6 @@ export class DivisionController {
     await this.competitionService.deleteDivision(actor, divisionId);
   }
 
-  @Patch("/:divisionId/status")
-  @ApiActorSecurity()
-  @ApiResponse({
-    status: 200,
-    description: "대회 부문 상태 수정 성공 및 대회 부문 정보 반환",
-    type: DivisionResponseDto,
-  })
-  async setDivisionStatus(
-    @CurrentActor() actor: Actor,
-    @Param("divisionId") divisionId: string,
-    @Body() body: SetDivisionStatusDto
-  ): Promise<DivisionResponseDto> {
-    const updated = await this.competitionService.setDivisionStatus(
-      actor,
-      divisionId,
-      body.status
-    );
-    return updated;
-  }
-
   @Get("/:divisionId/participants")
   @ApiResponse({
     status: 200,
