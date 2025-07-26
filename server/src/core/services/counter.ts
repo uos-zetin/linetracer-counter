@@ -64,7 +64,7 @@ export class CounterService {
       this.counterDivisionBindingMap.get(deviceId)?.divisionId ?? null;
 
     return {
-      id: deviceId,
+      deviceId,
       name,
       startedAt,
       stoppedAt,
