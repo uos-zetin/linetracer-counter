@@ -1,6 +1,6 @@
 import type { Fetcher } from "@/shared";
 import type { RecordDto, RecordRepository } from "./types";
-import type { Record } from "../model/types";
+import type { Record, RecordStatus } from "../model/types";
 import { parseRecordDto } from "../lib/parse-dto";
 
 export class RecordFetcherRepository implements RecordRepository {
@@ -30,6 +30,20 @@ export class RecordFetcherRepository implements RecordRepository {
   async createRecord(participantId: string, record: Pick<RecordDto, "value" | "source" | "note">): Promise<Record> {
     const response = await this.authFetcher.post<RecordDto>(`/participants/${participantId}/records`, {
       body: record,
+    });
+    return parseRecordDto(response.data);
+  }
+
+  async updateRecordNote(recordId: string, note: string): Promise<Record> {
+    const response = await this.authFetcher.patch<RecordDto>(`/records/${recordId}/note`, {
+      body: { note },
+    });
+    return parseRecordDto(response.data);
+  }
+
+  async updateRecordStatus(recordId: string, status: RecordStatus): Promise<Record> {
+    const response = await this.authFetcher.patch<RecordDto>(`/records/${recordId}/status`, {
+      body: { status },
     });
     return parseRecordDto(response.data);
   }
