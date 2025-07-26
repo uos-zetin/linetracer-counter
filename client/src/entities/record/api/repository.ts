@@ -27,7 +27,7 @@ export class RecordFetcherRepository implements RecordRepository {
     return response.data.map((dto) => parseRecordDto(dto));
   }
 
-  async createRecord(participantId: string, record: Pick<RecordDto, "value" | "source" | "note">): Promise<Record> {
+  async createRecord(participantId: string, record: Pick<Record, "value" | "source" | "note">): Promise<Record> {
     const response = await this.authFetcher.post<RecordDto>(`/api/participants/${participantId}/records`, {
       body: record,
     });

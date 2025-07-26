@@ -16,7 +16,7 @@ export class CounterFetcherRepository implements CounterRepository {
 
   async getById(id: string) {
     const response = await this.authFetcher.get<CounterDto>(`/api/counters/${id}`);
-    return parseCounterDto(response.data);
+    return response.data ? parseCounterDto(response.data) : null;
   }
 
   async connectDivision(counterId: string, divisionId: string) {

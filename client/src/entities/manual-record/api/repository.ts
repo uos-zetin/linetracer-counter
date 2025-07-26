@@ -3,7 +3,7 @@ import type { ManualRecord } from "../model/types";
 import type { ManualRecordDto, ManualRecordRepository } from "./types";
 import { parseManualRecordDto } from "../lib/parse-dto";
 
-export class ManualRecordFetchRepository implements ManualRecordRepository {
+export class ManualRecordFetcherRepository implements ManualRecordRepository {
   private fetcher: Fetcher;
   private authFetcher: Fetcher;
 
