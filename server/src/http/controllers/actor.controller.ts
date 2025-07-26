@@ -6,6 +6,7 @@ import {
   HttpCode,
   Inject,
   Param,
+  Patch,
   Post,
   Req,
 } from "@nestjs/common";
@@ -38,6 +39,7 @@ export class ActorController {
   ) {}
 
   @Get("/")
+  @HttpCode(200)
   @ApiActorSecurity()
   @ApiResponse({
     status: 200,
@@ -72,6 +74,7 @@ export class ActorController {
   }
 
   @Post("/login")
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: "로그인 성공 및 세션 키 반환",
@@ -92,6 +95,7 @@ export class ActorController {
   }
 
   @Get("/whoami")
+  @HttpCode(200)
   @ApiActorSecurity()
   @ApiResponse({
     status: 200,
@@ -110,7 +114,7 @@ export class ActorController {
   @ApiActorSecurity()
   @ApiResponse({
     status: 204,
-    description: "서버에 저장된 세션 키 폐기(또는 없음)",
+    description: "서버에 저장된 세션 키 폐기",
   })
   async logoutActor(
     @Req()
@@ -122,7 +126,7 @@ export class ActorController {
     }
   }
 
-  @Post("/:actorId/roles")
+  @Patch("/:actorId/roles")
   @HttpCode(200)
   @ApiActorSecurity()
   @ApiResponse({

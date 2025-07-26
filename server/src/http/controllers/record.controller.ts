@@ -1,7 +1,14 @@
 import { Actor } from "@/core/models";
 import { ParticipantActorService } from "@/core/services/participant.actor";
 
-import { Body, Controller, Inject, Param, Patch } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Inject,
+  Param,
+  Patch,
+} from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import {
@@ -23,6 +30,7 @@ export class RecordController {
   ) {}
 
   @Patch("/:recordId/note")
+  @HttpCode(200)
   @ApiActorSecurity()
   @ApiResponse({
     status: 200,
@@ -38,10 +46,11 @@ export class RecordController {
   }
 
   @Patch("/:recordId/status")
+  @HttpCode(200)
   @ApiActorSecurity()
   @ApiResponse({
     status: 200,
-    description: "기록 상태 변경 성공 및 변경된 기록 정보 반환",
+    description: "기록 상태 변경 성공 및 수정된 기록 정보 반환",
     type: RecordResponseDto,
   })
   async setRecordStatus(

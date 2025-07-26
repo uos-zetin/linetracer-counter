@@ -38,6 +38,7 @@ export class ParticipantController {
   ) {}
 
   @Patch("/:participantId")
+  @HttpCode(200)
   @ApiActorSecurity()
   @ApiResponse({
     status: 200,
@@ -71,6 +72,7 @@ export class ParticipantController {
   }
 
   @Get("/:participantId/records")
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: "특정 참가자의 모든 기록 목록 반환",
@@ -84,6 +86,7 @@ export class ParticipantController {
   }
 
   @Post("/:participantId/records")
+  @HttpCode(201)
   @ApiActorSecurity()
   @ApiResponse({
     status: 201,
@@ -105,6 +108,7 @@ export class ParticipantController {
   }
 
   @Get("/:participantId/manual-records")
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: "특정 참가자의 모든 수동 계수 기록 목록 반환",
@@ -189,6 +193,7 @@ export class ParticipantController {
   }
 
   @Get("/:participantId/timer/logs")
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: "특정 참가자의 모든 타이머 로그 목록 반환",
