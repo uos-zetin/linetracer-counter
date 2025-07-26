@@ -3,6 +3,7 @@ import {
   AuthorizationError,
   CounterNotRegisteredError,
   DivisionNotOngoingError,
+  DivisionStatusError,
   EntityNotFoundError,
   ParameterInvalidError,
   PersistenceError,
@@ -92,6 +93,13 @@ export class CustomExceptionFilter implements ExceptionFilter {
         error = {
           statusCode: HttpStatus.BAD_REQUEST,
           type: "TimerLogConsecutiveError",
+          message: exception.message,
+        };
+        break;
+      case exception instanceof DivisionStatusError:
+        error = {
+          statusCode: HttpStatus.BAD_REQUEST,
+          type: "DivisionStatusError",
           message: exception.message,
         };
         break;
