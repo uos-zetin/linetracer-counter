@@ -1,6 +1,13 @@
-import { TimerLogConsecutiveError } from "@/core/errors";
-import { ManualRecord, Participant, Record, TimerLog } from "@/core/models";
+import { DivisionStatusError, TimerLogConsecutiveError } from "@/core/errors";
 import {
+  Division,
+  ManualRecord,
+  Participant,
+  Record,
+  TimerLog,
+} from "@/core/models";
+import {
+  DivisionRepository,
   ManualRecordRepository,
   ParticipantRepository,
   RecordRepository,
@@ -9,6 +16,14 @@ import {
 import { ParticipantService } from "@/core/services/participant";
 
 import { v4 as uuidv4 } from "uuid";
+
+const mockDivisionRepo: jest.Mocked<DivisionRepository> = {
+  getById: jest.fn(),
+  create: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+  getByCompetitionId: jest.fn(),
+};
 
 const mockParticipantRepo: jest.Mocked<ParticipantRepository> = {
   getById: jest.fn(),
@@ -41,6 +56,15 @@ const mockTimerLogRepo: jest.Mocked<TimerLogRepository> = {
   delete: jest.fn(),
   getByParticipantId: jest.fn(),
 };
+
+const generateDivision = (name: string): Division => ({
+  id: uuidv4(),
+  competitionId: uuidv4(),
+  name,
+  description: `${name} 설명`,
+  createdAt: new Date(),
+  status: "ready",
+});
 
 const generateDummyParticipant = (
   count: number,
@@ -100,6 +124,7 @@ describe("ParticipantService 단위 테스트", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     service = new ParticipantService({
+      divisionRepository: mockDivisionRepo,
       participantRepository: mockParticipantRepo,
       recordRepository: mockRecordRepo,
       manualRecordRepository: mockManualRecordRepo,
@@ -129,8 +154,10 @@ describe("ParticipantService 단위 테스트", () => {
 
     it("참가자를 추가할 수 있다.", async () => {
       // Arrange
-      const participant = generateDummyParticipant(0, uuidv4());
+      const division = generateDivision("부문 1");
+      const participant = generateDummyParticipant(0, division.id);
       mockParticipantRepo.create.mockResolvedValue(participant);
+      mockDivisionRepo.getById.mockResolvedValue(division);
 
       // Act
       const result = await service.addParticipant(
@@ -156,6 +183,34 @@ describe("ParticipantService 단위 테스트", () => {
           givenTime: participant.givenTime,
         })
       );
+      expect(mockDivisionRepo.getById).toHaveBeenCalledWith(
+        participant.divisionId
+      );
+    });
+
+    it("준비 상태가 아닌 부문에 참가자를 추가할 수 없다.", async () => {
+      // Arrange
+      const division = generateDivision("부문 1");
+      const participant = generateDummyParticipant(0, division.id);
+      mockDivisionRepo.getById.mockResolvedValue({
+        ...division,
+        status: "ongoing",
+      });
+
+      // Act
+      const asyncTask = service.addParticipant(
+        participant.divisionId,
+        participant.name,
+        participant.teamName,
+        participant.robotName,
+        participant.comment,
+        participant.orderRaw,
+        participant.givenTime
+      );
+
+      // Assert
+      await expect(asyncTask).rejects.toThrow(DivisionStatusError);
+      expect(mockParticipantRepo.create).not.toHaveBeenCalled();
     });
 
     it("특정 참가자를 조회할 수 있다.", async () => {

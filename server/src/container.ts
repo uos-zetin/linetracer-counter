@@ -134,6 +134,7 @@ export class Container {
       this.competitionService
     );
     this.participantService = new ParticipantService({
+      divisionRepository: this.divisionSQLiteRepo,
       participantRepository: this.participantSQLiteRepo,
       recordRepository: this.recordSQLiteRepo,
       manualRecordRepository: this.manualRecordSQLiteRepo,
