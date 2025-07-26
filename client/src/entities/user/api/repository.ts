@@ -2,7 +2,7 @@ import type { User, UserRole } from "../model/types";
 import type { LoginUserDto, RegisterUserDto, UserRepository, LoginResult } from "./types";
 import type { Fetcher } from "@/shared";
 
-export class UserRepositoryImpl implements UserRepository {
+export class UserFetcherRepository implements UserRepository {
   private readonly publicFetcher: Fetcher; // 인증 불필요한 요청용
   private readonly authenticatedFetcher: Fetcher; // 인증 필요한 요청용
 
