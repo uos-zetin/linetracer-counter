@@ -13,7 +13,7 @@ import { type ProgressState, useProgressService } from "@/features/progress";
 import { SponsorView } from "./ui/sponsor-view";
 import { QRViewer } from "./ui/qr-viewer";
 import { useCounterService } from "@/features/counter";
-import { integrateLogs } from "@/entities/timer-log";
+import { integrateLogs } from "@/entities/timer";
 
 const mockProgress: ProgressState = {
   id: "progress-1",

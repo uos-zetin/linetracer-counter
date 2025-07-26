@@ -3,7 +3,7 @@ import type { DivisionDto } from "@/entities/division";
 import type { ManualRecordDto } from "@/entities/manual-record";
 import type { ParticipantDto } from "@/entities/participant";
 import type { RecordDto } from "@/entities/record";
-import type { TimerLogDto } from "@/entities/timer-log";
+import type { TimerLogDto } from "@/entities/timer";
 import type { ProgressState } from "../model/types";
 
 interface RunnerDto {
