@@ -4,26 +4,26 @@ import type { Record, RecordStatus } from "../model/types";
 import { parseRecordDto } from "../lib/parse-dto";
 
 export class RecordFetcherRepository implements RecordRepository {
-  private fether: Fetcher;
+  private fetcher: Fetcher;
   private authFetcher: Fetcher;
 
   constructor(fetcher: Fetcher, authFetcher: Fetcher) {
-    this.fether = fetcher;
+    this.fetcher = fetcher;
     this.authFetcher = authFetcher;
   }
 
   async getAllRecords(participantId: string): Promise<Record[]> {
-    const response = await this.fether.get<RecordDto[]>(`/api/participants/${participantId}/records`);
+    const response = await this.fetcher.get<RecordDto[]>(`/api/participants/${participantId}/records`);
     return response.data.map((dto) => parseRecordDto(dto));
   }
 
   async getRecordById(recordId: string): Promise<Record | null> {
-    const response = await this.fether.get<RecordDto>(`/api/records/${recordId}`);
+    const response = await this.fetcher.get<RecordDto>(`/api/records/${recordId}`);
     return response.data ? parseRecordDto(response.data) : null;
   }
 
   async getTopRecords(divisionId: string): Promise<Record[]> {
-    const response = await this.fether.get<RecordDto[]>(`/api/divisions/${divisionId}/records/top`);
+    const response = await this.fetcher.get<RecordDto[]>(`/api/divisions/${divisionId}/records/top`);
     return response.data.map((dto) => parseRecordDto(dto));
   }
 
