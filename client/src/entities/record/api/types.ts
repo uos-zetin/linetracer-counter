@@ -11,6 +11,8 @@ export interface RecordDto {
 }
 
 export interface RecordRepository {
-  // Implement methods when api is ready
-  getRecords(participantId: string): Promise<Record[]>;
+  getAllRecords(participantId: string): Promise<Record[]>;
+  getRecordById(recordId: string): Promise<Record | null>;
+  getTopRecords(divisionId: string): Promise<Record[]>;
+  createRecord(participantId: string, record: Pick<Record, "value" | "source" | "note">): Promise<Record>;
 }
