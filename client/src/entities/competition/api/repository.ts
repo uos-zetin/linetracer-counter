@@ -24,7 +24,7 @@ export class CompetitionFetcherRepository implements CompetitionRepository {
     return response.data ? parseCompetitionDto(response.data) : null;
   }
 
-  async createCompetition(competition: Competition): Promise<Competition> {
+  async createCompetition(competition: Omit<Competition, "id" | "createdAt">): Promise<Competition> {
     const response = await this.authFetcher.post<CompetitionDto>("/competitions", {
       body: {
         name: competition.name,

@@ -15,7 +15,7 @@ export interface CompetitionCreateDto {
 export interface CompetitionRepository {
   getAllCompetitions(): Promise<Competition[]>;
   getCompetitionById(competitionId: string): Promise<Competition | null>;
-  createCompetition(competition: Competition): Promise<Competition>;
+  createCompetition(competition: Omit<Competition, "id" | "createdAt">): Promise<Competition>;
   updateCompetition(competition: Competition): Promise<Competition>;
   deleteCompetition(competitionId: string): Promise<void>;
 }
