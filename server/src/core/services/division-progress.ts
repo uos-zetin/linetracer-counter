@@ -1,5 +1,5 @@
 import {
-  DivisionNotOngoingError,
+  DivisionStatusError,
   RunnerNotParticipatedError,
   RunnerNotSetError,
 } from "@/core/errors";
@@ -97,23 +97,21 @@ export class DivisionProgressService {
 
   /**
    * 부문이 "ongoing" 상태인지 검증하고 부문 데이터를 반환한다.
-   * @throws DivisionNotOngoingError 부문이 진행 중 상태가 아닌 경우
+   * @throws DivisionStatusError 부문이 진행 중 상태가 아닌 경우
    */
   private async getDivisionAndCheckOngoing(
     divisionId: string
   ): Promise<Division> {
     const division = await this.competitionSrv.getDivision(divisionId);
     if (division.status !== "ongoing") {
-      throw new DivisionNotOngoingError(
-        `Division ${divisionId} is not ongoing`
-      );
+      throw new DivisionStatusError(`Division ${divisionId} is not ongoing`);
     }
     return division;
   }
 
   /**
    * 부문의 현재 활성 경연자를 설정한다.
-   * @throws DivisionNotOngoingError 부문이 진행 중 상태가 아닌 경우
+   * @throws DivisionStatusError 부문이 진행 중 상태가 아닌 경우
    * @throws RunnerNotParticipatedError 경연자가 참가자 목록에 없는 경우
    */
   public async setRunner(divisionId: string, runnerId: string) {
@@ -156,7 +154,7 @@ export class DivisionProgressService {
 
   /**
    * 현재 경연자를 대기열의 마지막으로 미루고 다음 경연자로 넘어간다.
-   * @throws DivisionNotOngoingError 부문이 진행 중 상태가 아닌 경우
+   * @throws DivisionStatusError 부문이 진행 중 상태가 아닌 경우
    * @throws RunnerNotSetError 현재 설정된 경연자가 없는 경우
    */
   public async postponeRunner(divisionId: string) {
@@ -200,7 +198,7 @@ export class DivisionProgressService {
 
   /**
    * 대회 대기열에서 특정 참가자의 순서 위치를 변경한다.
-   * @throws DivisionNotOngoingError 부문이 진행 중 상태가 아닌 경우
+   * @throws DivisionStatusError 부문이 진행 중 상태가 아닌 경우
    * @throws RunnerNotParticipatedError 참가자가 부문에 없는 경우
    */
   public async changeParticipantOrder(
@@ -235,7 +233,7 @@ export class DivisionProgressService {
 
   /**
    * 전반적인 부문 진행 정보를 조회한다.
-   * @throws DivisionNotOngoingError 부문이 진행 중 상태가 아닌 경우
+   * @throws DivisionStatusError 부문이 진행 중 상태가 아닌 경우
    */
   public async getDivisionProgress(
     divisionId: string

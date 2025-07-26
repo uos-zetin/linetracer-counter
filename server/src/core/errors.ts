@@ -54,13 +54,6 @@ export class DivisionStatusError extends Error {
   }
 }
 
-export class DivisionNotOngoingError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "DivisionNotOngoingError";
-  }
-}
-
 export class RunnerNotParticipatedError extends Error {
   constructor(message: string) {
     super(message);
