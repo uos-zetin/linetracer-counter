@@ -13,7 +13,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
 } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 
@@ -22,6 +21,7 @@ import {
   CurrentActor,
 } from "../decorators/current-actor.decorator";
 import {
+  ChangeParticipantOrderDto,
   DivisionProgressResponseDto,
   DivisionResponseDto,
   SetCurrentRunnerDto,
@@ -251,14 +251,13 @@ export class DivisionController {
   async setParticipantOrder(
     @CurrentActor() actor: Actor,
     @Param("divisionId") divisionId: string,
-    @Query("participantId") participantId: string,
-    @Query("order") order: number
+    @Body() body: ChangeParticipantOrderDto
   ): Promise<void> {
     await this.divisionProgressService.changeParticipantOrder(
       actor,
       divisionId,
-      participantId,
-      order
+      body.participantId,
+      body.order
     );
   }
 }
