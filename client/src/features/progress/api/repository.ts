@@ -13,40 +13,40 @@ export class ProgressFetcherRepository implements ProgressRepository {
   }
 
   async getProgress(divisionId: string): Promise<ProgressState | null> {
-    const response = await this.fetcher.get<ProgressDto>(`/divisions/${divisionId}/progress`);
+    const response = await this.fetcher.get<ProgressDto>(`/api/divisions/${divisionId}/progress`);
     return response.data ? parseProgressDto(response.data) : null;
   }
 
   async openProgressDivision(divisionId: string): Promise<void> {
-    await this.authFetcher.post(`/divisions/${divisionId}/progress/open`);
+    await this.authFetcher.post(`/api/divisions/${divisionId}/progress/open`);
   }
 
   async closeProgressDivision(divisionId: string): Promise<void> {
-    await this.authFetcher.post(`/divisions/${divisionId}/progress/close`);
+    await this.authFetcher.post(`/api/divisions/${divisionId}/progress/close`);
   }
 
   async resetProgressDivision(divisionId: string): Promise<void> {
-    await this.authFetcher.post(`/divisions/${divisionId}/progress/reset`);
+    await this.authFetcher.post(`/api/divisions/${divisionId}/progress/reset`);
   }
 
   async setCurrentRunner(divisionId: string, participantId: string): Promise<void> {
-    await this.authFetcher.patch(`/divisions/${divisionId}/progress/runner`, {
+    await this.authFetcher.patch(`/api/divisions/${divisionId}/progress/runner`, {
       body: { participantId },
     });
   }
 
   async postponeCurrentRunner(divisionId: string): Promise<void> {
-    await this.authFetcher.post(`/divisions/${divisionId}/progress/runner/postpone`);
+    await this.authFetcher.post(`/api/divisions/${divisionId}/progress/runner/postpone`);
   }
 
   async getOrder(divisionId: string): Promise<string[]> {
-    const response = await this.fetcher.get<string[]>(`/divisions/${divisionId}/progress/order`);
+    const response = await this.fetcher.get<string[]>(`/api/divisions/${divisionId}/progress/order`);
     return response.data || [];
   }
 
   async changeOrder(divisionId: string, participantId: string, order: number): Promise<void> {
-    await this.authFetcher.post(`/divisions/${divisionId}/progress/order`, {
-      query: { participantId, order: String(order) },
+    await this.authFetcher.patch(`/api/divisions/${divisionId}/progress/order`, {
+      body: { participantId, order: String(order) },
     });
   }
 }

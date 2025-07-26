@@ -14,6 +14,7 @@ export interface CounterRepository {
   connectDivision: (counterId: string, divisionId: string) => Promise<void>;
   disconnectDivision: (counterId: string) => Promise<void>;
   reset: (counterId: string) => Promise<void>;
+  disconnectCounter: (counterId: string) => Promise<void>;
 }
 
 export interface CounterChannel {

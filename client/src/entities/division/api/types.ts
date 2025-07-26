@@ -1,4 +1,4 @@
-import type { Division, DivisionStatus } from "../model/types";
+import type { Division } from "../model/types";
 
 export interface DivisionDto {
   id: string;
@@ -14,6 +14,5 @@ export interface DivisionRepository {
   getDivisionById(divisionId: string): Promise<Division | null>;
   createDivision(competitionId: string, division: Omit<Division, "id" | "createdAt">): Promise<Division>;
   updateDivision(divisionId: string, division: Division): Promise<Division | null>;
-  updateDivisionStatus(divisionId: string, status: DivisionStatus): Promise<Division | null>;
   deleteDivision(divisionId: string): Promise<void>;
 }

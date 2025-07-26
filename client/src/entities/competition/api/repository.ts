@@ -13,19 +13,19 @@ export class CompetitionFetcherRepository implements CompetitionRepository {
   }
 
   async getAllCompetitions(): Promise<Competition[]> {
-    const response = await this.fetcher.get<CompetitionDto[]>("/competitions");
+    const response = await this.fetcher.get<CompetitionDto[]>("/api/competitions");
 
     return response.data.map((competition) => parseCompetitionDto(competition));
   }
 
   async getCompetitionById(competitionId: string): Promise<Competition | null> {
-    const response = await this.fetcher.get<CompetitionDto>(`/competitions/${competitionId}`);
+    const response = await this.fetcher.get<CompetitionDto>(`/api/competitions/${competitionId}`);
 
     return response.data ? parseCompetitionDto(response.data) : null;
   }
 
   async createCompetition(competition: Omit<Competition, "id" | "createdAt">): Promise<Competition> {
-    const response = await this.authFetcher.post<CompetitionDto>("/competitions", {
+    const response = await this.authFetcher.post<CompetitionDto>("/api/competitions", {
       body: {
         name: competition.name,
         description: competition.description,
@@ -36,7 +36,7 @@ export class CompetitionFetcherRepository implements CompetitionRepository {
   }
 
   async updateCompetition(competition: Competition): Promise<Competition> {
-    const response = await this.authFetcher.patch<CompetitionDto>(`/competitions/${competition.id}`, {
+    const response = await this.authFetcher.patch<CompetitionDto>(`/api/competitions/${competition.id}`, {
       body: {
         name: competition.name,
         description: competition.description,
@@ -47,6 +47,6 @@ export class CompetitionFetcherRepository implements CompetitionRepository {
   }
 
   async deleteCompetition(competitionId: string): Promise<void> {
-    await this.authFetcher.delete(`/competitions/${competitionId}`);
+    await this.authFetcher.delete(`/api/competitions/${competitionId}`);
   }
 }

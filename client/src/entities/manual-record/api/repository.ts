@@ -13,7 +13,7 @@ export class ManualRecordFetchRepository implements ManualRecordRepository {
   }
 
   async getAllManualRecords(participantId: string): Promise<ManualRecord[]> {
-    const response = await this.fetcher.get<ManualRecordDto[]>(`/participants/${participantId}/manual-records`);
+    const response = await this.fetcher.get<ManualRecordDto[]>(`/api/participants/${participantId}/manual-records`);
     return response.data.map((record) => parseManualRecordDto(record));
   }
 
@@ -21,7 +21,7 @@ export class ManualRecordFetchRepository implements ManualRecordRepository {
     participantId: string,
     manualRecord: Pick<ManualRecord, "value" | "recorderName">,
   ): Promise<ManualRecord> {
-    const response = await this.authFetcher.post<ManualRecordDto>(`/participants/${participantId}/manual-records`, {
+    const response = await this.authFetcher.post<ManualRecordDto>(`/api/participants/${participantId}/manual-records`, {
       body: manualRecord,
     });
     return parseManualRecordDto(response.data);
