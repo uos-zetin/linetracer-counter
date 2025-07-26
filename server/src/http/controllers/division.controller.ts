@@ -132,7 +132,8 @@ export class DivisionController {
     );
   }
 
-  @Get("/:divisionId/top-records")
+  @Get("/:divisionId/records/top")
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: "특정 부문의 상위 기록 목록 반환",
