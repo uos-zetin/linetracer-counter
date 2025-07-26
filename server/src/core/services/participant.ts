@@ -1,7 +1,8 @@
-import { TimerLogConsecutiveError } from "@/core/errors";
+import { DivisionStatusError, TimerLogConsecutiveError } from "@/core/errors";
 import { Unsubscriber } from "@/core/interfaces";
 import { ManualRecord, Participant, Record, TimerLog } from "@/core/models";
 import {
+  DivisionRepository,
   ManualRecordRepository,
   ParticipantRepository,
   RecordRepository,
@@ -37,17 +38,20 @@ export type ParticipantEventCallback = (
 ) => Promise<void>;
 
 export class ParticipantService {
+  private readonly divisionRepo: DivisionRepository;
   private readonly participantRepo: ParticipantRepository;
   private readonly recordRepo: RecordRepository;
   private readonly manualRecordRepo: ManualRecordRepository;
   private readonly timerLogRepo: TimerLogRepository;
 
   constructor(di: {
+    divisionRepository: DivisionRepository;
     participantRepository: ParticipantRepository;
     manualRecordRepository: ManualRecordRepository;
     recordRepository: RecordRepository;
     timerLogRepository: TimerLogRepository;
   }) {
+    this.divisionRepo = di.divisionRepository;
     this.participantRepo = di.participantRepository;
     this.recordRepo = di.recordRepository;
     this.manualRecordRepo = di.manualRecordRepository;
@@ -66,6 +70,11 @@ export class ParticipantService {
     orderRaw: number,
     givenTime: number
   ): Promise<Participant> {
+    const division = await this.divisionRepo.getById(divisionId);
+    if (division.status !== "ready") {
+      throw new DivisionStatusError(`Division ${divisionId} is not ready`);
+    }
+
     const participant: Participant = {
       id: uuidv4(),
       divisionId,

@@ -1,4 +1,4 @@
-import { Actor, Division } from "@/core/models";
+import { Actor } from "@/core/models";
 import { requireAnyRole } from "@/core/utils/auth";
 
 import { CompetitionService } from "./competition";
@@ -62,15 +62,6 @@ export class CompetitionActorService {
   public async deleteDivision(actor: Actor, divisionId: string) {
     requireAnyRole(actor, "administrator");
     return this.service.deleteDivision(divisionId);
-  }
-
-  public async setDivisionStatus(
-    actor: Actor,
-    divisionId: string,
-    status: Division["status"]
-  ) {
-    requireAnyRole(actor, "administrator");
-    return this.service.setDivisionStatus(divisionId, status);
   }
 
   public async getTopRecordsByDivision(actor: Actor, divisionId: string) {

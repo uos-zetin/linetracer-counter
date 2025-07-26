@@ -2,7 +2,7 @@ import {
   AuthenticationError,
   AuthorizationError,
   CounterNotRegisteredError,
-  DivisionNotOngoingError,
+  DivisionStatusError,
   EntityNotFoundError,
   ParameterInvalidError,
   PersistenceError,
@@ -95,10 +95,10 @@ export class CustomExceptionFilter implements ExceptionFilter {
           message: exception.message,
         };
         break;
-      case exception instanceof DivisionNotOngoingError:
+      case exception instanceof DivisionStatusError:
         error = {
           statusCode: HttpStatus.BAD_REQUEST,
-          type: "DivisionNotOngoingError",
+          type: "DivisionStatusError",
           message: exception.message,
         };
         break;

@@ -1,5 +1,5 @@
 import {
-  DivisionNotOngoingError,
+  DivisionStatusError,
   RunnerNotParticipatedError,
   RunnerNotSetError,
 } from "@/core/errors";
@@ -278,7 +278,7 @@ describe("DivisionProgressService 단위 테스트", () => {
       const asyncTask = service.setRunner(division.id, runnerId);
 
       // Assert
-      await expect(asyncTask).rejects.toThrow(DivisionNotOngoingError);
+      await expect(asyncTask).rejects.toThrow(DivisionStatusError);
     });
   });
 
@@ -392,7 +392,7 @@ describe("DivisionProgressService 단위 테스트", () => {
       const asyncTask = service.postponeRunner(division.id);
 
       // Assert
-      await expect(asyncTask).rejects.toThrow(DivisionNotOngoingError);
+      await expect(asyncTask).rejects.toThrow(DivisionStatusError);
     });
   });
 
@@ -490,7 +490,7 @@ describe("DivisionProgressService 단위 테스트", () => {
       const asyncTask = service.changeParticipantOrder(division.id, "0", 3);
 
       // Assert
-      await expect(asyncTask).rejects.toThrow(DivisionNotOngoingError);
+      await expect(asyncTask).rejects.toThrow(DivisionStatusError);
       expect(mockStateStore.setState).not.toHaveBeenCalled();
     });
   });
@@ -554,7 +554,7 @@ describe("DivisionProgressService 단위 테스트", () => {
       const asyncTask = service.getDivisionProgress(division.id);
 
       // Assert
-      await expect(asyncTask).rejects.toThrow(DivisionNotOngoingError);
+      await expect(asyncTask).rejects.toThrow(DivisionStatusError);
     });
   });
 
