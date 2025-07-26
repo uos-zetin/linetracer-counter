@@ -8,7 +8,8 @@
     "start": "node index.js",
     "test": "jest",
     "test:integration": "jest tests/integration",
-    "script:create-admin": "ts-node -r tsconfig-paths/register src/scripts/create-admin.ts"
+    "script:create-admin": "ts-node -r tsconfig-paths/register src/scripts/create-admin.ts",
+    "script:simulate-counter": "ts-node -r tsconfig-paths/register src/scripts/simulate-counter.ts"
   },
   "author": "",
   "license": "ISC",
@@ -24,7 +25,6 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "dotenv": "^17.0.1",
-    "readline-sync": "^1.4.10",
     "sqlite3": "^5.1.7",
     "uuid": "^11.1.0"
   },
@@ -33,7 +33,6 @@
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.8",
-    "@types/readline-sync": "^1.4.8",
     "jest": "^30.0.3",
     "nodemon": "^3.1.10",
     "ts-jest": "^29.4.0",
