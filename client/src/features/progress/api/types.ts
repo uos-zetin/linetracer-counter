@@ -22,7 +22,16 @@ export interface ProgressDto {
   topRecords: RecordDto[];
 }
 
-export interface ProgressRepository {}
+export interface ProgressRepository {
+  getProgress: (divisionId: string) => Promise<ProgressState | null>;
+  openProgressDivision: (divisionId: string) => Promise<void>;
+  closeProgressDivision: (divisionId: string) => Promise<void>;
+  resetProgressDivision: (divisionId: string) => Promise<void>;
+  setCurrentRunner: (divisionId: string, participantId: string) => Promise<void>;
+  postponeCurrentRunner: (divisionId: string) => Promise<void>;
+  getOrder: (divisionId: string) => Promise<string[]>;
+  changeOrder: (divisionId: string, participantId: string, order: number) => Promise<void>;
+}
 
 export interface ProgressChannel {
   connect: (divisionId: string) => void;
