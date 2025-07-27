@@ -71,7 +71,7 @@ export interface TimerLog {
 }
 
 export interface Counter {
-  id: string; // 계수기 ID
+  deviceId: string; // 계수기 ID
   name: string; // 계수기 이름
   startedAt: number | null; // 시작 시각(unix timestamp, null이면 아직 시작되지 않음을 의미함)
   stoppedAt: number | null; // 종료 시각(unix timestamp, null이면 아직 종료되지 않음을 의미함)

@@ -41,9 +41,10 @@ export class CounterController {
   ) {}
 
   @Get()
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: "모든 카운터 목록 반환",
+    description: "모든 계수기 목록 반환",
     type: [CounterResponseDto],
   })
   async getCounters(
@@ -53,9 +54,10 @@ export class CounterController {
   }
 
   @Get("/:deviceId")
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: "특정 카운터 정보 반환",
+    description: "특정 계수기 정보 반환",
     type: CounterResponseDto,
   })
   async getCounter(
@@ -70,7 +72,7 @@ export class CounterController {
   @ApiActorSecurity()
   @ApiResponse({
     status: 204,
-    description: "카운터를 특정 부문에 연결하거나 해제함",
+    description: "계수기를 특정 부문에 연결하거나 해제함",
   })
   async linkCounterToDivision(
     @CurrentActor() actor: Actor,
@@ -89,7 +91,7 @@ export class CounterController {
   @ApiActorSecurity()
   @ApiResponse({
     status: 204,
-    description: "카운터를 부문에서 연결 해제 성공",
+    description: "계수기를 부문에서 연결 해제 성공",
   })
   async unlinkCounterFromDivision(
     @CurrentActor() actor: Actor,
@@ -103,7 +105,7 @@ export class CounterController {
   @ApiActorSecurity()
   @ApiResponse({
     status: 204,
-    description: "카운터 리셋 성공",
+    description: "계수기 리셋 성공",
   })
   async resetCounter(
     @CurrentActor() actor: Actor,
@@ -117,7 +119,7 @@ export class CounterController {
   @ApiActorSecurity()
   @ApiResponse({
     status: 204,
-    description: "카운터 등록 해제 성공",
+    description: "계수기 등록 해제 성공",
   })
   async unregisterCounter(
     @CurrentActor() actor: Actor,
@@ -127,11 +129,11 @@ export class CounterController {
   }
 
   @Post("/front-back-ir/register")
-  @HttpCode(201)
+  @HttpCode(204)
   @ApiActorSecurity()
   @ApiResponse({
-    status: 201,
-    description: "Front-Back IR 카운터 등록 성공",
+    status: 204,
+    description: "Front-Back IR 계수기 등록 성공",
   })
   async registerFrontBackIrCounter(
     @CurrentActor() actor: Actor,
@@ -152,7 +154,7 @@ export class CounterController {
   @ApiActorSecurity()
   @ApiResponse({
     status: 204,
-    description: "Front-Back IR 카운터 데이터 전송 성공",
+    description: "Front-Back IR 계수기 데이터 전송 성공",
   })
   @ApiBody({
     type: FrontBackIrCounterDeviceDataDto,

@@ -1,5 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsIn, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import {
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from "class-validator";
 
 import { CompetitionResponseDto } from "./competition.dto";
 import { ManualRecordResponseDto } from "./manual-record.dto";
@@ -106,4 +112,16 @@ export class SetCurrentRunnerDto {
   @IsString()
   @IsNotEmpty()
   participantId!: string;
+}
+
+export class ChangeParticipantOrderDto {
+  @ApiProperty({ description: "변경할 참가자의 참가자 ID" })
+  @IsString()
+  @IsNotEmpty()
+  participantId!: string;
+
+  @ApiProperty({ description: "변경할 참가자의 순번" })
+  @IsNumber()
+  @IsNotEmpty()
+  order!: number;
 }

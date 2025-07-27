@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import {
-  IsArray,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -14,7 +13,7 @@ import {
 
 export class CounterResponseDto {
   @ApiProperty({ description: "계수기 ID" })
-  id!: string;
+  deviceId!: string;
 
   @ApiProperty({ description: "계수기 이름", example: "Line Counter #1" })
   name!: string;
@@ -43,7 +42,7 @@ export class CounterResponseDto {
 
 export class CounterDivisionBindingDto {
   @ApiProperty({
-    description: "연결할 divisionId. 해제하려면 null.",
+    description: "연결할 대회 부문 ID(null이면 연결 해제)",
     type: String,
     nullable: true,
     example: "division-123",

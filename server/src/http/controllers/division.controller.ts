@@ -13,7 +13,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
 } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 
@@ -22,10 +21,10 @@ import {
   CurrentActor,
 } from "../decorators/current-actor.decorator";
 import {
+  ChangeParticipantOrderDto,
   DivisionProgressResponseDto,
   DivisionResponseDto,
   SetCurrentRunnerDto,
-  SetDivisionStatusDto,
   UpdateDivisionDto,
 } from "../dtos/division.dto";
 import {
@@ -46,12 +45,27 @@ export class DivisionController {
     private readonly divisionProgressService: DivisionProgressActorService
   ) {}
 
+  @Get("/:divisionId")
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: "특정 대회 부문 정보 반환",
+    type: DivisionResponseDto,
+  })
+  async getDivision(
+    @CurrentActor() actor: Actor,
+    @Param("divisionId") divisionId: string
+  ): Promise<DivisionResponseDto> {
+    return this.competitionService.getDivision(actor, divisionId);
+  }
+
   @Patch("/:divisionId")
+  @HttpCode(200)
   @ApiActorSecurity()
   @ApiResponse({
     status: 200,
     description: "대회 부문 정보 수정 성공 및 대회 부문 정보 반환",
-    type: UpdateDivisionDto,
+    type: DivisionResponseDto,
   })
   async updateDivision(
     @CurrentActor() actor: Actor,
@@ -81,6 +95,7 @@ export class DivisionController {
   }
 
   @Get("/:divisionId/participants")
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: "특정 부문의 모든 참가자 목록 반환",
@@ -119,7 +134,8 @@ export class DivisionController {
     );
   }
 
-  @Get("/:divisionId/top-records")
+  @Get("/:divisionId/records/top")
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: "특정 부문의 상위 기록 목록 반환",
@@ -133,6 +149,7 @@ export class DivisionController {
   }
 
   @Get("/:divisionId/progress")
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: "특정 부문의 진행 상태 반환",
@@ -146,9 +163,10 @@ export class DivisionController {
   }
 
   @Post("/:divisionId/progress/open")
+  @HttpCode(204)
   @ApiActorSecurity()
   @ApiResponse({
-    status: 200,
+    status: 204,
     description: "대회 부문 시작 성공",
   })
   async openDivision(
@@ -159,9 +177,10 @@ export class DivisionController {
   }
 
   @Post("/:divisionId/progress/close")
+  @HttpCode(204)
   @ApiActorSecurity()
   @ApiResponse({
-    status: 200,
+    status: 204,
     description: "대회 부문 종료 성공",
   })
   async closeDivision(
@@ -172,9 +191,10 @@ export class DivisionController {
   }
 
   @Post("/:divisionId/progress/reset")
+  @HttpCode(204)
   @ApiActorSecurity()
   @ApiResponse({
-    status: 200,
+    status: 204,
     description: "대회 부문 초기화 성공",
   })
   async resetDivision(
@@ -185,9 +205,10 @@ export class DivisionController {
   }
 
   @Patch("/:divisionId/progress/runner")
+  @HttpCode(204)
   @ApiActorSecurity()
   @ApiResponse({
-    status: 200,
+    status: 204,
     description: "현재 경연자 설정 성공",
   })
   async setCurrentRunner(
@@ -203,9 +224,10 @@ export class DivisionController {
   }
 
   @Post("/:divisionId/progress/runner/postpone")
+  @HttpCode(204)
   @ApiActorSecurity()
   @ApiResponse({
-    status: 200,
+    status: 204,
     description: "현재 경연자 연기 성공",
   })
   async postponeCurrentRunner(
@@ -216,6 +238,7 @@ export class DivisionController {
   }
 
   @Get("/:divisionId/progress/order")
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: "참가자 순번 목록 반환",
@@ -229,22 +252,22 @@ export class DivisionController {
   }
 
   @Patch("/:divisionId/progress/order")
+  @HttpCode(204)
   @ApiActorSecurity()
   @ApiResponse({
-    status: 200,
+    status: 204,
     description: "참가자 순번 변경 성공",
   })
   async setParticipantOrder(
     @CurrentActor() actor: Actor,
     @Param("divisionId") divisionId: string,
-    @Query("participantId") participantId: string,
-    @Query("order") order: number
+    @Body() body: ChangeParticipantOrderDto
   ): Promise<void> {
     await this.divisionProgressService.changeParticipantOrder(
       actor,
       divisionId,
-      participantId,
-      order
+      body.participantId,
+      body.order
     );
   }
 }

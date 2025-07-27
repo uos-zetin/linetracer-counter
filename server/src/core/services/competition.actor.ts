@@ -40,6 +40,10 @@ export class CompetitionActorService {
     return this.service.deleteCompetition(competitionId);
   }
 
+  public async getDivision(actor: Actor, divisionId: string) {
+    return this.service.getDivision(divisionId);
+  }
+
   public async createDivision(
     actor: Actor,
     competitionId: string,

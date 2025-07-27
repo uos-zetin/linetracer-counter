@@ -34,6 +34,7 @@ export class CompetitionController {
   ) {}
 
   @Get("/")
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: "모든 대회 목록 반환",
@@ -44,6 +45,7 @@ export class CompetitionController {
   }
 
   @Get("/:competitionId")
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: "대회 정보 반환",
@@ -83,11 +85,12 @@ export class CompetitionController {
   }
 
   @Patch("/:competitionId")
+  @HttpCode(200)
   @ApiActorSecurity()
   @ApiResponse({
     status: 200,
     description: "대회 정보 수정 성공 및 수정된 대회 정보 반환",
-    type: UpdateCompetitionDto,
+    type: CompetitionResponseDto,
   })
   async updateCompetition(
     @CurrentActor() actor: Actor,
@@ -117,6 +120,7 @@ export class CompetitionController {
   }
 
   @Get("/:competitionId/divisions")
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: "대회에 속한 모든 부문 목록 반환",
