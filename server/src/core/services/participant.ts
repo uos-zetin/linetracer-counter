@@ -67,8 +67,7 @@ export class ParticipantService {
     teamName: string,
     robotName: string,
     comment: string,
-    orderRaw: number,
-    givenTime: number
+    orderRaw: number
   ): Promise<Participant> {
     const division = await this.divisionRepo.getById(divisionId);
     if (division.status !== "ready") {
@@ -83,7 +82,6 @@ export class ParticipantService {
       robotName,
       comment,
       orderRaw,
-      givenTime,
       createdAt: new Date(),
     };
     return this.participantRepo.create(participant);
@@ -104,7 +102,7 @@ export class ParticipantService {
   }
 
   /**
-   * 특정 참가자의 이름, 팀명, 로봇명, 하고 싶은 말, 경연 순번, 주어진 시간을 수정할 수 있다.
+   * 특정 참가자의 이름, 팀명, 로봇명, 하고 싶은 말, 경연 순번을 수정할 수 있다.
    */
   async updateParticipant(
     participantId: string,
@@ -114,7 +112,6 @@ export class ParticipantService {
       robotName?: string;
       comment?: string;
       orderRaw?: number;
-      givenTime?: number;
     }
   ): Promise<Participant> {
     const participant = await this.participantRepo.getById(participantId);

@@ -32,12 +32,6 @@ export class ParticipantResponseDto {
   @ApiProperty({ description: "원본 경연 순번", example: 1 })
   orderRaw!: number;
 
-  @ApiProperty({
-    description: "주어진 시간(ms)",
-    example: 4 * 60 * 1000, // 5분
-  })
-  givenTime!: number;
-
   @ApiProperty({ description: "생성 시각", format: "date-time" })
   createdAt!: Date;
 }
@@ -69,13 +63,6 @@ export class CreateParticipantDto {
   @ApiProperty({ description: "원본 경연 순번", example: 1 })
   @IsNumber()
   orderRaw!: number;
-
-  @ApiProperty({
-    description: "주어진 시간(ms)",
-    example: 4 * 60 * 1000, // 4분
-  })
-  @IsNumber()
-  givenTime!: number;
 }
 
 export class UpdateParticipantDto {
@@ -106,12 +93,4 @@ export class UpdateParticipantDto {
   @IsNumber()
   @IsOptional()
   orderRaw?: number;
-
-  @ApiProperty({
-    description: "주어진 시간(ms) - 5분 = 300,000ms",
-    example: 300000,
-  })
-  @IsNumber()
-  @IsOptional()
-  givenTime?: number;
 }

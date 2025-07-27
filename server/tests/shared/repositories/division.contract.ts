@@ -27,6 +27,7 @@ export function runDivisionRepositoryContract(
         id: `test-${uuidv4()}`,
         competitionId: competitionId || `test-${uuidv4()}`,
         name: `부문 ${index + 1}`,
+        timeLimit: 4 * 60 * 1000, // 4분
         description: `피할 수 없으면 즐겨요.`,
         createdAt: new Date(),
         status: "ready",
@@ -60,6 +61,7 @@ export function runDivisionRepositoryContract(
       const updated: Division = {
         ...original,
         name: "시니어 부문",
+        timeLimit: 5 * 60 * 1000, // 5분
         description:
           "화가 날 때는 100까지 세어요. 최악일 때는 욕설을 퍼부어요.",
         status: "ongoing",

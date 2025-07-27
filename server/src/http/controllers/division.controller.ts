@@ -121,7 +121,7 @@ export class DivisionController {
     @Param("divisionId") divisionId: string,
     @Body() body: CreateParticipantDto
   ): Promise<ParticipantResponseDto> {
-    const { name, teamName, robotName, comment, orderRaw, givenTime } = body;
+    const { name, teamName, robotName, comment, orderRaw } = body;
     return this.participantService.addParticipant(
       actor,
       divisionId,
@@ -129,8 +129,7 @@ export class DivisionController {
       teamName,
       robotName,
       comment,
-      orderRaw,
-      givenTime
+      orderRaw
     );
   }
 

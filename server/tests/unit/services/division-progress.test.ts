@@ -58,6 +58,7 @@ const generateDummyDivision = (
   id: uuidv4(),
   competitionId,
   name: "테스트 부문",
+  timeLimit: 4 * 60 * 1000, // 4분
   description: "테스트 부문 설명",
   status,
   createdAt: new Date(),
@@ -81,7 +82,6 @@ const generateDummyParticipant = (
   robotName: "테스트 로봇",
   comment: "테스트 코멘트",
   orderRaw,
-  givenTime: 4 * 60 * 1000, // 4분
   createdAt: new Date(),
 });
 

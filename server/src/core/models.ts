@@ -9,6 +9,7 @@ export interface Division {
   id: string; // 대회 부문 ID
   competitionId: string; // 대회 ID
   name: string; // 대회 부문 이름
+  timeLimit: number; // 각 경연자에게 주어질 경연 제한 시간(ms)
   description: string; // 대회 부문 설명
   createdAt: Date; // 생성 시각
   /**
@@ -28,7 +29,6 @@ export interface Participant {
   robotName: string; // 로봇 이름
   comment: string; // 하고 싶은 말
   orderRaw: number; // 원본 경연 순번
-  givenTime: number; // 주어진 시간(ms)
   createdAt: Date; // 생성 시각
 }
 

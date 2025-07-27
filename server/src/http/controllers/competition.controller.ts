@@ -150,11 +150,12 @@ export class CompetitionController {
     @CurrentActor() actor: Actor,
     @Param("competitionId") competitionId: string,
     @Body() body: CreateDivisionDto
-  ) {
+  ): Promise<DivisionResponseDto> {
     const division = await this.competitionService.createDivision(
       actor,
       competitionId,
       body.name,
+      body.timeLimit,
       body.description
     );
     return division;

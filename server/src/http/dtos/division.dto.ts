@@ -1,11 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import {
-  IsIn,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 import { CompetitionResponseDto } from "./competition.dto";
 import { ManualRecordResponseDto } from "./manual-record.dto";
@@ -24,6 +18,12 @@ export class DivisionResponseDto {
 
   @ApiProperty({ description: "대회 부문 이름", example: "Expert-DC 본선" })
   name!: string;
+
+  @ApiProperty({
+    description: "주어진 경연 시간(ms)",
+    example: 4 * 60 * 1000, // 4분
+  })
+  timeLimit!: number;
 
   @ApiProperty({
     description: "대회 부문 설명",
@@ -49,6 +49,14 @@ export class CreateDivisionDto {
   name!: string;
 
   @ApiProperty({
+    description: "주어진 경연 시간(ms)",
+    example: 4 * 60 * 1000, // 4분
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  timeLimit!: number;
+
+  @ApiProperty({
     description: "대회 부문 설명",
     example: "멍때리면서 DC 모터 라인트레이서를 굴려보세요!",
   })
@@ -64,22 +72,20 @@ export class UpdateDivisionDto {
   name?: string;
 
   @ApiProperty({
+    description: "주어진 경연 시간(ms)",
+    example: 4 * 60 * 1000, // 4분
+  })
+  @IsNumber()
+  @IsOptional()
+  timeLimit?: number;
+
+  @ApiProperty({
     description: "대회 부문 설명",
     example: "멍때리면서 DC 모터 라인트레이서를 굴려보세요!",
   })
   @IsString()
   @IsOptional()
   description?: string;
-}
-
-export class SetDivisionStatusDto {
-  @ApiProperty({
-    description: "대회 부문 상태",
-    type: String,
-    enum: StatusTypes,
-  })
-  @IsIn(StatusTypes)
-  status!: (typeof StatusTypes)[number];
 }
 
 export class DivisionProgressResponseDto {

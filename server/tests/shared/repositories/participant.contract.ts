@@ -31,7 +31,6 @@ export function runParticipantRepositoryContract(
         robotName: `테스트 로봇 ${order}`,
         comment: `테스트 참가자 ${order}의 코멘트`,
         orderRaw: order,
-        givenTime: 4 * 60 * 1000, // 4분
         createdAt: new Date(),
       };
     }
@@ -67,7 +66,6 @@ export function runParticipantRepositoryContract(
         robotName: "수정된 로봇 이름",
         comment: "수정된 참가자 코멘트",
         orderRaw: 999,
-        givenTime: 5 * 60 * 1000, // 5분
       };
       await repo.update(updated);
       const loaded = await repo.getById(original.id);

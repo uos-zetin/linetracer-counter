@@ -64,6 +64,7 @@ const generateDummyDivisions = (
       id: uuidv4(),
       competitionId,
       name: `부문 ${i + 1}`,
+      timeLimit: 4 * 60 * 1000, // 4분
       description: `제${i + 1}회 부문 설명`,
       createdAt: new Date(),
       status: "ready",
@@ -83,7 +84,6 @@ const generateDummyParticipant = (
   robotName: "테스트 로봇",
   comment: "테스트 코멘트",
   orderRaw: 1,
-  givenTime: 4 * 60 * 1000, // 4분
   createdAt: new Date(),
 });
 
@@ -227,6 +227,7 @@ describe("CompetitionService 단위 테스트", () => {
     const result = await service.createDivision(
       division.competitionId,
       division.name,
+      division.timeLimit,
       division.description
     );
 

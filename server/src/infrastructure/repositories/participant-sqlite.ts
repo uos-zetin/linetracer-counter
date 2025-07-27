@@ -13,7 +13,6 @@ type ParticipantRecord = {
   robotName: string;
   comment: string;
   orderRaw: number;
-  givenTime: number;
   createdAt: string;
   isDeleted: number;
 };
@@ -36,7 +35,6 @@ export class ParticipantSQLiteRepository implements ParticipantRepository {
           robotName TEXT NOT NULL,
           comment TEXT NOT NULL,
           orderRaw INTEGER NOT NULL,
-          givenTime INTEGER NOT NULL,
           createdAt TEXT NOT NULL,
           isDeleted INTEGER NOT NULL
         )`
@@ -63,7 +61,6 @@ export class ParticipantSQLiteRepository implements ParticipantRepository {
       robotName: record.robotName,
       comment: record.comment,
       orderRaw: record.orderRaw,
-      givenTime: record.givenTime,
       createdAt: new Date(record.createdAt),
     };
   }
@@ -89,8 +86,8 @@ export class ParticipantSQLiteRepository implements ParticipantRepository {
   async create(participant: Participant): Promise<Participant> {
     await this.db
       .run(
-        `INSERT INTO participants (id, divisionId, name, teamName, robotName, comment, orderRaw, givenTime, createdAt, isDeleted)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+        `INSERT INTO participants (id, divisionId, name, teamName, robotName, comment, orderRaw, createdAt, isDeleted)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`,
         [
           participant.id,
           participant.divisionId,
@@ -99,7 +96,6 @@ export class ParticipantSQLiteRepository implements ParticipantRepository {
           participant.robotName,
           participant.comment,
           participant.orderRaw,
-          participant.givenTime,
           participant.createdAt.toISOString(),
         ]
       )
@@ -113,7 +109,7 @@ export class ParticipantSQLiteRepository implements ParticipantRepository {
     const result = await this.db
       .run(
         `UPDATE participants
-          SET divisionId = ?, name = ?, teamName = ?, robotName = ?, comment = ?, orderRaw = ?, givenTime = ?, createdAt = ?
+          SET divisionId = ?, name = ?, teamName = ?, robotName = ?, comment = ?, orderRaw = ?, createdAt = ?
           WHERE id = ? AND isDeleted = 0`,
         [
           participant.divisionId,
@@ -122,7 +118,6 @@ export class ParticipantSQLiteRepository implements ParticipantRepository {
           participant.robotName,
           participant.comment,
           participant.orderRaw,
-          participant.givenTime,
           participant.createdAt.toISOString(),
           participant.id,
         ]
