@@ -3,17 +3,16 @@ import { ProgressProvider } from "./progress-provider";
 import { AuthProvider } from "./auth-provider";
 import { RepositoryProvider } from "./repository-provider";
 import { AdminCompetitionProvider } from "./admin-competition-provider";
+import { composeProviders } from "./compose-providers";
+
+const ComposedProviders = composeProviders(
+  AuthProvider,
+  RepositoryProvider,
+  CounterProvider,
+  ProgressProvider,
+  AdminCompetitionProvider
+);
 
 export const AppProviders = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <AuthProvider>
-      <RepositoryProvider>
-        <CounterProvider>
-          <ProgressProvider>
-            <AdminCompetitionProvider>{children}</AdminCompetitionProvider>
-          </ProgressProvider>
-        </CounterProvider>
-      </RepositoryProvider>
-    </AuthProvider>
-  );
+  return <ComposedProviders>{children}</ComposedProviders>;
 };

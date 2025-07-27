@@ -1,4 +1,5 @@
 import type { Competition, CompetitionForm, CompetitionRepository } from "@/entities/competition";
+import { CompetitionFormSchema } from "@/entities/competition";
 import type { AdminCompetitionService } from "./types";
 
 interface AdminCompetitionServiceProps {
@@ -28,7 +29,8 @@ export const createAdminCompetitionService = ({
 
   const createCompetition = async (data: CompetitionForm): Promise<Competition> => {
     try {
-      return await competitionRepository.createCompetition(data);
+      const validatedData = CompetitionFormSchema.parse(data);
+      return await competitionRepository.createCompetition(validatedData);
     } catch (error) {
       console.error("Failed to create competition:", error);
       throw error;
@@ -37,17 +39,8 @@ export const createAdminCompetitionService = ({
 
   const updateCompetition = async (id: string, data: CompetitionForm): Promise<Competition> => {
     try {
-      const existingCompetition = await competitionRepository.getCompetitionById(id);
-      if (!existingCompetition) {
-        throw new Error(`Competition with id ${id} not found`);
-      }
-
-      const updatedCompetition = {
-        ...existingCompetition,
-        ...data,
-      };
-
-      return await competitionRepository.updateCompetition(updatedCompetition);
+      const validatedData = CompetitionFormSchema.parse(data);
+      return await competitionRepository.updateCompetition({ id, ...validatedData } as Competition);
     } catch (error) {
       console.error(`Failed to update competition ${id}:`, error);
       throw error;
