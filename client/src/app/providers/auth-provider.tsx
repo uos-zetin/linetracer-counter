@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { FetchApiFetcher, AuthenticatedFetcher } from "@/shared";
 import { UserFetcherRepository } from "@/entities/user";
 import { createAuthService, authServiceContext, AuthServiceSessionProvider, type AuthService } from "@/features/auth";
-import { createFetcherProvider } from "./fetcher-provider";
+import { FetcherProvider } from "./fetcher-provider";
 
 const AuthProviderInner = ({ authService, children }: { authService: AuthService; children: React.ReactNode }) => {
   // 세션 복원
@@ -31,12 +31,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const sessionProvider = new AuthServiceSessionProvider(authService);
   authenticatedFetcher.setSessionProvider(sessionProvider);
 
-  // 5. Fetcher Context 제공
-  const FetcherProvider = createFetcherProvider(publicFetcher, authenticatedFetcher);
-
   return (
     <authServiceContext.Provider value={authService}>
-      <FetcherProvider>
+      <FetcherProvider publicFetcher={publicFetcher} authenticatedFetcher={authenticatedFetcher}>
         <AuthProviderInner authService={authService}>{children}</AuthProviderInner>
       </FetcherProvider>
     </authServiceContext.Provider>

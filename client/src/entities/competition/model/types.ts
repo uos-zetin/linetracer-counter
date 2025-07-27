@@ -4,3 +4,8 @@ export interface Competition {
   description: string;
   createdAt: Date;
 }
+
+export interface CompetitionForm {
+  name: string;
+  description: string;
+}

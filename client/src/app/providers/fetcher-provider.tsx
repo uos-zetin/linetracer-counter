@@ -1,23 +1,14 @@
-import { createContext, useContext } from "react";
 import type { Fetcher } from "@/shared/api/fetcher";
+import { fetcherContext } from "./use-fetcher";
 
-interface FetcherContextValue {
+interface FetcherProviderProps {
+  children: React.ReactNode;
   publicFetcher: Fetcher;
   authenticatedFetcher: Fetcher;
 }
 
-const FetcherContext = createContext<FetcherContextValue | null>(null);
-
-export const createFetcherProvider = (publicFetcher: Fetcher, authenticatedFetcher: Fetcher) => {
-  return function FetcherProvider({ children }: { children: React.ReactNode }) {
-    return (
-      <FetcherContext.Provider value={{ publicFetcher, authenticatedFetcher }}>{children}</FetcherContext.Provider>
-    );
-  };
+export const FetcherProvider = ({ children, publicFetcher, authenticatedFetcher }: FetcherProviderProps) => {
+  return (
+    <fetcherContext.Provider value={{ publicFetcher, authenticatedFetcher }}>{children}</fetcherContext.Provider>
+  );
 };
-
-export function useFetcher() {
-  const ctx = useContext(FetcherContext);
-  if (!ctx) throw new Error("useFetcher must be used within FetcherProvider");
-  return ctx;
-}

@@ -1,15 +1,9 @@
-import {
-  CounterFetcherRepository,
-  CounterSocketIOChannel,
-  type CounterChannel,
-  type CounterRepository,
-} from "@/entities/counter";
-import { useFetcher } from "./fetcher-provider";
-import { counterRepoContext, createCounterService, type CounterService } from "@/features/counter";
+import { CounterSocketIOChannel, type CounterChannel } from "@/entities/counter";
+import { useRepository } from "./use-repository";
+import { counterServiceContext, createCounterService, type CounterService } from "@/features/counter";
 
 export const CounterProvider = ({ children }: { children: React.ReactNode }) => {
-  const fetcher = useFetcher();
-  const counterRepository: CounterRepository = new CounterFetcherRepository(fetcher.authenticatedFetcher);
+  const { counterRepository } = useRepository();
   const counterChannel: CounterChannel = new CounterSocketIOChannel();
 
   const counterService: CounterService = createCounterService({
@@ -17,7 +11,5 @@ export const CounterProvider = ({ children }: { children: React.ReactNode }) => 
     counterChannel,
   });
 
-  const CounterProvider = counterRepoContext.Provider;
-
-  return <CounterProvider value={counterService}>{children}</CounterProvider>;
+  return <counterServiceContext.Provider value={counterService}>{children}</counterServiceContext.Provider>;
 };
