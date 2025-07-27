@@ -59,14 +59,14 @@ describe("CounterService 단위 테스트", () => {
       // Assert
       expect(result).toEqual([
         {
-          id: "counter-001",
+          deviceId: "counter-001",
           name: "Test Counter",
           startedAt: null,
           stoppedAt: null,
           divisionId: null,
         },
         {
-          id: "counter-002",
+          deviceId: "counter-002",
           name: "Test Counter 2",
           startedAt: 1000,
           stoppedAt: 2000,
@@ -91,7 +91,7 @@ describe("CounterService 단위 테스트", () => {
 
       // Assert
       expect(result).toEqual({
-        id: "counter-001",
+        deviceId: "counter-001",
         name: "Test Counter",
         startedAt: 1000,
         stoppedAt: 2000,
