@@ -64,7 +64,7 @@ export class UserFetcherRepository implements UserRepository {
   }
 
   async updateUserRoles(userId: string, roles: UserRole[]): Promise<User> {
-    const response = await this.authenticatedFetcher.post<User>(`/api/actors/${userId}/roles`, {
+    const response = await this.authenticatedFetcher.patch<User>(`/api/actors/${userId}/roles`, {
       body: { roles },
     });
     return response.data;
