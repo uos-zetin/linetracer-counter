@@ -10,6 +10,9 @@ export interface ManualRecordDto {
 }
 
 export interface ManualRecordRepository {
-  // Implement methods when api is ready
-  postManualRecord(manualRecord: ManualRecord): Promise<ManualRecord>;
+  getAllManualRecords(participantId: string): Promise<ManualRecord[]>;
+  createManualRecord(
+    participantId: string,
+    manualRecord: Pick<ManualRecord, "value" | "recorderName">,
+  ): Promise<ManualRecord>;
 }

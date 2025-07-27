@@ -16,7 +16,7 @@ export class CounterFetcherRepository implements CounterRepository {
 
   async getById(id: string) {
     const response = await this.authFetcher.get<CounterDto>(`/api/counters/${id}`);
-    return parseCounterDto(response.data);
+    return response.data ? parseCounterDto(response.data) : null;
   }
 
   async connectDivision(counterId: string, divisionId: string) {
@@ -28,15 +28,17 @@ export class CounterFetcherRepository implements CounterRepository {
   }
 
   async disconnectDivision(counterId: string) {
-    await this.authFetcher.patch(`/api/counters/${counterId}/division`, {
-      body: { divisionId: "" },
-    });
-
+    await this.authFetcher.delete(`/api/counters/${counterId}/division`);
     return;
   }
 
   async reset(counterId: string) {
     await this.authFetcher.post(`/api/counters/${counterId}/reset`);
+    return;
+  }
+
+  async disconnectCounter(counterId: string) {
+    await this.authFetcher.delete(`/api/counters/${counterId}`);
     return;
   }
 }

@@ -7,7 +7,15 @@ export interface CompetitionDto {
   createdAt: string; // ISO 문자열
 }
 
+export interface CompetitionCreateDto {
+  name: string;
+  description: string;
+}
+
 export interface CompetitionRepository {
-  // Implement methods when api is ready
-  getCompetitions(): Promise<Competition[]>;
+  getAllCompetitions(): Promise<Competition[]>;
+  getCompetitionById(competitionId: string): Promise<Competition | null>;
+  createCompetition(competition: Omit<Competition, "id" | "createdAt">): Promise<Competition>;
+  updateCompetition(competition: Competition): Promise<Competition>;
+  deleteCompetition(competitionId: string): Promise<void>;
 }

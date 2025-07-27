@@ -13,6 +13,9 @@ export interface ParticipantDto {
 }
 
 export interface ParticipantRepository {
-  // Implement methods when api is ready
-  getParticipants(divisionId: string): Promise<Participant[]>;
+  getAllParticipants(divisionId: string): Promise<Participant[]>;
+  getParticipantById(participantId: string): Promise<Participant | null>;
+  createParticipant(divisionId: string, participant: Omit<Participant, "id" | "createdAt">): Promise<Participant>;
+  updateParticipant(participantId: string, participant: Participant): Promise<Participant | null>;
+  deleteParticipant(participantId: string): Promise<void>;
 }

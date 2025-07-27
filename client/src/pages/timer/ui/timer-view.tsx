@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
-import { getRemainingMs, formatMsToTime } from "@/entities/timer-log";
+import { getRemainingMs, formatMsToTime } from "@/entities/timer";
 
-import type { TimerState } from "@/entities/timer-log";
+import type { TimerState } from "@/entities/timer";
 
 export function TimerView({ timerState }: { timerState: TimerState }) {
   const [remainingMs, setRemainingMs] = useState(timerState.initialMs);
