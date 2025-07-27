@@ -141,7 +141,7 @@ export class CompetitionService {
   ): Promise<Division> {
     const target = await this.divisionRepo.getById(divisionId);
     if (data.name) target.name = data.name;
-    if (data.timeLimit) target.timeLimit = data.timeLimit;
+    if (data.timeLimit !== undefined) target.timeLimit = data.timeLimit;
     if (data.description) target.description = data.description;
     const updated = await this.divisionRepo.update(target);
     this.emitDivisionEvent(divisionId, {
