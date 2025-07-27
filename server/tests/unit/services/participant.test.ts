@@ -61,6 +61,7 @@ const generateDivision = (name: string): Division => ({
   id: uuidv4(),
   competitionId: uuidv4(),
   name,
+  timeLimit: 4 * 60 * 1000, // 4분
   description: `${name} 설명`,
   createdAt: new Date(),
   status: "ready",
@@ -77,7 +78,6 @@ const generateDummyParticipant = (
   robotName: "멍때리기로봇",
   comment: "멍때리면서 라인트레이서를 굴려보겠습니다!",
   orderRaw: 1,
-  givenTime: 4 * 60 * 1000, // 4분
   createdAt: new Date(),
 });
 
@@ -166,8 +166,7 @@ describe("ParticipantService 단위 테스트", () => {
         participant.teamName,
         participant.robotName,
         participant.comment,
-        participant.orderRaw,
-        participant.givenTime
+        participant.orderRaw
       );
 
       // Assert
@@ -180,7 +179,6 @@ describe("ParticipantService 단위 테스트", () => {
           robotName: participant.robotName,
           comment: participant.comment,
           orderRaw: participant.orderRaw,
-          givenTime: participant.givenTime,
         })
       );
       expect(mockDivisionRepo.getById).toHaveBeenCalledWith(
@@ -204,8 +202,7 @@ describe("ParticipantService 단위 테스트", () => {
         participant.teamName,
         participant.robotName,
         participant.comment,
-        participant.orderRaw,
-        participant.givenTime
+        participant.orderRaw
       );
 
       // Assert
@@ -236,7 +233,6 @@ describe("ParticipantService 단위 테스트", () => {
         robotName: "수정된 로봇명",
         comment: "수정된 코멘트",
         orderRaw: 999,
-        givenTime: 10 * 60 * 1000, // 10분
       };
       const updatedParticipant: Participant = {
         ...participant,

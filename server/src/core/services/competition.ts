@@ -117,12 +117,14 @@ export class CompetitionService {
   public async createDivision(
     competitionId: string,
     name: string,
+    timeLimit: number,
     description: string
   ): Promise<Division> {
     const data: Division = {
       id: uuidv4(),
       competitionId,
       name,
+      timeLimit,
       description,
       createdAt: new Date(),
       status: "ready",
@@ -131,14 +133,15 @@ export class CompetitionService {
   }
 
   /**
-   * 대회 부문의 이름/설명을 수정한다.
+   * 대회 부문의 이름/경연 제한 시간/설명을 수정한다.
    */
   public async updateDivision(
     divisionId: string,
-    data: { name?: string; description?: string }
+    data: { name?: string; timeLimit?: number; description?: string }
   ): Promise<Division> {
     const target = await this.divisionRepo.getById(divisionId);
     if (data.name) target.name = data.name;
+    if (data.timeLimit !== undefined) target.timeLimit = data.timeLimit;
     if (data.description) target.description = data.description;
     const updated = await this.divisionRepo.update(target);
     this.emitDivisionEvent(divisionId, {

@@ -8,6 +8,7 @@ type DivisionRecord = {
   id: string;
   competitionId: string;
   name: string;
+  timeLimit: number;
   description: string;
   createdAt: string;
   status: "ready" | "ongoing" | "closed";
@@ -29,6 +30,7 @@ export class DivisionSQLiteRepository implements DivisionRepository {
           id TEXT PRIMARY KEY NOT NULL,
           competitionId TEXT NOT NULL,
           name TEXT NOT NULL,
+          timeLimit INTEGER NOT NULL,
           description TEXT NOT NULL,
           createdAt TEXT NOT NULL,
           status TEXT NOT NULL,
@@ -101,6 +103,7 @@ export class DivisionSQLiteRepository implements DivisionRepository {
               id: data.id,
               competitionId: data.competitionId,
               name: data.name,
+              timeLimit: data.timeLimit,
               description: data.description,
               createdAt: new Date(data.createdAt),
               status: data.status,
@@ -117,12 +120,13 @@ export class DivisionSQLiteRepository implements DivisionRepository {
     return new Promise((resolve, reject) => {
       this.db.run(
         `INSERT INTO divisions
-          (id, competitionId, name, description, createdAt, status, isDeleted)
-          VALUES (?, ?, ?, ?, ?, ?, 0)`,
+          (id, competitionId, name, timeLimit, description, createdAt, status, isDeleted)
+          VALUES (?, ?, ?, ?, ?, ?, ?, 0)`,
         [
           division.id,
           division.competitionId,
           division.name,
+          division.timeLimit,
           division.description,
           division.createdAt.toISOString(),
           division.status,
@@ -146,10 +150,11 @@ export class DivisionSQLiteRepository implements DivisionRepository {
     return new Promise((resolve, reject) => {
       this.db.run(
         `UPDATE divisions
-          SET name = ?, description = ?, createdAt = ?, status = ?
+          SET name = ?, timeLimit = ?, description = ?, createdAt = ?, status = ?
           WHERE id = ? AND isDeleted = 0`,
         [
           division.name,
+          division.timeLimit,
           division.description,
           division.createdAt.toISOString(),
           division.status,
@@ -206,7 +211,7 @@ export class DivisionSQLiteRepository implements DivisionRepository {
 
     return new Promise((resolve, reject) => {
       this.db.all(
-        `SELECT id, competitionId, name, description, createdAt, status, isDeleted
+        `SELECT id, competitionId, name, timeLimit, description, createdAt, status, isDeleted
          FROM divisions
          WHERE competitionId = ? AND isDeleted = 0
          ORDER BY createdAt DESC`,
@@ -225,6 +230,7 @@ export class DivisionSQLiteRepository implements DivisionRepository {
                 id: row.id,
                 competitionId: row.competitionId,
                 name: row.name,
+                timeLimit: row.timeLimit,
                 description: row.description,
                 createdAt: new Date(row.createdAt),
                 status: row.status,

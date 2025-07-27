@@ -48,16 +48,22 @@ export class CompetitionActorService {
     actor: Actor,
     competitionId: string,
     name: string,
+    timeLimit: number,
     description: string
   ) {
     requireAnyRole(actor, "administrator");
-    return this.service.createDivision(competitionId, name, description);
+    return this.service.createDivision(
+      competitionId,
+      name,
+      timeLimit,
+      description
+    );
   }
 
   public async updateDivision(
     actor: Actor,
     divisionId: string,
-    data: { name?: string; description?: string }
+    data: { name?: string; timeLimit?: number; description?: string }
   ) {
     requireAnyRole(actor, "administrator");
     return this.service.updateDivision(divisionId, data);

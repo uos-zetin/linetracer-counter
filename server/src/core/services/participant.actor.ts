@@ -19,8 +19,7 @@ export class ParticipantActorService {
     teamName: string,
     robotName: string,
     comment: string,
-    orderRaw: number,
-    givenTime: number
+    orderRaw: number
   ): Promise<Participant> {
     requireAnyRole(actor, "administrator");
     return this.service.addParticipant(
@@ -29,8 +28,7 @@ export class ParticipantActorService {
       teamName,
       robotName,
       comment,
-      orderRaw,
-      givenTime
+      orderRaw
     );
   }
 
@@ -50,7 +48,6 @@ export class ParticipantActorService {
       robotName?: string;
       comment?: string;
       orderRaw?: number;
-      givenTime?: number;
     }
   ): Promise<Participant> {
     requireAnyRole(actor, "administrator");
