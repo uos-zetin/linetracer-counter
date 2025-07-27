@@ -148,11 +148,15 @@ export class MockTimerRepository implements TimerRepository {
   async adjustTimer(participantId: string, value: number): Promise<TimerLog> {
     await this.simulateDelay(120);
 
+    // Mock에서는 실제 서버 동작을 시뮬레이션: adjust 값을 add/sub로 변환
+    const adjustedValue = value >= 0 ? value : -value;
+    const adjustedType = value >= 0 ? "add" : "sub";
+
     const newLog: TimerLog = {
       id: `timer-log-${this.nextId++}`,
       participantId,
-      value,
-      type: value >= 0 ? "add" : "sub",
+      value: adjustedValue,
+      type: adjustedType,
       createdAt: new Date(),
     };
 

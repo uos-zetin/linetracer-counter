@@ -79,7 +79,7 @@ export class MockCompetitionRepository implements CompetitionRepository {
     const index = this.competitions.findIndex((c) => c.id === competition.id);
     
     if (index === -1) {
-      throw new Error(`Competition with id ${competition.id} not found`);
+      throw new Error(`대회를 찾을 수 없습니다: ${competition.id}`);
     }
 
     // 업데이트된 대회 정보 (createdAt은 변경하지 않음)
@@ -99,7 +99,7 @@ export class MockCompetitionRepository implements CompetitionRepository {
     const index = this.competitions.findIndex((c) => c.id === competitionId);
     
     if (index === -1) {
-      throw new Error(`Competition with id ${competitionId} not found`);
+      throw new Error(`대회를 찾을 수 없습니다: ${competitionId}`);
     }
 
     this.competitions.splice(index, 1);

@@ -159,7 +159,7 @@ export class MockDivisionRepository implements DivisionRepository {
 
     const division = this.divisionStore.get(divisionId);
     if (!division) {
-      throw new Error("Division not found");
+      throw new Error("부문을 찾을 수 없습니다");
     }
 
     // 전체 저장소에서 삭제

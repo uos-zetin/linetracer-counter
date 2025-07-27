@@ -5,6 +5,7 @@ export class MockRecordRepository implements RecordRepository {
   private records: Map<string, Record> = new Map();
   private recordsByParticipant: Map<string, string[]> = new Map();
   private recordsByDivision: Map<string, string[]> = new Map();
+  private participantToDivision: Map<string, string> = new Map(); // 참가자 ID -> 부문 ID 매핑
   private nextId = 1;
 
   constructor() {
@@ -125,6 +126,9 @@ export class MockRecordRepository implements RecordRepository {
     mockRecords.forEach(({ participantId, divisionId, records }) => {
       const participantRecordIds: string[] = [];
       
+      // 참가자-부문 매핑 저장
+      this.participantToDivision.set(participantId, divisionId);
+      
       records.forEach(record => {
         this.records.set(record.id, record);
         participantRecordIds.push(record.id);
@@ -195,11 +199,13 @@ export class MockRecordRepository implements RecordRepository {
     participantRecords.push(newRecord.id);
     this.recordsByParticipant.set(participantId, participantRecords);
 
-    // 부문별 기록 추가 (참가자의 부문을 찾아야 함)
-    // 여기서는 간단히 division-1로 가정
-    const divisionRecords = this.recordsByDivision.get("division-1") || [];
-    divisionRecords.push(newRecord.id);
-    this.recordsByDivision.set("division-1", divisionRecords);
+    // 부문별 기록 추가 (참가자의 부문 찾기)
+    const divisionId = this.participantToDivision.get(participantId);
+    if (divisionId) {
+      const divisionRecords = this.recordsByDivision.get(divisionId) || [];
+      divisionRecords.push(newRecord.id);
+      this.recordsByDivision.set(divisionId, divisionRecords);
+    }
 
     return { ...newRecord };
   }
@@ -246,12 +252,16 @@ export class MockRecordRepository implements RecordRepository {
     this.records.clear();
     this.recordsByParticipant.clear();
     this.recordsByDivision.clear();
+    this.participantToDivision.clear();
     this.nextId = 1;
     this.initializeMockData();
   }
 
   public addTestRecord(divisionId: string, record: Record): void {
     this.records.set(record.id, record);
+    
+    // 참가자-부문 매핑 업데이트
+    this.participantToDivision.set(record.participantId, divisionId);
     
     const participantRecords = this.recordsByParticipant.get(record.participantId) || [];
     participantRecords.push(record.id);
