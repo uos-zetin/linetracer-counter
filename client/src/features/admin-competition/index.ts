@@ -1,4 +1,4 @@
-export { createAdminCompetitionService } from "./model/admin-competition-service";
+export { createAdminCompetitionService } from "./model/service";
 export { AdminCompetitionContext, useAdminCompetitionService } from "./model/context";
 export type { AdminCompetitionService } from "./model/types";
 

@@ -1,4 +1,4 @@
-export { createAdminDivisionService } from "./model/admin-division-service";
+export { createAdminDivisionService } from "./model/service";
 export { AdminDivisionContext, useAdminDivisionService } from "./model/context";
 export type { AdminDivisionService } from "./model/types";
 
