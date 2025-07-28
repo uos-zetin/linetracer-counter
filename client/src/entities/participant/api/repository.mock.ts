@@ -31,7 +31,7 @@ export class MockParticipantRepository implements ParticipantRepository {
         givenTime: 180,
       },
       {
-        divisionId: "division-1", 
+        divisionId: "division-1",
         name: "이지은",
         teamName: "부산국제고등학교",
         robotName: "라이트닝볼트",
@@ -48,7 +48,7 @@ export class MockParticipantRepository implements ParticipantRepository {
         orderRaw: 3,
         givenTime: 195,
       },
-      // 부문 2 참가자들  
+      // 부문 2 참가자들
       {
         divisionId: "division-2",
         name: "최은영",
@@ -61,7 +61,7 @@ export class MockParticipantRepository implements ParticipantRepository {
       {
         divisionId: "division-2",
         name: "정우진",
-        teamName: "광주과학고등학교", 
+        teamName: "광주과학고등학교",
         robotName: "아이언이글",
         comment: "부문 2 두 번째 참가자",
         orderRaw: 2,
@@ -91,7 +91,7 @@ export class MockParticipantRepository implements ParticipantRepository {
         name: "송미래",
         teamName: "전주과학고등학교",
         robotName: "퓨처스타",
-        comment: "부문 3 두 번째 참가자", 
+        comment: "부문 3 두 번째 참가자",
         orderRaw: 2,
         givenTime: 185,
       },
@@ -105,12 +105,11 @@ export class MockParticipantRepository implements ParticipantRepository {
         robotName: data.robotName,
         comment: data.comment,
         orderRaw: data.orderRaw,
-        givenTime: data.givenTime,
         createdAt: new Date(),
       };
 
       this.participants.set(participant.id, participant);
-      
+
       if (!this.participantsByDivision.has(data.divisionId)) {
         this.participantsByDivision.set(data.divisionId, []);
       }
@@ -127,7 +126,7 @@ export class MockParticipantRepository implements ParticipantRepository {
 
     const participantIds = this.participantsByDivision.get(divisionId) || [];
     const participants = participantIds
-      .map(id => this.participants.get(id))
+      .map((id) => this.participants.get(id))
       .filter((participant): participant is Participant => participant !== undefined)
       .sort((a, b) => a.orderRaw - b.orderRaw); // 순서대로 정렬
 
@@ -175,10 +174,7 @@ export class MockParticipantRepository implements ParticipantRepository {
   /**
    * 참가자 정보를 업데이트합니다.
    */
-  async updateParticipant(
-    participantId: string,
-    participant: Participant,
-  ): Promise<Participant | null> {
+  async updateParticipant(participantId: string, participant: Participant): Promise<Participant | null> {
     await this.simulateNetworkDelay();
 
     const existingParticipant = this.participants.get(participantId);
@@ -226,7 +222,7 @@ export class MockParticipantRepository implements ParticipantRepository {
    */
   private async simulateNetworkDelay(): Promise<void> {
     const delay = Math.random() * 100 + 50; // 50-150ms 랜덤 지연
-    return new Promise(resolve => setTimeout(resolve, delay));
+    return new Promise((resolve) => setTimeout(resolve, delay));
   }
 
   /**

@@ -24,6 +24,7 @@ export class MockDivisionRepository implements DivisionRepository {
         description: "초등학교 1-6학년 대상 부문",
         createdAt: new Date("2024-01-01T09:00:00Z"),
         status: "ready",
+        timeLimit: 4 * 60 * 1000,
       },
       {
         id: "division-2",
@@ -32,6 +33,7 @@ export class MockDivisionRepository implements DivisionRepository {
         description: "중학교 1-3학년 대상 부문",
         createdAt: new Date("2024-01-01T09:05:00Z"),
         status: "ongoing",
+        timeLimit: 4 * 60 * 1000,
       },
       {
         id: "division-3",
@@ -40,6 +42,7 @@ export class MockDivisionRepository implements DivisionRepository {
         description: "고등학교 1-3학년 대상 부문",
         createdAt: new Date("2024-01-01T09:10:00Z"),
         status: "ready",
+        timeLimit: 4 * 60 * 1000,
       },
       {
         id: "division-4",
@@ -48,6 +51,7 @@ export class MockDivisionRepository implements DivisionRepository {
         description: "대학생 및 성인 대상 부문",
         createdAt: new Date("2024-01-01T09:15:00Z"),
         status: "closed",
+        timeLimit: 4 * 60 * 1000,
       },
     ];
 
@@ -60,6 +64,7 @@ export class MockDivisionRepository implements DivisionRepository {
         description: "10세 이하 참가자 대상",
         createdAt: new Date("2024-02-01T10:00:00Z"),
         status: "ready",
+        timeLimit: 4 * 60 * 1000,
       },
       {
         id: "division-6",
@@ -68,6 +73,7 @@ export class MockDivisionRepository implements DivisionRepository {
         description: "18세 이상 참가자 대상",
         createdAt: new Date("2024-02-01T10:05:00Z"),
         status: "ongoing",
+        timeLimit: 4 * 60 * 1000,
       },
     ];
 
@@ -99,10 +105,7 @@ export class MockDivisionRepository implements DivisionRepository {
     return division ? { ...division } : null;
   }
 
-  async createDivision(
-    competitionId: string,
-    division: Omit<Division, "id" | "createdAt">
-  ): Promise<Division> {
+  async createDivision(competitionId: string, division: Omit<Division, "id" | "createdAt">): Promise<Division> {
     // 실제 API 호출을 시뮬레이션하기 위한 지연
     await new Promise((resolve) => setTimeout(resolve, 200));
 
