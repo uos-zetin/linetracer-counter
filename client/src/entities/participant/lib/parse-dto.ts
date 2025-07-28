@@ -9,7 +9,6 @@ export function parseParticipantDto(dto: ParticipantDto): Participant {
     robotName: dto.robotName,
     comment: dto.comment,
     orderRaw: dto.orderRaw,
-    givenTime: dto.givenTime,
     createdAt: new Date(dto.createdAt), // ISO 문자열을 Date 객체로 변환
   };
 }

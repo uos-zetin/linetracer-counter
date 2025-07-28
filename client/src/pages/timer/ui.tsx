@@ -30,6 +30,7 @@ const mockProgress: ProgressState = {
     createdAt: new Date("2023-10-01T00:00:00Z"),
     competitionId: "competition-1",
     status: "ongoing",
+    timeLimit: 4 * 60 * 1000,
   },
   runner: {
     participant: {
@@ -37,7 +38,6 @@ const mockProgress: ProgressState = {
       name: "김민교",
       teamName: "ZETIN",
       robotName: "2019년산",
-      givenTime: 4 * 60 * 1000,
       createdAt: new Date("2023-10-01T00:00:00Z"),
       comment: "최고의 라인트레이서",
       orderRaw: 1,
@@ -93,7 +93,6 @@ const mockProgress: ProgressState = {
       name: "이영희",
       teamName: "ZETIN",
       robotName: "2020년산",
-      givenTime: 3 * 60 * 1000, // 3 minutes in milliseconds
       createdAt: new Date("2023-10-01T00:00:00Z"),
       comment: "빠른 라인트레이서",
       orderRaw: 2,
@@ -103,7 +102,6 @@ const mockProgress: ProgressState = {
       name: "박철수",
       teamName: "ZETIN",
       robotName: "2021년산",
-      givenTime: 5 * 60 * 1000, // 5 minutes in milliseconds
       createdAt: new Date("2023-10-01T00:00:00Z"),
       comment: "강력한 라인트레이서",
       orderRaw: 3,
@@ -168,7 +166,7 @@ export function TimerPage() {
   const nextRunners = progressService.useNextRunners();
   const timerLogs = runner?.timerLogs ?? [];
 
-  const timerState = integrateLogs(runner?.participant.givenTime ?? 0, timerLogs);
+  const timerState = integrateLogs(division?.timeLimit ?? 0, timerLogs);
 
   // counterId가 없으면 로딩 상태 표시
   if (!counterId) {

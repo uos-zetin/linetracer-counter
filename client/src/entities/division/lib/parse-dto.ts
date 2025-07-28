@@ -9,5 +9,6 @@ export function parseDivisionDto(dto: DivisionDto): Division {
     description: dto.description,
     createdAt: new Date(dto.createdAt), // ISO 문자열을 Date 객체로 변환
     status: dto.status,
+    timeLimit: dto.timeLimit,
   };
 }

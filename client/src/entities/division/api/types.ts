@@ -7,6 +7,7 @@ export interface DivisionDto {
   description: string;
   createdAt: string;
   status: "ready" | "ongoing" | "closed";
+  timeLimit: number;
 }
 
 export interface DivisionRepository {

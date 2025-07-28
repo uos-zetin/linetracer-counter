@@ -7,4 +7,5 @@ export interface Division {
   description: string;
   createdAt: Date;
   status: DivisionStatus;
+  timeLimit: number;
 }

@@ -1,7 +1,7 @@
 import type { CounterState } from "../model/types";
 
 export interface CounterDto {
-  id: string;
+  deviceId: string;
   name: string;
   startedAt: number | null;
   stoppedAt: number | null;

@@ -5,6 +5,5 @@ export interface Participant {
   robotName: string;
   comment: string;
   orderRaw: number;
-  givenTime: number;
   createdAt: Date;
 }

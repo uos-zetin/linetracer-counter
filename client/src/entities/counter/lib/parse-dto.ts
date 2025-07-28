@@ -3,7 +3,7 @@ import type { CounterState } from "../model/types";
 
 export function parseCounterDto(dto: CounterDto): CounterState {
   return {
-    id: dto.id,
+    id: dto.deviceId,
     name: dto.name,
     startedAt: dto.startedAt ? dto.startedAt : null,
     stoppedAt: dto.stoppedAt ? dto.stoppedAt : null,

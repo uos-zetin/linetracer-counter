@@ -8,7 +8,6 @@ export interface ParticipantDto {
   robotName: string;
   comment: string;
   orderRaw: number;
-  givenTime: number;
   createdAt: string;
 }
 
