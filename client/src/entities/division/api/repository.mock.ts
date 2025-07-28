@@ -12,81 +12,106 @@ export class MockDivisionRepository implements DivisionRepository {
   }
 
   private initializeMockData(): void {
-    const competition1Id = "competition-1";
-    const competition2Id = "competition-2";
+    // Competition Mock Repository의 실제 ID 사용
+    const comp001 = "comp-001"; // 제1회 로봇 프로그래밍 대회
+    const comp002 = "comp-002"; // 대학생 알고리즘 경진대회
+    const comp003 = "comp-003"; // AI 해커톤 2024
 
-    // 대회 1의 부문들
-    const competition1Divisions: Division[] = [
+    // comp-001 (로봇 프로그래밍 대회)의 부문들
+    const comp001Divisions: Division[] = [
       {
-        id: "division-1",
-        competitionId: competition1Id,
+        id: "division-001",
+        competitionId: comp001,
         name: "초등부",
-        description: "초등학교 1-6학년 대상 부문",
-        createdAt: new Date("2024-01-01T09:00:00Z"),
+        description: "초등학교 1-6학년 대상 로봇 프로그래밍 부문",
+        createdAt: new Date("2024-01-15T09:00:00Z"),
         status: "ready",
-        timeLimit: 4 * 60 * 1000,
+        timeLimit: 240, // 4시간 (분 단위)
       },
       {
-        id: "division-2",
-        competitionId: competition1Id,
+        id: "division-002",
+        competitionId: comp001,
         name: "중등부",
-        description: "중학교 1-3학년 대상 부문",
-        createdAt: new Date("2024-01-01T09:05:00Z"),
-        status: "ongoing",
-        timeLimit: 4 * 60 * 1000,
-      },
-      {
-        id: "division-3",
-        competitionId: competition1Id,
-        name: "고등부",
-        description: "고등학교 1-3학년 대상 부문",
-        createdAt: new Date("2024-01-01T09:10:00Z"),
+        description: "중학교 1-3학년 대상 로봇 프로그래밍 부문",
+        createdAt: new Date("2024-01-15T09:05:00Z"),
         status: "ready",
-        timeLimit: 4 * 60 * 1000,
+        timeLimit: 300, // 5시간
       },
       {
-        id: "division-4",
-        competitionId: competition1Id,
-        name: "일반부",
-        description: "대학생 및 성인 대상 부문",
-        createdAt: new Date("2024-01-01T09:15:00Z"),
-        status: "closed",
-        timeLimit: 4 * 60 * 1000,
+        id: "division-003",
+        competitionId: comp001,
+        name: "고등부",
+        description: "고등학교 1-3학년 대상 로봇 프로그래밍 부문",
+        createdAt: new Date("2024-01-15T09:10:00Z"),
+        status: "ongoing",
+        timeLimit: 360, // 6시간
       },
     ];
 
-    // 대회 2의 부문들
-    const competition2Divisions: Division[] = [
+    // comp-002 (알고리즘 경진대회)의 부문들
+    const comp002Divisions: Division[] = [
       {
-        id: "division-5",
-        competitionId: competition2Id,
-        name: "주니어부",
-        description: "10세 이하 참가자 대상",
-        createdAt: new Date("2024-02-01T10:00:00Z"),
+        id: "division-004",
+        competitionId: comp002,
+        name: "Beginner",
+        description: "프로그래밍 입문자 대상 알고리즘 문제",
+        createdAt: new Date("2024-02-20T10:30:00Z"),
         status: "ready",
-        timeLimit: 4 * 60 * 1000,
+        timeLimit: 180, // 3시간
       },
       {
-        id: "division-6",
-        competitionId: competition2Id,
-        name: "시니어부",
-        description: "18세 이상 참가자 대상",
-        createdAt: new Date("2024-02-01T10:05:00Z"),
-        status: "ongoing",
-        timeLimit: 4 * 60 * 1000,
+        id: "division-005",
+        competitionId: comp002,
+        name: "Intermediate",
+        description: "중급자 대상 알고리즘 문제",
+        createdAt: new Date("2024-02-20T10:35:00Z"),
+        status: "ready",
+        timeLimit: 240, // 4시간
+      },
+      {
+        id: "division-006",
+        competitionId: comp002,
+        name: "Advanced",
+        description: "고급자 대상 고난도 알고리즘 문제",
+        createdAt: new Date("2024-02-20T10:40:00Z"),
+        status: "closed",
+        timeLimit: 300, // 5시간
+      },
+    ];
+
+    // comp-003 (AI 해커톤)의 부문들
+    const comp003Divisions: Division[] = [
+      {
+        id: "division-007",
+        competitionId: comp003,
+        name: "Computer Vision",
+        description: "컴퓨터 비전 기술을 활용한 AI 솔루션 개발",
+        createdAt: new Date("2024-03-10T14:00:00Z"),
+        status: "ready",
+        timeLimit: 2880, // 48시간
+      },
+      {
+        id: "division-008",
+        competitionId: comp003,
+        name: "Natural Language Processing",
+        description: "자연어 처리 기술을 활용한 AI 솔루션 개발", 
+        createdAt: new Date("2024-03-10T14:05:00Z"),
+        status: "ready",
+        timeLimit: 2880, // 48시간
       },
     ];
 
     // competitionId별로 divisions 저장
-    this.divisions.set(competition1Id, competition1Divisions);
-    this.divisions.set(competition2Id, competition2Divisions);
+    this.divisions.set(comp001, comp001Divisions);
+    this.divisions.set(comp002, comp002Divisions);
+    this.divisions.set(comp003, comp003Divisions);
 
     // 전체 division 저장소에 저장
-    [...competition1Divisions, ...competition2Divisions].forEach((division) => {
+    [...comp001Divisions, ...comp002Divisions, ...comp003Divisions].forEach((division) => {
       this.divisionStore.set(division.id, division);
     });
 
-    this.nextId = 7; // 다음 ID는 7부터 시작
+    this.nextId = 9; // 다음 ID는 9부터 시작
   }
 
   async getAllDivisions(competitionId: string): Promise<Division[]> {
@@ -105,14 +130,15 @@ export class MockDivisionRepository implements DivisionRepository {
     return division ? { ...division } : null;
   }
 
-  async createDivision(competitionId: string, division: Omit<Division, "id" | "createdAt">): Promise<Division> {
+  async createDivision(competitionId: string, division: Omit<Division, "id" | "createdAt" | "status">): Promise<Division> {
     // 실제 API 호출을 시뮬레이션하기 위한 지연
     await new Promise((resolve) => setTimeout(resolve, 200));
 
     const newDivision: Division = {
       ...division,
-      id: `division-${this.nextId++}`,
+      id: `division-${String(this.nextId++).padStart(3, '0')}`,
       createdAt: new Date(),
+      status: "ready",
     };
 
     // competitionId별 divisions에 추가
@@ -174,50 +200,5 @@ export class MockDivisionRepository implements DivisionRepository {
       const filteredDivisions = competitionDivisions.filter((d) => d.id !== divisionId);
       this.divisions.set(division.competitionId, filteredDivisions);
     }
-  }
-
-  // 테스트를 위한 헬퍼 메서드들
-  public reset(): void {
-    this.divisions.clear();
-    this.divisionStore.clear();
-    this.nextId = 1;
-    this.initializeMockData();
-  }
-
-  public addTestDivision(division: Division): void {
-    this.divisionStore.set(division.id, division);
-    const competitionDivisions = this.divisions.get(division.competitionId) || [];
-    competitionDivisions.push(division);
-    this.divisions.set(division.competitionId, competitionDivisions);
-  }
-
-  public getStoredDivision(divisionId: string): Division | undefined {
-    return this.divisionStore.get(divisionId);
-  }
-
-  public getStoredDivisionsByCompetition(competitionId: string): Division[] {
-    return this.divisions.get(competitionId) || [];
-  }
-
-  // 상태 변경을 시뮬레이션하는 메서드
-  public simulateStatusChange(divisionId: string, newStatus: Division["status"]): boolean {
-    const division = this.divisionStore.get(divisionId);
-    if (!division) {
-      return false;
-    }
-
-    const updatedDivision = { ...division, status: newStatus };
-    this.divisionStore.set(divisionId, updatedDivision);
-
-    // competitionId별 저장소도 업데이트
-    const competitionDivisions = this.divisions.get(division.competitionId);
-    if (competitionDivisions) {
-      const index = competitionDivisions.findIndex((d) => d.id === divisionId);
-      if (index !== -1) {
-        competitionDivisions[index] = updatedDivision;
-      }
-    }
-
-    return true;
   }
 }
