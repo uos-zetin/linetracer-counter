@@ -10,6 +10,8 @@ export async function bootstrap() {
   await container.initialize();
   const app = await NestFactory.create(AppModule);
 
+  app.setGlobalPrefix("api");
+
   const config = new DocumentBuilder()
     .setTitle("ZETIN Linetracer Counter Server")
     .setDescription("APIs for ZETIN Linetracer Counter Server")
@@ -25,7 +27,7 @@ export async function bootstrap() {
     )
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup("docs", app, documentFactory);
+  SwaggerModule.setup("/api/docs", app, documentFactory);
 
   app.useGlobalPipes(
     new ValidationPipe({
