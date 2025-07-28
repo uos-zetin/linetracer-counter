@@ -13,22 +13,22 @@ export class TimerFetcherRepository implements TimerRepository {
   }
 
   async getTimerLogs(participantId: string): Promise<TimerLog[]> {
-    const response = await this.fetcher.get<TimerLogDto[]>(`/participants/${participantId}/timers`);
+    const response = await this.fetcher.get<TimerLogDto[]>(`/api/participants/${participantId}/timers`);
     return response.data.map((dto) => parseTimerLogDto(dto)) || [];
   }
 
   async startTimer(participantId: string): Promise<TimerLog> {
-    const response = await this.authFetcher.post<TimerLogDto>(`/participants/${participantId}/timers/start`);
+    const response = await this.authFetcher.post<TimerLogDto>(`/api/participants/${participantId}/timers/start`);
     return parseTimerLogDto(response.data);
   }
 
   async stopTimer(participantId: string): Promise<TimerLog> {
-    const response = await this.authFetcher.post<TimerLogDto>(`/participants/${participantId}/timers/stop`);
+    const response = await this.authFetcher.post<TimerLogDto>(`/api/participants/${participantId}/timers/stop`);
     return parseTimerLogDto(response.data);
   }
 
   async adjustTimer(participantId: string, value: number): Promise<TimerLog> {
-    const response = await this.authFetcher.post<TimerLogDto>(`/participants/${participantId}/timers`, {
+    const response = await this.authFetcher.post<TimerLogDto>(`/api/participants/${participantId}/timers/adjust`, {
       body: { value },
     });
     return parseTimerLogDto(response.data);
