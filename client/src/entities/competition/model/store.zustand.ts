@@ -1,54 +1,62 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { enableMapSet } from "immer";
-import type { Competition, CompetitionStore } from "./types";
-
-// Immer MapSet 플러그인 활성화
-enableMapSet();
+import type { CompetitionStore } from "./types";
 
 /** 테스트 편의를 위해 그대로 export */
 export const useZustandCompetitionStore = create<CompetitionStore>()(
   immer((set, get) => ({
-    competitions: new Map<string, Competition>(),
+    competitions: [],
 
     init: (competitions) =>
       set((state) => {
-        state.competitions.clear();
-        competitions.forEach((competition) => {
-          state.competitions.set(competition.id, competition);
-        });
+        // 생성일시 역순으로 정렬하여 저장
+        state.competitions = competitions.sort((a, b) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
       }),
 
     add: (competition) =>
       set((state) => {
-        state.competitions.set(competition.id, competition);
+        // 기존 항목이 있으면 제거 후 추가
+        state.competitions = state.competitions.filter(c => c.id !== competition.id);
+        
+        // 생성일시 순서에 맞게 삽입
+        const insertIndex = state.competitions.findIndex(c => 
+          new Date(competition.createdAt).getTime() > new Date(c.createdAt).getTime()
+        );
+        
+        if (insertIndex === -1) {
+          state.competitions.push(competition);
+        } else {
+          state.competitions.splice(insertIndex, 0, competition);
+        }
       }),
 
     update: (competition) =>
       set((state) => {
-        state.competitions.set(competition.id, competition);
+        const index = state.competitions.findIndex(c => c.id === competition.id);
+        if (index !== -1) {
+          state.competitions[index] = competition;
+        }
       }),
 
     remove: (competitionId) =>
       set((state) => {
-        state.competitions.delete(competitionId);
+        state.competitions = state.competitions.filter(c => c.id !== competitionId);
       }),
 
     getById: (competitionId) => {
       const competitions = get().competitions;
-      return competitions.get(competitionId) ?? null;
+      return competitions.find(c => c.id === competitionId) ?? null;
     },
 
     getAll: () => {
-      const competitions = get().competitions;
-      return Array.from(competitions.values()).sort((a, b) => 
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
+      return get().competitions;
     },
 
     clearAll: () =>
       set((state) => {
-        state.competitions.clear();
+        state.competitions = [];
       }),
   }))
 );

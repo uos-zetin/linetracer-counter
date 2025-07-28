@@ -88,7 +88,7 @@ export const createAdminCompetitionService = ({
 
   // Store 구독 메서드들
   const useCompetitions = (): Competition[] => {
-    return useZustandCompetitionStore((state) => state.getAll());
+    return useZustandCompetitionStore((state) => state.competitions);
   };
 
   const useCompetitionById = (id: string): Competition | null => {

@@ -24,5 +24,5 @@ export interface CompetitionGetters {
 }
 
 export interface CompetitionStore extends CompetitionActions, CompetitionGetters {
-  competitions: Map<string, Competition>; // 대회 상태를 저장하는 맵
+  competitions: Competition[]; // 대회 상태를 저장하는 배열 (생성일시 역순 정렬)
 }
