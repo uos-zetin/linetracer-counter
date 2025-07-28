@@ -9,6 +9,7 @@ dotenv.config({
 export type Env = {
   SQLITE_DB_PATH: string;
   PROGRESS_STATE_DIR: string;
+  STATIC_FILES_PATH: string;
 };
 
 export const env: Env = {
@@ -16,4 +17,6 @@ export const env: Env = {
   PROGRESS_STATE_DIR:
     process.env.PROGRESS_STATE_DIR ||
     path.join(os.tmpdir(), "division-progress-state"),
+  STATIC_FILES_PATH:
+    process.env.STATIC_FILES_PATH || path.join(process.cwd(), "static"),
 };

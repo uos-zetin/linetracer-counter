@@ -1,7 +1,11 @@
 import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
+import { ServeStaticModule } from "@nestjs/serve-static";
+
+import path from "path";
 
 import di from "@/container";
 import { ActorSessionStore } from "@/core/interfaces";
+import { env } from "@/env";
 
 import { ActorService } from "@/core/services/actor";
 import { CompetitionActorService } from "@/core/services/competition.actor";
@@ -77,6 +81,12 @@ const counterDeviceManager: CustomProvider<CounterDeviceActorManager> = {
     counterDeviceManager,
     DivisionProgressGateway,
     CounterGateway,
+  ],
+  imports: [
+    ServeStaticModule.forRoot({
+      rootPath: path.resolve(env.STATIC_FILES_PATH),
+      exclude: ["/api{/*path}"],
+    }),
   ],
 })
 export class AppModule {
