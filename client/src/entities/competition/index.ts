@@ -4,3 +4,4 @@ export { MockCompetitionRepository } from "./api/repository.mock";
 export * from "./lib/parse-dto";
 export * from "./model/types";
 export * from "./model/validation";
+export * from "./model/store.zustand";
