@@ -8,8 +8,8 @@
     "start": "node index.js",
     "test": "jest",
     "test:integration": "jest tests/integration",
-    "script:create-admin": "ts-node -r tsconfig-paths/register src/scripts/create-admin.ts",
-    "script:simulate-counter": "ts-node -r tsconfig-paths/register src/scripts/simulate-counter.ts"
+    "script:create-admin": "npm run build && node build/scripts/create-admin.js",
+    "script:simulate-counter": "npm run build && node build/scripts/simulate-counter.js"
   },
   "author": "",
   "license": "ISC",
