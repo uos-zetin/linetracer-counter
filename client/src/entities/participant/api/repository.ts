@@ -13,12 +13,12 @@ export class ParticipantFetcherRepository implements ParticipantRepository {
   }
 
   async getAllParticipants(divisionId: string): Promise<Participant[]> {
-    const response = await this.fetcher.get<ParticipantDto[]>(`/api/divisions/${divisionId}/participants`);
+    const response = await this.fetcher.get<ParticipantDto[]>(`/divisions/${divisionId}/participants`);
     return response.data.map((dto) => parseParticipantDto(dto));
   }
 
   async getParticipantById(participantId: string): Promise<Participant | null> {
-    const response = await this.fetcher.get<ParticipantDto>(`/api/participants/${participantId}`);
+    const response = await this.fetcher.get<ParticipantDto>(`/participants/${participantId}`);
     return response.data ? parseParticipantDto(response.data) : null;
   }
 
@@ -26,20 +26,20 @@ export class ParticipantFetcherRepository implements ParticipantRepository {
     divisionId: string,
     participant: Omit<Participant, "id" | "createdAt">,
   ): Promise<Participant> {
-    const response = await this.authFetcher.post<ParticipantDto>(`/api/divisions/${divisionId}/participants`, {
+    const response = await this.authFetcher.post<ParticipantDto>(`/divisions/${divisionId}/participants`, {
       body: participant,
     });
     return parseParticipantDto(response.data);
   }
 
   async updateParticipant(participantId: string, participant: Participant): Promise<Participant | null> {
-    const response = await this.authFetcher.patch<ParticipantDto>(`/api/participants/${participantId}`, {
+    const response = await this.authFetcher.patch<ParticipantDto>(`/participants/${participantId}`, {
       body: participant,
     });
     return response.data ? parseParticipantDto(response.data) : null;
   }
 
   async deleteParticipant(participantId: string): Promise<void> {
-    await this.authFetcher.delete(`/api/participants/${participantId}`);
+    await this.authFetcher.delete(`/participants/${participantId}`);
   }
 }
