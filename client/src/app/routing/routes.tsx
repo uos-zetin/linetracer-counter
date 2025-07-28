@@ -1,6 +1,6 @@
 import { createBrowserRouter, type RouteObject } from "react-router";
 import { HomePage } from "@/pages/home";
-import { AdminPage, AdminCompetitionsPage, AdminDivisionsPage } from "@/pages/admin";
+import { AdminPage, AdminCompetitionsPage, AdminDivisionsPage, AdminParticipantsPage } from "@/pages/admin";
 import { TimerPage } from "@/pages/timer";
 import { CounterSelectorPage } from "@/pages/counter-selector";
 
@@ -28,6 +28,10 @@ const routes: RouteObject[] = [
   {
     path: "/admin/divisions",
     element: <AdminDivisionsPage />,
+  },
+  {
+    path: "/admin/participants",
+    element: <AdminParticipantsPage />,
   },
 ];
 

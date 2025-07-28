@@ -14,7 +14,10 @@ export interface ParticipantDto {
 export interface ParticipantRepository {
   getAllParticipants(divisionId: string): Promise<Participant[]>;
   getParticipantById(participantId: string): Promise<Participant | null>;
-  createParticipant(divisionId: string, participant: Omit<Participant, "id" | "createdAt">): Promise<Participant>;
+  createParticipant(
+    divisionId: string,
+    participant: Omit<Participant, "id" | "divisionId" | "createdAt">,
+  ): Promise<Participant>;
   updateParticipant(participantId: string, participant: Participant): Promise<Participant | null>;
   deleteParticipant(participantId: string): Promise<void>;
 }

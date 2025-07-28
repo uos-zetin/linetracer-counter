@@ -12,7 +12,7 @@ export const createAdminCompetitionService = ({
   const loadAllCompetitions = async (): Promise<void> => {
     try {
       const competitions = await competitionRepository.getAllCompetitions();
-      
+
       // Store 업데이트
       const store = useZustandCompetitionStore.getState();
       store.init(competitions);
@@ -27,14 +27,14 @@ export const createAdminCompetitionService = ({
       // 먼저 Store에서 확인
       const store = useZustandCompetitionStore.getState();
       const cachedCompetition = store.getById(id);
-      
+
       if (cachedCompetition) {
         return; // 이미 Store에 있으면 바로 반환
       }
-      
+
       // Store에 없으면 Repository에서 조회
       const competition = await competitionRepository.getCompetitionById(id);
-      
+
       // Store 업데이트 (존재하는 경우만)
       if (competition) {
         store.add(competition);
@@ -49,7 +49,7 @@ export const createAdminCompetitionService = ({
     try {
       const validatedData = CompetitionFormSchema.parse(data);
       const newCompetition = await competitionRepository.createCompetition(validatedData);
-      
+
       // Store 업데이트
       const store = useZustandCompetitionStore.getState();
       store.add(newCompetition);
@@ -63,7 +63,7 @@ export const createAdminCompetitionService = ({
     try {
       const validatedData = CompetitionFormSchema.parse(data);
       const updatedCompetition = await competitionRepository.updateCompetition({ id, ...validatedData } as Competition);
-      
+
       // Store 업데이트
       const store = useZustandCompetitionStore.getState();
       store.update(updatedCompetition);
@@ -76,7 +76,7 @@ export const createAdminCompetitionService = ({
   const deleteCompetition = async (id: string): Promise<void> => {
     try {
       await competitionRepository.deleteCompetition(id);
-      
+
       // Store 업데이트
       const store = useZustandCompetitionStore.getState();
       store.remove(id);
@@ -102,7 +102,7 @@ export const createAdminCompetitionService = ({
     createCompetition,
     updateCompetition,
     deleteCompetition,
-    
+
     // Store 구독 메서드들
     useCompetitions,
     useCompetitionById,
