@@ -35,6 +35,7 @@ const mockProgress: ProgressState = {
   runner: {
     participant: {
       id: "abc",
+      divisionId: "division-1",
       name: "김민교",
       teamName: "ZETIN",
       robotName: "2019년산",
@@ -90,6 +91,7 @@ const mockProgress: ProgressState = {
   nextRunners: [
     {
       id: "def",
+      divisionId: "division-1",
       name: "이영희",
       teamName: "ZETIN",
       robotName: "2020년산",
@@ -99,6 +101,7 @@ const mockProgress: ProgressState = {
     },
     {
       id: "ghi",
+      divisionId: "division-1",
       name: "박철수",
       teamName: "ZETIN",
       robotName: "2021년산",

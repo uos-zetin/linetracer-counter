@@ -14,7 +14,7 @@ export class TimerFetcherRepository implements TimerRepository {
 
   async getTimerLogs(participantId: string): Promise<TimerLog[]> {
     const response = await this.fetcher.get<TimerLogDto[]>(`/participants/${participantId}/timers`);
-    return response.data.map((dto) => parseTimerLogDto(dto)) || [];
+    return response.data?.map((dto) => parseTimerLogDto(dto)) || [];
   }
 
   async startTimer(participantId: string): Promise<TimerLog> {
