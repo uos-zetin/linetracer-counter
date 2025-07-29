@@ -1,4 +1,7 @@
 export { AdminPage } from "./ui";
-export { AdminCompetitionsPage } from "./competitions";
-export { AdminDivisionsPage } from "./ui/admin-divisions-page";
-export { AdminParticipantsPage } from "./ui/admin-participants-page";
+export { AdminDashboard } from "./ui/admin-dashboard";
+export { CompetitionManagement } from "./ui/competition-management";
+export { DivisionManagement } from "./ui/division-management";
+export { ParticipantManagement } from "./ui/participant-management";
+export { RecordManagement } from "./ui/record-management";
+export { UserManagement } from "./ui/user-management";

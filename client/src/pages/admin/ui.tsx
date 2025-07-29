@@ -1,10 +1,10 @@
 import { AdminLayout } from "./ui/admin-layout";
-import { AdminDashboard } from "./ui/admin-dashboard";
+import { Outlet } from "react-router";
 
 export function AdminPage() {
   return (
     <AdminLayout>
-      <AdminDashboard />
+      <Outlet />
     </AdminLayout>
   );
 }
