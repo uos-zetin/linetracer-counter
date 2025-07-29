@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, ModalFooter } from "@/shared/ui";
+import { Modal, ModalFooter } from "@/shared";
 import type { Competition, CompetitionForm } from "@/entities/competition";
 
 interface CompetitionEditModalProps {
@@ -9,12 +9,7 @@ interface CompetitionEditModalProps {
   competition: Competition | null;
 }
 
-export function CompetitionEditModal({
-  isOpen,
-  onClose,
-  onSubmit,
-  competition,
-}: CompetitionEditModalProps) {
+export function CompetitionEditModal({ isOpen, onClose, onSubmit, competition }: CompetitionEditModalProps) {
   const [formData, setFormData] = useState<CompetitionForm>({
     name: "",
     description: "",
@@ -34,10 +29,10 @@ export function CompetitionEditModal({
   }, [isOpen, competition]);
 
   const handleInputChange = (field: keyof CompetitionForm, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // 에러 클리어
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
@@ -73,7 +68,7 @@ export function CompetitionEditModal({
         name: formData.name.trim(),
         description: formData.description.trim(),
       });
-      
+
       // 성공 시 모달 닫기
       onClose();
     } catch (error) {
@@ -97,12 +92,7 @@ export function CompetitionEditModal({
   }
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title="대회 수정"
-      size="md"
-    >
+    <Modal isOpen={isOpen} onClose={handleClose} title="대회 수정" size="md">
       <form onSubmit={handleSubmit}>
         <div className="px-6 py-4 space-y-4">
           {/* 대회명 */}
@@ -123,9 +113,7 @@ export function CompetitionEditModal({
               maxLength={100}
               disabled={isSubmitting}
             />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-            )}
+            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
           </div>
 
           {/* 설명 */}
@@ -146,12 +134,8 @@ export function CompetitionEditModal({
               maxLength={1000}
               disabled={isSubmitting}
             />
-            {errors.description && (
-              <p className="mt-1 text-sm text-red-600">{errors.description}</p>
-            )}
-            <p className="mt-1 text-sm text-gray-500">
-              {formData.description.length}/1000자
-            </p>
+            {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
+            <p className="mt-1 text-sm text-gray-500">{formData.description.length}/1000자</p>
           </div>
         </div>
 

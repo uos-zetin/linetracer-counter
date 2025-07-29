@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal, ModalFooter } from "@/shared/ui";
+import { Modal, ModalFooter } from "@/shared";
 import type { ParticipantForm } from "@/entities/participant";
 import type { Division } from "@/entities/division";
 
@@ -101,12 +101,12 @@ export function ParticipantCreateModal({
     <Modal isOpen={isOpen} onClose={handleClose} size="md" showCloseButton={false}>
       <div className="p-6">
         <h2 className="text-lg font-medium text-gray-900 mb-4">참가자 추가</h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* 부문 선택 */}
           <div>
             <label htmlFor="divisionId" className="block text-sm font-medium text-gray-700 mb-1">
-              부문 <span className="text-red-500">*</span>  
+              부문 <span className="text-red-500">*</span>
             </label>
             <select
               id="divisionId"
@@ -124,9 +124,7 @@ export function ParticipantCreateModal({
                 </option>
               ))}
             </select>
-            {errors.divisionId && (
-              <p className="mt-1 text-sm text-red-600">{errors.divisionId}</p>
-            )}
+            {errors.divisionId && <p className="mt-1 text-sm text-red-600">{errors.divisionId}</p>}
           </div>
 
           {/* 참가자명 */}
@@ -144,9 +142,7 @@ export function ParticipantCreateModal({
               }`}
               placeholder="참가자 이름을 입력하세요"
             />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-            )}
+            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
           </div>
 
           {/* 팀명 */}
@@ -164,9 +160,7 @@ export function ParticipantCreateModal({
               }`}
               placeholder="소속 팀명을 입력하세요"
             />
-            {errors.teamName && (
-              <p className="mt-1 text-sm text-red-600">{errors.teamName}</p>
-            )}
+            {errors.teamName && <p className="mt-1 text-sm text-red-600">{errors.teamName}</p>}
           </div>
 
           {/* 로봇명 */}
@@ -184,9 +178,7 @@ export function ParticipantCreateModal({
               }`}
               placeholder="로봇 이름을 입력하세요"
             />
-            {errors.robotName && (
-              <p className="mt-1 text-sm text-red-600">{errors.robotName}</p>
-            )}
+            {errors.robotName && <p className="mt-1 text-sm text-red-600">{errors.robotName}</p>}
           </div>
 
           {/* 참가 순서 */}
@@ -204,9 +196,7 @@ export function ParticipantCreateModal({
                 errors.orderRaw ? "border-red-300" : "border-gray-300"
               }`}
             />
-            {errors.orderRaw && (
-              <p className="mt-1 text-sm text-red-600">{errors.orderRaw}</p>
-            )}
+            {errors.orderRaw && <p className="mt-1 text-sm text-red-600">{errors.orderRaw}</p>}
           </div>
 
           {/* 코멘트 */}

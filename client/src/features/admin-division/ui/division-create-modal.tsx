@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, ModalFooter } from "@/shared/ui";
+import { Modal, ModalFooter } from "@/shared";
 import { useAdminCompetitionService } from "@/features/admin-competition";
 import type { DivisionForm } from "@/entities/division";
 import type { Competition } from "@/entities/competition";
@@ -11,12 +11,7 @@ interface DivisionCreateModalProps {
   preSelectedCompetitionId?: string;
 }
 
-export function DivisionCreateModal({
-  isOpen,
-  onClose,
-  onSubmit,
-  preSelectedCompetitionId,
-}: DivisionCreateModalProps) {
+export function DivisionCreateModal({ isOpen, onClose, onSubmit, preSelectedCompetitionId }: DivisionCreateModalProps) {
   const competitionService = useAdminCompetitionService();
   const competitions = competitionService.useCompetitions();
 
@@ -39,15 +34,15 @@ export function DivisionCreateModal({
   // preSelectedCompetitionId가 변경될 때 폼 데이터 업데이트
   useEffect(() => {
     if (preSelectedCompetitionId) {
-      setFormData(prev => ({ ...prev, competitionId: preSelectedCompetitionId }));
+      setFormData((prev) => ({ ...prev, competitionId: preSelectedCompetitionId }));
     }
   }, [preSelectedCompetitionId]);
 
   const handleInputChange = (field: keyof DivisionForm, value: string | number) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // 에러 클리어
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
@@ -95,7 +90,7 @@ export function DivisionCreateModal({
         description: formData.description.trim(),
         timeLimit: formData.timeLimit,
       });
-      
+
       // 성공 시 폼 초기화 및 모달 닫기
       setFormData({
         competitionId: preSelectedCompetitionId || "",
@@ -127,12 +122,7 @@ export function DivisionCreateModal({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title="새 부문 생성"
-      size="md"
-    >
+    <Modal isOpen={isOpen} onClose={handleClose} title="새 부문 생성" size="md">
       <form onSubmit={handleSubmit}>
         <div className="px-6 py-4 space-y-4">
           {/* 대회 선택 */}
@@ -157,9 +147,7 @@ export function DivisionCreateModal({
                 </option>
               ))}
             </select>
-            {errors.competitionId && (
-              <p className="mt-1 text-sm text-red-600">{errors.competitionId}</p>
-            )}
+            {errors.competitionId && <p className="mt-1 text-sm text-red-600">{errors.competitionId}</p>}
           </div>
 
           {/* 부문명 */}
@@ -180,9 +168,7 @@ export function DivisionCreateModal({
               maxLength={100}
               disabled={isSubmitting}
             />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-            )}
+            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
           </div>
 
           {/* 설명 */}
@@ -203,12 +189,8 @@ export function DivisionCreateModal({
               maxLength={1000}
               disabled={isSubmitting}
             />
-            {errors.description && (
-              <p className="mt-1 text-sm text-red-600">{errors.description}</p>
-            )}
-            <p className="mt-1 text-sm text-gray-500">
-              {formData.description.length}/1000자
-            </p>
+            {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
+            <p className="mt-1 text-sm text-gray-500">{formData.description.length}/1000자</p>
           </div>
 
           {/* 제한 시간 */}
@@ -229,12 +211,8 @@ export function DivisionCreateModal({
               max={1440}
               disabled={isSubmitting}
             />
-            {errors.timeLimit && (
-              <p className="mt-1 text-sm text-red-600">{errors.timeLimit}</p>
-            )}
-            <p className="mt-1 text-sm text-gray-500">
-              1분 ~ 1440분(24시간) 사이로 설정하세요
-            </p>
+            {errors.timeLimit && <p className="mt-1 text-sm text-red-600">{errors.timeLimit}</p>}
+            <p className="mt-1 text-sm text-gray-500">1분 ~ 1440분(24시간) 사이로 설정하세요</p>
           </div>
         </div>
 

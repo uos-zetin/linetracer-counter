@@ -1,4 +1,4 @@
-import { ConfirmModal } from "@/shared/ui";
+import { ConfirmModal } from "@/shared";
 import type { Participant } from "@/entities/participant";
 
 interface ParticipantDeleteModalProps {
@@ -8,12 +8,7 @@ interface ParticipantDeleteModalProps {
   participant: Participant | null;
 }
 
-export function ParticipantDeleteModal({
-  isOpen,
-  onClose,
-  onConfirm,
-  participant,
-}: ParticipantDeleteModalProps) {
+export function ParticipantDeleteModal({ isOpen, onClose, onConfirm, participant }: ParticipantDeleteModalProps) {
   if (!participant) {
     return null;
   }

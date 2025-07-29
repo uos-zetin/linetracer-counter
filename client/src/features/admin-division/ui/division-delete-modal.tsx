@@ -1,4 +1,4 @@
-import { ConfirmModal } from "@/shared/ui";
+import { ConfirmModal } from "@/shared";
 import type { Division } from "@/entities/division";
 
 interface DivisionDeleteModalProps {
@@ -8,12 +8,7 @@ interface DivisionDeleteModalProps {
   division: Division | null;
 }
 
-export function DivisionDeleteModal({
-  isOpen,
-  onClose,
-  onConfirm,
-  division,
-}: DivisionDeleteModalProps) {
+export function DivisionDeleteModal({ isOpen, onClose, onConfirm, division }: DivisionDeleteModalProps) {
   if (!division) {
     return null;
   }

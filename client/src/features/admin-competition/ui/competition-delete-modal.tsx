@@ -1,4 +1,4 @@
-import { ConfirmModal } from "@/shared/ui";
+import { ConfirmModal } from "@/shared";
 import type { Competition } from "@/entities/competition";
 
 interface CompetitionDeleteModalProps {
@@ -8,12 +8,7 @@ interface CompetitionDeleteModalProps {
   competition: Competition | null;
 }
 
-export function CompetitionDeleteModal({
-  isOpen,
-  onClose,
-  onConfirm,
-  competition,
-}: CompetitionDeleteModalProps) {
+export function CompetitionDeleteModal({ isOpen, onClose, onConfirm, competition }: CompetitionDeleteModalProps) {
   if (!competition) {
     return null;
   }

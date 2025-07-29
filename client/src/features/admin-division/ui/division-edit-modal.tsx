@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, ModalFooter } from "@/shared/ui";
+import { Modal, ModalFooter } from "@/shared";
 import { useAdminCompetitionService } from "@/features/admin-competition";
 import type { Division, DivisionForm } from "@/entities/division";
 
@@ -10,12 +10,7 @@ interface DivisionEditModalProps {
   division: Division | null;
 }
 
-export function DivisionEditModal({
-  isOpen,
-  onClose,
-  onSubmit,
-  division,
-}: DivisionEditModalProps) {
+export function DivisionEditModal({ isOpen, onClose, onSubmit, division }: DivisionEditModalProps) {
   const competitionService = useAdminCompetitionService();
   const competitions = competitionService.useCompetitions();
 
@@ -32,7 +27,7 @@ export function DivisionEditModal({
   useEffect(() => {
     if (isOpen) {
       competitionService.loadAllCompetitions().catch(console.error);
-      
+
       if (division) {
         setFormData({
           competitionId: division.competitionId,
@@ -46,10 +41,10 @@ export function DivisionEditModal({
   }, [isOpen, division]);
 
   const handleInputChange = (field: keyof DivisionForm, value: string | number) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // 에러 클리어
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
@@ -97,7 +92,7 @@ export function DivisionEditModal({
         description: formData.description.trim(),
         timeLimit: formData.timeLimit,
       });
-      
+
       // 성공 시 모달 닫기
       onClose();
     } catch (error) {
@@ -126,12 +121,7 @@ export function DivisionEditModal({
   }
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title="부문 수정"
-      size="md"
-    >
+    <Modal isOpen={isOpen} onClose={handleClose} title="부문 수정" size="md">
       <form onSubmit={handleSubmit}>
         <div className="px-6 py-4 space-y-4">
           {/* 대회 선택 */}
@@ -156,9 +146,7 @@ export function DivisionEditModal({
                 </option>
               ))}
             </select>
-            {errors.competitionId && (
-              <p className="mt-1 text-sm text-red-600">{errors.competitionId}</p>
-            )}
+            {errors.competitionId && <p className="mt-1 text-sm text-red-600">{errors.competitionId}</p>}
           </div>
 
           {/* 부문명 */}
@@ -179,9 +167,7 @@ export function DivisionEditModal({
               maxLength={100}
               disabled={isSubmitting}
             />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-            )}
+            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
           </div>
 
           {/* 설명 */}
@@ -202,12 +188,8 @@ export function DivisionEditModal({
               maxLength={1000}
               disabled={isSubmitting}
             />
-            {errors.description && (
-              <p className="mt-1 text-sm text-red-600">{errors.description}</p>
-            )}
-            <p className="mt-1 text-sm text-gray-500">
-              {formData.description.length}/1000자
-            </p>
+            {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
+            <p className="mt-1 text-sm text-gray-500">{formData.description.length}/1000자</p>
           </div>
 
           {/* 제한 시간 */}
@@ -228,12 +210,8 @@ export function DivisionEditModal({
               max={1440}
               disabled={isSubmitting}
             />
-            {errors.timeLimit && (
-              <p className="mt-1 text-sm text-red-600">{errors.timeLimit}</p>
-            )}
-            <p className="mt-1 text-sm text-gray-500">
-              1분 ~ 1440분(24시간) 사이로 설정하세요
-            </p>
+            {errors.timeLimit && <p className="mt-1 text-sm text-red-600">{errors.timeLimit}</p>}
+            <p className="mt-1 text-sm text-gray-500">1분 ~ 1440분(24시간) 사이로 설정하세요</p>
           </div>
         </div>
 
