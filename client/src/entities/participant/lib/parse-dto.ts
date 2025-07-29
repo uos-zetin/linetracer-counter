@@ -4,6 +4,7 @@ import type { Participant } from "../model/types";
 export function parseParticipantDto(dto: ParticipantDto): Participant {
   return {
     id: dto.id,
+    divisionId: dto.divisionId,
     name: dto.name,
     teamName: dto.teamName,
     robotName: dto.robotName,
