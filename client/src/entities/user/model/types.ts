@@ -12,8 +12,29 @@ export interface UserForm {
   roles: UserRole[];
 }
 
-export interface RegisterForm {
+export interface UserLoginForm {
+  userName: string;
+  password: string;
+}
+
+export interface UserRegisterForm {
   name: string;
   userName: string;
   password: string;
+}
+
+export interface UserActions {
+  init: (users: User[]) => void;
+  add: (user: User) => void;
+  addMany: (users: User[]) => void;
+  update: (user: User) => void;
+  remove: (userId: string) => void;
+}
+
+export interface UserGetters {
+  getById: (userId: string) => User | null;
+}
+
+export interface UserStore extends UserActions, UserGetters {
+  users: User[];
 }

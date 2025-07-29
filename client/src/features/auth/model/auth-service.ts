@@ -66,13 +66,20 @@ export const createAuthService = ({ userRepository }: AuthServiceProps): AuthSer
         throw new Error("로그인에 실패했습니다.");
       }
 
+      saveSession(loginResult);
+
+      // 로그인 성공 시 사용자 정보 조회
+      const user = await userRepository.getCurrentUser();
+      if (!user) {
+        throw new Error("사용자 정보를 가져오는 데 실패했습니다.");
+      }
+
       // 상태 업데이트
-      useAuthStore.getState().setAuth(loginResult.user, true);
+      useAuthStore.getState().setAuth(user, true);
 
       // 세션 저장
-      saveSession(loginResult.sessionKey);
 
-      return loginResult.user;
+      return user;
     } catch (error) {
       clearSession();
       useAuthStore.getState().clearAuth();

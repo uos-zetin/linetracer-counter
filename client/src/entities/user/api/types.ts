@@ -1,4 +1,4 @@
-import type { User, UserRole } from "../model/types";
+import type { UserRegisterForm, User, UserRole, UserLoginForm } from "../model/types";
 
 export interface UserDto {
   id: string;
@@ -18,16 +18,11 @@ export interface LoginUserDto {
   password: string;
 }
 
-export interface LoginResult {
-  user: User;
-  sessionKey: string;
-}
-
 export interface UserRepository {
   getAllUsers(): Promise<User[]>;
   getCurrentUser(): Promise<User | null>;
-  registerUser(user: RegisterUserDto): Promise<User>;
-  loginUser(user: LoginUserDto): Promise<LoginResult | null>;
+  registerUser(user: UserRegisterForm): Promise<User>;
+  loginUser(user: UserLoginForm): Promise<string>;
   logoutUser(): Promise<void>;
   updateUserRoles(userId: string, roles: UserRole[]): Promise<User>;
   deleteUser(userId: string): Promise<void>;
