@@ -3,7 +3,7 @@ import type { AdminUserService } from "./types";
 
 export const AdminUserContext = createContext<AdminUserService | null>(null);
 
-export const useAdminUserContext = () => {
+export const useAdminUserService = () => {
   const context = useContext(AdminUserContext);
   if (!context) {
     throw new Error("useAdminUserContext must be used within an AdminUserProvider");

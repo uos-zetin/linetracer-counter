@@ -9,7 +9,8 @@ export const createAdminUserService = ({ userRepository }: AdminUserServiceProps
   const loadAllUsers = async (): Promise<void> => {
     try {
       const store = useZustandUserStore.getState();
-      store.init([]);
+      const users = await userRepository.getAllUsers();
+      store.init(users);
     } catch (error) {
       console.error("Failed to load all users:", error);
       throw error;
@@ -27,7 +28,7 @@ export const createAdminUserService = ({ userRepository }: AdminUserServiceProps
     }
   };
 
-  const updateUserRole = async (id: string, newRole: UserRole[]): Promise<void> => {
+  const updateUserRoles = async (id: string, newRole: UserRole[]): Promise<void> => {
     try {
       const updatedUser = await userRepository.updateUserRoles(id, newRole);
       const store = useZustandUserStore.getState();
@@ -51,8 +52,7 @@ export const createAdminUserService = ({ userRepository }: AdminUserServiceProps
 
   // Store 구독 메서드들
   const useUsers = () => {
-    const store = useZustandUserStore.getState();
-    return store.users;
+    return useZustandUserStore((state) => state.users);
   };
 
   const useUserById = (id: string) => {
@@ -63,7 +63,7 @@ export const createAdminUserService = ({ userRepository }: AdminUserServiceProps
   return {
     loadAllUsers,
     createUser,
-    updateUserRole,
+    updateUserRoles,
     deleteUser,
     useUsers,
     useUserById,

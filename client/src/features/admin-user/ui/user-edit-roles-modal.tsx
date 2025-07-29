@@ -5,7 +5,7 @@ import type { User, UserRole } from "@/entities/user";
 
 type RoleFormErrors = { roles?: string };
 
-interface UserRoleEditModalProps {
+interface UserEditRolesModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (roles: UserRole[]) => Promise<void>;
@@ -14,7 +14,7 @@ interface UserRoleEditModalProps {
 
 const allRoles: UserRole[] = ["administrator", "manualRecorder", "stopwatchRecorder"];
 
-export function UserRoleEditModal({ isOpen, onClose, onSubmit, user }: UserRoleEditModalProps) {
+export function UserEditRolesModal({ isOpen, onClose, onSubmit, user }: UserEditRolesModalProps) {
   const [selectedRoles, setSelectedRoles] = useState<UserRole[]>([]);
   const [errors, setErrors] = useState<RoleFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);

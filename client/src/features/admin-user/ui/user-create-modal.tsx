@@ -1,47 +1,35 @@
 import { useState } from "react";
 import { Modal, ModalFooter } from "@/shared"; // shared Public API
-import type { UserForm, UserRole } from "@/entities/user";
+import type { UserRegisterForm } from "@/entities/user";
 
-type UserFormErrors = Partial<Record<keyof UserForm, string>>;
+type UserFormErrors = Partial<Record<keyof UserRegisterForm, string>>;
 
 interface UserCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: UserForm) => Promise<void>;
-  // 선택값 고정이 필요하면 preSelectedRoles?: UserRole[]; 등을 추가할 수 있습니다.
+  onSubmit: (data: UserRegisterForm) => Promise<void>;
 }
 
-const allRoles: UserRole[] = ["administrator", "manualRecorder", "stopwatchRecorder"];
-
 export function UserCreateModal({ isOpen, onClose, onSubmit }: UserCreateModalProps) {
-  const [formData, setFormData] = useState<UserForm>({ name: "", roles: [] });
+  const [formData, setFormData] = useState<UserRegisterForm>({ name: "", userName: "", password: "" });
   const [errors, setErrors] = useState<UserFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // ----------------------------- helpers -----------------------------
-  const handleInputChange = (field: keyof UserForm, value: string | UserRole[]) => {
+  const handleInputChange = (field: keyof UserRegisterForm, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
-  };
-
-  const toggleRole = (role: UserRole) => {
-    setFormData((prev) => ({
-      ...prev,
-      roles: prev.roles.includes(role) ? prev.roles.filter((r) => r !== role) : [...prev.roles, role],
-    }));
-    if (errors.roles) setErrors((prev) => ({ ...prev, roles: undefined }));
   };
 
   const validateForm = (): boolean => {
     const newErrors: UserFormErrors = {};
     if (!formData.name.trim()) newErrors.name = "이름을 입력해주세요";
-    if (formData.roles.length === 0) newErrors.roles = "최소 1개 이상의 역할을 선택해주세요";
     setErrors(newErrors);
     return Object.values(newErrors).every((v) => v === undefined);
   };
 
   const resetForm = () => {
-    setFormData({ name: "", roles: [] });
+    setFormData({ name: "", userName: "", password: "" });
     setErrors({});
   };
 
@@ -52,7 +40,7 @@ export function UserCreateModal({ isOpen, onClose, onSubmit }: UserCreateModalPr
 
     setIsSubmitting(true);
     try {
-      await onSubmit({ name: formData.name.trim(), roles: formData.roles });
+      await onSubmit(formData);
       onClose();
       resetForm();
     } catch (err) {
@@ -94,27 +82,6 @@ export function UserCreateModal({ isOpen, onClose, onSubmit }: UserCreateModalPr
             }`}
           />
           {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
-        </div>
-
-        {/* 역할 선택 */}
-        <div>
-          <p className="block text-sm font-medium text-gray-700 mb-1">
-            역할 <span className="text-red-500">*</span>
-          </p>
-          <div className="space-y-2">
-            {allRoles.map((role) => (
-              <label key={role} className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={formData.roles.includes(role)}
-                  onChange={() => toggleRole(role)}
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-                />
-                {role}
-              </label>
-            ))}
-          </div>
-          {errors.roles && <p className="mt-1 text-sm text-red-600">{errors.roles}</p>}
         </div>
 
         {/* Footer */}

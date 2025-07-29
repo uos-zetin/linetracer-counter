@@ -7,16 +7,18 @@ import { AdminDivisionProvider } from "./admin-division-provider";
 import { AdminParticipantProvider } from "./admin-participant-provider";
 import { composeProviders } from "./compose-providers";
 import { AdminRecordProvider } from "./admin-record-provider";
+import { AdminUserProvider } from "./admin-user-provider";
 
 const ComposedProviders = composeProviders(
-  AuthProvider,
   RepositoryProvider,
+  AuthProvider,
   CounterProvider,
   ProgressProvider,
   AdminCompetitionProvider,
   AdminDivisionProvider,
   AdminParticipantProvider,
   AdminRecordProvider,
+  AdminUserProvider,
 );
 
 export const AppProviders = ({ children }: { children: React.ReactNode }) => {

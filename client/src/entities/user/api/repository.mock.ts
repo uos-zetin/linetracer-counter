@@ -1,5 +1,5 @@
 import type { User, UserRole } from "../model/types";
-import type { LoginUserDto, RegisterUserDto, UserRepository, LoginResult } from "./types";
+import type { LoginUserDto, RegisterUserDto, UserRepository } from "./types";
 
 /**
  * Mock User Repository Implementation
@@ -77,7 +77,7 @@ export class MockUserRepository implements UserRepository {
    * 세션 키 생성
    */
   private generateSessionKey(): string {
-    const sessionKey = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const sessionKey = `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     this.sessionKeys.add(sessionKey);
     return sessionKey;
   }
@@ -161,30 +161,27 @@ export class MockUserRepository implements UserRepository {
     return newUser;
   }
 
-  async loginUser(user: LoginUserDto): Promise<LoginResult | null> {
+  async loginUser(user: LoginUserDto): Promise<string> {
     const userId = this.findUserIdByUserName(user.userName);
     if (!userId) {
-      return null; // 사용자 없음
+      return ""; // 사용자 없음
     }
 
     const credentials = this.userCredentials.get(userId);
     if (!credentials || credentials.password !== user.password) {
-      return null; // 비밀번호 틀림
+      return ""; // 비밀번호 틀림
     }
 
     const userData = this.users.get(userId);
     if (!userData) {
-      return null; // 사용자 데이터 없음
+      return ""; // 사용자 데이터 없음
     }
 
     // 로그인 성공
     this.currentUserId = userId;
     const sessionKey = this.generateSessionKey();
 
-    return {
-      user: userData,
-      sessionKey,
-    };
+    return sessionKey;
   }
 
   async logoutUser(): Promise<void> {
@@ -193,7 +190,7 @@ export class MockUserRepository implements UserRepository {
     }
 
     this.currentUserId = null;
-    // 실제 구현에서는 특정 세션 키만 제거해야 하지만, 
+    // 실제 구현에서는 특정 세션 키만 제거해야 하지만,
     // 간단한 mock에서는 모든 세션 키를 클리어
     this.sessionKeys.clear();
   }
@@ -216,7 +213,7 @@ export class MockUserRepository implements UserRepository {
 
     // 유효한 역할인지 확인
     const validRoles: UserRole[] = ["administrator", "manualRecorder", "stopwatchRecorder"];
-    const invalidRoles = roles.filter(role => !validRoles.includes(role));
+    const invalidRoles = roles.filter((role) => !validRoles.includes(role));
     if (invalidRoles.length > 0) {
       throw new Error(`유효하지 않은 역할: ${invalidRoles.join(", ")}`);
     }
