@@ -38,9 +38,3 @@ export interface LoginCredentials {
   userName: string;
   password: string;
 }
-
-export interface RegisterData {
-  name: string;
-  userName: string;
-  password: string;
-}

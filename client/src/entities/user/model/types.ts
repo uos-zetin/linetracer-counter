@@ -6,3 +6,14 @@ export interface User {
   roles: UserRole[];
   createdAt: Date;
 }
+
+export interface UserForm {
+  name: string;
+  roles: UserRole[];
+}
+
+export interface RegisterForm {
+  name: string;
+  userName: string;
+  password: string;
+}
