@@ -35,7 +35,7 @@ interface DivisionProgressSocket extends Socket {
 
 @Injectable()
 @WebSocketGateway({
-  namespace: "/divisions/progress/message",
+  namespace: "/divisions/progress/socket",
   cors: {
     origin: "*",
   },
