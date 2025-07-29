@@ -7,12 +7,13 @@ export interface DivisionDto {
   description: string;
   createdAt: string;
   status: "ready" | "ongoing" | "closed";
+  timeLimit: number;
 }
 
 export interface DivisionRepository {
   getAllDivisions(competitionId: string): Promise<Division[]>;
   getDivisionById(divisionId: string): Promise<Division | null>;
-  createDivision(competitionId: string, division: Omit<Division, "id" | "createdAt">): Promise<Division>;
+  createDivision(competitionId: string, division: Omit<Division, "id" | "createdAt" | "status">): Promise<Division>;
   updateDivision(divisionId: string, division: Division): Promise<Division | null>;
   deleteDivision(divisionId: string): Promise<void>;
 }

@@ -33,14 +33,3 @@ export interface AuthService {
   // 사용자 업데이트
   updateUser: (user: User) => void;
 }
-
-export interface LoginCredentials {
-  userName: string;
-  password: string;
-}
-
-export interface RegisterData {
-  name: string;
-  userName: string;
-  password: string;
-}

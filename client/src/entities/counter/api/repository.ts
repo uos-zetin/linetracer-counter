@@ -10,17 +10,17 @@ export class CounterFetcherRepository implements CounterRepository {
   }
 
   async getAll() {
-    const response = await this.authFetcher.get<CounterDto[]>("/api/counters");
+    const response = await this.authFetcher.get<CounterDto[]>("/counters");
     return response.data.map((dto) => parseCounterDto(dto));
   }
 
   async getById(id: string) {
-    const response = await this.authFetcher.get<CounterDto>(`/api/counters/${id}`);
+    const response = await this.authFetcher.get<CounterDto>(`/counters/${id}`);
     return response.data ? parseCounterDto(response.data) : null;
   }
 
   async connectDivision(counterId: string, divisionId: string) {
-    await this.authFetcher.patch(`/api/counters/${counterId}/division`, {
+    await this.authFetcher.patch(`/counters/${counterId}/division`, {
       body: { divisionId },
     });
 
@@ -28,17 +28,17 @@ export class CounterFetcherRepository implements CounterRepository {
   }
 
   async disconnectDivision(counterId: string) {
-    await this.authFetcher.delete(`/api/counters/${counterId}/division`);
+    await this.authFetcher.delete(`/counters/${counterId}/division`);
     return;
   }
 
   async reset(counterId: string) {
-    await this.authFetcher.post(`/api/counters/${counterId}/reset`);
+    await this.authFetcher.post(`/counters/${counterId}/reset`);
     return;
   }
 
   async disconnectCounter(counterId: string) {
-    await this.authFetcher.delete(`/api/counters/${counterId}`);
+    await this.authFetcher.delete(`/counters/${counterId}`);
     return;
   }
 }

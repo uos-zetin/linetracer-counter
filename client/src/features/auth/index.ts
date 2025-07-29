@@ -23,4 +23,4 @@ export {
 export { createAuthService } from "./model/auth-service";
 export { useAuthService, authServiceContext } from "./model/context";
 export { AuthServiceSessionProvider } from "./lib/session-provider";
-export type { AuthService, AuthState, LoginCredentials, RegisterData } from "./model/types";
+export type { AuthService, AuthState } from "./model/types";

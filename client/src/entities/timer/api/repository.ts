@@ -28,7 +28,7 @@ export class TimerFetcherRepository implements TimerRepository {
   }
 
   async adjustTimer(participantId: string, value: number): Promise<TimerLog> {
-    const response = await this.authFetcher.post<TimerLogDto>(`/participants/${participantId}/timers`, {
+    const response = await this.authFetcher.post<TimerLogDto>(`/participants/${participantId}/timers/adjust`, {
       body: { value },
     });
     return parseTimerLogDto(response.data);

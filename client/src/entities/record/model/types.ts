@@ -10,3 +10,19 @@ export interface Record {
   note: string;
   createdAt: Date;
 }
+
+export interface RecordActions {
+  init: (records: Record[]) => void;
+  add: (record: Record) => void;
+  addMany: (records: Record[]) => void;
+  update: (record: Record) => void;
+  remove: (recordId: string) => void;
+}
+
+export interface RecordGetters {
+  getById: (recordId: string) => Record | undefined;
+}
+
+export interface RecordStore extends RecordActions, RecordGetters {
+  records: Record[];
+}
