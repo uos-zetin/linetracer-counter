@@ -1,20 +1,26 @@
 import { useState, useEffect } from "react";
-import { Modal, ModalFooter } from "@/shared";
-import { useAdminCompetitionService } from "@/features/admin-competition";
-import type { DivisionForm } from "@/entities/division";
+import { Modal, ModalFooter } from "@/shared"; // shared Public API
 import type { Competition } from "@/entities/competition";
+import type { DivisionForm } from "@/entities/division";
 
 interface DivisionCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: DivisionForm) => Promise<void>;
+  competitions: Competition[]; // ← 훅 대신 외부에서 주입
   preSelectedCompetitionId?: string;
 }
 
-export function DivisionCreateModal({ isOpen, onClose, onSubmit, preSelectedCompetitionId }: DivisionCreateModalProps) {
-  const competitionService = useAdminCompetitionService();
-  const competitions = competitionService.useCompetitions();
+type DivisionFormError = Record<keyof DivisionForm, string>;
 
+export function DivisionCreateModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  competitions,
+  preSelectedCompetitionId,
+}: DivisionCreateModalProps) {
+  // ----------------------------- state -----------------------------
   const [formData, setFormData] = useState<DivisionForm>({
     competitionId: preSelectedCompetitionId || "",
     name: "",
@@ -22,65 +28,47 @@ export function DivisionCreateModal({ isOpen, onClose, onSubmit, preSelectedComp
     timeLimit: 60,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<Partial<DivisionForm>>({});
+  const [errors, setErrors] = useState<DivisionFormError>({
+    competitionId: "",
+    name: "",
+    description: "",
+    timeLimit: "",
+  });
 
-  // 모달이 열릴 때 대회 목록 로드
-  useEffect(() => {
-    if (isOpen) {
-      competitionService.loadAllCompetitions().catch(console.error);
-    }
-  }, [isOpen]);
-
-  // preSelectedCompetitionId가 변경될 때 폼 데이터 업데이트
+  // preSelectedCompetitionId 변경 시 반영
   useEffect(() => {
     if (preSelectedCompetitionId) {
       setFormData((prev) => ({ ...prev, competitionId: preSelectedCompetitionId }));
     }
   }, [preSelectedCompetitionId]);
 
+  // ----------------------------- handlers -----------------------------
   const handleInputChange = (field: keyof DivisionForm, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // 에러 클리어
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<DivisionForm> = {};
-
-    if (!formData.competitionId) {
-      newErrors.competitionId = "대회를 선택해주세요";
-    }
-
-    if (!formData.name.trim()) {
-      newErrors.name = "부문명은 필수입니다";
-    } else if (formData.name.trim().length > 100) {
-      newErrors.name = "부문명은 100자를 초과할 수 없습니다";
-    }
-
-    if (!formData.description.trim()) {
-      newErrors.description = "설명은 필수입니다";
-    } else if (formData.description.trim().length > 1000) {
-      newErrors.description = "설명은 1000자를 초과할 수 없습니다";
-    }
-
-    if (formData.timeLimit < 1) {
-      newErrors.timeLimit = "제한 시간은 1분 이상이어야 합니다";
-    } else if (formData.timeLimit > 1440) {
-      newErrors.timeLimit = "제한 시간은 1440분(24시간)을 초과할 수 없습니다";
-    }
-
-    setErrors(newErrors);
+    const newErrors: Partial<DivisionFormError> = {};
+    if (!formData.competitionId) newErrors.competitionId = "대회를 선택해주세요";
+    if (!formData.name.trim()) newErrors.name = "부문명은 필수입니다";
+    else if (formData.name.trim().length > 100) newErrors.name = "부문명은 100자를 초과할 수 없습니다";
+    if (!formData.description.trim()) newErrors.description = "설명은 필수입니다";
+    else if (formData.description.trim().length > 1000) newErrors.description = "설명은 1000자를 초과할 수 없습니다";
+    if (formData.timeLimit < 1) newErrors.timeLimit = "제한 시간은 1분 이상이어야 합니다";
+    else if (formData.timeLimit > 1440) newErrors.timeLimit = "제한 시간은 1440분(24시간)을 초과할 수 없습니다";
+    setErrors({
+      competitionId: newErrors.competitionId ?? "",
+      name: newErrors.name ?? "",
+      description: newErrors.description ?? "",
+      timeLimit: newErrors.timeLimit ?? "",
+    });
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
     try {
@@ -90,39 +78,47 @@ export function DivisionCreateModal({ isOpen, onClose, onSubmit, preSelectedComp
         description: formData.description.trim(),
         timeLimit: formData.timeLimit,
       });
-
-      // 성공 시 폼 초기화 및 모달 닫기
+      // 초기화 후 닫기
       setFormData({
         competitionId: preSelectedCompetitionId || "",
         name: "",
         description: "",
         timeLimit: 60,
       });
-      setErrors({});
+      setErrors({
+        competitionId: "",
+        name: "",
+        description: "",
+        timeLimit: "",
+      });
       onClose();
-    } catch (error) {
-      console.error("Failed to create division:", error);
-      // TODO: 에러 처리 (toast 등)
+    } catch (err) {
+      console.error("Failed to create division:", err);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleClose = () => {
-    if (!isSubmitting) {
-      setFormData({
-        competitionId: preSelectedCompetitionId || "",
-        name: "",
-        description: "",
-        timeLimit: 60,
-      });
-      setErrors({});
-      onClose();
-    }
+    if (isSubmitting) return;
+    setFormData({
+      competitionId: preSelectedCompetitionId || "",
+      name: "",
+      description: "",
+      timeLimit: 60,
+    });
+    setErrors({
+      competitionId: "",
+      name: "",
+      description: "",
+      timeLimit: "",
+    });
+    onClose();
   };
 
+  // ----------------------------- render -----------------------------
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="새 부문 생성" size="md">
+    <Modal isOpen={isOpen} onClose={handleClose} title="새 부문 생성" size="md" closeOnBackdrop={false}>
       <form onSubmit={handleSubmit}>
         <div className="px-6 py-4 space-y-4">
           {/* 대회 선택 */}
@@ -134,16 +130,15 @@ export function DivisionCreateModal({ isOpen, onClose, onSubmit, preSelectedComp
               id="division-competition"
               value={formData.competitionId}
               onChange={(e) => handleInputChange("competitionId", e.target.value)}
-              className={`
-                w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                ${errors.competitionId ? "border-red-300" : "border-gray-300"}
-              `}
               disabled={isSubmitting || !!preSelectedCompetitionId}
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                errors.competitionId ? "border-red-300" : "border-gray-300"
+              }`}
             >
               <option value="">대회를 선택하세요</option>
-              {competitions.map((competition) => (
-                <option key={competition.id} value={competition.id}>
-                  {competition.name}
+              {competitions.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
                 </option>
               ))}
             </select>
@@ -160,13 +155,12 @@ export function DivisionCreateModal({ isOpen, onClose, onSubmit, preSelectedComp
               type="text"
               value={formData.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
-              className={`
-                w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                ${errors.name ? "border-red-300" : "border-gray-300"}
-              `}
-              placeholder="부문명을 입력하세요"
               maxLength={100}
               disabled={isSubmitting}
+              placeholder="부문명을 입력하세요"
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                errors.name ? "border-red-300" : "border-gray-300"
+              }`}
             />
             {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
           </div>
@@ -181,13 +175,12 @@ export function DivisionCreateModal({ isOpen, onClose, onSubmit, preSelectedComp
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
               rows={4}
-              className={`
-                w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                ${errors.description ? "border-red-300" : "border-gray-300"}
-              `}
-              placeholder="부문 설명을 입력하세요"
               maxLength={1000}
               disabled={isSubmitting}
+              placeholder="부문 설명을 입력하세요"
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                errors.description ? "border-red-300" : "border-gray-300"
+              }`}
             />
             {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
             <p className="mt-1 text-sm text-gray-500">{formData.description.length}/1000자</p>
@@ -203,13 +196,12 @@ export function DivisionCreateModal({ isOpen, onClose, onSubmit, preSelectedComp
               type="number"
               value={formData.timeLimit}
               onChange={(e) => handleInputChange("timeLimit", parseInt(e.target.value) || 0)}
-              className={`
-                w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                ${errors.timeLimit ? "border-red-300" : "border-gray-300"}
-              `}
               min={1}
               max={1440}
               disabled={isSubmitting}
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                errors.timeLimit ? "border-red-300" : "border-gray-300"
+              }`}
             />
             {errors.timeLimit && <p className="mt-1 text-sm text-red-600">{errors.timeLimit}</p>}
             <p className="mt-1 text-sm text-gray-500">1분 ~ 1440분(24시간) 사이로 설정하세요</p>

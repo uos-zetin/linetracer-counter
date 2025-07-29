@@ -8,6 +8,12 @@ interface CompetitionCreateModalProps {
   onSubmit: (data: CompetitionForm) => Promise<void>;
 }
 
+/**
+ * CompetitionCreateModal – SkeletonModal 기반 대회 생성 폼
+ *
+ * ✅ 새 SkeletonModal(`@/shared/ui/modal`)을 사용하도록 마이그레이션했습니다.
+ * ✅ 배경 클릭으로 닫히지 않도록 `closeOnBackdrop={false}` 설정.
+ */
 export function CompetitionCreateModal({ isOpen, onClose, onSubmit }: CompetitionCreateModalProps) {
   const [formData, setFormData] = useState<CompetitionForm>({
     name: "",
@@ -16,28 +22,20 @@ export function CompetitionCreateModal({ isOpen, onClose, onSubmit }: Competitio
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<CompetitionForm>>({});
 
+  // ----------------------------- handlers -----------------------------
   const handleInputChange = (field: keyof CompetitionForm, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // 에러 클리어
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<CompetitionForm> = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = "대회명은 필수입니다";
-    } else if (formData.name.trim().length > 100) {
-      newErrors.name = "대회명은 100자를 초과할 수 없습니다";
-    }
+    if (!formData.name.trim()) newErrors.name = "대회명은 필수입니다";
+    else if (formData.name.trim().length > 100) newErrors.name = "대회명은 100자를 초과할 수 없습니다";
 
-    if (!formData.description.trim()) {
-      newErrors.description = "설명은 필수입니다";
-    } else if (formData.description.trim().length > 1000) {
-      newErrors.description = "설명은 1000자를 초과할 수 없습니다";
-    }
+    if (!formData.description.trim()) newErrors.description = "설명은 필수입니다";
+    else if (formData.description.trim().length > 1000) newErrors.description = "설명은 1000자를 초과할 수 없습니다";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -45,10 +43,7 @@ export function CompetitionCreateModal({ isOpen, onClose, onSubmit }: Competitio
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
     try {
@@ -57,28 +52,27 @@ export function CompetitionCreateModal({ isOpen, onClose, onSubmit }: Competitio
         description: formData.description.trim(),
       });
 
-      // 성공 시 폼 초기화 및 모달 닫기
       setFormData({ name: "", description: "" });
       setErrors({});
       onClose();
-    } catch (error) {
-      console.error("Failed to create competition:", error);
-      // TODO: 에러 처리 (toast 등)
+    } catch (err) {
+      console.error("Failed to create competition:", err);
+      // TODO: Toast 에러 처리
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleClose = () => {
-    if (!isSubmitting) {
-      setFormData({ name: "", description: "" });
-      setErrors({});
-      onClose();
-    }
+    if (isSubmitting) return; // 진행 중엔 닫기 금지
+    setFormData({ name: "", description: "" });
+    setErrors({});
+    onClose();
   };
 
+  // ----------------------------- render -----------------------------
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="새 대회 생성" size="md">
+    <Modal isOpen={isOpen} onClose={handleClose} title="새 대회 생성" size="md" closeOnBackdrop={false}>
       <form onSubmit={handleSubmit}>
         <div className="px-6 py-4 space-y-4">
           {/* 대회명 */}
@@ -91,10 +85,9 @@ export function CompetitionCreateModal({ isOpen, onClose, onSubmit }: Competitio
               type="text"
               value={formData.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
-              className={`
-                w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                ${errors.name ? "border-red-300" : "border-gray-300"}
-              `}
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                errors.name ? "border-red-300" : "border-gray-300"
+              }`}
               placeholder="대회명을 입력하세요"
               maxLength={100}
               disabled={isSubmitting}
@@ -112,10 +105,9 @@ export function CompetitionCreateModal({ isOpen, onClose, onSubmit }: Competitio
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
               rows={4}
-              className={`
-                w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                ${errors.description ? "border-red-300" : "border-gray-300"}
-              `}
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                errors.description ? "border-red-300" : "border-gray-300"
+              }`}
               placeholder="대회 설명을 입력하세요"
               maxLength={1000}
               disabled={isSubmitting}

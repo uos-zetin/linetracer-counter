@@ -259,6 +259,7 @@ export function DivisionManagement() {
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateSubmit}
         preSelectedCompetitionId={selectedCompetitionId}
+        competitions={competitions}
       />
 
       <DivisionEditModal
@@ -269,6 +270,7 @@ export function DivisionManagement() {
         }}
         onSubmit={handleEditSubmit}
         division={selectedDivision}
+        competitions={competitions}
       />
 
       <DivisionDeleteModal
