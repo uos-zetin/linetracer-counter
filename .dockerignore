@@ -1,0 +1,24 @@
+# project
+node_modules/
+dist/
+build/
+
+# environment
+.env*
+
+# ide
+.vscode/
+.devcontainer/
+
+# os
+.DS_Store
+Thumbs.db
+
+# git
+.git/
+.gitignore
+
+# docker
+Dockerfile*
+docker-compose*
+.dockerignore

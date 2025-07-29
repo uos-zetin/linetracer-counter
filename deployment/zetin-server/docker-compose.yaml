@@ -1,0 +1,21 @@
+services:
+  linetracer-counter:
+    build:
+      context: /srv/server-linetracer-counter/repository
+      dockerfile: ./deployment/zetin-server/Dockerfile
+    image: linetracer-counter:latest
+    container_name: linetracer-counter
+    restart: unless-stopped
+    volumes:
+      - /srv/server-linetracer-counter/persistent:/var/lib/linetracer-counter
+    environment:
+      - NODE_ENV=production
+      - SQLITE_DB_PATH=/var/lib/linetracer-counter/sqlite3.db
+      - PROGRESS_STATE_DIR=/var/lib/linetracer-counter/progress-state
+      - STATIC_FILES_PATH=/app/static
+    networks:
+      - zetin-srv
+
+networks:
+  zetin-srv:
+    external: true
