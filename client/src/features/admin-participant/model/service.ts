@@ -2,7 +2,7 @@ import type { Participant, ParticipantRepository, ParticipantForm } from "@/enti
 import { useZustandParticipantStore } from "@/entities/participant";
 import type { AdminParticipantService } from "./types";
 
-export interface AdminParticipantServiceProps {
+interface AdminParticipantServiceProps {
   participantRepository: ParticipantRepository;
 }
 
@@ -12,13 +12,13 @@ export const createAdminParticipantService = ({
   const loadParticipantsByDivisions = async (divisionIds: string[]): Promise<void> => {
     try {
       // 모든 division의 participants를 동시에 로드
-      const allParticipantsPromises = divisionIds.map(divisionId => 
-        participantRepository.getAllParticipants(divisionId)
+      const allParticipantsPromises = divisionIds.map((divisionId) =>
+        participantRepository.getAllParticipants(divisionId),
       );
-      
+
       const allParticipantsArrays = await Promise.all(allParticipantsPromises);
       const allParticipants = allParticipantsArrays.flat();
-      
+
       // 한 번에 모든 participants 설정
       const store = useZustandParticipantStore.getState();
       store.init(allParticipants);
