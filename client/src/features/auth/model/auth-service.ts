@@ -1,6 +1,7 @@
 import type { User, UserRepository } from "@/entities/user";
 import { useAuthStore } from "./store.zustand";
 import type { AuthState, AuthService } from "./types";
+import { parseSessionCredential, validateLoginInput, validateRegisterInput } from "../lib/validation";
 
 interface AuthServiceProps {
   userRepository: UserRepository;
@@ -39,9 +40,22 @@ export const createAuthService = ({ userRepository }: AuthServiceProps): AuthSer
   const loadSession = (): SessionCredential | null => {
     try {
       const stored = localStorage.getItem(storageKey);
-      return stored ? JSON.parse(stored) : null;
+      if (!stored) return null;
+
+      const parsed = JSON.parse(stored);
+      const validated = parseSessionCredential(parsed);
+      
+      if (!validated) {
+        // 잘못된 세션 데이터가 있으면 정리
+        localStorage.removeItem(storageKey);
+        return null;
+      }
+
+      return validated;
     } catch (error) {
       console.warn("세션 로드 실패:", error);
+      // 파싱 실패 시에도 localStorage 정리
+      localStorage.removeItem(storageKey);
       return null;
     }
   };
@@ -60,7 +74,10 @@ export const createAuthService = ({ userRepository }: AuthServiceProps): AuthSer
   // Service 메서드들
   const login = async (userName: string, password: string): Promise<User> => {
     try {
-      const loginResult = await userRepository.loginUser({ userName, password });
+      // 입력 데이터 검증
+      const validatedInput = validateLoginInput({ userName, password });
+      
+      const loginResult = await userRepository.loginUser(validatedInput);
 
       if (!loginResult) {
         throw new Error("로그인에 실패했습니다.");
@@ -100,10 +117,13 @@ export const createAuthService = ({ userRepository }: AuthServiceProps): AuthSer
 
   const register = async (name: string, userName: string, password: string): Promise<User> => {
     try {
-      await userRepository.registerUser({ name, userName, password });
+      // 입력 데이터 검증
+      const validatedInput = validateRegisterInput({ name, userName, password });
+      
+      await userRepository.registerUser(validatedInput);
 
       // 등록 후 자동 로그인
-      return await login(userName, password);
+      return await login(validatedInput.userName, validatedInput.password);
     } catch (error) {
       clearSession();
       useAuthStore.getState().clearAuth();

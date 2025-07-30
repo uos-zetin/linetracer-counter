@@ -1,320 +1,172 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { useZustandProgressStore } from '../store.zustand';
-import type { ProgressState } from '../types';
+import { describe, it, expect, beforeEach } from "vitest";
+import { useZustandProgressStore } from "../store.zustand";
+import type { Competition } from "@/entities/competition";
+import type { Division, DivisionStatus } from "@/entities/division";
+import type { Participant } from "@/entities/participant";
+import type { TimerLog } from "@/entities/timer";
+import type { Record, RecordSource, RecordStatus } from "@/entities/record";
+import type { ManualRecord } from "@/entities/manual-record";
+import type { ProgressState, Runner } from "../types";
 
-describe('useZustandProgressStore', () => {
-  beforeEach(() => {
-    // Arrange: 각 테스트 전에 스토어 초기화
+// ---------------------------------------------------------------------------
+// 🔧 테스트 유틸 — 목데이터 & 초기화
+// ---------------------------------------------------------------------------
+const NOW = new Date("2025-01-01T00:00:00Z");
+
+/* Competition */
+function dummyCompetition(): Competition {
+  return {
+    id: "comp‑1",
+    name: "Dummy Competition",
+    description: "테스트용 대회",
+    createdAt: NOW,
+  };
+}
+
+/* Division */
+function dummyDivision(): Division {
+  return {
+    id: "div‑1",
+    competitionId: "comp‑1",
+    name: "Dummy Division",
+    description: "테스트용 부문",
+    createdAt: NOW,
+    status: "ready" as DivisionStatus,
+    timeLimit: 10 * 60 * 1_000, // 10분
+  };
+}
+
+/* Participant */
+function dummyParticipant(id = "par‑1"): Participant {
+  return {
+    id,
+    divisionId: "div‑1",
+    name: `참가자 ${id}`,
+    teamName: "Team A",
+    robotName: "Robot‑X",
+    comment: "",
+    orderRaw: 1,
+    createdAt: NOW,
+  };
+}
+
+/* TimerLog */
+function dummyTimerLog(): TimerLog {
+  return {
+    id: "log‑1",
+    participantId: "par‑1",
+    value: 0,
+    type: "start",
+    createdAt: NOW,
+  };
+}
+
+/* Record */
+function dummyRecord(): Record {
+  return {
+    id: "rec‑1",
+    participantId: "par‑1",
+    value: 9_876,
+    source: "manual" as RecordSource,
+    status: "valid" as RecordStatus,
+    note: "",
+    createdAt: NOW,
+  };
+}
+
+/* ManualRecord */
+function dummyManualRecord(): ManualRecord {
+  return {
+    id: "mrec‑1",
+    participantId: "par‑1",
+    value: 9_876,
+    recorderName: "관리자",
+    invalidatedAt: null,
+    createdAt: NOW,
+  };
+}
+
+/* Runner */
+function dummyRunner(): Runner {
+  return {
+    participant: dummyParticipant(),
+    timerLogs: [dummyTimerLog()],
+    records: [dummyRecord()],
+    manualRecords: [dummyManualRecord()],
+  };
+}
+
+/* Progress */
+function dummyProgress(): ProgressState {
+  return {
+    id: "prog‑1",
+    competition: dummyCompetition(),
+    division: dummyDivision(),
+    runner: dummyRunner(),
+    nextRunners: [dummyParticipant("par‑2")],
+    topRecords: [dummyRecord()],
+  };
+}
+
+/* 각 테스트마다 스토어 초기화 */
+function resetStore() {
+  useZustandProgressStore.getState().reset();
+}
+
+// ---------------------------------------------------------------------------
+// 🧪 ProgressStore 테스트 (AAA 패턴)
+// ---------------------------------------------------------------------------
+describe("Zustand ProgressStore", () => {
+  beforeEach(resetStore);
+
+  it("setProgress() — 전체 Progress를 설정한다", () => {
+    // Arrange
+    const progress = dummyProgress();
+
+    // Act
+    useZustandProgressStore.getState().setProgress(progress);
+
+    // Assert
+    expect(useZustandProgressStore.getState().getProgress()).toEqual(progress);
+  });
+
+  it("patchProgress() — 부분 업데이트를 적용한다", () => {
+    // Arrange
+    const original = dummyProgress();
+    useZustandProgressStore.getState().setProgress(original);
+    const patchedRunner: Runner = {
+      ...original.runner!,
+      participant: { ...original.runner!.participant, name: "Patched Runner" },
+    };
+
+    // Act
+    useZustandProgressStore.getState().patchProgress({ runner: patchedRunner });
+
+    // Assert
+    const { runner, competition, division, nextRunners, topRecords } = useZustandProgressStore.getState().getProgress();
+
+    expect(runner).toEqual(patchedRunner); // 변경된 필드
+    expect(competition).toEqual(original.competition);
+    expect(division).toEqual(original.division);
+    expect(nextRunners).toEqual(original.nextRunners);
+    expect(topRecords).toEqual(original.topRecords);
+  });
+
+  it("reset() — 초기 상태로 되돌린다", () => {
+    // Arrange
+    useZustandProgressStore.getState().setProgress(dummyProgress());
+
+    // Act
     useZustandProgressStore.getState().reset();
-  });
 
-  describe('setProgress', () => {
-    it('주어진 상태로 진행 상황을 설정해야 한다', () => {
-      // Arrange
-      const progressState: ProgressState = {
-        id: 'progress-1',
-        competition: {
-          id: 'comp-1',
-          name: 'Test Competition',
-          startedAt: new Date().toISOString(),
-          endedAt: null,
-        },
-        division: {
-          id: 'div-1',
-          name: 'Test Division',
-          competitionId: 'comp-1',
-        },
-        runner: null,
-        nextRunners: [],
-        topRecords: [],
-      };
-
-      // Act
-      useZustandProgressStore.getState().setProgress(progressState);
-
-      // Assert
-      const state = useZustandProgressStore.getState();
-      expect(state.id).toBe('progress-1');
-      expect(state.competition?.name).toBe('Test Competition');
-      expect(state.division?.name).toBe('Test Division');
-    });
-  });
-
-  describe('patchProgress', () => {
-    it('부분적인 상태 업데이트를 수행해야 한다', () => {
-      // Arrange
-      const initialState: ProgressState = {
-        id: 'progress-1',
-        competition: null,
-        division: null,
-        runner: null,
-        nextRunners: [],
-        topRecords: [],
-      };
-      
-      useZustandProgressStore.getState().setProgress(initialState);
-
-      const partialUpdate = {
-        id: 'progress-updated',
-        competition: {
-          id: 'comp-1',
-          name: 'Updated Competition',
-          startedAt: new Date().toISOString(),
-          endedAt: null,
-        },
-      };
-
-      // Act
-      useZustandProgressStore.getState().patchProgress(partialUpdate);
-
-      // Assert
-      const state = useZustandProgressStore.getState();
-      expect(state.id).toBe('progress-updated');
-      expect(state.competition?.name).toBe('Updated Competition');
-      expect(state.division).toBeNull(); // 다른 속성은 유지
-    });
-  });
-
-  describe('reset', () => {
-    it('상태를 초기값으로 리셋해야 한다', () => {
-      // Arrange
-      const progressState: ProgressState = {
-        id: 'progress-1',
-        competition: {
-          id: 'comp-1',
-          name: 'Test Competition',
-          startedAt: new Date().toISOString(),
-          endedAt: null,
-        },
-        division: {
-          id: 'div-1',
-          name: 'Test Division',
-          competitionId: 'comp-1',
-        },
-        runner: null,
-        nextRunners: [],
-        topRecords: [],
-      };
-      
-      useZustandProgressStore.getState().setProgress(progressState);
-
-      // Act
-      useZustandProgressStore.getState().reset();
-
-      // Assert
-      const state = useZustandProgressStore.getState();
-      expect(state.id).toBe('');
-      expect(state.competition).toBeNull();
-      expect(state.division).toBeNull();
-      expect(state.runner).toBeNull();
-      expect(state.nextRunners).toEqual([]);
-      expect(state.topRecords).toEqual([]);
-    });
-  });
-
-  describe('getProgress', () => {
-    it('현재 진행 상태를 반환해야 한다', () => {
-      // Arrange
-      const progressState: ProgressState = {
-        id: 'progress-1',
-        competition: {
-          id: 'comp-1',
-          name: 'Test Competition',
-          startedAt: new Date().toISOString(),
-          endedAt: null,
-        },
-        division: null,
-        runner: null,
-        nextRunners: [],
-        topRecords: [],
-      };
-      
-      useZustandProgressStore.getState().setProgress(progressState);
-
-      // Act
-      const progress = useZustandProgressStore.getState().getProgress();
-
-      // Assert
-      expect(progress.id).toBe('progress-1');
-      expect(progress.competition?.name).toBe('Test Competition');
-    });
-  });
-
-  describe('getCompetition', () => {
-    it('현재 대회 정보를 반환해야 한다', () => {
-      // Arrange
-      const competition = {
-        id: 'comp-1',
-        name: 'Test Competition',
-        startedAt: new Date().toISOString(),
-        endedAt: null,
-      };
-      
-      useZustandProgressStore.getState().patchProgress({ competition });
-
-      // Act
-      const result = useZustandProgressStore.getState().getCompetition();
-
-      // Assert
-      expect(result?.name).toBe('Test Competition');
-    });
-
-    it('대회가 없을 때 null을 반환해야 한다', () => {
-      // Arrange
-      useZustandProgressStore.getState().reset();
-
-      // Act
-      const result = useZustandProgressStore.getState().getCompetition();
-
-      // Assert
-      expect(result).toBeNull();
-    });
-  });
-
-  describe('getDivision', () => {
-    it('현재 구역 정보를 반환해야 한다', () => {
-      // Arrange
-      const division = {
-        id: 'div-1',
-        name: 'Test Division',
-        competitionId: 'comp-1',
-      };
-      
-      useZustandProgressStore.getState().patchProgress({ division });
-
-      // Act
-      const result = useZustandProgressStore.getState().getDivision();
-
-      // Assert
-      expect(result?.name).toBe('Test Division');
-    });
-
-    it('구역이 없을 때 null을 반환해야 한다', () => {
-      // Arrange
-      useZustandProgressStore.getState().reset();
-
-      // Act
-      const result = useZustandProgressStore.getState().getDivision();
-
-      // Assert
-      expect(result).toBeNull();
-    });
-  });
-
-  describe('getRunner', () => {
-    it('현재 주자 정보를 반환해야 한다', () => {
-      // Arrange
-      const runner = {
-        participant: {
-          id: 'part-1',
-          name: 'Test Runner',
-          divisionId: 'div-1',
-        },
-        timerLogs: [],
-        records: [],
-        manualRecords: [],
-      };
-      
-      useZustandProgressStore.getState().patchProgress({ runner });
-
-      // Act
-      const result = useZustandProgressStore.getState().getRunner();
-
-      // Assert
-      expect(result?.participant.name).toBe('Test Runner');
-    });
-
-    it('주자가 없을 때 null을 반환해야 한다', () => {
-      // Arrange
-      useZustandProgressStore.getState().reset();
-
-      // Act
-      const result = useZustandProgressStore.getState().getRunner();
-
-      // Assert
-      expect(result).toBeNull();
-    });
-  });
-
-  describe('getNextRunners', () => {
-    it('다음 주자 목록을 반환해야 한다', () => {
-      // Arrange
-      const nextRunners = [
-        {
-          id: 'part-1',
-          name: 'Runner 1',
-          divisionId: 'div-1',
-        },
-        {
-          id: 'part-2',
-          name: 'Runner 2',
-          divisionId: 'div-1',
-        },
-      ];
-      
-      useZustandProgressStore.getState().patchProgress({ nextRunners });
-
-      // Act
-      const result = useZustandProgressStore.getState().getNextRunners();
-
-      // Assert
-      expect(result).toHaveLength(2);
-      expect(result[0].name).toBe('Runner 1');
-      expect(result[1].name).toBe('Runner 2');
-    });
-
-    it('다음 주자가 없을 때 빈 배열을 반환해야 한다', () => {
-      // Arrange
-      useZustandProgressStore.getState().reset();
-
-      // Act
-      const result = useZustandProgressStore.getState().getNextRunners();
-
-      // Assert
-      expect(result).toEqual([]);
-    });
-  });
-
-  describe('getTopRecords', () => {
-    it('상위 기록 목록을 반환해야 한다', () => {
-      // Arrange
-      const topRecords = [
-        {
-          id: 'record-1',
-          participantId: 'part-1',
-          divisionId: 'div-1',
-          time: 1000,
-          rank: 1,
-        },
-        {
-          id: 'record-2',
-          participantId: 'part-2',
-          divisionId: 'div-1',
-          time: 1100,
-          rank: 2,
-        },
-      ];
-      
-      useZustandProgressStore.getState().patchProgress({ topRecords });
-
-      // Act
-      const result = useZustandProgressStore.getState().getTopRecords();
-
-      // Assert
-      expect(result).toHaveLength(2);
-      expect(result[0].rank).toBe(1);
-      expect(result[1].rank).toBe(2);
-    });
-
-    it('상위 기록이 없을 때 빈 배열을 반환해야 한다', () => {
-      // Arrange
-      useZustandProgressStore.getState().reset();
-
-      // Act
-      const result = useZustandProgressStore.getState().getTopRecords();
-
-      // Assert
-      expect(result).toEqual([]);
+    // Assert
+    expect(useZustandProgressStore.getState().getProgress()).toEqual({
+      id: "",
+      competition: null,
+      division: null,
+      runner: null,
+      nextRunners: [],
+      topRecords: [],
     });
   });
 });

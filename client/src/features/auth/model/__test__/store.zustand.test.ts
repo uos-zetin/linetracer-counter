@@ -1,20 +1,20 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { useAuthStore } from '../store.zustand';
-import type { User } from '@/entities/user';
+import { beforeEach, describe, expect, it } from "vitest";
+import { useAuthStore } from "../store.zustand";
+import type { User } from "@/entities/user";
 
-describe('useAuthStore', () => {
+describe("useAuthStore", () => {
   beforeEach(() => {
     // Arrange: 각 테스트 전에 스토어 초기화
     useAuthStore.getState().clearAuth();
   });
 
-  describe('setAuth', () => {
-    it('사용자와 인증 상태를 설정해야 한다', () => {
+  describe("setAuth", () => {
+    it("사용자와 인증 상태를 설정해야 한다", () => {
       // Arrange
       const user: User = {
-        id: 'user-1',
-        name: 'Test User',
-        roles: ['USER'],
+        id: "user-1",
+        name: "Test User",
+        roles: [],
         createdAt: new Date(),
       };
 
@@ -27,15 +27,15 @@ describe('useAuthStore', () => {
       expect(state.isAuthenticated).toBe(true);
     });
 
-    it('사용자가 null이고 인증되지 않은 상태를 설정해야 한다', () => {
+    it("사용자가 null이고 인증되지 않은 상태를 설정해야 한다", () => {
       // Arrange
       const user: User = {
-        id: 'user-1',
-        name: 'Test User',
-        roles: ['USER'],
+        id: "user-1",
+        name: "Test User",
+        roles: [],
         createdAt: new Date(),
       };
-      
+
       useAuthStore.getState().setAuth(user, true);
 
       // Act
@@ -48,16 +48,16 @@ describe('useAuthStore', () => {
     });
   });
 
-  describe('clearAuth', () => {
-    it('인증 상태를 초기화해야 한다', () => {
+  describe("clearAuth", () => {
+    it("인증 상태를 초기화해야 한다", () => {
       // Arrange
       const user: User = {
-        id: 'user-1',
-        name: 'Test User',
-        roles: ['USER'],
+        id: "user-1",
+        name: "Test User",
+        roles: [],
         createdAt: new Date(),
       };
-      
+
       useAuthStore.getState().setAuth(user, true);
 
       // Act
@@ -69,7 +69,7 @@ describe('useAuthStore', () => {
       expect(state.isAuthenticated).toBe(false);
     });
 
-    it('이미 초기화된 상태에서도 문제없이 동작해야 한다', () => {
+    it("이미 초기화된 상태에서도 문제없이 동작해야 한다", () => {
       // Arrange
       useAuthStore.getState().clearAuth();
 
@@ -83,16 +83,16 @@ describe('useAuthStore', () => {
     });
   });
 
-  describe('getUser', () => {
-    it('현재 사용자를 반환해야 한다', () => {
+  describe("getUser", () => {
+    it("현재 사용자를 반환해야 한다", () => {
       // Arrange
       const user: User = {
-        id: 'user-1',
-        name: 'Test User',
-        roles: ['USER'],
+        id: "user-1",
+        name: "Test User",
+        roles: [],
         createdAt: new Date(),
       };
-      
+
       useAuthStore.getState().setAuth(user, true);
 
       // Act
@@ -102,7 +102,7 @@ describe('useAuthStore', () => {
       expect(result).toEqual(user);
     });
 
-    it('사용자가 없을 때 null을 반환해야 한다', () => {
+    it("사용자가 없을 때 null을 반환해야 한다", () => {
       // Arrange
       useAuthStore.getState().clearAuth();
 
@@ -114,16 +114,16 @@ describe('useAuthStore', () => {
     });
   });
 
-  describe('getIsAuthenticated', () => {
-    it('인증된 상태에서 true를 반환해야 한다', () => {
+  describe("getIsAuthenticated", () => {
+    it("인증된 상태에서 true를 반환해야 한다", () => {
       // Arrange
       const user: User = {
-        id: 'user-1',
-        name: 'Test User',
-        roles: ['USER'],
+        id: "user-1",
+        name: "Test User",
+        roles: [],
         createdAt: new Date(),
       };
-      
+
       useAuthStore.getState().setAuth(user, true);
 
       // Act
@@ -133,7 +133,7 @@ describe('useAuthStore', () => {
       expect(result).toBe(true);
     });
 
-    it('인증되지 않은 상태에서 false를 반환해야 한다', () => {
+    it("인증되지 않은 상태에서 false를 반환해야 한다", () => {
       // Arrange
       useAuthStore.getState().clearAuth();
 
@@ -144,15 +144,15 @@ describe('useAuthStore', () => {
       expect(result).toBe(false);
     });
 
-    it('사용자가 있지만 인증되지 않은 상태에서 false를 반환해야 한다', () => {
+    it("사용자가 있지만 인증되지 않은 상태에서 false를 반환해야 한다", () => {
       // Arrange
       const user: User = {
-        id: 'user-1',
-        name: 'Test User',
-        roles: ['USER'],
+        id: "user-1",
+        name: "Test User",
+        roles: [],
         createdAt: new Date(),
       };
-      
+
       useAuthStore.getState().setAuth(user, false);
 
       // Act
@@ -163,13 +163,13 @@ describe('useAuthStore', () => {
     });
   });
 
-  describe('상태 일관성', () => {
-    it('setAuth로 설정한 값이 getter로 정확히 반환되어야 한다', () => {
+  describe("상태 일관성", () => {
+    it("setAuth로 설정한 값이 getter로 정확히 반환되어야 한다", () => {
       // Arrange
       const user: User = {
-        id: 'user-1',
-        name: 'Test User',
-        roles: ['ADMIN'],
+        id: "user-1",
+        name: "Test User",
+        roles: ["administrator"],
         createdAt: new Date(),
       };
 
@@ -181,15 +181,15 @@ describe('useAuthStore', () => {
       expect(useAuthStore.getState().getIsAuthenticated()).toBe(true);
     });
 
-    it('clearAuth 후 모든 getter가 초기값을 반환해야 한다', () => {
+    it("clearAuth 후 모든 getter가 초기값을 반환해야 한다", () => {
       // Arrange
       const user: User = {
-        id: 'user-1',
-        name: 'Test User',
-        roles: ['USER'],
+        id: "user-1",
+        name: "Test User",
+        roles: [],
         createdAt: new Date(),
       };
-      
+
       useAuthStore.getState().setAuth(user, true);
 
       // Act

@@ -21,8 +21,8 @@ import { CounterController } from "./controllers/counter.controller";
 import { DivisionController } from "./controllers/division.controller";
 import { ParticipantController } from "./controllers/participant.controller";
 import { RecordController } from "./controllers/record.controller";
-import { CounterGateway } from "./gateway/counter.gateway";
-import { DivisionProgressGateway } from "./gateway/division-progress.gateway";
+import { CounterGateway } from "./gateways/counter.gateway";
+import { DivisionProgressGateway } from "./gateways/division-progress.gateway";
 import { ActorSessionMiddleware } from "./middlewares/actor-session.middleware";
 
 type CustomProvider<T> = {

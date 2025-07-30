@@ -169,9 +169,70 @@ export const validateRegisterForm = (data: RegisterFormData): ValidationResult =
   };
 };
 
+// ===== 세션 및 API 데이터 검증 (모델 계층) =====
+
+/**
+ * 세션 정보 검증 스키마
+ */
+export const SessionCredentialSchema = z.object({
+  sessionKey: z.string().min(1, "세션 키는 필수입니다"),
+  expiresAt: z.number().positive("만료 시간은 양수여야 합니다"),
+});
+
+/**
+ * API용 로그인 입력 검증 스키마 (UI 폼보다 간단)
+ */
+export const LoginInputSchema = z.object({
+  userName: z.string().min(1, "사용자명은 필수입니다").max(50, "사용자명은 50자 이하여야 합니다"),
+  password: z.string().min(6, "비밀번호는 최소 6자 이상이어야 합니다").max(100, "비밀번호는 100자 이하여야 합니다"),
+});
+
+/**
+ * API용 회원가입 입력 검증 스키마 (UI 폼보다 간단)
+ */
+export const RegisterInputSchema = z.object({
+  name: z.string().min(1, "이름은 필수입니다").max(100, "이름은 100자 이하여야 합니다"),
+  userName: z.string().min(1, "사용자명은 필수입니다").max(50, "사용자명은 50자 이하여야 합니다"),
+  password: z.string().min(6, "비밀번호는 최소 6자 이상이어야 합니다").max(100, "비밀번호는 100자 이하여야 합니다"),
+});
+
+/**
+ * 세션 정보를 안전하게 파싱하는 함수
+ */
+export const parseSessionCredential = (data: unknown): z.infer<typeof SessionCredentialSchema> | null => {
+  try {
+    return SessionCredentialSchema.parse(data);
+  } catch (error) {
+    console.warn("세션 데이터 검증 실패:", error);
+    return null;
+  }
+};
+
+/**
+ * 로그인 입력을 검증하는 함수 (API용)
+ */
+export const validateLoginInput = (data: unknown): z.infer<typeof LoginInputSchema> => {
+  return LoginInputSchema.parse(data);
+};
+
+/**
+ * 회원가입 입력을 검증하는 함수 (API용)
+ */
+export const validateRegisterInput = (data: unknown): z.infer<typeof RegisterInputSchema> => {
+  return RegisterInputSchema.parse(data);
+};
+
+// ===== 기존 UI 폼 검증 함수들 =====
+
 // 추가: 타입 안전한 파싱 함수들 (옵셔널)
 export const parseLoginForm = (data: unknown) => loginFormSchema.parse(data);
 export const parseRegisterForm = (data: unknown) => registerFormSchema.parse(data);
 
 // 추가: 스키마 export (다른 곳에서 재사용 가능)
-export { loginFormSchema, registerFormSchema, userNameSchema, passwordSchema, nameSchema };
+export { 
+  loginFormSchema, 
+  registerFormSchema, 
+  userNameSchema, 
+  passwordSchema, 
+  nameSchema,
+};

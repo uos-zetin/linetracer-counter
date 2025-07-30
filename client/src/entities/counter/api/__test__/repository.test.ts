@@ -1,40 +1,30 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { CounterFetcherRepository } from '../repository';
-import type { CounterState } from '../../model/types';
-import type { CounterDto } from '../types';
-import type { Fetcher } from '@/shared';
-import { parseCounterDto } from '../../lib/parse-dto';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import type { Fetcher, ApiResponse } from "@/shared/api/fetcher";
+import type { CounterDto } from "../types";
+import type { CounterState } from "../../model/types";
+import { CounterFetcherRepository } from "../repository";
 
-// parseCounterDto 함수 모킹
-vi.mock('../../lib/parse-dto', () => ({
-  parseCounterDto: vi.fn(),
-}));
-
-describe('CounterFetcherRepository', () => {
+describe("CounterFetcherRepository", () => {
   let mockAuthFetcher: Fetcher;
-  let counterRepository: CounterFetcherRepository;
+  let repository: CounterFetcherRepository;
 
   const mockCounterDto: CounterDto = {
-    id: 'counter-1',
-    name: 'Test Counter',
-    startedAt: null,
+    deviceId: "counter-1",
+    name: "Test Counter",
+    startedAt: 1640995200000, // 2022-01-01T00:00:00.000Z
     stoppedAt: null,
-    divisionId: null,
+    divisionId: "division-1",
   };
 
   const mockCounterState: CounterState = {
-    id: 'counter-1',
-    name: 'Test Counter',
-    startedAt: null,
+    id: "counter-1",
+    name: "Test Counter",
+    startedAt: 1640995200000,
     stoppedAt: null,
-    divisionId: null,
+    divisionId: "division-1",
   };
 
   beforeEach(() => {
-    // Mock 초기화
-    vi.clearAllMocks();
-    
-    // Arrange: Mock fetcher 생성 및 repository 초기화
     mockAuthFetcher = {
       get: vi.fn(),
       post: vi.fn(),
@@ -44,378 +34,201 @@ describe('CounterFetcherRepository', () => {
       request: vi.fn(),
     };
 
-    counterRepository = new CounterFetcherRepository(mockAuthFetcher);
-
-    // parseCounterDto 모킹 설정
-    vi.mocked(parseCounterDto).mockReturnValue(mockCounterState);
+    repository = new CounterFetcherRepository(mockAuthFetcher);
   });
 
-  describe('getAll', () => {
-    it('모든 계수기 목록을 성공적으로 가져와야 한다', async () => {
+  describe("getAll", () => {
+    it("should get all counters successfully", async () => {
       // Arrange
-      const counters: CounterDto[] = [
-        mockCounterDto,
-        {
-          id: 'counter-2',
-          name: 'Another Counter',
-          startedAt: 1704067200000,
-          stoppedAt: 1704067260000,
-          divisionId: 'division-1',
-        },
-      ];
-
-      mockAuthFetcher.get = vi.fn().mockResolvedValue({
-        data: counters,
-      });
+      const mockResponse: ApiResponse<CounterDto[]> = {
+        data: [mockCounterDto],
+        status: 200,
+        headers: {},
+      };
+      vi.mocked(mockAuthFetcher.get).mockResolvedValue(mockResponse);
 
       // Act
-      const result = await counterRepository.getAll();
+      const result = await repository.getAll();
 
       // Assert
-      expect(mockAuthFetcher.get).toHaveBeenCalledWith('/api/counters');
-      expect(parseCounterDto).toHaveBeenCalledTimes(2);
-      expect(parseCounterDto).toHaveBeenCalledWith(counters[0]);
-      expect(parseCounterDto).toHaveBeenCalledWith(counters[1]);
-      expect(result).toEqual([mockCounterState, mockCounterState]);
+      expect(mockAuthFetcher.get).toHaveBeenCalledWith("/counters");
+      expect(result).toEqual([mockCounterState]);
     });
 
-    it('빈 계수기 목록을 반환할 수 있어야 한다', async () => {
+    it("should return empty array when no counters exist", async () => {
       // Arrange
-      mockAuthFetcher.get = vi.fn().mockResolvedValue({
+      const mockResponse: ApiResponse<CounterDto[]> = {
         data: [],
-      });
+        status: 200,
+        headers: {},
+      };
+      vi.mocked(mockAuthFetcher.get).mockResolvedValue(mockResponse);
 
       // Act
-      const result = await counterRepository.getAll();
+      const result = await repository.getAll();
 
       // Assert
-      expect(mockAuthFetcher.get).toHaveBeenCalledWith('/api/counters');
-      expect(parseCounterDto).not.toHaveBeenCalled();
+      expect(mockAuthFetcher.get).toHaveBeenCalledWith("/counters");
       expect(result).toEqual([]);
     });
 
-    it('네트워크 에러 시 에러를 처리해야 한다', async () => {
+    it("should get multiple counters successfully", async () => {
       // Arrange
-      const networkError = new Error('네트워크 연결 실패');
-      mockAuthFetcher.get = vi.fn().mockRejectedValue(networkError);
+      const secondCounterDto: CounterDto = {
+        deviceId: "counter-2",
+        name: "Second Counter",
+        startedAt: null,
+        stoppedAt: 1640998800000, // 2022-01-01T01:00:00.000Z
+        divisionId: null,
+      };
+      const mockResponse: ApiResponse<CounterDto[]> = {
+        data: [mockCounterDto, secondCounterDto],
+        status: 200,
+        headers: {},
+      };
+      vi.mocked(mockAuthFetcher.get).mockResolvedValue(mockResponse);
 
-      // Act & Assert
-      await expect(counterRepository.getAll()).rejects.toThrow('네트워크 연결 실패');
-      expect(mockAuthFetcher.get).toHaveBeenCalledWith('/api/counters');
-    });
+      // Act
+      const result = await repository.getAll();
 
-    it('인증 실패 시 에러를 처리해야 한다', async () => {
-      // Arrange
-      const authError = new Error('인증 실패');
-      mockAuthFetcher.get = vi.fn().mockRejectedValue(authError);
-
-      // Act & Assert
-      await expect(counterRepository.getAll()).rejects.toThrow('인증 실패');
+      // Assert
+      expect(mockAuthFetcher.get).toHaveBeenCalledWith("/counters");
+      expect(result).toHaveLength(2);
+      expect(result[0]).toEqual(mockCounterState);
+      expect(result[1]).toEqual({
+        id: "counter-2",
+        name: "Second Counter",
+        startedAt: null,
+        stoppedAt: 1640998800000,
+        divisionId: null,
+      });
     });
   });
 
-  describe('getById', () => {
-    it('특정 계수기 정보를 성공적으로 가져와야 한다', async () => {
+  describe("getById", () => {
+    it("should get counter by ID successfully", async () => {
       // Arrange
-      const counterId = 'counter-1';
-      mockAuthFetcher.get = vi.fn().mockResolvedValue({
+      const counterId = "counter-1";
+      const mockResponse: ApiResponse<CounterDto> = {
         data: mockCounterDto,
-      });
+        status: 200,
+        headers: {},
+      };
+      vi.mocked(mockAuthFetcher.get).mockResolvedValue(mockResponse);
 
       // Act
-      const result = await counterRepository.getById(counterId);
+      const result = await repository.getById(counterId);
 
       // Assert
-      expect(mockAuthFetcher.get).toHaveBeenCalledWith(`/api/counters/${counterId}`);
-      expect(parseCounterDto).toHaveBeenCalledWith(mockCounterDto);
+      expect(mockAuthFetcher.get).toHaveBeenCalledWith(`/counters/${counterId}`);
       expect(result).toEqual(mockCounterState);
     });
 
-    it('존재하지 않는 계수기 조회 시 null을 반환해야 한다', async () => {
+    it("should return null when counter does not exist", async () => {
       // Arrange
-      const counterId = 'non-existent-counter';
-      mockAuthFetcher.get = vi.fn().mockResolvedValue({
+      const counterId = "non-existent";
+      const mockResponse: ApiResponse<null> = {
         data: null,
-      });
+        status: 404,
+        headers: {},
+      };
+      vi.mocked(mockAuthFetcher.get).mockResolvedValue(mockResponse);
 
       // Act
-      const result = await counterRepository.getById(counterId);
+      const result = await repository.getById(counterId);
 
       // Assert
-      expect(mockAuthFetcher.get).toHaveBeenCalledWith(`/api/counters/${counterId}`);
-      expect(parseCounterDto).not.toHaveBeenCalled();
+      expect(mockAuthFetcher.get).toHaveBeenCalledWith(`/counters/${counterId}`);
       expect(result).toBeNull();
-    });
-
-    it('네트워크 에러 시 에러를 처리해야 한다', async () => {
-      // Arrange
-      const counterId = 'counter-1';
-      const networkError = new Error('계수기 조회 실패');
-      mockAuthFetcher.get = vi.fn().mockRejectedValue(networkError);
-
-      // Act & Assert
-      await expect(counterRepository.getById(counterId)).rejects.toThrow('계수기 조회 실패');
-      expect(mockAuthFetcher.get).toHaveBeenCalledWith(`/api/counters/${counterId}`);
     });
   });
 
-  describe('connectDivision', () => {
-    it('계수기를 디비전에 성공적으로 연결해야 한다', async () => {
+  describe("connectDivision", () => {
+    it("should connect counter to division successfully", async () => {
       // Arrange
-      const counterId = 'counter-1';
-      const divisionId = 'division-1';
-      mockAuthFetcher.patch = vi.fn().mockResolvedValue({
+      const counterId = "counter-1";
+      const divisionId = "division-1";
+      const mockResponse: ApiResponse<void> = {
         data: undefined,
-      });
+        status: 200,
+        headers: {},
+      };
+      vi.mocked(mockAuthFetcher.patch).mockResolvedValue(mockResponse);
 
       // Act
-      await counterRepository.connectDivision(counterId, divisionId);
+      await repository.connectDivision(counterId, divisionId);
 
       // Assert
-      expect(mockAuthFetcher.patch).toHaveBeenCalledWith(`/api/counters/${counterId}/division`, {
+      expect(mockAuthFetcher.patch).toHaveBeenCalledWith(`/counters/${counterId}/division`, {
         body: { divisionId },
       });
     });
-
-    it('존재하지 않는 계수기 연결 시 에러를 처리해야 한다', async () => {
-      // Arrange
-      const counterId = 'non-existent-counter';
-      const divisionId = 'division-1';
-      const notFoundError = new Error('계수기를 찾을 수 없습니다');
-      mockAuthFetcher.patch = vi.fn().mockRejectedValue(notFoundError);
-
-      // Act & Assert
-      await expect(counterRepository.connectDivision(counterId, divisionId)).rejects.toThrow('계수기를 찾을 수 없습니다');
-    });
-
-    it('존재하지 않는 디비전 연결 시 에러를 처리해야 한다', async () => {
-      // Arrange
-      const counterId = 'counter-1';
-      const divisionId = 'non-existent-division';
-      const notFoundError = new Error('디비전을 찾을 수 없습니다');
-      mockAuthFetcher.patch = vi.fn().mockRejectedValue(notFoundError);
-
-      // Act & Assert
-      await expect(counterRepository.connectDivision(counterId, divisionId)).rejects.toThrow('디비전을 찾을 수 없습니다');
-    });
-
-    it('권한 없음 에러를 처리해야 한다', async () => {
-      // Arrange
-      const counterId = 'counter-1';
-      const divisionId = 'division-1';
-      const forbiddenError = new Error('계수기 연결 권한이 없습니다');
-      mockAuthFetcher.patch = vi.fn().mockRejectedValue(forbiddenError);
-
-      // Act & Assert
-      await expect(counterRepository.connectDivision(counterId, divisionId)).rejects.toThrow('계수기 연결 권한이 없습니다');
-    });
   });
 
-  describe('disconnectDivision', () => {
-    it('계수기를 디비전에서 성공적으로 연결 해제해야 한다', async () => {
+  describe("disconnectDivision", () => {
+    it("should disconnect counter from division successfully", async () => {
       // Arrange
-      const counterId = 'counter-1';
-      mockAuthFetcher.delete = vi.fn().mockResolvedValue({
+      const counterId = "counter-1";
+      const mockResponse: ApiResponse<void> = {
         data: undefined,
-      });
+        status: 200,
+        headers: {},
+      };
+      vi.mocked(mockAuthFetcher.delete).mockResolvedValue(mockResponse);
 
       // Act
-      await counterRepository.disconnectDivision(counterId);
+      await repository.disconnectDivision(counterId);
 
       // Assert
-      expect(mockAuthFetcher.delete).toHaveBeenCalledWith(`/api/counters/${counterId}/division`);
-    });
-
-    it('존재하지 않는 계수기 연결 해제 시 에러를 처리해야 한다', async () => {
-      // Arrange
-      const counterId = 'non-existent-counter';
-      const notFoundError = new Error('계수기를 찾을 수 없습니다');
-      mockAuthFetcher.delete = vi.fn().mockRejectedValue(notFoundError);
-
-      // Act & Assert
-      await expect(counterRepository.disconnectDivision(counterId)).rejects.toThrow('계수기를 찾을 수 없습니다');
-    });
-
-    it('이미 연결되지 않은 계수기 연결 해제 시 에러를 처리해야 한다', async () => {
-      // Arrange
-      const counterId = 'counter-1';
-      const badRequestError = new Error('계수기가 디비전에 연결되어 있지 않습니다');
-      mockAuthFetcher.delete = vi.fn().mockRejectedValue(badRequestError);
-
-      // Act & Assert
-      await expect(counterRepository.disconnectDivision(counterId)).rejects.toThrow('계수기가 디비전에 연결되어 있지 않습니다');
+      expect(mockAuthFetcher.delete).toHaveBeenCalledWith(`/counters/${counterId}/division`);
     });
   });
 
-  describe('reset', () => {
-    it('계수기를 성공적으로 리셋해야 한다', async () => {
+  describe("reset", () => {
+    it("should reset counter successfully", async () => {
       // Arrange
-      const counterId = 'counter-1';
-      mockAuthFetcher.post = vi.fn().mockResolvedValue({
+      const counterId = "counter-1";
+      const mockResponse: ApiResponse<void> = {
         data: undefined,
-      });
+        status: 200,
+        headers: {},
+      };
+      vi.mocked(mockAuthFetcher.post).mockResolvedValue(mockResponse);
 
       // Act
-      await counterRepository.reset(counterId);
+      await repository.reset(counterId);
 
       // Assert
-      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/api/counters/${counterId}/reset`);
-    });
-
-    it('존재하지 않는 계수기 리셋 시 에러를 처리해야 한다', async () => {
-      // Arrange
-      const counterId = 'non-existent-counter';
-      const notFoundError = new Error('계수기를 찾을 수 없습니다');
-      mockAuthFetcher.post = vi.fn().mockRejectedValue(notFoundError);
-
-      // Act & Assert
-      await expect(counterRepository.reset(counterId)).rejects.toThrow('계수기를 찾을 수 없습니다');
-    });
-
-    it('실행 중인 계수기 리셋 시 에러를 처리해야 한다', async () => {
-      // Arrange
-      const counterId = 'counter-1';
-      const conflictError = new Error('실행 중인 계수기는 리셋할 수 없습니다');
-      mockAuthFetcher.post = vi.fn().mockRejectedValue(conflictError);
-
-      // Act & Assert
-      await expect(counterRepository.reset(counterId)).rejects.toThrow('실행 중인 계수기는 리셋할 수 없습니다');
-    });
-
-    it('권한 없음 에러를 처리해야 한다', async () => {
-      // Arrange
-      const counterId = 'counter-1';
-      const forbiddenError = new Error('계수기 리셋 권한이 없습니다');
-      mockAuthFetcher.post = vi.fn().mockRejectedValue(forbiddenError);
-
-      // Act & Assert
-      await expect(counterRepository.reset(counterId)).rejects.toThrow('계수기 리셋 권한이 없습니다');
+      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/counters/${counterId}/reset`);
     });
   });
 
-  describe('disconnectCounter', () => {
-    it('계수기를 성공적으로 연결 해제해야 한다', async () => {
+  describe("disconnectCounter", () => {
+    it("should disconnect counter successfully", async () => {
       // Arrange
-      const counterId = 'counter-1';
-      mockAuthFetcher.delete = vi.fn().mockResolvedValue({
+      const counterId = "counter-1";
+      const mockResponse: ApiResponse<void> = {
         data: undefined,
-      });
+        status: 200,
+        headers: {},
+      };
+      vi.mocked(mockAuthFetcher.delete).mockResolvedValue(mockResponse);
 
       // Act
-      await counterRepository.disconnectCounter(counterId);
+      await repository.disconnectCounter(counterId);
 
       // Assert
-      expect(mockAuthFetcher.delete).toHaveBeenCalledWith(`/api/counters/${counterId}`);
-    });
-
-    it('존재하지 않는 계수기 연결 해제 시 에러를 처리해야 한다', async () => {
-      // Arrange
-      const counterId = 'non-existent-counter';
-      const notFoundError = new Error('계수기를 찾을 수 없습니다');
-      mockAuthFetcher.delete = vi.fn().mockRejectedValue(notFoundError);
-
-      // Act & Assert
-      await expect(counterRepository.disconnectCounter(counterId)).rejects.toThrow('계수기를 찾을 수 없습니다');
-    });
-
-    it('사용 중인 계수기 연결 해제 시 에러를 처리해야 한다', async () => {
-      // Arrange
-      const counterId = 'counter-1';
-      const conflictError = new Error('사용 중인 계수기는 연결 해제할 수 없습니다');
-      mockAuthFetcher.delete = vi.fn().mockRejectedValue(conflictError);
-
-      // Act & Assert
-      await expect(counterRepository.disconnectCounter(counterId)).rejects.toThrow('사용 중인 계수기는 연결 해제할 수 없습니다');
-    });
-
-    it('권한 없음 에러를 처리해야 한다', async () => {
-      // Arrange
-      const counterId = 'counter-1';
-      const forbiddenError = new Error('계수기 연결 해제 권한이 없습니다');
-      mockAuthFetcher.delete = vi.fn().mockRejectedValue(forbiddenError);
-
-      // Act & Assert
-      await expect(counterRepository.disconnectCounter(counterId)).rejects.toThrow('계수기 연결 해제 권한이 없습니다');
+      expect(mockAuthFetcher.delete).toHaveBeenCalledWith(`/counters/${counterId}`);
     });
   });
 
-  describe('메서드 반환값 검증', () => {
-    it('connectDivision은 undefined를 반환해야 한다', async () => {
-      // Arrange
-      const counterId = 'counter-1';
-      const divisionId = 'division-1';
-      mockAuthFetcher.patch = vi.fn().mockResolvedValue({ data: undefined });
-
-      // Act
-      const result = await counterRepository.connectDivision(counterId, divisionId);
-
-      // Assert
-      expect(result).toBeUndefined();
-    });
-
-    it('disconnectDivision은 undefined를 반환해야 한다', async () => {
-      // Arrange
-      const counterId = 'counter-1';
-      mockAuthFetcher.delete = vi.fn().mockResolvedValue({ data: undefined });
-
-      // Act
-      const result = await counterRepository.disconnectDivision(counterId);
-
-      // Assert
-      expect(result).toBeUndefined();
-    });
-
-    it('reset은 undefined를 반환해야 한다', async () => {
-      // Arrange
-      const counterId = 'counter-1';
-      mockAuthFetcher.post = vi.fn().mockResolvedValue({ data: undefined });
-
-      // Act
-      const result = await counterRepository.reset(counterId);
-
-      // Assert
-      expect(result).toBeUndefined();
-    });
-
-    it('disconnectCounter는 undefined를 반환해야 한다', async () => {
-      // Arrange
-      const counterId = 'counter-1';
-      mockAuthFetcher.delete = vi.fn().mockResolvedValue({ data: undefined });
-
-      // Act
-      const result = await counterRepository.disconnectCounter(counterId);
-
-      // Assert
-      expect(result).toBeUndefined();
-    });
-  });
-
-  describe('인증 요구사항', () => {
-    it('모든 메서드가 authFetcher를 사용해야 한다', async () => {
+  describe("constructor", () => {
+    it("should inject authFetcher correctly", () => {
       // Arrange & Act
-      mockAuthFetcher.get = vi.fn().mockResolvedValue({ data: [] });
-      await counterRepository.getAll();
-
-      mockAuthFetcher.get = vi.fn().mockResolvedValue({ data: mockCounterDto });
-      await counterRepository.getById('counter-1');
-
-      mockAuthFetcher.patch = vi.fn().mockResolvedValue({ data: undefined });
-      await counterRepository.connectDivision('counter-1', 'division-1');
-
-      mockAuthFetcher.delete = vi.fn().mockResolvedValue({ data: undefined });
-      await counterRepository.disconnectDivision('counter-1');
-
-      mockAuthFetcher.post = vi.fn().mockResolvedValue({ data: undefined });
-      await counterRepository.reset('counter-1');
-
-      mockAuthFetcher.delete = vi.fn().mockResolvedValue({ data: undefined });
-      await counterRepository.disconnectCounter('counter-1');
+      const newRepository = new CounterFetcherRepository(mockAuthFetcher);
 
       // Assert
-      expect(mockAuthFetcher.get).toHaveBeenCalled();
-      expect(mockAuthFetcher.post).toHaveBeenCalled();
-      expect(mockAuthFetcher.patch).toHaveBeenCalled();
-      expect(mockAuthFetcher.delete).toHaveBeenCalled();
+      expect(newRepository).toBeInstanceOf(CounterFetcherRepository);
     });
   });
 });

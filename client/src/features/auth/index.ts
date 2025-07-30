@@ -2,7 +2,7 @@
 export { LoginForm } from "./ui/login-form";
 export { AuthDebugWrapper } from "./ui/auth-debug";
 
-// 검증 관련 exports
+// 검증 관련 exports (UI 폼 + API 모델 통합)
 export {
   validateLoginForm,
   validateRegisterForm,
@@ -17,6 +17,12 @@ export {
   userNameSchema,
   passwordSchema,
   nameSchema,
+  SessionCredentialSchema,
+  LoginInputSchema,
+  RegisterInputSchema,
+  parseSessionCredential,
+  validateLoginInput,
+  validateRegisterInput,
 } from "./lib/validation";
 
 // Auth Service exports

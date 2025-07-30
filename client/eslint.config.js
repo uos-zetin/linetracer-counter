@@ -36,8 +36,8 @@ export default tseslint.config(
         {
           allowSameSlice: true,
           allowTypeImports: true,
-          testFilesPatterns: ["\\.test\\.", "\\.spec\\."],
-          ignoreImportPatterns: [],
+          testFilesPatterns: ["test", "spec", "__tests__"],
+          ignoreImportPatterns: ["\\.(test|spec)\\.(ts|tsx)$"],
         },
       ],
       "fsd/no-public-api-sidestep": "error",

@@ -86,7 +86,7 @@ describe('ManualRecordFetcherRepository', () => {
       const result = await manualRecordRepository.getAllManualRecords(participantId);
 
       // Assert
-      expect(mockFetcher.get).toHaveBeenCalledWith(`/api/participants/${participantId}/manual-records`);
+      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${participantId}/manual-records`);
       expect(parseManualRecordDto).toHaveBeenCalledTimes(2);
       expect(parseManualRecordDto).toHaveBeenCalledWith(manualRecords[0]);
       expect(parseManualRecordDto).toHaveBeenCalledWith(manualRecords[1]);
@@ -104,7 +104,7 @@ describe('ManualRecordFetcherRepository', () => {
       const result = await manualRecordRepository.getAllManualRecords(participantId);
 
       // Assert
-      expect(mockFetcher.get).toHaveBeenCalledWith(`/api/participants/${participantId}/manual-records`);
+      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${participantId}/manual-records`);
       expect(parseManualRecordDto).not.toHaveBeenCalled();
       expect(result).toEqual([]);
     });
@@ -117,7 +117,7 @@ describe('ManualRecordFetcherRepository', () => {
 
       // Act & Assert
       await expect(manualRecordRepository.getAllManualRecords(participantId)).rejects.toThrow('네트워크 연결 실패');
-      expect(mockFetcher.get).toHaveBeenCalledWith(`/api/participants/${participantId}/manual-records`);
+      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${participantId}/manual-records`);
     });
 
     it('존재하지 않는 참가자에 대한 요청 시 에러를 처리해야 한다', async () => {
@@ -148,7 +148,7 @@ describe('ManualRecordFetcherRepository', () => {
       const result = await manualRecordRepository.createManualRecord(participantId, newManualRecord);
 
       // Assert
-      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/api/participants/${participantId}/manual-records`, {
+      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/manual-records`, {
         body: newManualRecord,
       });
       expect(parseManualRecordDto).toHaveBeenCalledWith(mockManualRecordDto);
@@ -274,7 +274,7 @@ describe('ManualRecordFetcherRepository', () => {
       const result = await manualRecordRepository.createManualRecord(participantId, largeValueRecord);
 
       // Assert
-      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/api/participants/${participantId}/manual-records`, {
+      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/manual-records`, {
         body: largeValueRecord,
       });
       expect(result).toEqual(mockManualRecord);
@@ -299,7 +299,7 @@ describe('ManualRecordFetcherRepository', () => {
       const result = await manualRecordRepository.createManualRecord(participantId, specialCharRecord);
 
       // Assert
-      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/api/participants/${participantId}/manual-records`, {
+      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/manual-records`, {
         body: specialCharRecord,
       });
       expect(result).toEqual(mockManualRecord);
@@ -324,7 +324,7 @@ describe('ManualRecordFetcherRepository', () => {
       const result = await manualRecordRepository.createManualRecord(participantId, zeroTimeRecord);
 
       // Assert
-      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/api/participants/${participantId}/manual-records`, {
+      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/manual-records`, {
         body: zeroTimeRecord,
       });
       expect(result).toEqual(mockManualRecord);
