@@ -39,7 +39,7 @@ interface CounterSocket extends Socket {
 
 @Injectable()
 @WebSocketGateway({
-  namespace: "/counters/socket",
+  namespace: "/socket/counters",
   cors: {
     origin: "*",
   },
@@ -84,7 +84,7 @@ export class CounterGateway
       }
 
       // session 쿼리 파라미터 유무 검사
-      const session = client.handshake.query.session;
+      const session = client.handshake.headers.authorization?.split(" ")[1];
       if (!session || typeof session !== "string" || session.trim() === "") {
         this.emitErrorAndDisconnect(client, {
           code: "MISSING_SESSION",

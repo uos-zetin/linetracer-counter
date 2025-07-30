@@ -85,7 +85,7 @@ const counterDeviceManager: CustomProvider<CounterDeviceActorManager> = {
   imports: [
     ServeStaticModule.forRoot({
       rootPath: path.resolve(env.STATIC_FILES_PATH),
-      exclude: ["/api{/*path}"],
+      exclude: ["/api{/*path}", "/socket{/*path}"],
     }),
   ],
 })
