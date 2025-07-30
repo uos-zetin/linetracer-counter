@@ -5,7 +5,7 @@ import { createProgressService, progressServiceContext } from "@/features/progre
 import { ProgressSocketIOChannel } from "@/features/progress";
 
 export const ProgressProvider = ({ children }: { children: React.ReactNode }) => {
-  const { progressRepository } = useRepository();
+  const { progressRepository, manualRecordRepository } = useRepository();
   
   const { progressService, ProgressServiceProvider } = useMemo(() => {
     const progressChannel: ProgressChannel = new ProgressSocketIOChannel();
@@ -13,11 +13,12 @@ export const ProgressProvider = ({ children }: { children: React.ReactNode }) =>
     const progressService: ProgressService = createProgressService({
       progressRepository,
       progressChannel,
+      manualRecordRepository,
     });
     const ProgressServiceProvider = progressServiceContext.Provider;
 
     return { progressService, ProgressServiceProvider };
-  }, [progressRepository]);
+  }, [progressRepository, manualRecordRepository]);
 
   return <ProgressServiceProvider value={progressService}>{children}</ProgressServiceProvider>;
 };

@@ -1,15 +1,18 @@
 import type { ProgressChannel, ProgressRepository } from "../api/types";
+import type { ManualRecordRepository } from "@/entities/manual-record";
 import { useZustandProgressStore } from "./store.zustand";
 import type { ProgressService, ProgressState } from "./types";
 
 interface ProgressServiceProps {
   progressRepository: ProgressRepository;
   progressChannel: ProgressChannel;
+  manualRecordRepository: ManualRecordRepository;
 }
 
 export const createProgressService = ({
   progressRepository,
   progressChannel,
+  manualRecordRepository,
 }: ProgressServiceProps): ProgressService => {
   let progressUpdate: (() => void) | null;
 
@@ -122,6 +125,23 @@ export const createProgressService = ({
     }
   };
 
+  // Manual record methods
+  const getCurrentRunnerManualRecords = () => {
+    const store = useZustandProgressStore.getState();
+    const runner = store.getRunner();
+    return runner?.manualRecords || [];
+  };
+
+  const addManualRecord = async (participantId: string, value: number, recorderName: string) => {
+    try {
+      await manualRecordRepository.createManualRecord(participantId, { value, recorderName });
+      // Note: The progress store will be updated via WebSocket when the manual record is created
+    } catch (error) {
+      console.error("Failed to add manual record:", error);
+      throw error;
+    }
+  };
+
   return {
     connect,
     disconnect,
@@ -139,5 +159,7 @@ export const createProgressService = ({
     openDivision,
     closeDivision,
     resetDivision,
+    getCurrentRunnerManualRecords,
+    addManualRecord,
   };
 };
