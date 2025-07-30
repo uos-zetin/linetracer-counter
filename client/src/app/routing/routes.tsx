@@ -11,6 +11,7 @@ import {
 } from "@/pages/admin";
 import { TimerPage } from "@/pages/timer";
 import { CounterSelectorPage } from "@/pages/counter-selector";
+import { ControllerPage } from "@/pages/controller";
 
 const routes: RouteObject[] = [
   {
@@ -19,11 +20,20 @@ const routes: RouteObject[] = [
   },
   {
     path: "/counter",
-    element: <CounterSelectorPage />,
-  },
-  {
-    path: "/counter/:counterId/timer",
-    element: <TimerPage />,
+    children: [
+      {
+        index: true,
+        element: <CounterSelectorPage />,
+      },
+      {
+        path: ":counterId/timer",
+        element: <TimerPage />,
+      },
+      {
+        path: ":counterId/controller",
+        element: <ControllerPage />,
+      },
+    ],
   },
   {
     path: "/admin",

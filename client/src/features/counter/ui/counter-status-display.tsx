@@ -1,5 +1,6 @@
 import { useCounterService } from "../model/context";
-import { formatElapsedMs } from "@/entities/counter";
+import { formatElapsedMs, getElapsedMs } from "@/entities/counter";
+import { useEffect, useRef, useState } from "react";
 
 interface CounterStatusDisplayProps {
   counterId: string;
@@ -15,9 +16,36 @@ export const CounterStatusDisplay = ({
   className = ""
 }: CounterStatusDisplayProps) => {
   const counterService = useCounterService();
-
   const { startedAt, stoppedAt } = counterService.useStopwatch(counterId);
-  const elapsedMs = counterService.getElapsedMs(counterId);
+  
+  // 실시간 elapsed time 계산
+  const [elapsedMs, setElapsedMs] = useState(getElapsedMs(startedAt, stoppedAt ?? Date.now()));
+  const frameRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const tick = () => {
+      const now = Date.now();
+      const newElapsedTime = getElapsedMs(startedAt, stoppedAt ?? now);
+      setElapsedMs(newElapsedTime);
+      
+      // 실행 중일 때만 계속 업데이트
+      if (startedAt && !stoppedAt) {
+        frameRef.current = requestAnimationFrame(tick);
+      }
+    };
+
+    if (startedAt) {
+      frameRef.current = requestAnimationFrame(tick);
+    } else {
+      setElapsedMs(0);
+    }
+
+    return () => {
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current);
+      }
+    };
+  }, [startedAt, stoppedAt]);
   
   const isRunning = startedAt !== null && stoppedAt === null;
   const isStopped = startedAt !== null && stoppedAt !== null;
