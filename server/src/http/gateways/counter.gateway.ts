@@ -39,7 +39,7 @@ interface CounterSocket extends Socket {
 
 @Injectable()
 @WebSocketGateway({
-  namespace: "/counters/socket",
+  namespace: "/socket/counters",
   cors: {
     origin: "*",
   },
