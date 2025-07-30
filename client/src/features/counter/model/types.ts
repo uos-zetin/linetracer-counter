@@ -9,4 +9,6 @@ export interface CounterService {
   start: (counterId: string, startedAt: number) => void;
   stop: (counterId: string, stoppedAt: number) => void;
   getElapsedMs: (counterId: string, now?: number) => number;
+  connectDivision: (counterId: string, divisionId: string) => Promise<void>;
+  disconnectDivision: (counterId: string) => Promise<void>;
 }

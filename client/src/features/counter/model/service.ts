@@ -101,6 +101,24 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
     return store.getElapsedMs(counterId, now);
   };
 
+  const connectDivision = async (counterId: string, divisionId: string) => {
+    try {
+      await counterRepository.connectDivision(counterId, divisionId);
+    } catch (error) {
+      console.error("Failed to connect division to counter:", error);
+      throw error;
+    }
+  };
+
+  const disconnectDivision = async (counterId: string) => {
+    try {
+      await counterRepository.disconnectDivision(counterId);
+    } catch (error) {
+      console.error("Failed to disconnect division from counter:", error);
+      throw error;
+    }
+  };
+
   return {
     connect,
     disconnect,
@@ -109,5 +127,7 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
     start,
     stop,
     getElapsedMs,
+    connectDivision,
+    disconnectDivision,
   };
 };
