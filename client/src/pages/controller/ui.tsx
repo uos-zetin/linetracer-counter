@@ -102,7 +102,7 @@ export const ControllerPage = () => {
       {counterConnected && (
         <>
           <ProgressMonitorSection />
-          <TimerControlSection counterId={counterId} />
+          <TimerControlSection />
           <RecordControlSection />
           <DivisionControlSection />
           <ManualRecordSection />

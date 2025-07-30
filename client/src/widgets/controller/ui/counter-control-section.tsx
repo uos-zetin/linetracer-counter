@@ -1,4 +1,4 @@
-import { CounterDivisionConnector, CounterResetButton, CounterStatusDisplay, useCounterService } from "@/features/counter";
+import { CounterDivisionConnector, CounterResetButton, CounterStatusDisplay } from "@/features/counter";
 import { useProgressService } from "@/features/progress";
 import { useAdminDivisionService } from "@/features/admin-division";
 
@@ -11,12 +11,8 @@ export const CounterControlSection = ({
   counterId, 
   className = ""
 }: CounterControlSectionProps) => {
-  const counterService = useCounterService();
   const progressService = useProgressService();
   const adminDivisionService = useAdminDivisionService();
-  
-  // Get counter state (should be already connected via counterId)
-  const { startedAt, stoppedAt } = counterService.useStopwatch(counterId);
   
   // Get progress state (should be connected if counter has divisionId)
   const currentDivision = progressService.useDivision();

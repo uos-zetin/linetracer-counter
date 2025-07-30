@@ -1,4 +1,4 @@
-import { RecordStatusSelector, RecordNoteEditor, RecordListDisplay, useRecordControlService } from "@/features/record-control";
+import { RecordStatusSelector, RecordNoteEditor, RecordListDisplay } from "@/features/record-control";
 import { useProgressService } from "@/features/progress";
 import { useState } from "react";
 import type { Record } from "@/entities/record";
@@ -10,7 +10,6 @@ interface RecordControlSectionProps {
 export const RecordControlSection = ({ 
   className = ""
 }: RecordControlSectionProps) => {
-  const recordControlService = useRecordControlService();
   const progressService = useProgressService();
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
   

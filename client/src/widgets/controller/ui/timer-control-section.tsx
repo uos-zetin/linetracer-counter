@@ -1,16 +1,13 @@
-import { TimerStartButton, TimerStopButton, TimerAdjustControls, TimerDisplay, useTimerControlService } from "@/features/timer-control";
+import { TimerStartButton, TimerStopButton, TimerAdjustControls, TimerDisplay } from "@/features/timer-control";
 import { useProgressService } from "@/features/progress";
 
 interface TimerControlSectionProps {
-  counterId: string;
   className?: string;
 }
 
 export const TimerControlSection = ({ 
-  counterId, 
   className = ""
 }: TimerControlSectionProps) => {
-  const timerControlService = useTimerControlService();
   const progressService = useProgressService();
   
   // Get current runner from progress
