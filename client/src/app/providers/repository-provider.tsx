@@ -7,6 +7,7 @@ import { MockManualRecordRepository } from "@/entities/manual-record";
 import { MockUserRepository } from "@/entities/user";
 import { MockCounterRepository } from "@/entities/counter";
 import { MockTimerRepository } from "@/entities/timer";
+import { MockProgressRepository } from "@/features/progress";
 import { repositoryContext } from "./use-repository";
 
 export const RepositoryProvider = ({ children }: { children: React.ReactNode }) => {
@@ -20,6 +21,7 @@ export const RepositoryProvider = ({ children }: { children: React.ReactNode }) 
       userRepository: new MockUserRepository(),
       counterRepository: new MockCounterRepository(),
       timerRepository: new MockTimerRepository(),
+      progressRepository: new MockProgressRepository(),
     }),
     []
   );

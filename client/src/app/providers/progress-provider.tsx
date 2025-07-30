@@ -1,24 +1,23 @@
 import { useMemo } from "react";
 import type { ProgressChannel, ProgressService } from "@/features/progress";
-// import { useFetcher } from "./fetcher-provider";
+import { useRepository } from "./use-repository";
 import { createProgressService, progressServiceContext } from "@/features/progress";
 import { ProgressSocketIOChannel } from "@/features/progress";
 
 export const ProgressProvider = ({ children }: { children: React.ReactNode }) => {
-  // const fetcher = useFetcher();
-  // const progressRepository: ProgressRepository = new ProgressFetcherRepository(fetcher.authenticatedFetcher);
+  const { progressRepository } = useRepository();
   
   const { progressService, ProgressServiceProvider } = useMemo(() => {
     const progressChannel: ProgressChannel = new ProgressSocketIOChannel();
 
     const progressService: ProgressService = createProgressService({
-      // progressRepository,
+      progressRepository,
       progressChannel,
     });
     const ProgressServiceProvider = progressServiceContext.Provider;
 
     return { progressService, ProgressServiceProvider };
-  }, []);
+  }, [progressRepository]);
 
   return <ProgressServiceProvider value={progressService}>{children}</ProgressServiceProvider>;
 };

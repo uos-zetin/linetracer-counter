@@ -48,4 +48,12 @@ export interface ProgressService {
   useRunner: () => Runner | null;
   useNextRunners: () => Participant[];
   useTopRecords: () => Record[];
+  // Runner control methods
+  postponeCurrentRunner: (divisionId: string) => Promise<void>;
+  setCurrentRunner: (divisionId: string, participantId: string) => Promise<void>;
+  changeOrder: (divisionId: string, participantId: string, order: number) => Promise<void>;
+  getOrder: (divisionId: string) => Promise<string[]>;
+  openDivision: (divisionId: string) => Promise<void>;
+  closeDivision: (divisionId: string) => Promise<void>;
+  resetDivision: (divisionId: string) => Promise<void>;
 }
