@@ -59,6 +59,16 @@ export const useZustandCounterStore = create<CounterStore>()(
       return counter?.divisionId ?? null;
     },
 
+    getStartedAt: (counterId) => {
+      const counter = get().counters.get(counterId);
+      return counter?.startedAt ?? null;
+    },
+
+    getStoppedAt: (counterId) => {
+      const counter = get().counters.get(counterId);
+      return counter?.stoppedAt ?? null;
+    },
+
     clearAll: () =>
       set((state) => {
         state.counters.clear();

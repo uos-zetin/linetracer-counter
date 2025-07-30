@@ -1,20 +1,21 @@
 import { useNavigate } from "react-router";
 import { useState, useEffect, useRef } from "react";
 
-const mockCounterNames = [
-  "계수기-A",
-  "계수기-B",
-  "계수기-C",
-  "계수기-D",
-  "계수기-E",
-  "계수기-F",
-  "계수기-G",
-  "계수기-H",
+const mockCounters = [
+  { id: "counter-001", name: "계수기-A (테스트용)" },
+  { id: "counter-002", name: "계수기-B (데모용)" },
+  { id: "counter-003", name: "계수기-C (개발용)" },
+  { id: "counter-004", name: "계수기-D" },
+  { id: "counter-005", name: "계수기-E" },
+  { id: "counter-006", name: "계수기-F" },
+  { id: "counter-007", name: "계수기-G" },
+  { id: "counter-008", name: "계수기-H" },
 ];
 
 export function CounterSelectorPage() {
   const navigate = useNavigate();
   const [selectedCounter, setSelectedCounter] = useState<string>("");
+  const [selectedCounterId, setSelectedCounterId] = useState<string>("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -30,14 +31,14 @@ export function CounterSelectorPage() {
   }, []);
 
   const handleNavigation = (path: string) => {
-    if (selectedCounter) {
-      const counterId = encodeURIComponent(selectedCounter);
-      navigate(`/counter/${counterId}${path}`);
+    if (selectedCounterId) {
+      navigate(`/counter/${selectedCounterId}${path}`);
     }
   };
 
-  const handleCounterSelect = (counterName: string) => {
-    setSelectedCounter(counterName);
+  const handleCounterSelect = (counter: typeof mockCounters[0]) => {
+    setSelectedCounter(counter.name);
+    setSelectedCounterId(counter.id);
     setIsDropdownOpen(false);
   };
 
@@ -74,17 +75,17 @@ export function CounterSelectorPage() {
 
               {isDropdownOpen && (
                 <div className="absolute top-full left-0 right-0 mt-[0.25vw] bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-[20vw] overflow-y-auto">
-                  {mockCounterNames.map((counterName) => (
+                  {mockCounters.map((counter) => (
                     <button
-                      key={counterName}
-                      onClick={() => handleCounterSelect(counterName)}
+                      key={counter.id}
+                      onClick={() => handleCounterSelect(counter)}
                       className={`w-full px-[1.5vw] py-[1vw] text-[1.5vw] text-left hover:bg-gray-100 transition-colors ${
-                        selectedCounter === counterName
+                        selectedCounter === counter.name
                           ? "bg-uos-primary-blue text-white hover:bg-blue-600"
                           : "text-gray-900"
                       }`}
                     >
-                      {counterName}
+                      {counter.name}
                     </button>
                   ))}
                 </div>
@@ -101,11 +102,11 @@ export function CounterSelectorPage() {
             </button>
             <button
               onClick={() => handleNavigation("/controller")}
-              disabled={!selectedCounter}
+              disabled={!selectedCounterId}
               className={`
                 px-[2vw] py-[1vw] rounded-lg text-[1.5vw] font-medium transition-colors
                 ${
-                  selectedCounter
+                  selectedCounterId
                     ? "bg-green-600 text-white hover:bg-green-700"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }
@@ -115,11 +116,11 @@ export function CounterSelectorPage() {
             </button>
             <button
               onClick={() => handleNavigation("/timer")}
-              disabled={!selectedCounter}
+              disabled={!selectedCounterId}
               className={`
                 px-[2vw] py-[1vw] rounded-lg text-[1.5vw] font-medium transition-colors
                 ${
-                  selectedCounter
+                  selectedCounterId
                     ? "bg-uos-primary-blue text-white hover:bg-blue-600"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }
@@ -129,11 +130,11 @@ export function CounterSelectorPage() {
             </button>
             <button
               onClick={() => handleNavigation("/manual-counter")}
-              disabled={!selectedCounter}
+              disabled={!selectedCounterId}
               className={`
                 px-[2vw] py-[1vw] rounded-lg text-[1.5vw] font-medium transition-colors
                 ${
-                  selectedCounter
+                  selectedCounterId
                     ? "bg-orange-600 text-white hover:bg-orange-700"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }

@@ -5,6 +5,7 @@ import "./index.css";
 import { router } from "./routing";
 import { AppProviders } from "./providers";
 
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AppProviders>

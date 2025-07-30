@@ -23,6 +23,7 @@ export const createProgressService = ({
   const connect = (divisionId: string) => {
     progressChannel.connect(divisionId);
     progressUpdate = progressChannel.subscribe(update);
+
   };
 
   const disconnect = () => {
