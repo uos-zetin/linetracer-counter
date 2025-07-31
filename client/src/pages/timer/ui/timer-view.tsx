@@ -1,10 +1,15 @@
-import { formatMsToTime } from "@/entities/timer";
-import { useCountdownTimer } from "@/shared";
-import type { TimerState } from "@/entities/timer";
+import { formatMsToTime, integrateLogs, useCountdownTimer } from "@/entities/timer";
+import { useProgressService } from "@/features/progress";
 
-export function TimerView({ timerState }: { timerState: TimerState }) {
-  const remainingMs = useCountdownTimer(timerState);
-  const timeComponents = formatMsToTime(remainingMs);
+export function TimerView() {
+  const progress = useProgressService();
+  const currentDivision = progress.useDivision();
+  const currentRunner = progress.useRunner();
+  const timerLogs = currentRunner?.timerLogs || [];
+  const timerState = integrateLogs(currentDivision?.timeLimit || 0, timerLogs);
+  
+  const remainingTime = useCountdownTimer(timerState);
+  const timeComponents = formatMsToTime(remainingTime);
 
   return (
     <div className="flex flex-col items-center justify-center">

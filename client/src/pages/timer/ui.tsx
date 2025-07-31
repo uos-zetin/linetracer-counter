@@ -12,8 +12,6 @@ import { useEffect } from "react";
 import { type ProgressState, useProgressService } from "@/features/progress";
 import { SponsorView } from "./ui/sponsor-view";
 import { QRViewer } from "./ui/qr-viewer";
-import { useCounterService } from "@/features/counter";
-import { integrateLogs } from "@/entities/timer";
 
 const mockProgress: ProgressState = {
   id: "progress-1",
@@ -157,9 +155,6 @@ export function TimerPage() {
     }
   }, [counterId, navigate]);
 
-  const counterService = useCounterService();
-  const stopwatch = counterService.useStopwatch();
-
   const progressService = useProgressService();
   progressService.setProgress(mockProgress);
 
@@ -167,9 +162,6 @@ export function TimerPage() {
   const division = progressService.useDivision();
   const runner = progressService.useRunner();
   const nextRunners = progressService.useNextRunners();
-  const timerLogs = runner?.timerLogs ?? [];
-
-  const timerState = integrateLogs(division?.timeLimit ?? 0, timerLogs);
 
   // counterId가 없으면 로딩 상태 표시
   if (!counterId) {
@@ -198,10 +190,10 @@ export function TimerPage() {
           />
         </div>
         <div className="order-3 md:row-start-2 md:col-start-1">
-          <TimerView timerState={timerState} />
+          <TimerView />
         </div>
         <div className="order-4 md:row-start-2 md:col-start-2">
-          <StopwatchView startedAt={stopwatch.startedAt} stoppedAt={stopwatch.stoppedAt} />
+          <StopwatchView />
         </div>
         <div className="order-5 md:col-span-2 mt-[1.5vw] mx-[20vw] md:mx-[2vw]">
           <div

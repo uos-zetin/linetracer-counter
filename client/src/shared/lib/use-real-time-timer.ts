@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * 실시간 타이머 기본 훅 - stopwatch와 countdown timer 모두에서 사용
+ * 실시간 타이머 기본 훅 - 도메인 독립적인 순수한 타이머 로직
  * @param startedAt - 시작 시간 (timestamp)
  * @param stoppedAt - 정지 시간 (timestamp, null이면 실행 중)
  * @param calculateValue - 시작/정지/현재 시간을 받아서 표시할 값을 계산하는 함수
@@ -41,7 +41,7 @@ export function useRealTimeTimer<T>(
         cancelAnimationFrame(frameRef.current);
       }
     };
-  }, [startedAt, stoppedAt]);
+  }, [startedAt, stoppedAt, calculateValue]);
 
   return value;
 }

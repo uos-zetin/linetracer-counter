@@ -1,22 +1,17 @@
 import { useNavigate } from "react-router";
 import { useState, useEffect, useRef } from "react";
-
-const mockCounters = [
-  { id: "counter-001", name: "계수기-A (테스트용)" },
-  { id: "counter-002", name: "계수기-B (데모용)" },
-  { id: "counter-003", name: "계수기-C (개발용)" },
-  { id: "counter-004", name: "계수기-D" },
-  { id: "counter-005", name: "계수기-E" },
-  { id: "counter-006", name: "계수기-F" },
-  { id: "counter-007", name: "계수기-G" },
-  { id: "counter-008", name: "계수기-H" },
-];
+import { useCounterService } from "@/features/counter";
+import type { CounterState } from "@/entities/counter";
 
 export function CounterSelectorPage() {
   const navigate = useNavigate();
+  const counterService = useCounterService();
+  const [counters, setCounters] = useState<CounterState[]>([]);
   const [selectedCounter, setSelectedCounter] = useState<string>("");
   const [selectedCounterId, setSelectedCounterId] = useState<string>("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,13 +25,31 @@ export function CounterSelectorPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const loadCounters = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const counterList = await counterService.getAllCounters();
+        setCounters(counterList);
+      } catch (err) {
+        console.error("Failed to load counters:", err);
+        setError("계수기 목록을 불러오는데 실패했습니다.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCounters();
+  }, [counterService]);
+
   const handleNavigation = (path: string) => {
     if (selectedCounterId) {
       navigate(`/counter/${selectedCounterId}${path}`);
     }
   };
 
-  const handleCounterSelect = (counter: typeof mockCounters[0]) => {
+  const handleCounterSelect = (counter: CounterState) => {
     setSelectedCounter(counter.name);
     setSelectedCounterId(counter.id);
     setIsDropdownOpen(false);
@@ -52,14 +65,21 @@ export function CounterSelectorPage() {
         <div className="bg-white rounded-lg shadow-lg p-[3vw] max-w-[60vw] w-full">
           <h2 className="text-[2.5vw] font-bold text-center mb-[2vw] text-gray-800">사용할 계수기를 선택하세요</h2>
 
+          {error && (
+            <div className="mb-[2vw] p-[1vw] bg-red-100 border border-red-300 rounded-lg">
+              <p className="text-red-700 text-[1.2vw] text-center">{error}</p>
+            </div>
+          )}
+
           <div className="mb-[3vw]">
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-full p-[1.5vw] text-[1.5vw] border border-gray-300 rounded-lg focus:ring-2 focus:ring-uos-primary-blue focus:border-transparent outline-none transition-all duration-200 bg-white text-left flex items-center justify-between"
+                disabled={isLoading}
+                className="w-full p-[1.5vw] text-[1.5vw] border border-gray-300 rounded-lg focus:ring-2 focus:ring-uos-primary-blue focus:border-transparent outline-none transition-all duration-200 bg-white text-left flex items-center justify-between disabled:bg-gray-100 disabled:cursor-not-allowed"
               >
                 <span className={selectedCounter ? "text-gray-900" : "text-gray-500"}>
-                  {selectedCounter || "계수기를 선택하세요"}
+                  {isLoading ? "계수기 목록을 불러오는 중..." : selectedCounter || "계수기를 선택하세요"}
                 </span>
                 <svg
                   className={`w-[1.5vw] h-[1.5vw] transition-transform duration-200 mr-[0.5vw] ${
@@ -73,21 +93,27 @@ export function CounterSelectorPage() {
                 </svg>
               </button>
 
-              {isDropdownOpen && (
+              {isDropdownOpen && !isLoading && (
                 <div className="absolute top-full left-0 right-0 mt-[0.25vw] bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-[20vw] overflow-y-auto">
-                  {mockCounters.map((counter) => (
-                    <button
-                      key={counter.id}
-                      onClick={() => handleCounterSelect(counter)}
-                      className={`w-full px-[1.5vw] py-[1vw] text-[1.5vw] text-left hover:bg-gray-100 transition-colors ${
-                        selectedCounter === counter.name
-                          ? "bg-uos-primary-blue text-white hover:bg-blue-600"
-                          : "text-gray-900"
-                      }`}
-                    >
-                      {counter.name}
-                    </button>
-                  ))}
+                  {counters.length === 0 ? (
+                    <div className="px-[1.5vw] py-[1vw] text-[1.5vw] text-gray-500 text-center">
+                      사용 가능한 계수기가 없습니다.
+                    </div>
+                  ) : (
+                    counters.map((counter) => (
+                      <button
+                        key={counter.id}
+                        onClick={() => handleCounterSelect(counter)}
+                        className={`w-full px-[1.5vw] py-[1vw] text-[1.5vw] text-left hover:bg-gray-100 transition-colors ${
+                          selectedCounter === counter.name
+                            ? "bg-uos-primary-blue text-white hover:bg-blue-600"
+                            : "text-gray-900"
+                        }`}
+                      >
+                        {counter.name}
+                      </button>
+                    ))
+                  )}
                 </div>
               )}
             </div>

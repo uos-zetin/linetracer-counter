@@ -1,5 +1,5 @@
-import { getElapsedMs } from "@/entities/counter";
-import { useRealTimeTimer } from "./use-real-time-timer";
+import { getElapsedMs } from "./selectors";
+import { useRealTimeTimer } from "@/shared";
 
 /**
  * Stopwatch - 경과 시간을 실시간으로 계산하는 훅

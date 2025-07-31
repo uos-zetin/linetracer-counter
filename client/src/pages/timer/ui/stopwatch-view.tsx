@@ -1,13 +1,10 @@
-import { formatElapsedMs } from "@/entities/counter";
-import { useStopwatchTimer } from "@/shared";
+import { formatElapsedMs, useStopwatchTimer } from "@/entities/counter";
+import { useCounterService } from "@/features/counter";
 
-type StopwatchViewProps = {
-  startedAt: number | null;
-  stoppedAt: number | null;
-};
-
-export function StopwatchView({ startedAt, stoppedAt }: StopwatchViewProps) {
-  const elapsedTime = useStopwatchTimer(startedAt, stoppedAt);
+export function StopwatchView() {
+  const counterService = useCounterService();
+  const stopwatch = counterService.useStopwatch();
+  const elapsedTime = useStopwatchTimer(stopwatch.startedAt, stopwatch.stoppedAt);
   const timeComponents = formatElapsedMs(elapsedTime);
 
   return (
