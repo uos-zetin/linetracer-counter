@@ -1,31 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-
-import { getRemainingMs, formatMsToTime } from "@/entities/timer";
-
+import { formatMsToTime } from "@/entities/timer";
+import { useCountdownTimer } from "@/features/timer";
 import type { TimerState } from "@/entities/timer";
 
 export function TimerView({ timerState }: { timerState: TimerState }) {
-  const [remainingMs, setRemainingMs] = useState(timerState.initialMs);
-  const frameRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    const tick = () => {
-      const now = Date.now();
-      const elapsed = getRemainingMs(timerState, now);
-
-      setRemainingMs(elapsed);
-      if (elapsed > 0) frameRef.current = requestAnimationFrame(tick);
-    };
-
-    frameRef.current = requestAnimationFrame(tick);
-
-    return () => {
-      if (frameRef.current !== null) {
-        cancelAnimationFrame(frameRef.current);
-      }
-    };
-  }, [timerState]);
-
+  const remainingMs = useCountdownTimer(timerState);
   const timeComponents = formatMsToTime(remainingMs);
 
   return (
