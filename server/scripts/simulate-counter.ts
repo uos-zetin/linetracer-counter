@@ -73,7 +73,7 @@ class CounterApiClient {
   private baseUrl: string;
   private sessionKey: string | null = null;
 
-  constructor(baseUrl: string = "http://localhost:3000") {
+  constructor(baseUrl: string = "http://localhost:3000/api") {
     this.baseUrl = baseUrl;
   }
 
@@ -127,6 +127,25 @@ class CounterApiClient {
       }
     } catch (error) {
       throw new Error(`Register counter error: ${error}`);
+    }
+  }
+
+  async unregisterCounter(deviceId: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/counters/${deviceId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Session ${this.sessionKey}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Unregister counter failed: ${response.status} ${response.statusText}`
+        );
+      }
+    } catch (error) {
+      throw new Error(`Unregister counter error: ${error}`);
     }
   }
 
@@ -833,6 +852,25 @@ class App {
     }
   }
 
+  private async unregisterCounter(): Promise<void> {
+    try {
+      console.log(`${Colors.yellow}Unregistering counter...${Colors.reset}`);
+      await this.apiClient.unregisterCounter(this.deviceId);
+
+      this.isCounterRegistered = false;
+      console.log(
+        `${Colors.green}✓ Counter unregistered successfully!${Colors.reset}`
+      );
+      this.renderer.addLog(`Counter unregistered: ${this.deviceId}`);
+    } catch (error: any) {
+      console.log(
+        `${Colors.red}✗ Counter unregistration failed: ${error.message}${Colors.reset}`
+      );
+      this.renderer.addLog(`Counter unregistration failed: ${error.message}`);
+      throw error;
+    }
+  }
+
   async start(): Promise<void> {
     try {
       // Initialize authentication and counter registration
@@ -887,7 +925,7 @@ class App {
     }
   }
 
-  private handleKeyPress(key: string): void {
+  private async handleKeyPress(key: string): Promise<void> {
     if (!this.isRunning) return;
 
     const obstacles = this.state.getObstacles();
@@ -910,10 +948,6 @@ class App {
         obstacle.move(moveDistance, 0);
         break;
       case this.keyBindings.toggle:
-        const newState = !obstacle.isActive();
-        this.renderer.addLog(
-          `Obstacle ${newState ? "activated" : "deactivated"}`
-        );
         obstacle.toggleActive();
         break;
       case this.keyBindings.transmit:
@@ -926,7 +960,8 @@ class App {
         break;
       case this.keyBindings.quit:
       case "\u0003":
-        this.renderer.addLog("Shutting down simulator...");
+        await this.unregisterCounter();
+        console.log("Shutting down simulator...");
         this.stop();
         break;
       default:
