@@ -3,6 +3,5 @@ export interface ManualRecord {
   participantId: string;
   value: number;
   recorderName: string;
-  invalidatedAt: Date | null;
   createdAt: Date;
 }

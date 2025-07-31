@@ -1,20 +1,21 @@
-import type { TimerLogDto } from "../api/types";
-import type { TimerLog } from "../model/types";
+import type { TimerLogDto, TimerLogTypeDto } from "../api/types";
+import type { TimerLog, TimerLogType } from "../model/types";
+
+export function parseTimerLogTypeDto(
+  type: TimerLogTypeDto,
+  value: number,
+): { timerLogType: TimerLogType; value: number } {
+  if (type === "start" || type === "stop") {
+    return { timerLogType: type, value };
+  } else if (value > 0) {
+    return { timerLogType: "add", value };
+  } else {
+    return { timerLogType: "sub", value: -value };
+  }
+}
 
 export function parseTimerLogDto(dto: TimerLogDto): TimerLog {
-  let newType: "start" | "stop" | "add" | "sub";
-  let newValue: number;
-
-  if (dto.type === "start" || dto.type === "stop") {
-    newType = dto.type;
-    newValue = dto.value;
-  } else if (dto.value > 0) {
-    newType = "add";
-    newValue = dto.value;
-  } else {
-    newType = "sub";
-    newValue = -dto.value;
-  }
+  const { timerLogType: newType, value: newValue } = parseTimerLogTypeDto(dto.type as TimerLogTypeDto, dto.value);
 
   return {
     id: dto.id,

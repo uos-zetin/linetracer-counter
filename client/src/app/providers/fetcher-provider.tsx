@@ -9,6 +9,8 @@ interface FetcherProviderProps {
 
 export const FetcherProvider = ({ children, publicFetcher, authenticatedFetcher }: FetcherProviderProps) => {
   return (
-    <fetcherContext.Provider value={{ publicFetcher, authenticatedFetcher }}>{children}</fetcherContext.Provider>
+    <fetcherContext.Provider value={{ fetcher: publicFetcher, authFetcher: authenticatedFetcher }}>
+      {children}
+    </fetcherContext.Provider>
   );
 };

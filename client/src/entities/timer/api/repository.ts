@@ -1,5 +1,5 @@
 import type { Fetcher } from "@/shared";
-import type { TimerLog } from "../model/types";
+import type { TimerLog, TimerLogType } from "../model/types";
 import type { TimerLogDto, TimerRepository } from "./types";
 import { parseTimerLogDto } from "../lib/parse-dto";
 
@@ -27,9 +27,18 @@ export class TimerFetcherRepository implements TimerRepository {
     return parseTimerLogDto(response.data);
   }
 
-  async adjustTimer(participantId: string, value: number): Promise<TimerLog> {
+  async adjustTimer(participantId: string, type: TimerLogType, value: number): Promise<TimerLog> {
+    let adjustedValue = value;
+    if (type === "add") {
+      adjustedValue = value;
+    } else if (type === "sub") {
+      adjustedValue = -value;
+    } else {
+      throw new Error("Invalid timer log type for adjustment. Use 'add' or 'sub'.");
+    }
+
     const response = await this.authFetcher.post<TimerLogDto>(`/participants/${participantId}/timers/adjust`, {
-      body: { value },
+      body: { adjustmentMs: adjustedValue },
     });
     return parseTimerLogDto(response.data);
   }

@@ -1,20 +1,22 @@
 import type { UserRegisterForm, User, UserRole, UserLoginForm } from "../model/types";
 
+export type UserRoleDto = "administrator" | "manualRecorder" | "stopwatchRecorder";
+
 export interface UserDto {
   id: string;
   name: string;
-  roles: string[];
+  roles: UserRoleDto[];
   createdAt: string; // ISO date string
 }
 
 export interface RegisterUserDto {
   name: string;
-  userName: string;
+  username: string;
   password: string;
 }
 
 export interface LoginUserDto {
-  userName: string;
+  username: string;
   password: string;
 }
 

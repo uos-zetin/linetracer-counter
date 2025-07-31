@@ -1,8 +1,10 @@
+export type TimerLogType = "start" | "stop" | "add" | "sub";
+
 export interface TimerLog {
   id: string;
   participantId: string;
   value: number;
-  type: "start" | "stop" | "add" | "sub";
+  type: TimerLogType;
   createdAt: Date;
 }
 

@@ -12,8 +12,8 @@ import { TimerControlProvider } from "./timer-control-provicer";
 import { RecordControlProvider } from "./record-control-provider";
 
 const ComposedProviders = composeProviders(
-  RepositoryProvider,
   AuthProvider,
+  RepositoryProvider,
   CounterProvider,
   ProgressProvider,
   AdminCompetitionProvider,

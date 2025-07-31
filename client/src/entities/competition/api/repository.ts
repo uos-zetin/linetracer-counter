@@ -1,6 +1,6 @@
 import type { Fetcher } from "@/shared";
-import type { Competition } from "../model/types";
-import type { CompetitionDto, CompetitionRepository } from "./types";
+import type { Competition, CompetitionForm } from "../model/types";
+import type { CompetitionCreateDto, CompetitionDto, CompetitionRepository } from "./types";
 import { parseCompetitionDto } from "../lib/parse-dto";
 
 export class CompetitionFetcherRepository implements CompetitionRepository {
@@ -24,12 +24,12 @@ export class CompetitionFetcherRepository implements CompetitionRepository {
     return response.data ? parseCompetitionDto(response.data) : null;
   }
 
-  async createCompetition(competition: Omit<Competition, "id" | "createdAt">): Promise<Competition> {
+  async createCompetition(competition: CompetitionForm): Promise<Competition> {
     const response = await this.authFetcher.post<CompetitionDto>("/competitions", {
       body: {
         name: competition.name,
         description: competition.description,
-      } as CompetitionDto,
+      } as CompetitionCreateDto,
     });
 
     return parseCompetitionDto(response.data);
@@ -40,7 +40,7 @@ export class CompetitionFetcherRepository implements CompetitionRepository {
       body: {
         name: competition.name,
         description: competition.description,
-      } as CompetitionDto,
+      } as CompetitionCreateDto,
     });
 
     return parseCompetitionDto(response.data);

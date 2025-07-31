@@ -2,8 +2,8 @@ import { createContext, useContext } from "react";
 import type { Fetcher } from "@/shared/api/fetcher";
 
 export interface FetcherContext {
-  publicFetcher: Fetcher;
-  authenticatedFetcher: Fetcher;
+  fetcher: Fetcher;
+  authFetcher: Fetcher;
 }
 
 export const fetcherContext = createContext<FetcherContext | null>(null);

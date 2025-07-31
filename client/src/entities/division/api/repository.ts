@@ -1,7 +1,7 @@
 import type { Fetcher } from "@/shared";
-import type { DivisionDto, DivisionRepository } from "./types";
+import type { DivisionCreateDto, DivisionDto, DivisionRepository } from "./types";
 import { parseDivisionDto } from "../lib/parse-dto";
-import type { Division } from "../model/types";
+import type { Division, DivisionForm } from "../model/types";
 
 export class DivisionFetcherRepository implements DivisionRepository {
   private fetcher: Fetcher;
@@ -22,18 +22,26 @@ export class DivisionFetcherRepository implements DivisionRepository {
     return response.data ? parseDivisionDto(response.data) : null;
   }
 
-  async createDivision(competitionId: string, division: Omit<Division, "id" | "createdAt">): Promise<Division> {
+  async createDivision(competitionId: string, division: DivisionForm): Promise<Division> {
     const response = await this.authFetcher.post<DivisionDto>(`/competitions/${competitionId}/divisions`, {
-      body: division,
+      body: {
+        name: division.name,
+        description: division.description,
+        timeLimit: division.timeLimit,
+      } as DivisionCreateDto,
     });
     return parseDivisionDto(response.data);
   }
 
-  async updateDivision(divisionId: string, division: Division): Promise<Division | null> {
-    const response = await this.authFetcher.patch<DivisionDto>(`/divisions/${divisionId}`, {
-      body: division,
+  async updateDivision(division: Division): Promise<Division | null> {
+    const response = await this.authFetcher.patch<DivisionDto>(`/divisions/${division.id}`, {
+      body: {
+        name: division.name,
+        description: division.description,
+        timeLimit: division.timeLimit,
+      } as DivisionCreateDto,
     });
-    return response.data ? parseDivisionDto(response.data) : null;
+    return parseDivisionDto(response.data) || null;
   }
 
   async deleteDivision(divisionId: string): Promise<void> {
