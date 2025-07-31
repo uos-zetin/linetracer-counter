@@ -26,7 +26,7 @@ export {
 } from "./lib/validation";
 
 // Auth Service exports
-export { createAuthService } from "./model/auth-service";
+export { createAuthService } from "./model/service";
 export { useAuthService, authServiceContext } from "./model/context";
 export { AuthServiceSessionProvider } from "./lib/session-provider";
 export type { AuthService, AuthState } from "./model/types";

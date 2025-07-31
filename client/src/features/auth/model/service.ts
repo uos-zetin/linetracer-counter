@@ -44,7 +44,7 @@ export const createAuthService = ({ userRepository }: AuthServiceProps): AuthSer
 
       const parsed = JSON.parse(stored);
       const validated = parseSessionCredential(parsed);
-      
+
       if (!validated) {
         // 잘못된 세션 데이터가 있으면 정리
         localStorage.removeItem(storageKey);
@@ -76,7 +76,7 @@ export const createAuthService = ({ userRepository }: AuthServiceProps): AuthSer
     try {
       // 입력 데이터 검증
       const validatedInput = validateLoginInput({ userName, password });
-      
+
       const loginResult = await userRepository.loginUser(validatedInput);
 
       if (!loginResult) {
@@ -119,7 +119,7 @@ export const createAuthService = ({ userRepository }: AuthServiceProps): AuthSer
     try {
       // 입력 데이터 검증
       const validatedInput = validateRegisterInput({ name, userName, password });
-      
+
       await userRepository.registerUser(validatedInput);
 
       // 등록 후 자동 로그인
