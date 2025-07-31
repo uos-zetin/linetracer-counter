@@ -22,8 +22,8 @@ export class DivisionFetcherRepository implements DivisionRepository {
     return response.data ? parseDivisionDto(response.data) : null;
   }
 
-  async createDivision(competitionId: string, division: DivisionForm): Promise<Division> {
-    const response = await this.authFetcher.post<DivisionDto>(`/competitions/${competitionId}/divisions`, {
+  async createDivision(division: DivisionForm): Promise<Division> {
+    const response = await this.authFetcher.post<DivisionDto>(`/competitions/${division.competitionId}/divisions`, {
       body: {
         name: division.name,
         description: division.description,

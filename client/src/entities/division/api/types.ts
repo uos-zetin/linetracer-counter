@@ -19,7 +19,7 @@ export interface DivisionCreateDto {
 export interface DivisionRepository {
   getAllDivisions(competitionId: string): Promise<Division[]>;
   getDivisionById(divisionId: string): Promise<Division | null>;
-  createDivision(competitionId: string, division: DivisionForm): Promise<Division>;
+  createDivision(division: DivisionForm): Promise<Division>;
   updateDivision(division: Division): Promise<Division | null>;
   deleteDivision(divisionId: string): Promise<void>;
 }

@@ -18,20 +18,6 @@ export const createRecordControlService = ({ recordRepository }: RecordControlSe
     }
   };
 
-  const getRecordById = async (recordId: string): Promise<Record | null> => {
-    try {
-      const record = await recordRepository.getRecordById(recordId);
-      if (record) {
-        const store = useZustandRecordStore.getState();
-        store.update(record);
-      }
-      return record;
-    } catch (error) {
-      console.error("Failed to get record by id:", error);
-      throw error;
-    }
-  };
-
   const getTopRecords = async (divisionId: string): Promise<Record[]> => {
     try {
       return await recordRepository.getTopRecords(divisionId);
@@ -41,7 +27,10 @@ export const createRecordControlService = ({ recordRepository }: RecordControlSe
     }
   };
 
-  const createRecord = async (participantId: string, record: Pick<Record, "value" | "source" | "note">): Promise<Record> => {
+  const createRecord = async (
+    participantId: string,
+    record: Pick<Record, "value" | "source" | "note">,
+  ): Promise<Record> => {
     try {
       const newRecord = await recordRepository.createRecord(participantId, record);
       const store = useZustandRecordStore.getState();
@@ -89,17 +78,16 @@ export const createRecordControlService = ({ recordRepository }: RecordControlSe
   // Service-level filtering methods
   const getRecordsByParticipant = (participantId: string): Record[] => {
     const store = useZustandRecordStore.getState();
-    return store.records.filter(record => record.participantId === participantId);
+    return store.records.filter((record) => record.participantId === participantId);
   };
 
   const getRecordsByStatus = (status: RecordStatus): Record[] => {
     const store = useZustandRecordStore.getState();
-    return store.records.filter(record => record.status === status);
+    return store.records.filter((record) => record.status === status);
   };
 
   return {
     getAllRecords,
-    getRecordById,
     getTopRecords,
     createRecord,
     updateRecordNote,

@@ -62,8 +62,7 @@ export const createAdminDivisionService = ({ divisionRepository }: AdminDivision
   const createDivision = async (data: DivisionForm): Promise<void> => {
     try {
       const validatedData = DivisionFormSchema.parse(data);
-      const { competitionId, ...divisionData } = validatedData;
-      const newDivision = await divisionRepository.createDivision(competitionId, { ...divisionData, competitionId });
+      const newDivision = await divisionRepository.createDivision(validatedData);
 
       // Store 업데이트
       const store = useZustandDivisionStore.getState();
@@ -82,14 +81,17 @@ export const createAdminDivisionService = ({ divisionRepository }: AdminDivision
       const store = useZustandDivisionStore.getState();
       const existingDivision = store.getById(id);
 
-      const divisionToUpdate: Division = {
-        id,
+      if (!existingDivision) {
+        throw new Error(`Division with id ${id} not found`);
+      }
+
+      // 기존 정보를 유지하면서 업데이트
+      const updatedDivisionData: Division = {
+        ...existingDivision,
         ...validatedData,
-        status: existingDivision?.status || "ready",
-        createdAt: existingDivision?.createdAt || new Date(),
       };
 
-      const updatedDivision = await divisionRepository.updateDivision(id, divisionToUpdate);
+      const updatedDivision = await divisionRepository.updateDivision(updatedDivisionData);
 
       // Store 업데이트
       if (updatedDivision) {
@@ -121,15 +123,15 @@ export const createAdminDivisionService = ({ divisionRepository }: AdminDivision
 
   const useDivisionsByCompetition = (competitionId: string): Division[] => {
     const allDivisions = useZustandDivisionStore((state) => state.divisions);
-    
+
     // 빈 competitionId면 빈 배열 반환
     if (!competitionId) {
       return [];
     }
-    
+
     // Service에서 필터링 및 정렬
     return allDivisions
-      .filter(d => d.competitionId === competitionId)
+      .filter((d) => d.competitionId === competitionId)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   };
 

@@ -192,7 +192,7 @@ describe("DivisionFetcherRepository", () => {
       vi.mocked(mockAuthFetcher.post).mockResolvedValue(mockResponse);
 
       // Act
-      const result = await repository.createDivision(competitionId, newDivision);
+      const result = await repository.createDivision(newDivision);
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/competitions/${competitionId}/divisions`, {
@@ -240,7 +240,7 @@ describe("DivisionFetcherRepository", () => {
       vi.mocked(mockAuthFetcher.patch).mockResolvedValue(mockResponse);
 
       // Act
-      const result = await repository.updateDivision(divisionId, updatedDivision);
+      const result = await repository.updateDivision(updatedDivision);
 
       // Assert
       expect(mockAuthFetcher.patch).toHaveBeenCalledWith(`/divisions/${divisionId}`, {
@@ -269,7 +269,7 @@ describe("DivisionFetcherRepository", () => {
       vi.mocked(mockAuthFetcher.patch).mockResolvedValue(mockResponse);
 
       // Act
-      const result = await repository.updateDivision(divisionId, updatedDivision);
+      const result = await repository.updateDivision(updatedDivision);
 
       // Assert
       expect(mockAuthFetcher.patch).toHaveBeenCalledWith(`/divisions/${divisionId}`, {

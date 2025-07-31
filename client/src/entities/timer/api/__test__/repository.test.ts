@@ -312,7 +312,7 @@ describe("TimerFetcherRepository", () => {
       vi.mocked(parseTimerLogDto).mockReturnValue(adjustTimerLog);
 
       // Act
-      const result = await timerRepository.adjustTimer(participantId, adjustValue);
+      const result = await timerRepository.adjustTimer(participantId, adjustTimerLog.type, adjustValue);
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {
@@ -349,7 +349,7 @@ describe("TimerFetcherRepository", () => {
       vi.mocked(parseTimerLogDto).mockReturnValue(adjustTimerLog);
 
       // Act
-      const result = await timerRepository.adjustTimer(participantId, adjustValue);
+      const result = await timerRepository.adjustTimer(participantId, adjustTimerLog.type, adjustValue);
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {
@@ -386,7 +386,7 @@ describe("TimerFetcherRepository", () => {
       vi.mocked(parseTimerLogDto).mockReturnValue(adjustTimerLog);
 
       // Act
-      const result = await timerRepository.adjustTimer(participantId, adjustValue);
+      const result = await timerRepository.adjustTimer(participantId, adjustTimerLog.type, adjustValue);
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {
@@ -398,12 +398,13 @@ describe("TimerFetcherRepository", () => {
     it("유효하지 않은 조정 값에 대한 에러를 처리해야 한다", async () => {
       // Arrange
       const participantId = "participant-1";
+      const recordType = "add";
       const invalidValue = Number.NaN;
       const validationError = new Error("유효하지 않은 조정 값입니다");
       mockAuthFetcher.post = vi.fn().mockRejectedValue(validationError);
 
       // Act & Assert
-      await expect(timerRepository.adjustTimer(participantId, invalidValue)).rejects.toThrow(
+      await expect(timerRepository.adjustTimer(participantId, recordType, invalidValue)).rejects.toThrow(
         "유효하지 않은 조정 값입니다",
       );
     });
@@ -411,12 +412,13 @@ describe("TimerFetcherRepository", () => {
     it("권한 없음 에러를 처리해야 한다", async () => {
       // Arrange
       const participantId = "participant-1";
+      const adjustType = "add"; // 또는 "sub"
       const adjustValue = 1000;
       const forbiddenError = new Error("타이머 조정 권한이 없습니다");
       mockAuthFetcher.post = vi.fn().mockRejectedValue(forbiddenError);
 
       // Act & Assert
-      await expect(timerRepository.adjustTimer(participantId, adjustValue)).rejects.toThrow(
+      await expect(timerRepository.adjustTimer(participantId, adjustType, adjustValue)).rejects.toThrow(
         "타이머 조정 권한이 없습니다",
       );
     });
@@ -442,7 +444,7 @@ describe("TimerFetcherRepository", () => {
       await timerRepository.stopTimer("participant-1");
 
       mockAuthFetcher.post = vi.fn().mockResolvedValue({ data: mockTimerLogDto });
-      await timerRepository.adjustTimer("participant-1", 1000);
+      await timerRepository.adjustTimer("participant-1", "add", 1000);
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalled();
@@ -464,7 +466,7 @@ describe("TimerFetcherRepository", () => {
       });
 
       // Act
-      const result = await timerRepository.adjustTimer(participantId, largeValue);
+      const result = await timerRepository.adjustTimer(participantId, "add", largeValue);
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {
@@ -486,7 +488,7 @@ describe("TimerFetcherRepository", () => {
       });
 
       // Act
-      const result = await timerRepository.adjustTimer(participantId, smallNegativeValue);
+      const result = await timerRepository.adjustTimer(participantId, "sub", smallNegativeValue);
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {

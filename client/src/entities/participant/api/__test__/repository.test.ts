@@ -127,51 +127,6 @@ describe("ParticipantFetcherRepository", () => {
     });
   });
 
-  describe("getParticipantById", () => {
-    it("특정 참가자 정보를 성공적으로 가져와야 한다", async () => {
-      // Arrange
-      const participantId = "participant-1";
-      mockFetcher.get = vi.fn().mockResolvedValue({
-        data: mockParticipantDto,
-      });
-
-      // Act
-      const result = await participantRepository.getParticipantById(participantId);
-
-      // Assert
-      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${participantId}`);
-      expect(parseParticipantDto).toHaveBeenCalledWith(mockParticipantDto);
-      expect(result).toEqual(mockParticipant);
-    });
-
-    it("존재하지 않는 참가자 조회 시 null을 반환해야 한다", async () => {
-      // Arrange
-      const participantId = "non-existent-participant";
-      mockFetcher.get = vi.fn().mockResolvedValue({
-        data: null,
-      });
-
-      // Act
-      const result = await participantRepository.getParticipantById(participantId);
-
-      // Assert
-      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${participantId}`);
-      expect(parseParticipantDto).not.toHaveBeenCalled();
-      expect(result).toBeNull();
-    });
-
-    it("네트워크 에러 시 에러를 처리해야 한다", async () => {
-      // Arrange
-      const participantId = "participant-1";
-      const networkError = new Error("참가자 조회 실패");
-      mockFetcher.get = vi.fn().mockRejectedValue(networkError);
-
-      // Act & Assert
-      await expect(participantRepository.getParticipantById(participantId)).rejects.toThrow("참가자 조회 실패");
-      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${participantId}`);
-    });
-  });
-
   describe("createParticipant", () => {
     it("새 참가자를 성공적으로 생성해야 한다", async () => {
       // Arrange
@@ -350,9 +305,6 @@ describe("ParticipantFetcherRepository", () => {
       // Arrange & Act
       mockFetcher.get = vi.fn().mockResolvedValue({ data: [] });
       await participantRepository.getAllParticipants("division-1");
-
-      mockFetcher.get = vi.fn().mockResolvedValue({ data: mockParticipantDto });
-      await participantRepository.getParticipantById("participant-1");
 
       // Assert
       expect(mockFetcher.get).toHaveBeenCalled();

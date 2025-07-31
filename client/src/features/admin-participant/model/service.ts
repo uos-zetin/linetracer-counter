@@ -52,27 +52,6 @@ export const createAdminParticipantService = ({
     }
   };
 
-  const loadParticipantById = async (id: string): Promise<void> => {
-    try {
-      // 먼저 Store에서 확인
-      const store = useZustandParticipantStore.getState();
-      const cachedParticipant = store.getById(id);
-
-      if (cachedParticipant) {
-        return; // 이미 Store에 있으면 바로 반환
-      }
-
-      // Store에 없으면 Repository에서 조회
-      const participant = await participantRepository.getParticipantById(id);
-      if (participant) {
-        store.add(participant);
-      }
-    } catch (error) {
-      console.error(`Failed to load participant ${id}:`, error);
-      throw error;
-    }
-  };
-
   const createParticipant = async (data: ParticipantForm): Promise<void> => {
     try {
       const newParticipant = await participantRepository.createParticipant(data.divisionId, data);
@@ -149,7 +128,6 @@ export const createAdminParticipantService = ({
     loadAllParticipants,
     loadParticipantsByDivisions,
     loadParticipantsByDivision,
-    loadParticipantById,
     createParticipant,
     updateParticipant,
     deleteParticipant,

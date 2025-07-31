@@ -1,5 +1,5 @@
 import { formatElapsedMs } from "@/entities/counter";
-import { useStopwatchTimer } from "@/features/timer";
+import { useStopwatchTimer } from "@/shared";
 
 type StopwatchViewProps = {
   startedAt: number | null;

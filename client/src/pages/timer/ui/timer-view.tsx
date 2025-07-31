@@ -1,5 +1,5 @@
 import { formatMsToTime } from "@/entities/timer";
-import { useCountdownTimer } from "@/features/timer";
+import { useCountdownTimer } from "@/shared";
 import type { TimerState } from "@/entities/timer";
 
 export function TimerView({ timerState }: { timerState: TimerState }) {

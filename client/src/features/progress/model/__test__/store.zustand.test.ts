@@ -81,7 +81,6 @@ function dummyManualRecord(): ManualRecord {
     participantId: "par‑1",
     value: 9_876,
     recorderName: "관리자",
-    invalidatedAt: null,
     createdAt: NOW,
   };
 }

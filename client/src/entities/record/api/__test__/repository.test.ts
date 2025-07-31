@@ -124,51 +124,6 @@ describe("RecordFetcherRepository", () => {
     });
   });
 
-  describe("getRecordById", () => {
-    it("특정 기록 정보를 성공적으로 가져와야 한다", async () => {
-      // Arrange
-      const recordId = "record-1";
-      mockFetcher.get = vi.fn().mockResolvedValue({
-        data: mockRecordDto,
-      });
-
-      // Act
-      const result = await recordRepository.getRecordById(recordId);
-
-      // Assert
-      expect(mockFetcher.get).toHaveBeenCalledWith(`/records/${recordId}`);
-      expect(parseRecordDto).toHaveBeenCalledWith(mockRecordDto);
-      expect(result).toEqual(mockRecord);
-    });
-
-    it("존재하지 않는 기록 조회 시 null을 반환해야 한다", async () => {
-      // Arrange
-      const recordId = "non-existent-record";
-      mockFetcher.get = vi.fn().mockResolvedValue({
-        data: null,
-      });
-
-      // Act
-      const result = await recordRepository.getRecordById(recordId);
-
-      // Assert
-      expect(mockFetcher.get).toHaveBeenCalledWith(`/records/${recordId}`);
-      expect(parseRecordDto).not.toHaveBeenCalled();
-      expect(result).toBeNull();
-    });
-
-    it("네트워크 에러 시 에러를 처리해야 한다", async () => {
-      // Arrange
-      const recordId = "record-1";
-      const networkError = new Error("기록 조회 실패");
-      mockFetcher.get = vi.fn().mockRejectedValue(networkError);
-
-      // Act & Assert
-      await expect(recordRepository.getRecordById(recordId)).rejects.toThrow("기록 조회 실패");
-      expect(mockFetcher.get).toHaveBeenCalledWith(`/records/${recordId}`);
-    });
-  });
-
   describe("getTopRecords", () => {
     it("특정 디비전의 최고 기록을 성공적으로 가져와야 한다", async () => {
       // Arrange
@@ -404,9 +359,6 @@ describe("RecordFetcherRepository", () => {
       // Arrange & Act
       mockFetcher.get = vi.fn().mockResolvedValue({ data: [] });
       await recordRepository.getAllRecords("participant-1");
-
-      mockFetcher.get = vi.fn().mockResolvedValue({ data: mockRecordDto });
-      await recordRepository.getRecordById("record-1");
 
       mockFetcher.get = vi.fn().mockResolvedValue({ data: [] });
       await recordRepository.getTopRecords("division-1");

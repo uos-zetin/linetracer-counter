@@ -1,4 +1,4 @@
-import type { TimerRepository } from "@/entities/timer";
+import type { TimerLogType, TimerRepository } from "@/entities/timer";
 import type { TimerControlService } from "./types";
 
 interface TimerControlServiceProps {
@@ -24,9 +24,9 @@ export const createTimerControlService = ({ timerRepository }: TimerControlServi
     }
   };
 
-  const adjustTimer = async (participantId: string, value: number) => {
+  const adjustTimer = async (participantId: string, type: TimerLogType, value: number) => {
     try {
-      await timerRepository.adjustTimer(participantId, value);
+      await timerRepository.adjustTimer(participantId, type, value);
     } catch (error) {
       console.error("Failed to adjust timer:", error);
       throw error;

@@ -8,14 +8,12 @@ interface ManualRecordSectionProps {
   className?: string;
 }
 
-export const ManualRecordSection = ({ 
-  className = ""
-}: ManualRecordSectionProps) => {
+export const ManualRecordSection = ({ className = "" }: ManualRecordSectionProps) => {
   const progressService = useProgressService();
   const recordControlService = useRecordControlService();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedRecords, setSelectedRecords] = useState<Set<string>>(new Set());
-  
+
   const currentRunner = progressService.useRunner();
   const manualRecords = currentRunner?.manualRecords || [];
 
@@ -30,9 +28,7 @@ export const ManualRecordSection = ({
   };
 
   const handleSelectAll = () => {
-    const validRecordIds = manualRecords
-      .filter(record => !record.invalidatedAt)
-      .map(record => record.id);
+    const validRecordIds = manualRecords.map((record) => record.id);
     setSelectedRecords(new Set(validRecordIds));
   };
 
@@ -42,10 +38,10 @@ export const ManualRecordSection = ({
 
   const calculateMedianTime = (records: ManualRecord[]) => {
     if (records.length === 0) return 0;
-    
-    const sortedValues = records.map(r => r.value).sort((a, b) => a - b);
+
+    const sortedValues = records.map((r) => r.value).sort((a, b) => a - b);
     const length = sortedValues.length;
-    
+
     if (length % 2 === 1) {
       // 홀수 개: 중앙값
       return sortedValues[Math.floor(length / 2)];
@@ -59,27 +55,25 @@ export const ManualRecordSection = ({
 
   const handleCreateRecord = async () => {
     if (!currentRunner?.participant.id || selectedRecords.size === 0) return;
-    
-    const selectedManualRecords = manualRecords.filter(record => 
-      selectedRecords.has(record.id) && !record.invalidatedAt
-    );
-    
+
+    const selectedManualRecords = manualRecords.filter((record) => selectedRecords.has(record.id));
+
     if (selectedManualRecords.length === 0) {
       alert("No valid manual records selected");
       return;
     }
-    
+
     const medianTime = calculateMedianTime(selectedManualRecords);
-    const note = `Created from ${selectedManualRecords.length} manual records (median) by: ${
-      [...new Set(selectedManualRecords.map(r => r.recorderName))].join(", ")
-    }`;
-    
+    const note = `Created from ${selectedManualRecords.length} manual records (median) by: ${[
+      ...new Set(selectedManualRecords.map((r) => r.recorderName)),
+    ].join(", ")}`;
+
     setIsLoading(true);
     try {
       await recordControlService.createRecord(currentRunner.participant.id, {
         value: medianTime,
         source: "manual",
-        note: note
+        note: note,
       });
       setSelectedRecords(new Set());
       alert("Record created successfully!");
@@ -94,9 +88,7 @@ export const ManualRecordSection = ({
   if (!currentRunner) {
     return (
       <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">
-          Manual Record Review
-        </h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Manual Record Review</h2>
         <div className="text-center py-8 text-gray-500">
           <div className="text-lg mb-2">No active runner</div>
           <div className="text-sm">Connect a division and set a current runner to review manual records</div>
@@ -105,15 +97,12 @@ export const ManualRecordSection = ({
     );
   }
 
-  const validRecords = manualRecords.filter(record => !record.invalidatedAt);
-  const selectedValidRecords = validRecords.filter(record => selectedRecords.has(record.id));
+  const selectedValidRecords = manualRecords.filter((record) => selectedRecords.has(record.id));
 
   return (
     <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
-      <h2 className="text-xl font-semibent mb-4 text-gray-800">
-        Manual Record Review
-      </h2>
-      
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">Manual Record Review</h2>
+
       <div className="space-y-4">
         {/* Current Runner Info */}
         <div className="bg-blue-50 p-4 rounded-lg">
@@ -121,12 +110,15 @@ export const ManualRecordSection = ({
           <div className="text-sm text-blue-800 space-y-1">
             <div className="font-medium">{currentRunner.participant.name}</div>
             <div>Team: {currentRunner.participant.teamName}</div>
-            <div>Manual Records: {validRecords.length} valid, {manualRecords.length - validRecords.length} invalidated</div>
+            <div>
+              Manual Records: {selectedValidRecords.length} valid, {manualRecords.length - selectedValidRecords.length}{" "}
+              invalidated
+            </div>
           </div>
         </div>
 
         {/* Manual Records List */}
-        {validRecords.length > 0 ? (
+        {manualRecords.length > 0 ? (
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <h3 className="font-medium text-gray-900">Manual Records from Manual Counter</h3>
@@ -147,12 +139,15 @@ export const ManualRecordSection = ({
                 </button>
               </div>
             </div>
-            
+
             <div className="bg-gray-50 p-3 rounded-lg max-h-64 overflow-y-auto">
-              {validRecords
+              {manualRecords
                 .sort((a, b) => a.value - b.value) // Sort by time for easier median understanding
                 .map((record, index) => (
-                  <div key={record.id} className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
+                  <div
+                    key={record.id}
+                    className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0"
+                  >
                     <div className="flex items-center space-x-3">
                       <input
                         type="checkbox"
@@ -180,20 +175,22 @@ export const ManualRecordSection = ({
                 <h4 className="font-medium text-green-900 mb-2">Selected Records Summary</h4>
                 <div className="text-sm text-green-800 space-y-1 mb-3">
                   <div>Count: {selectedValidRecords.length} records</div>
-                  <div>Median Time: <span className="font-mono font-medium">
-                    {formatElapsedMs(calculateMedianTime(selectedValidRecords)).toString()}
-                  </span></div>
+                  <div>
+                    Median Time:{" "}
+                    <span className="font-mono font-medium">
+                      {formatElapsedMs(calculateMedianTime(selectedValidRecords)).toString()}
+                    </span>
+                  </div>
                   {selectedValidRecords.length > 1 && (
                     <div className="text-xs text-green-600">
-                      {selectedValidRecords.length % 2 === 1 
-                        ? "Middle value of sorted times" 
-                        : "Average of middle two values"
-                      }
+                      {selectedValidRecords.length % 2 === 1
+                        ? "Middle value of sorted times"
+                        : "Average of middle two values"}
                     </div>
                   )}
-                  <div>Recorders: {[...new Set(selectedValidRecords.map(r => r.recorderName))].join(", ")}</div>
+                  <div>Recorders: {[...new Set(selectedValidRecords.map((r) => r.recorderName))].join(", ")}</div>
                 </div>
-                
+
                 <button
                   onClick={handleCreateRecord}
                   disabled={isLoading}
@@ -205,9 +202,7 @@ export const ManualRecordSection = ({
             )}
 
             {selectedRecords.size > 0 && selectedValidRecords.length === 0 && (
-              <div className="text-sm text-gray-500 text-center py-2">
-                No valid records selected
-              </div>
+              <div className="text-sm text-gray-500 text-center py-2">No valid records selected</div>
             )}
           </div>
         ) : (

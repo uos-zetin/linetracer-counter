@@ -1,6 +1,6 @@
 import { useCounterService } from "../model/context";
 import { formatElapsedMs } from "@/entities/counter";
-import { useStopwatchTimer } from "@/features/timer";
+import { useStopwatchTimer } from "@/shared";
 
 interface CounterStatusDisplayProps {
   counterId: string;

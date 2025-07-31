@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTimerControlService } from "../model/context";
+import type { TimerLogType } from "@/entities/timer";
 
 interface TimerAdjustControlsProps {
   participantId: string;
@@ -8,11 +9,11 @@ interface TimerAdjustControlsProps {
   className?: string;
 }
 
-export const TimerAdjustControls = ({ 
-  participantId, 
+export const TimerAdjustControls = ({
+  participantId,
   disabled = false,
   onAdjust,
-  className = ""
+  className = "",
 }: TimerAdjustControlsProps) => {
   const timerControlService = useTimerControlService();
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +22,9 @@ export const TimerAdjustControls = ({
   const handleAdjust = async (value: number) => {
     setIsLoading(true);
     try {
-      await timerControlService.adjustTimer(participantId, value);
+      const { type, adjustValue }: { type: TimerLogType; adjustValue: number } =
+        value < 0 ? { type: "sub", adjustValue: Math.abs(value) } : { type: "add", adjustValue: value };
+      await timerControlService.adjustTimer(participantId, type, adjustValue);
       onAdjust?.(value);
     } catch (error) {
       console.error("Failed to adjust timer:", error);
@@ -40,9 +43,7 @@ export const TimerAdjustControls = ({
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Timer Adjustment
-        </label>
+        <label className="block text-sm font-medium text-gray-700">Timer Adjustment</label>
         <div className="flex items-center space-x-2">
           <input
             type="number"
@@ -62,11 +63,9 @@ export const TimerAdjustControls = ({
           </button>
         </div>
       </div>
-      
+
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Quick Adjust
-        </label>
+        <label className="block text-sm font-medium text-gray-700">Quick Adjust</label>
         <div className="flex space-x-2">
           {presetValues.map((preset) => (
             <button

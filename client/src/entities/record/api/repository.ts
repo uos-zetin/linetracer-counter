@@ -17,11 +17,6 @@ export class RecordFetcherRepository implements RecordRepository {
     return response.data.map((dto) => parseRecordDto(dto));
   }
 
-  async getRecordById(recordId: string): Promise<Record | null> {
-    const response = await this.fetcher.get<RecordDto>(`/records/${recordId}`);
-    return response.data ? parseRecordDto(response.data) : null;
-  }
-
   async getTopRecords(divisionId: string): Promise<Record[]> {
     const response = await this.fetcher.get<RecordDto[]>(`/divisions/${divisionId}/records/top`);
     return response.data.map((dto) => parseRecordDto(dto));
