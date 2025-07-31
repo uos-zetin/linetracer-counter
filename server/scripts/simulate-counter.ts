@@ -677,10 +677,10 @@ class App {
   private isAuthenticated: boolean = false;
   private isCounterRegistered: boolean = false;
 
-  constructor() {
+  constructor(apiBaseUrl?: string) {
     this.state = new SimulatorState();
     this.renderer = new Renderer();
-    this.apiClient = new CounterApiClient();
+    this.apiClient = new CounterApiClient(apiBaseUrl);
     this.deviceId = `simulator-${Date.now()}`;
     this.dataCommunication = new DataCommunication(
       this.apiClient,
@@ -1015,7 +1015,8 @@ class App {
 }
 
 if (require.main === module) {
-  const app = new App();
+  const apiBaseUrl = process.argv[2];
+  const app = new App(apiBaseUrl);
 
   console.log(
     `${Colors.magenta}Front Back IR Counter Simulator${Colors.reset}`
@@ -1023,6 +1024,10 @@ if (require.main === module) {
   console.log(
     `${Colors.white}Connect to your linetracer counter system\n${Colors.reset}`
   );
+
+  if (apiBaseUrl) {
+    console.log(`${Colors.cyan}API Base URL: ${apiBaseUrl}${Colors.reset}\n`);
+  }
 
   app.start().catch((error) => {
     console.error(
