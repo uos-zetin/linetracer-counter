@@ -73,7 +73,8 @@ export const createAdminRecordService = ({ recordRepository }: AdminRecordServic
   };
 
   const useRecordById = (id: string): Record | null => {
-    return useZustandRecordStore((state) => state.getById(id)) || null;
+    const record = useZustandRecordStore((state) => state.records.find((record) => record.id === id));
+    return record || null;
   };
 
   return {

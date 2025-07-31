@@ -72,7 +72,7 @@ export const createRecordControlService = ({ recordRepository }: RecordControlSe
   };
 
   const useRecordById = (recordId: string) => {
-    return useZustandRecordStore((state) => state.getById(recordId));
+    return useZustandRecordStore((state) => state.records.find((record) => record.id === recordId) || null);
   };
 
   // Service-level filtering methods

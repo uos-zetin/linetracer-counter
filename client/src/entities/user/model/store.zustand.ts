@@ -3,7 +3,7 @@ import type { UserStore } from "./types";
 import { immer } from "zustand/middleware/immer";
 
 export const useZustandUserStore = create<UserStore>()(
-  immer((set, get) => ({
+  immer((set) => ({
     users: [],
 
     // Actions
@@ -34,8 +34,5 @@ export const useZustandUserStore = create<UserStore>()(
       set((state) => {
         state.users = state.users.filter((u) => u.id !== userId);
       }),
-
-    // Getters
-    getById: (userId) => get().users.find((user) => user.id === userId) || null,
   })),
 );

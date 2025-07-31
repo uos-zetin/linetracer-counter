@@ -3,7 +3,7 @@ import { immer } from "zustand/middleware/immer";
 import type { Participant, ParticipantStore } from "./types";
 
 export const useZustandParticipantStore = create<ParticipantStore>()(
-  immer((set, get) => ({
+  immer((set) => ({
     participants: [],
 
     // Actions - Division store와 동일한 패턴
@@ -56,11 +56,5 @@ export const useZustandParticipantStore = create<ParticipantStore>()(
       set((state) => {
         state.participants = state.participants.filter((p) => p.id !== participantId);
       }),
-
-    // Selectors
-    getById: (participantId: string) => {
-      const participants = get().participants;
-      return participants.find((p) => p.id === participantId) ?? null;
-    },
   })),
 );

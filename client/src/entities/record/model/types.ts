@@ -25,10 +25,6 @@ export interface RecordActions {
   remove: (recordId: string) => void;
 }
 
-export interface RecordGetters {
-  getById: (recordId: string) => Record | undefined;
-}
-
-export interface RecordStore extends RecordActions, RecordGetters {
+export interface RecordStore extends RecordActions {
   records: Record[];
 }

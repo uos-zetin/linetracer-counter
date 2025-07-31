@@ -3,7 +3,7 @@ import type { RecordStore, Record } from "./types";
 import { immer } from "zustand/middleware/immer";
 
 export const useZustandRecordStore = create<RecordStore>()(
-  immer((set, get) => ({
+  immer((set) => ({
     records: [],
 
     // Actions
@@ -34,8 +34,5 @@ export const useZustandRecordStore = create<RecordStore>()(
       set((state) => {
         state.records = state.records.filter((r) => r.id !== recordId);
       }),
-
-    // Getters
-    getById: (recordId: string) => get().records.find((r) => r.id === recordId),
   })),
 );

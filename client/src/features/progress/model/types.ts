@@ -27,20 +27,11 @@ export interface ProgressActions {
   reset: () => void;
 }
 
-export interface ProgressGetters {
-  getProgress: () => ProgressState;
-  getCompetition: () => Competition | null;
-  getDivision: () => Division | null;
-  getRunner: () => Runner | null;
-  getNextRunners: () => Participant[];
-  getTopRecords: () => Record[];
-}
-
-export type ProgressStore = ProgressState & ProgressActions & ProgressGetters;
+export type ProgressStore = ProgressState & ProgressActions;
 
 export interface ProgressService {
-  connect: (divisionId: string) => void;
-  disconnect: () => void;
+  connect: (divisionId: string) => Promise<void>;
+  disconnect: () => Promise<void>;
   setProgress: (progress: ProgressState) => void;
   useProgress: () => ProgressState;
   useCompetition: () => Competition | null;
@@ -57,6 +48,6 @@ export interface ProgressService {
   closeDivision: (divisionId: string) => Promise<void>;
   resetDivision: (divisionId: string) => Promise<void>;
   // Manual record methods
-  getCurrentRunnerManualRecords: () => ManualRecord[];
+  useCurrentRunnerManualRecords: () => ManualRecord[];
   addManualRecord: (participantId: string, value: number, recorderName: string) => Promise<void>;
 }

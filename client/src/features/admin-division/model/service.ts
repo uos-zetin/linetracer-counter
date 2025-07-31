@@ -25,7 +25,7 @@ export const createAdminDivisionService = ({ divisionRepository }: AdminDivision
 
       // Store 업데이트 - 기존 divisions 중 해당 competition의 것들만 교체
       const store = useZustandDivisionStore.getState();
-      const allDivisions = store.getAll();
+      const allDivisions = store.divisions;
       const otherDivisions = allDivisions.filter((d) => d.competitionId !== competitionId);
       const updatedDivisions = [...otherDivisions, ...divisions];
 
@@ -38,15 +38,7 @@ export const createAdminDivisionService = ({ divisionRepository }: AdminDivision
 
   const loadDivisionById = async (id: string): Promise<void> => {
     try {
-      // 먼저 Store에서 확인
       const store = useZustandDivisionStore.getState();
-      const cachedDivision = store.getById(id);
-
-      if (cachedDivision) {
-        return; // 이미 Store에 있으면 바로 반환
-      }
-
-      // Store에 없으면 Repository에서 조회
       const division = await divisionRepository.getDivisionById(id);
 
       // Store 업데이트 (존재하는 경우만)
@@ -79,7 +71,7 @@ export const createAdminDivisionService = ({ divisionRepository }: AdminDivision
 
       // 기존 division 정보를 가져와서 업데이트
       const store = useZustandDivisionStore.getState();
-      const existingDivision = store.getById(id);
+      const existingDivision = store.divisions.find((d) => d.id === id);
 
       if (!existingDivision) {
         throw new Error(`Division with id ${id} not found`);
@@ -136,7 +128,8 @@ export const createAdminDivisionService = ({ divisionRepository }: AdminDivision
   };
 
   const useDivisionById = (id: string): Division | null => {
-    return useZustandDivisionStore((state) => state.getById(id));
+    const division = useZustandDivisionStore((state) => state.divisions.find((d) => d.id === id) ?? null);
+    return division;
   };
 
   return {

@@ -31,10 +31,6 @@ export interface UserActions {
   remove: (userId: string) => void;
 }
 
-export interface UserGetters {
-  getById: (userId: string) => User | null;
-}
-
-export interface UserStore extends UserActions, UserGetters {
+export interface UserStore extends UserActions {
   users: User[];
 }

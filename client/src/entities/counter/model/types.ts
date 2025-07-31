@@ -14,14 +14,6 @@ export interface CounterActions {
   clearAll: () => void; // 모든 계수기 초기화 (테스트용)
 }
 
-export interface CounterGetters {
-  getIsRunning: (counterId: string) => boolean; // 계수기가 실행 중인지 여부
-  getElapsedMs: (counterId: string, now?: number) => number; // 경과 시간(ms) 계산
-  getDivisionId: (counterId: string) => string | null; // 계수기가 속한 종목 ID 반환
-  getStartedAt: (counterId: string) => number | null; // 계수기 시작 시간 반환
-  getStoppedAt: (counterId: string) => number | null; // 계수기 정지 시간 반환
-}
-
-export interface CounterStore extends CounterActions, CounterGetters {
-  counters: Map<string, CounterState>; // 계수기 상태를 저장하는 맵
+export interface CounterStore extends CounterActions {
+  counters: CounterState[]; // 계수기 상태 목록
 }

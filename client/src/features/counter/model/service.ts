@@ -16,10 +16,15 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
 
   const updateStore = (counter: CounterState) => {
     const store = useZustandCounterStore.getState();
-    const currentCounter = store.counters.get(counter.id);
+    const currentCounter = store.counters.find((c) => c.id === counter.id);
 
     // 새로운 counter이거나 전체 상태가 다르면 초기화
-    if (!currentCounter || currentCounter.name !== counter.name || currentCounter.divisionId !== counter.divisionId) {
+    if (
+      !currentCounter ||
+      currentCounter.name !== counter.name ||
+      currentCounter.id !== counter.id ||
+      currentCounter.divisionId !== counter.divisionId
+    ) {
       store.init(counter.id, counter);
       return;
     }
@@ -40,31 +45,39 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
 
   const connect = async (counterId: string) => {
     try {
-      // 1. Repository에서 초기 counter 상태 가져오기
-      const initialCounterState = await counterRepository.getById(counterId);
-      if (initialCounterState) {
-        const store = useZustandCounterStore.getState();
-        store.init(counterId, initialCounterState);
-        console.log('Initialized counter state from repository:', initialCounterState);
+      // 기존 연결이 있다면 먼저 정리
+      if (unsubscribe) {
+        unsubscribe();
+        unsubscribe = null;
       }
-
-      // 2. Channel 연결 및 구독
+      
+      // Channel 연결 후 구독
       await counterChannel.connect(counterId);
       unsubscribe = counterChannel.subscribe(updateStore);
-
     } catch (error) {
       console.error("Failed to connect to counter channel:", error);
+      // 연결 실패 시 정리
+      if (unsubscribe) {
+        unsubscribe();
+        unsubscribe = null;
+      }
       throw error;
     }
   };
 
-  const disconnect = async () => {
+  const disconnect = async (counterId?: string) => {
     try {
       if (unsubscribe) {
         unsubscribe();
         unsubscribe = null;
       }
       await counterChannel.disconnect();
+
+      // 연결 해제 시 store에서 counter 제거
+      if (counterId) {
+        const store = useZustandCounterStore.getState();
+        store.counters = store.counters.filter((c) => c.id !== counterId);
+      }
     } catch (error) {
       console.error("Failed to disconnect from counter channel:", error);
     }
@@ -79,23 +92,19 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
     }
   };
 
-  const useStopwatch = (counterId?: string) => {
-    const startedAt = useZustandCounterStore((state) => 
-      counterId ? state.getStartedAt(counterId) : null
-    );
-    const stoppedAt = useZustandCounterStore((state) => 
-      counterId ? state.getStoppedAt(counterId) : null
-    );
+  const useStopwatch = (counterId: string) => {
+    const startedAt = useZustandCounterStore((state) => state.counters.find((c) => c.id === counterId)?.startedAt);
+    const stoppedAt = useZustandCounterStore((state) => state.counters.find((c) => c.id === counterId)?.stoppedAt);
 
     return {
-      startedAt,
-      stoppedAt,
+      startedAt: startedAt || null,
+      stoppedAt: stoppedAt || null,
     };
   };
 
-  const getCounterState = (counterId: string) => {
-    const store = useZustandCounterStore.getState();
-    return store.counters.get(counterId) || null;
+  const useCounterState = (counterId: string) => {
+    const counter = useZustandCounterStore((state) => state.counters.find((c) => c.id === counterId));
+    return counter || null;
   };
 
   const start = (counterId: string, startedAt: number) => {
@@ -109,8 +118,19 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
   };
 
   const getElapsedMs = (counterId: string, now?: number) => {
-    const store = useZustandCounterStore.getState();
-    return store.getElapsedMs(counterId, now);
+    const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
+
+    if (!counter) {
+      return 0;
+    }
+    if (!counter.startedAt) {
+      return 0;
+    }
+    const elapsed = (now || Date.now()) - counter.startedAt;
+    if (counter.stoppedAt) {
+      return Math.max(counter.stoppedAt - counter.startedAt, 0);
+    }
+    return Math.max(elapsed, 0);
   };
 
   const connectDivision = async (counterId: string, divisionId: string) => {
@@ -131,12 +151,22 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
     }
   };
 
+  const getAllCounters = async () => {
+    try {
+      return await counterRepository.getAll();
+    } catch (error) {
+      console.error("Failed to get all counters:", error);
+      throw error;
+    }
+  };
+
   return {
     connect,
     disconnect,
     reset,
     useStopwatch,
-    getCounterState,
+    useCounterState,
+    getAllCounters,
     start,
     stop,
     getElapsedMs,

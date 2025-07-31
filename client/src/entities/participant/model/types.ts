@@ -26,10 +26,6 @@ export interface ParticipantActions {
   remove: (participantId: string) => void;
 }
 
-export interface ParticipantGetters {
-  getById: (participantId: string) => Participant | null;
-}
-
-export interface ParticipantStore extends ParticipantActions, ParticipantGetters {
+export interface ParticipantStore extends ParticipantActions {
   participants: Participant[];
 }

@@ -2,36 +2,56 @@ import type { ProgressChannel, ProgressRepository } from "../api/types";
 import type { ManualRecordRepository } from "@/entities/manual-record";
 import { useZustandProgressStore } from "./store.zustand";
 import type { ProgressService, ProgressState } from "./types";
+import { useShallow } from "zustand/shallow";
 
 interface ProgressServiceProps {
+  manualRecordRepository: ManualRecordRepository;
   progressRepository: ProgressRepository;
   progressChannel: ProgressChannel;
-  manualRecordRepository: ManualRecordRepository;
 }
 
 export const createProgressService = ({
+  manualRecordRepository,
   progressRepository,
   progressChannel,
-  manualRecordRepository,
 }: ProgressServiceProps): ProgressService => {
   let progressUpdate: (() => void) | null;
 
   const update = (progress: ProgressState) => {
-    useZustandProgressStore.getState().setProgress(progress);
+    const store = useZustandProgressStore.getState();
+    store.setProgress(progress);
+    console.log("Progress updated:", progress, store.division);
   };
 
-  const connect = (divisionId: string) => {
-    progressChannel.connect(divisionId);
-    progressUpdate = progressChannel.subscribe(update);
+  const connect = async (divisionId: string) => {
+    try {
+      if (progressUpdate) {
+        progressUpdate();
+        progressUpdate = null;
+      }
 
+      await progressChannel.connect(divisionId);
+      progressUpdate = progressChannel.subscribe(update);
+    } catch (error) {
+      console.error("Failed to connect to progress channel:", error);
+      // 연결 실패 시 정리
+      if (progressUpdate) {
+        progressUpdate();
+        progressUpdate = null;
+      }
+      throw error;
+    }
   };
 
-  const disconnect = () => {
+  const disconnect = async () => {
     if (progressUpdate) {
       progressUpdate();
       progressUpdate = null;
     }
-    progressChannel.disconnect();
+    await progressChannel.disconnect();
+
+    const store = useZustandProgressStore.getState();
+    store.reset(); // Reset the progress store on disconnect
   };
 
   const setProgress = (progress: ProgressState) => {
@@ -39,27 +59,38 @@ export const createProgressService = ({
   };
 
   const useProgress = () => {
-    return useZustandProgressStore((state) => state.getProgress());
+    const result = useZustandProgressStore(
+      useShallow((state) => ({
+        id: state.id,
+        competition: state.competition,
+        division: state.division,
+        runner: state.runner,
+        nextRunners: state.nextRunners,
+        topRecords: state.topRecords,
+      })),
+    );
+
+    return result;
   };
 
   const useCompetition = () => {
-    return useZustandProgressStore((state) => state.getCompetition());
+    return useZustandProgressStore((state) => state.competition);
   };
 
   const useDivision = () => {
-    return useZustandProgressStore((state) => state.getDivision());
+    return useZustandProgressStore((state) => state.division);
   };
 
   const useRunner = () => {
-    return useZustandProgressStore((state) => state.getRunner());
+    return useZustandProgressStore((state) => state.runner);
   };
 
   const useNextRunners = () => {
-    return useZustandProgressStore((state) => state.getNextRunners());
+    return useZustandProgressStore((state) => state.nextRunners);
   };
 
   const useTopRecords = () => {
-    return useZustandProgressStore((state) => state.getTopRecords());
+    return useZustandProgressStore((state) => state.topRecords);
   };
 
   // Runner control methods
@@ -127,9 +158,8 @@ export const createProgressService = ({
   };
 
   // Manual record methods
-  const getCurrentRunnerManualRecords = () => {
-    const store = useZustandProgressStore.getState();
-    const runner = store.getRunner();
+  const useCurrentRunnerManualRecords = () => {
+    const runner = useZustandProgressStore((state) => state.runner);
     return runner?.manualRecords || [];
   };
 
@@ -160,7 +190,7 @@ export const createProgressService = ({
     openDivision,
     closeDivision,
     resetDivision,
-    getCurrentRunnerManualRecords,
+    useCurrentRunnerManualRecords,
     addManualRecord,
   };
 };

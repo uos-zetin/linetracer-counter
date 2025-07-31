@@ -18,7 +18,7 @@ const AuthProviderInner = ({ authService, children }: { authService: AuthService
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // 1. 환경 설정과 fetcher 생성
-  const fetcherBaseUrl = import.meta.env.DEV ? "/api" : import.meta.env.VITE_SERVER_URL;
+  const fetcherBaseUrl = import.meta.env.DEV ? "/api" : import.meta.env.VITE_SERVER_URL + "/api";
 
   const { publicFetcher, authenticatedFetcher, authService } = useMemo(() => {
     const publicFetcher = new FetchApiFetcher(fetcherBaseUrl);

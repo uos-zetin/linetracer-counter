@@ -69,7 +69,7 @@ export const createAdminParticipantService = ({
     try {
       // 기존 participant 정보를 가져와서 업데이트
       const store = useZustandParticipantStore.getState();
-      const existingParticipant = store.getById(id);
+      const existingParticipant = store.participants.find((p) => p.id === id);
 
       const participantToUpdate: Participant = {
         id,
@@ -120,7 +120,7 @@ export const createAdminParticipantService = ({
   };
 
   const useParticipantById = (id: string): Participant | null => {
-    return useZustandParticipantStore((state) => state.getById(id));
+    return useZustandParticipantStore((state) => state.participants.find((p) => p.id === id) ?? null);
   };
 
   return {

@@ -26,11 +26,6 @@ export const createAdminCompetitionService = ({
     try {
       // 먼저 Store에서 확인
       const store = useZustandCompetitionStore.getState();
-      const cachedCompetition = store.getById(id);
-
-      if (cachedCompetition) {
-        return; // 이미 Store에 있으면 바로 반환
-      }
 
       // Store에 없으면 Repository에서 조회
       const competition = await competitionRepository.getCompetitionById(id);
@@ -92,7 +87,8 @@ export const createAdminCompetitionService = ({
   };
 
   const useCompetitionById = (id: string): Competition | null => {
-    return useZustandCompetitionStore((state) => state.getById(id));
+    const competition = useZustandCompetitionStore((state) => state.competitions.find((c) => c.id === id) ?? null);
+    return competition;
   };
 
   return {

@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { formatElapsedMs } from "@/entities/counter";
+import { formatElapsedMs, useStopwatchTimer } from "@/entities/counter";
 
 interface TimerDisplayProps {
   participantId: string;
@@ -20,30 +19,8 @@ export const TimerDisplay = ({
   startedAt = null,
   className = ""
 }: TimerDisplayProps) => {
-  const [currentTime, setCurrentTime] = useState(Date.now());
-
-  useEffect(() => {
-    if (startedAt === null) return;
-
-    const interval = setInterval(() => {
-      setCurrentTime(Date.now());
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [startedAt]);
-
-  const calculateCurrentMs = () => {
-    if (startedAt === null) {
-      // Timer is stopped
-      return initialMs + offsetMs + accumulatedMs;
-    } else {
-      // Timer is running
-      const runningMs = currentTime - startedAt;
-      return initialMs + offsetMs + accumulatedMs + runningMs;
-    }
-  };
-
-  const currentMs = calculateCurrentMs();
+  const elapsedMs = useStopwatchTimer(startedAt, null);
+  const currentMs = initialMs + offsetMs + accumulatedMs + (startedAt ? elapsedMs : 0);
   const isRunning = startedAt !== null;
 
   const getStatusColor = () => {
