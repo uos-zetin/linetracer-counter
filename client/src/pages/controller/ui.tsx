@@ -5,6 +5,8 @@ import { ControllerLayout } from "./ui/controller-layout";
 import { CounterControlSection } from "./ui/counter-control-section";
 import { StopwatchControlSection } from "./ui/stopwatch-control-section";
 import { ProgressMonitorSection } from "./ui/progress-monitor-section";
+import { RecordControlSection } from "./ui/record-control-section";
+import { TimerRunnerControlSection } from "./ui/timer-runner-control-section";
 
 export const ControllerPage = () => {
   const { counterId } = useParams<{ counterId: string }>();
@@ -46,6 +48,8 @@ export const ControllerPage = () => {
       <CounterControlSection counterId={counterId} />
       <StopwatchControlSection counterId={counterId} />
       <ProgressMonitorSection counterId={counterId} />
+      <RecordControlSection />
+      <TimerRunnerControlSection />
     </ControllerLayout>
   );
 };

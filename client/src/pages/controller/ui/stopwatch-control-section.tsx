@@ -1,4 +1,5 @@
 import { useCounterService } from "@/features/counter";
+import { formatElapsedMs } from "@/entities/counter";
 import { useState, useEffect } from "react";
 
 interface StopwatchControlSectionProps {
@@ -24,20 +25,15 @@ export const StopwatchControlSection = ({ counterId }: StopwatchControlSectionPr
   // 경과 시간 계산
   const getElapsedTime = () => {
     if (!stopwatch?.startedAt || !counterService) return 0;
-    
+
     // 종료시간이 있으면 종료시간 기준으로 계산, 없으면 현재시간 기준
     const endTime = stopwatch.stoppedAt || currentTime;
     return counterService.getElapsedMs(counterId, endTime);
   };
 
-  // 시간 포맷팅 (MM:SS.sss)
+  // 시간 포맷팅 (기존 formatter 사용)
   const formatTime = (ms: number) => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    const milliseconds = ms % 1000;
-
-    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}.${Math.floor(milliseconds / 10).toString().padStart(2, "0")}`;
+    return formatElapsedMs(ms).toString();
   };
 
   const handleReset = async () => {
@@ -76,17 +72,15 @@ export const StopwatchControlSection = ({ counterId }: StopwatchControlSectionPr
       <div className="space-y-6">
         {/* 시간 표시 */}
         <div className="text-center">
-          <div className="text-6xl font-mono font-bold text-gray-900 mb-4">
-            {formatTime(elapsedTime)}
-          </div>
+          <div className="text-6xl font-mono font-bold text-gray-900 mb-4">{formatTime(elapsedTime)}</div>
           <div className="flex items-center justify-center space-x-2 mb-4">
             <span
               className={`px-4 py-2 text-lg rounded-full font-medium ${
-                isRunning 
-                  ? "bg-green-100 text-green-800" 
-                  : isStopped 
-                  ? "bg-yellow-100 text-yellow-800" 
-                  : "bg-gray-100 text-gray-800"
+                isRunning
+                  ? "bg-green-100 text-green-800"
+                  : isStopped
+                    ? "bg-yellow-100 text-yellow-800"
+                    : "bg-gray-100 text-gray-800"
               }`}
             >
               {isRunning ? "측정 중" : isStopped ? "측정 완료" : "대기 중"}
@@ -98,19 +92,13 @@ export const StopwatchControlSection = ({ counterId }: StopwatchControlSectionPr
             <div className="bg-gray-50 p-3 rounded-lg">
               <div className="font-medium text-gray-700">시작 시간</div>
               <div className="font-mono">
-                {stopwatch?.startedAt 
-                  ? new Date(stopwatch.startedAt).toLocaleTimeString()
-                  : "---"
-                }
+                {stopwatch?.startedAt ? new Date(stopwatch.startedAt).toLocaleTimeString() : "---"}
               </div>
             </div>
             <div className="bg-gray-50 p-3 rounded-lg">
               <div className="font-medium text-gray-700">종료 시간</div>
               <div className="font-mono">
-                {stopwatch?.stoppedAt 
-                  ? new Date(stopwatch.stoppedAt).toLocaleTimeString()
-                  : "---"
-                }
+                {stopwatch?.stoppedAt ? new Date(stopwatch.stoppedAt).toLocaleTimeString() : "---"}
               </div>
             </div>
           </div>
