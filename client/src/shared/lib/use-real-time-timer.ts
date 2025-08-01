@@ -10,11 +10,9 @@ import { useEffect, useRef, useState } from "react";
 export function useRealTimeTimer<T>(
   startedAt: number | null,
   stoppedAt: number | null,
-  calculateValue: (startedAt: number | null, stoppedAt: number | null, now: number) => T
+  calculateValue: (startedAt: number | null, stoppedAt: number | null, now: number) => T,
 ): T {
-  const [value, setValue] = useState<T>(() => 
-    calculateValue(startedAt, stoppedAt, Date.now())
-  );
+  const [value, setValue] = useState<T>(() => calculateValue(startedAt, stoppedAt, Date.now()));
   const frameRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -22,14 +20,14 @@ export function useRealTimeTimer<T>(
       const now = Date.now();
       const newValue = calculateValue(startedAt, stoppedAt, now);
       setValue(newValue);
-      
+
       // 실행 중일 때만 계속 업데이트 (startedAt이 있고 stoppedAt이 없을 때)
-      if (startedAt && !stoppedAt) {
+      if (startedAt === null && stoppedAt === null) {
         frameRef.current = requestAnimationFrame(tick);
       }
     };
 
-    if (startedAt) {
+    if (startedAt === null && stoppedAt === null) {
       frameRef.current = requestAnimationFrame(tick);
     } else {
       // startedAt이 없으면 초기값으로 설정
