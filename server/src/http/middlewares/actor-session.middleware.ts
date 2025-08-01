@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 
 import { ActorSessionStore } from "@/core/interfaces";
 import { Actor } from "@/core/models";
+import { errorToResponse } from "../exception.filter";
 
 declare module "express" {
   export interface Request {
@@ -38,7 +39,8 @@ export class ActorSessionMiddleware implements NestMiddleware {
       req.actor = actor;
       next();
     } catch (err) {
-      next(err);
+      const error = errorToResponse(err);
+      return res.status(error.statusCode).json(error);
     }
   }
 }
