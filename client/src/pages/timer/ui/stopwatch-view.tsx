@@ -3,7 +3,7 @@ import { useCounterService } from "@/features/counter";
 
 export function StopwatchView() {
   const counterService = useCounterService();
-  const stopwatch = counterService.useStopwatch();
+  const stopwatch = counterService.useStopwatch("");
   const elapsedTime = useStopwatchTimer(stopwatch.startedAt, stopwatch.stoppedAt);
   const timeComponents = formatElapsedMs(elapsedTime);
 

@@ -30,7 +30,7 @@ export class ParticipantFetcherRepository implements ParticipantRepository {
     return parseParticipantDto(response.data);
   }
 
-  async updateParticipant(participantId: string, participant: Participant): Promise<Participant> {
+  async updateParticipant(participantId: string, participant: Participant): Promise<Participant | null> {
     const response = await this.authFetcher.patch<ParticipantDto>(`/participants/${participantId}`, {
       body: {
         name: participant.name,
@@ -40,7 +40,7 @@ export class ParticipantFetcherRepository implements ParticipantRepository {
         orderRaw: participant.orderRaw,
       } as ParticipantCreateDto,
     });
-    return parseParticipantDto(response.data);
+    return response.data ? parseParticipantDto(response.data) : null;
   }
 
   async deleteParticipant(participantId: string): Promise<void> {

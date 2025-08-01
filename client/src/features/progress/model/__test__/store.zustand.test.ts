@@ -126,7 +126,15 @@ describe("Zustand ProgressStore", () => {
     useZustandProgressStore.getState().setProgress(progress);
 
     // Assert
-    expect(useZustandProgressStore.getState().getProgress()).toEqual(progress);
+    const state = useZustandProgressStore.getState();
+    expect({
+      id: state.id,
+      competition: state.competition,
+      division: state.division,
+      runner: state.runner,
+      nextRunners: state.nextRunners,
+      topRecords: state.topRecords,
+    }).toEqual(progress);
   });
 
   it("patchProgress() — 부분 업데이트를 적용한다", () => {
@@ -142,7 +150,8 @@ describe("Zustand ProgressStore", () => {
     useZustandProgressStore.getState().patchProgress({ runner: patchedRunner });
 
     // Assert
-    const { runner, competition, division, nextRunners, topRecords } = useZustandProgressStore.getState().getProgress();
+    const state = useZustandProgressStore.getState();
+    const { runner, competition, division, nextRunners, topRecords } = state;
 
     expect(runner).toEqual(patchedRunner); // 변경된 필드
     expect(competition).toEqual(original.competition);
@@ -159,7 +168,15 @@ describe("Zustand ProgressStore", () => {
     useZustandProgressStore.getState().reset();
 
     // Assert
-    expect(useZustandProgressStore.getState().getProgress()).toEqual({
+    const state = useZustandProgressStore.getState();
+    expect({
+      id: state.id,
+      competition: state.competition,
+      division: state.division,
+      runner: state.runner,
+      nextRunners: state.nextRunners,
+      topRecords: state.topRecords,
+    }).toEqual({
       id: "",
       competition: null,
       division: null,

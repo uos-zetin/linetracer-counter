@@ -149,7 +149,13 @@ describe("ParticipantFetcherRepository", () => {
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/divisions/${divisionId}/participants`, {
-        body: newParticipant,
+        body: {
+          name: newParticipant.name,
+          teamName: newParticipant.teamName,
+          robotName: newParticipant.robotName,
+          comment: newParticipant.comment,
+          orderRaw: newParticipant.orderRaw,
+        },
       });
       expect(parseParticipantDto).toHaveBeenCalledWith(mockParticipantDto);
       expect(result).toEqual(mockParticipant);
@@ -223,7 +229,13 @@ describe("ParticipantFetcherRepository", () => {
 
       // Assert
       expect(mockAuthFetcher.patch).toHaveBeenCalledWith(`/participants/${participantId}`, {
-        body: updatedParticipant,
+        body: {
+          name: updatedParticipant.name,
+          teamName: updatedParticipant.teamName,
+          robotName: updatedParticipant.robotName,
+          comment: updatedParticipant.comment,
+          orderRaw: updatedParticipant.orderRaw,
+        },
       });
       expect(parseParticipantDto).toHaveBeenCalledWith(updatedParticipantDto);
       expect(result).toEqual(updatedParticipant);
@@ -243,7 +255,13 @@ describe("ParticipantFetcherRepository", () => {
 
       // Assert
       expect(mockAuthFetcher.patch).toHaveBeenCalledWith(`/participants/${participantId}`, {
-        body: participant,
+        body: {
+          name: participant.name,
+          teamName: participant.teamName,
+          robotName: participant.robotName,
+          comment: participant.comment,
+          orderRaw: participant.orderRaw,
+        },
       });
       expect(parseParticipantDto).not.toHaveBeenCalled();
       expect(result).toBeNull();

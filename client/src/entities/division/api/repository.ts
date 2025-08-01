@@ -41,7 +41,7 @@ export class DivisionFetcherRepository implements DivisionRepository {
         timeLimit: division.timeLimit,
       } as DivisionCreateDto,
     });
-    return parseDivisionDto(response.data) || null;
+    return response.data ? parseDivisionDto(response.data) : null;
   }
 
   async deleteDivision(divisionId: string): Promise<void> {

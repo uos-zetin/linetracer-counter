@@ -196,7 +196,11 @@ describe("DivisionFetcherRepository", () => {
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/competitions/${competitionId}/divisions`, {
-        body: newDivision,
+        body: {
+          name: newDivision.name,
+          description: newDivision.description,
+          timeLimit: newDivision.timeLimit,
+        },
       });
       expect(result).toEqual({
         id: "new-division-id",
@@ -244,7 +248,11 @@ describe("DivisionFetcherRepository", () => {
 
       // Assert
       expect(mockAuthFetcher.patch).toHaveBeenCalledWith(`/divisions/${divisionId}`, {
-        body: updatedDivision,
+        body: {
+          name: updatedDivision.name,
+          description: updatedDivision.description,
+          timeLimit: updatedDivision.timeLimit,
+        },
       });
       expect(result).toEqual(updatedDivision);
     });
@@ -273,7 +281,11 @@ describe("DivisionFetcherRepository", () => {
 
       // Assert
       expect(mockAuthFetcher.patch).toHaveBeenCalledWith(`/divisions/${divisionId}`, {
-        body: updatedDivision,
+        body: {
+          name: updatedDivision.name,
+          description: updatedDivision.description,
+          timeLimit: updatedDivision.timeLimit,
+        },
       });
       expect(result).toBeNull();
     });

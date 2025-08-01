@@ -316,7 +316,7 @@ describe("TimerFetcherRepository", () => {
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {
-        body: { value: adjustValue },
+        body: { adjustmentMs: adjustValue },
       });
       expect(parseTimerLogDto).toHaveBeenCalledWith(adjustTimerDto);
       expect(result).toEqual(adjustTimerLog);
@@ -349,11 +349,11 @@ describe("TimerFetcherRepository", () => {
       vi.mocked(parseTimerLogDto).mockReturnValue(adjustTimerLog);
 
       // Act
-      const result = await timerRepository.adjustTimer(participantId, adjustTimerLog.type, adjustValue);
+      const result = await timerRepository.adjustTimer(participantId, adjustTimerLog.type, 500);
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {
-        body: { value: adjustValue },
+        body: { adjustmentMs: adjustValue },
       });
       expect(parseTimerLogDto).toHaveBeenCalledWith(adjustTimerDto);
       expect(result).toEqual(adjustTimerLog);
@@ -362,7 +362,6 @@ describe("TimerFetcherRepository", () => {
     it("0 값으로 조정 시에도 정상 처리해야 한다", async () => {
       // Arrange
       const participantId = "participant-1";
-      const adjustValue = 0;
       const adjustTimerDto: TimerLogDto = {
         id: "timer-log-adjust-zero",
         participantId: "participant-1",
@@ -386,11 +385,11 @@ describe("TimerFetcherRepository", () => {
       vi.mocked(parseTimerLogDto).mockReturnValue(adjustTimerLog);
 
       // Act
-      const result = await timerRepository.adjustTimer(participantId, adjustTimerLog.type, adjustValue);
+      const result = await timerRepository.adjustTimer(participantId, adjustTimerLog.type, 0);
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {
-        body: { value: adjustValue },
+        body: { adjustmentMs: -0 },
       });
       expect(result).toEqual(adjustTimerLog);
     });
@@ -470,7 +469,7 @@ describe("TimerFetcherRepository", () => {
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {
-        body: { value: largeValue },
+        body: { adjustmentMs: largeValue },
       });
       expect(result).toEqual(mockTimerLog);
     });
@@ -488,11 +487,11 @@ describe("TimerFetcherRepository", () => {
       });
 
       // Act
-      const result = await timerRepository.adjustTimer(participantId, "sub", smallNegativeValue);
+      const result = await timerRepository.adjustTimer(participantId, "sub", Math.abs(smallNegativeValue));
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {
-        body: { value: smallNegativeValue },
+        body: { adjustmentMs: smallNegativeValue },
       });
       expect(result).toEqual(mockTimerLog);
     });

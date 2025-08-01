@@ -22,6 +22,6 @@ export interface ParticipantCreateDto {
 export interface ParticipantRepository {
   getAllParticipants(divisionId: string): Promise<Participant[]>;
   createParticipant(divisionId: string, participant: ParticipantForm): Promise<Participant>;
-  updateParticipant(participantId: string, participant: Participant): Promise<Participant>;
+  updateParticipant(participantId: string, participant: Participant): Promise<Participant | null>;
   deleteParticipant(participantId: string): Promise<void>;
 }
