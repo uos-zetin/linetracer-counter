@@ -28,6 +28,11 @@ export const useZustandCounterStore = create<CounterStore>()(
         );
       }),
 
+    remove: (counterId) =>
+      set((state) => {
+        state.counters = state.counters.filter((c) => c.id !== counterId);
+      }),
+
     clearAll: () =>
       set((state) => {
         state.counters = [];

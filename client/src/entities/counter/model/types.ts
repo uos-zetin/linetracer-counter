@@ -11,6 +11,7 @@ export interface CounterActions {
   start: (counterId: string, startedAt: number) => void; // 계수기 시작
   stop: (counterId: string, stoppedAt: number) => void; // 계수기 정지
   reset: (counterId: string) => void; // 계수기 리셋
+  remove: (counterId: string) => void; // 계수기 제거
   clearAll: () => void; // 모든 계수기 초기화 (테스트용)
 }
 

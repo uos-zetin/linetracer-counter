@@ -50,7 +50,7 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
         unsubscribe();
         unsubscribe = null;
       }
-      
+
       // Channel 연결 후 구독
       await counterChannel.connect(counterId);
       unsubscribe = counterChannel.subscribe(updateStore);
@@ -76,7 +76,7 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
       // 연결 해제 시 store에서 counter 제거
       if (counterId) {
         const store = useZustandCounterStore.getState();
-        store.counters = store.counters.filter((c) => c.id !== counterId);
+        store.remove(counterId);
       }
     } catch (error) {
       console.error("Failed to disconnect from counter channel:", error);
