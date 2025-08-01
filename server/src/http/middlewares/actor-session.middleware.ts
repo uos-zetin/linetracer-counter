@@ -20,27 +20,22 @@ export class ActorSessionMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    try {
-      const authHeader = req.headers.authorization;
-      const sessionKey = authHeader?.split(" ")[1];
+    const authHeader = req.headers.authorization;
+    const sessionKey = authHeader?.split(" ")[1];
 
-      // TODO: 추후 유틸리티 함수로 분리할 것
-      let actor: Actor = {
-        id: "",
-        name: "익명 사용자",
-        roles: [],
-        createdAt: new Date(),
-      };
-      if (sessionKey) {
-        actor = await this.actorSessionStore.validateSession(sessionKey);
-        req.actorSessionKey = sessionKey;
-      }
-
-      req.actor = actor;
-      next();
-    } catch (err) {
-      const error = errorToResponse(err);
-      return res.status(error.statusCode).json(error);
+    // TODO: 추후 유틸리티 함수로 분리할 것
+    let actor: Actor = {
+      id: "",
+      name: "익명 사용자",
+      roles: [],
+      createdAt: new Date(),
+    };
+    if (sessionKey) {
+      actor = await this.actorSessionStore.validateSession(sessionKey);
+      req.actorSessionKey = sessionKey;
     }
+
+    req.actor = actor;
+    next();
   }
 }
