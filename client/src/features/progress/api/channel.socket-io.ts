@@ -27,7 +27,6 @@ export class ProgressSocketIOChannel implements ProgressChannel {
         return;
       }
 
-      console.log(divisionId, sessionKey);
       this.socket = io("/socket/divisions/progress", {
         forceNew: true,
         query: { divisionId },
