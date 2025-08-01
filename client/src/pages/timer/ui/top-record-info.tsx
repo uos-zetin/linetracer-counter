@@ -1,13 +1,10 @@
 import { formatElapsedMs } from "@/entities/counter";
+import { useProgressService } from "@/features/progress";
 
 export interface TopRecord {
   id: string;
   participantName: string;
   timeMs: number;
-}
-
-interface TopRecordViewProps {
-  topRecords: TopRecord[];
 }
 
 const rankBg = (rank: number) => {
@@ -27,7 +24,32 @@ const ROW_COUNT = 5;
 const RIGHT_COLUMN_OFFSET = ROW_COUNT; // 5
 const RIGHT_COLUMN_START_RANK = ROW_COUNT + 1; // 6
 
-export function TopRecordView({ topRecords }: TopRecordViewProps) {
+export function TopRecordView() {
+  const progressService = useProgressService();
+  const topRecords = progressService.useTopRecords();
+  const runner = progressService.useRunner();
+  const nextRunners = progressService.useNextRunners();
+
+  // Record를 TopRecord로 변환
+  const formattedTopRecords: TopRecord[] = (topRecords || []).map((record) => {
+    // 현재 runner나 nextRunners에서 participant 이름을 찾아보기
+    let participantName = `Participant ${record.participantId.slice(0, 8)}`;
+    
+    if (runner?.participant.id === record.participantId) {
+      participantName = runner.participant.name;
+    } else {
+      const foundParticipant = nextRunners.find((p) => p.id === record.participantId);
+      if (foundParticipant) {
+        participantName = foundParticipant.name;
+      }
+    }
+
+    return {
+      id: record.id,
+      participantName,
+      timeMs: record.value,
+    };
+  });
   const rows = Array.from({ length: ROW_COUNT }, (_, i) => i);
 
   return (
@@ -38,8 +60,8 @@ export function TopRecordView({ topRecords }: TopRecordViewProps) {
 
       <ul>
         {rows.map((rowIdx) => {
-          const left = topRecords[rowIdx];
-          const right = topRecords[rowIdx + RIGHT_COLUMN_OFFSET];
+          const left = formattedTopRecords[rowIdx];
+          const right = formattedTopRecords[rowIdx + RIGHT_COLUMN_OFFSET];
 
           const bgLeft = (rowIdx + 1) % 2 ? "bg-gray-50" : "bg-white";
           const bgRight = (rowIdx + RIGHT_COLUMN_START_RANK) % 2 ? "bg-gray-50" : "bg-white";
