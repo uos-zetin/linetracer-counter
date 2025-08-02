@@ -1,3 +1,4 @@
+import { useCounterService } from "@/features/counter";
 import { useProgressService } from "@/features/progress";
 
 interface DivisionInfoProps {
@@ -5,11 +6,13 @@ interface DivisionInfoProps {
 }
 
 export function DivisionInfo({ counterId }: DivisionInfoProps) {
+  const counterService = useCounterService();
   const progressService = useProgressService();
+  const counter = counterService.useCounterState(counterId);
   const division = progressService.useDivision();
-  
+
   const divisionName = division?.name || "No Division";
-  const stopwatchName = decodeURIComponent(counterId);
+  const stopwatchName = counter?.name || "No Stopwatch";
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
