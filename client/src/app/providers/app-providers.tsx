@@ -10,6 +10,7 @@ import { AdminRecordProvider } from "./admin-record-provider";
 import { AdminUserProvider } from "./admin-user-provider";
 import { TimerControlProvider } from "./timer-control-provicer";
 import { RecordControlProvider } from "./record-control-provider";
+import { ManualRecordProvider } from "./manual-record-provider";
 
 const ComposedProviders = composeProviders(
   AuthProvider,
@@ -23,6 +24,7 @@ const ComposedProviders = composeProviders(
   AdminUserProvider,
   TimerControlProvider,
   RecordControlProvider,
+  ManualRecordProvider,
 );
 
 export const AppProviders = ({ children }: { children: React.ReactNode }) => {

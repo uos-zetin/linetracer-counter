@@ -5,3 +5,8 @@ export interface ManualRecord {
   recorderName: string;
   createdAt: Date;
 }
+
+export interface ManualRecordForm {
+  value: number;
+  recorderName: string;
+}

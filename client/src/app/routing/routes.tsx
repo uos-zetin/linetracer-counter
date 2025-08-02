@@ -12,6 +12,7 @@ import {
 import { TimerPage } from "@/pages/timer";
 import { CounterSelectorPage } from "@/pages/counter-selector";
 import { ControllerPage } from "@/pages/controller";
+import { ManualCounter } from "@/pages/manual-counter";
 
 const routes: RouteObject[] = [
   {
@@ -32,6 +33,10 @@ const routes: RouteObject[] = [
       {
         path: ":counterId/controller",
         element: <ControllerPage />,
+      },
+      {
+        path: ":counterId/manual-counter",
+        element: <ManualCounter />,
       },
     ],
   },
