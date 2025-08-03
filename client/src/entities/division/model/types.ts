@@ -25,11 +25,6 @@ export interface DivisionActions {
   clearAll: () => void;
 }
 
-export interface DivisionGetters {
-  getById: (divisionId: string) => Division | null;
-  getAll: () => Division[];
-}
-
-export interface DivisionStore extends DivisionActions, DivisionGetters {
+export interface DivisionStore extends DivisionActions {
   divisions: Division[];
 }

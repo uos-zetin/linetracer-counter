@@ -25,7 +25,7 @@ export const createAdminDivisionService = ({ divisionRepository }: AdminDivision
 
       // Store 업데이트 - 기존 divisions 중 해당 competition의 것들만 교체
       const store = useZustandDivisionStore.getState();
-      const allDivisions = store.getAll();
+      const allDivisions = store.divisions;
       const otherDivisions = allDivisions.filter((d) => d.competitionId !== competitionId);
       const updatedDivisions = [...otherDivisions, ...divisions];
 
@@ -38,15 +38,7 @@ export const createAdminDivisionService = ({ divisionRepository }: AdminDivision
 
   const loadDivisionById = async (id: string): Promise<void> => {
     try {
-      // 먼저 Store에서 확인
       const store = useZustandDivisionStore.getState();
-      const cachedDivision = store.getById(id);
-
-      if (cachedDivision) {
-        return; // 이미 Store에 있으면 바로 반환
-      }
-
-      // Store에 없으면 Repository에서 조회
       const division = await divisionRepository.getDivisionById(id);
 
       // Store 업데이트 (존재하는 경우만)
@@ -62,8 +54,7 @@ export const createAdminDivisionService = ({ divisionRepository }: AdminDivision
   const createDivision = async (data: DivisionForm): Promise<void> => {
     try {
       const validatedData = DivisionFormSchema.parse(data);
-      const { competitionId, ...divisionData } = validatedData;
-      const newDivision = await divisionRepository.createDivision(competitionId, { ...divisionData, competitionId });
+      const newDivision = await divisionRepository.createDivision(validatedData);
 
       // Store 업데이트
       const store = useZustandDivisionStore.getState();
@@ -80,16 +71,19 @@ export const createAdminDivisionService = ({ divisionRepository }: AdminDivision
 
       // 기존 division 정보를 가져와서 업데이트
       const store = useZustandDivisionStore.getState();
-      const existingDivision = store.getById(id);
+      const existingDivision = store.divisions.find((d) => d.id === id);
 
-      const divisionToUpdate: Division = {
-        id,
+      if (!existingDivision) {
+        throw new Error(`Division with id ${id} not found`);
+      }
+
+      // 기존 정보를 유지하면서 업데이트
+      const updatedDivisionData: Division = {
+        ...existingDivision,
         ...validatedData,
-        status: existingDivision?.status || "ready",
-        createdAt: existingDivision?.createdAt || new Date(),
       };
 
-      const updatedDivision = await divisionRepository.updateDivision(id, divisionToUpdate);
+      const updatedDivision = await divisionRepository.updateDivision(updatedDivisionData);
 
       // Store 업데이트
       if (updatedDivision) {
@@ -121,20 +115,21 @@ export const createAdminDivisionService = ({ divisionRepository }: AdminDivision
 
   const useDivisionsByCompetition = (competitionId: string): Division[] => {
     const allDivisions = useZustandDivisionStore((state) => state.divisions);
-    
+
     // 빈 competitionId면 빈 배열 반환
     if (!competitionId) {
       return [];
     }
-    
+
     // Service에서 필터링 및 정렬
     return allDivisions
-      .filter(d => d.competitionId === competitionId)
+      .filter((d) => d.competitionId === competitionId)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   };
 
   const useDivisionById = (id: string): Division | null => {
-    return useZustandDivisionStore((state) => state.getById(id));
+    const division = useZustandDivisionStore((state) => state.divisions.find((d) => d.id === id) ?? null);
+    return division;
   };
 
   return {

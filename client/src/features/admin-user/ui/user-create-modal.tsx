@@ -24,6 +24,9 @@ export function UserCreateModal({ isOpen, onClose, onSubmit }: UserCreateModalPr
   const validateForm = (): boolean => {
     const newErrors: UserFormErrors = {};
     if (!formData.name.trim()) newErrors.name = "이름을 입력해주세요";
+    if (!formData.userName.trim()) newErrors.userName = "사용자 ID를 입력해주세요";
+    if (!formData.password.trim()) newErrors.password = "비밀번호를 입력해주세요";
+    if (formData.password.length < 4) newErrors.password = "비밀번호는 4자 이상이어야 합니다";
     setErrors(newErrors);
     return Object.values(newErrors).every((v) => v === undefined);
   };
@@ -82,6 +85,41 @@ export function UserCreateModal({ isOpen, onClose, onSubmit }: UserCreateModalPr
             }`}
           />
           {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+        </div>
+
+        {/* 사용자 ID */}
+        <div>
+          <label htmlFor="user-username" className="block text-sm font-medium text-gray-700 mb-1">
+            사용자 ID <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="user-username"
+            value={formData.userName}
+            onChange={(e) => handleInputChange("userName", e.target.value)}
+            placeholder="로그인에 사용할 ID"
+            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.userName ? "border-red-300" : "border-gray-300"
+            }`}
+          />
+          {errors.userName && <p className="mt-1 text-sm text-red-600">{errors.userName}</p>}
+        </div>
+
+        {/* 비밀번호 */}
+        <div>
+          <label htmlFor="user-password" className="block text-sm font-medium text-gray-700 mb-1">
+            비밀번호 <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="user-password"
+            type="password"
+            value={formData.password}
+            onChange={(e) => handleInputChange("password", e.target.value)}
+            placeholder="비밀번호 (4자 이상)"
+            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.password ? "border-red-300" : "border-gray-300"
+            }`}
+          />
+          {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
         </div>
 
         {/* Footer */}

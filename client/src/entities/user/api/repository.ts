@@ -1,5 +1,6 @@
-import type { UserRegisterForm, User, UserRole } from "../model/types";
-import type { LoginUserDto, UserRepository } from "./types";
+import { parseUserDto } from "../lib/parse-dto";
+import type { UserRegisterForm, User, UserRole, UserLoginForm } from "../model/types";
+import type { LoginUserDto, RegisterUserDto, UserDto, UserRepository, UserRoleDto } from "./types";
 import type { Fetcher } from "@/shared";
 
 export class UserFetcherRepository implements UserRepository {
@@ -12,33 +13,33 @@ export class UserFetcherRepository implements UserRepository {
   }
 
   async getAllUsers(): Promise<User[]> {
-    const response = await this.authenticatedFetcher.get<User[]>("/actors");
-    return response.data;
+    const response = await this.authenticatedFetcher.get<UserDto[]>("/actors");
+    return response.data.map((userDto) => parseUserDto(userDto));
   }
 
   async getCurrentUser(): Promise<User | null> {
-    const response = await this.authenticatedFetcher.get<User | null>("/actors/whoami");
-    return response.data;
+    const response = await this.authenticatedFetcher.get<UserDto | null>("/actors/whoami");
+    return response.data ? parseUserDto(response.data) : null;
   }
 
   async registerUser(user: UserRegisterForm): Promise<User> {
-    const response = await this.publicFetcher.post<User>("/actors/register", {
+    const response = await this.publicFetcher.post<UserDto>("/actors/register", {
       body: {
         name: user.name,
         username: user.userName, // 서버는 username을 사용
         password: user.password,
-      },
+      } as RegisterUserDto,
     });
-    return response.data;
+    return parseUserDto(response.data);
   }
 
-  async loginUser(user: LoginUserDto): Promise<string> {
+  async loginUser(user: UserLoginForm): Promise<string> {
     // 서버에서 세션 키를 직접 반환하므로, 로그인 성공 시 별도로 사용자 정보를 조회해야 함
     const sessionKeyResponse = await this.publicFetcher.post<string>("/actors/login", {
       body: {
         username: user.userName,
         password: user.password,
-      },
+      } as LoginUserDto,
     });
 
     return sessionKeyResponse.data;
@@ -49,10 +50,10 @@ export class UserFetcherRepository implements UserRepository {
   }
 
   async updateUserRoles(userId: string, roles: UserRole[]): Promise<User> {
-    const response = await this.authenticatedFetcher.patch<User>(`/actors/${userId}/roles`, {
-      body: { roles },
+    const response = await this.authenticatedFetcher.patch<UserDto>(`/actors/${userId}/roles`, {
+      body: { roles } as { roles: UserRoleDto[] },
     });
-    return response.data;
+    return parseUserDto(response.data);
   }
 
   async deleteUser(userId: string): Promise<void> {

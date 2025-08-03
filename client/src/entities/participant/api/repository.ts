@@ -1,6 +1,6 @@
 import type { Fetcher } from "@/shared";
-import type { Participant } from "../model/types";
-import type { ParticipantDto, ParticipantRepository } from "./types";
+import type { Participant, ParticipantForm } from "../model/types";
+import type { ParticipantCreateDto, ParticipantDto, ParticipantRepository } from "./types";
 import { parseParticipantDto } from "../lib/parse-dto";
 
 export class ParticipantFetcherRepository implements ParticipantRepository {
@@ -17,24 +17,28 @@ export class ParticipantFetcherRepository implements ParticipantRepository {
     return response.data.map((dto) => parseParticipantDto(dto));
   }
 
-  async getParticipantById(participantId: string): Promise<Participant | null> {
-    const response = await this.fetcher.get<ParticipantDto>(`/participants/${participantId}`);
-    return response.data ? parseParticipantDto(response.data) : null;
-  }
-
-  async createParticipant(
-    divisionId: string,
-    participant: Omit<Participant, "id" | "createdAt">,
-  ): Promise<Participant> {
+  async createParticipant(divisionId: string, participant: ParticipantForm): Promise<Participant> {
     const response = await this.authFetcher.post<ParticipantDto>(`/divisions/${divisionId}/participants`, {
-      body: participant,
+      body: {
+        name: participant.name,
+        teamName: participant.teamName,
+        robotName: participant.robotName,
+        comment: participant.comment,
+        orderRaw: participant.orderRaw,
+      } as ParticipantCreateDto,
     });
     return parseParticipantDto(response.data);
   }
 
   async updateParticipant(participantId: string, participant: Participant): Promise<Participant | null> {
     const response = await this.authFetcher.patch<ParticipantDto>(`/participants/${participantId}`, {
-      body: participant,
+      body: {
+        name: participant.name,
+        teamName: participant.teamName,
+        robotName: participant.robotName,
+        comment: participant.comment,
+        orderRaw: participant.orderRaw,
+      } as ParticipantCreateDto,
     });
     return response.data ? parseParticipantDto(response.data) : null;
   }

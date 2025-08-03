@@ -56,8 +56,8 @@ export const createAdminUserService = ({ userRepository }: AdminUserServiceProps
   };
 
   const useUserById = (id: string) => {
-    const store = useZustandUserStore.getState();
-    return store.getById(id);
+    const user = useZustandUserStore((state) => state.users.find((u) => u.id === id));
+    return user || null;
   };
 
   return {

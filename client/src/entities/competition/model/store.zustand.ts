@@ -2,9 +2,8 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import type { CompetitionStore } from "./types";
 
-/** 테스트 편의를 위해 그대로 export */
 export const useZustandCompetitionStore = create<CompetitionStore>()(
-  immer((set, get) => ({
+  immer((set) => ({
     competitions: [],
 
     init: (competitions) =>
@@ -44,15 +43,6 @@ export const useZustandCompetitionStore = create<CompetitionStore>()(
       set((state) => {
         state.competitions = state.competitions.filter((c) => c.id !== competitionId);
       }),
-
-    getById: (competitionId) => {
-      const competitions = get().competitions;
-      return competitions.find((c) => c.id === competitionId) ?? null;
-    },
-
-    getAll: () => {
-      return get().competitions;
-    },
 
     clearAll: () =>
       set((state) => {

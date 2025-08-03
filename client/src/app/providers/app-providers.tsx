@@ -8,10 +8,12 @@ import { AdminParticipantProvider } from "./admin-participant-provider";
 import { composeProviders } from "./compose-providers";
 import { AdminRecordProvider } from "./admin-record-provider";
 import { AdminUserProvider } from "./admin-user-provider";
+import { TimerControlProvider } from "./timer-control-provicer";
+import { RecordControlProvider } from "./record-control-provider";
 
 const ComposedProviders = composeProviders(
-  RepositoryProvider,
   AuthProvider,
+  RepositoryProvider,
   CounterProvider,
   ProgressProvider,
   AdminCompetitionProvider,
@@ -19,6 +21,8 @@ const ComposedProviders = composeProviders(
   AdminParticipantProvider,
   AdminRecordProvider,
   AdminUserProvider,
+  TimerControlProvider,
+  RecordControlProvider,
 );
 
 export const AppProviders = ({ children }: { children: React.ReactNode }) => {

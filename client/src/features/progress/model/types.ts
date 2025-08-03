@@ -27,20 +27,11 @@ export interface ProgressActions {
   reset: () => void;
 }
 
-export interface ProgressGetters {
-  getProgress: () => ProgressState;
-  getCompetition: () => Competition | null;
-  getDivision: () => Division | null;
-  getRunner: () => Runner | null;
-  getNextRunners: () => Participant[];
-  getTopRecords: () => Record[];
-}
-
-export type ProgressStore = ProgressState & ProgressActions & ProgressGetters;
+export type ProgressStore = ProgressState & ProgressActions;
 
 export interface ProgressService {
-  connect: (divisionId: string) => void;
-  disconnect: () => void;
+  connect: (divisionId: string) => Promise<void>;
+  disconnect: () => Promise<void>;
   setProgress: (progress: ProgressState) => void;
   useProgress: () => ProgressState;
   useCompetition: () => Competition | null;
@@ -48,4 +39,15 @@ export interface ProgressService {
   useRunner: () => Runner | null;
   useNextRunners: () => Participant[];
   useTopRecords: () => Record[];
+  // Runner control methods
+  postponeCurrentRunner: (divisionId: string) => Promise<void>;
+  setCurrentRunner: (divisionId: string, participantId: string) => Promise<void>;
+  changeOrder: (divisionId: string, participantId: string, order: number) => Promise<void>;
+  getOrder: (divisionId: string) => Promise<string[]>;
+  openDivision: (divisionId: string) => Promise<void>;
+  closeDivision: (divisionId: string) => Promise<void>;
+  resetDivision: (divisionId: string) => Promise<void>;
+  // Manual record methods
+  useCurrentRunnerManualRecords: () => ManualRecord[];
+  addManualRecord: (participantId: string, value: number, recorderName: string) => Promise<void>;
 }

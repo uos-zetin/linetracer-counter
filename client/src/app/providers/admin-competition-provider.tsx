@@ -1,5 +1,9 @@
 import { useMemo } from "react";
-import { AdminCompetitionContext, createAdminCompetitionService, type AdminCompetitionService } from "@/features/admin-competition";
+import {
+  AdminCompetitionContext,
+  createAdminCompetitionService,
+  type AdminCompetitionService,
+} from "@/features/admin-competition";
 import { useRepository } from "./use-repository";
 
 export const AdminCompetitionProvider = ({ children }: { children: React.ReactNode }) => {
@@ -12,8 +16,6 @@ export const AdminCompetitionProvider = ({ children }: { children: React.ReactNo
   }, [competitionRepository]);
 
   return (
-    <AdminCompetitionContext.Provider value={adminCompetitionService}>
-      {children}
-    </AdminCompetitionContext.Provider>
+    <AdminCompetitionContext.Provider value={adminCompetitionService}>{children}</AdminCompetitionContext.Provider>
   );
 };

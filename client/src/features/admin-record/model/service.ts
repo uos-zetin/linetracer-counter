@@ -30,25 +30,6 @@ export const createAdminRecordService = ({ recordRepository }: AdminRecordServic
     }
   };
 
-  const loadRecordById = async (id: string): Promise<void> => {
-    try {
-      const store = useZustandRecordStore.getState();
-
-      const record = await recordRepository.getRecordById(id);
-
-      if (record && !store.getById(id)) {
-        store.add(record);
-      } else if (record && store.getById(id)) {
-        store.update(record);
-      } else {
-        console.warn(`Record with id ${id} not found in repository.`);
-      }
-    } catch (error) {
-      console.error(`Failed to load record by id ${id}:`, error);
-      throw error;
-    }
-  };
-
   const createRecord = async (data: Record): Promise<void> => {
     try {
       const newRecord = await recordRepository.createRecord(data.participantId, data);
@@ -92,14 +73,14 @@ export const createAdminRecordService = ({ recordRepository }: AdminRecordServic
   };
 
   const useRecordById = (id: string): Record | null => {
-    return useZustandRecordStore((state) => state.getById(id)) || null;
+    const record = useZustandRecordStore((state) => state.records.find((record) => record.id === id));
+    return record || null;
   };
 
   return {
     // Store state updates
     loadAllRecords,
     loadRecordsByParticipant,
-    loadRecordById,
     createRecord,
     updateRecordNote,
     updateRecordStatus,

@@ -7,6 +7,7 @@ import type { ManualRecordRepository } from "@/entities/manual-record";
 import type { UserRepository } from "@/entities/user";
 import type { CounterRepository } from "@/entities/counter";
 import type { TimerRepository } from "@/entities/timer";
+import type { ProgressRepository } from "@/features/progress";
 
 export interface RepositoryContext {
   competitionRepository: CompetitionRepository;
@@ -17,6 +18,7 @@ export interface RepositoryContext {
   userRepository: UserRepository;
   counterRepository: CounterRepository;
   timerRepository: TimerRepository;
+  progressRepository: ProgressRepository;
 }
 
 export const repositoryContext = createContext<RepositoryContext | null>(null);

@@ -1,40 +1,28 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
-import type { ProgressStore } from "./types";
+import type { ProgressState, ProgressStore } from "./types";
+
+const initialState: ProgressState = {
+  id: "",
+  competition: null,
+  division: null,
+  runner: null,
+  nextRunners: [],
+  topRecords: [],
+};
 
 export const useZustandProgressStore = create<ProgressStore>()(
-  immer((set, get) => ({
+  immer((set) => ({
     // Initial state
-    id: "",
-    competition: null,
-    division: null,
-    runner: null,
-    nextRunners: [],
-    topRecords: [],
+    ...initialState,
 
     // Actions
-    setProgress: (progress) => set({ ...progress }),
-    patchProgress: (partial) => set((state) => ({ ...state, ...partial })),
-    reset: () =>
-      set({
-        id: "",
-        competition: null,
-        division: null,
-        runner: null,
-        nextRunners: [],
-        topRecords: [],
+    setProgress: (progress) => set(progress),
+    patchProgress: (partial) =>
+      set((state) => {
+        Object.assign(state, partial);
       }),
-
-    // Getters
-    getProgress: () => {
-      const { id, competition, division, runner, nextRunners, topRecords } = get();
-      return { id, competition, division, runner, nextRunners, topRecords };
-    },
-    getCompetition: () => get().competition,
-    getDivision: () => get().division,
-    getRunner: () => get().runner,
-    getNextRunners: () => get().nextRunners,
-    getTopRecords: () => get().topRecords,
+    reset: () => set(initialState),
   })),
 );

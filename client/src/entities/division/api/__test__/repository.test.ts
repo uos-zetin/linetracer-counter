@@ -192,11 +192,15 @@ describe("DivisionFetcherRepository", () => {
       vi.mocked(mockAuthFetcher.post).mockResolvedValue(mockResponse);
 
       // Act
-      const result = await repository.createDivision(competitionId, newDivision);
+      const result = await repository.createDivision(newDivision);
 
       // Assert
       expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/competitions/${competitionId}/divisions`, {
-        body: newDivision,
+        body: {
+          name: newDivision.name,
+          description: newDivision.description,
+          timeLimit: newDivision.timeLimit,
+        },
       });
       expect(result).toEqual({
         id: "new-division-id",
@@ -240,11 +244,15 @@ describe("DivisionFetcherRepository", () => {
       vi.mocked(mockAuthFetcher.patch).mockResolvedValue(mockResponse);
 
       // Act
-      const result = await repository.updateDivision(divisionId, updatedDivision);
+      const result = await repository.updateDivision(updatedDivision);
 
       // Assert
       expect(mockAuthFetcher.patch).toHaveBeenCalledWith(`/divisions/${divisionId}`, {
-        body: updatedDivision,
+        body: {
+          name: updatedDivision.name,
+          description: updatedDivision.description,
+          timeLimit: updatedDivision.timeLimit,
+        },
       });
       expect(result).toEqual(updatedDivision);
     });
@@ -269,11 +277,15 @@ describe("DivisionFetcherRepository", () => {
       vi.mocked(mockAuthFetcher.patch).mockResolvedValue(mockResponse);
 
       // Act
-      const result = await repository.updateDivision(divisionId, updatedDivision);
+      const result = await repository.updateDivision(updatedDivision);
 
       // Assert
       expect(mockAuthFetcher.patch).toHaveBeenCalledWith(`/divisions/${divisionId}`, {
-        body: updatedDivision,
+        body: {
+          name: updatedDivision.name,
+          description: updatedDivision.description,
+          timeLimit: updatedDivision.timeLimit,
+        },
       });
       expect(result).toBeNull();
     });

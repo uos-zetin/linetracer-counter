@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createAuthService } from "../auth-service";
+import { createAuthService } from "../service";
 import { useAuthStore } from "../store.zustand";
 import type { UserRepository, User } from "@/entities/user";
 

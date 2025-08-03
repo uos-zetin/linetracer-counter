@@ -1,34 +1,10 @@
-import { getElapsedMs, formatElapsedMs } from "@/entities/counter";
+import { formatElapsedMs, useStopwatchTimer } from "@/entities/counter";
+import { useCounterService } from "@/features/counter";
 
-import { useEffect, useRef, useState } from "react";
-
-type StopwatchViewProps = {
-  startedAt: number | null;
-  stoppedAt: number | null;
-};
-
-export function StopwatchView({ startedAt, stoppedAt }: StopwatchViewProps) {
-  const [elapsedTime, setElapsedTime] = useState(getElapsedMs(startedAt, stoppedAt ?? Date.now()));
-  const frameRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    const tick = () => {
-      const now = Date.now();
-
-      const newElapsedTime = getElapsedMs(startedAt, now);
-      setElapsedTime(newElapsedTime);
-      if (newElapsedTime > 0) frameRef.current = requestAnimationFrame(tick);
-    };
-
-    frameRef.current = requestAnimationFrame(tick);
-
-    return () => {
-      if (frameRef.current !== null) {
-        cancelAnimationFrame(frameRef.current);
-      }
-    };
-  }, [startedAt]);
-
+export function StopwatchView() {
+  const counterService = useCounterService();
+  const stopwatch = counterService.useStopwatch("");
+  const elapsedTime = useStopwatchTimer(stopwatch.startedAt, stopwatch.stoppedAt);
   const timeComponents = formatElapsedMs(elapsedTime);
 
   return (

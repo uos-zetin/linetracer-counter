@@ -34,7 +34,7 @@ export interface ProgressRepository {
 }
 
 export interface ProgressChannel {
-  connect: (divisionId: string) => void;
-  disconnect: () => void;
+  connect: (divisionId: string) => Promise<void>;
+  disconnect: () => Promise<void>;
   subscribe: (callback: (progress: ProgressState) => void) => () => void;
 }

@@ -6,13 +6,14 @@ export interface ManualRecordDto {
   value: number;
   recorderName: string;
   createdAt: string;
-  invalidatedAt: string | null;
+}
+
+export interface ManualRecordCreateDto {
+  value: number;
+  recorderName: string;
 }
 
 export interface ManualRecordRepository {
   getAllManualRecords(participantId: string): Promise<ManualRecord[]>;
-  createManualRecord(
-    participantId: string,
-    manualRecord: Pick<ManualRecord, "value" | "recorderName">,
-  ): Promise<ManualRecord>;
+  createManualRecord(participantId: string, manualRecord: ManualRecordCreateDto): Promise<ManualRecord>;
 }

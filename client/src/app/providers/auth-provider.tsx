@@ -3,7 +3,7 @@ import { FetchApiFetcher, AuthenticatedFetcher } from "@/shared";
 // import { UserFetcherRepository } from "@/entities/user";
 import { createAuthService, authServiceContext, AuthServiceSessionProvider, type AuthService } from "@/features/auth";
 import { FetcherProvider } from "./fetcher-provider";
-import { useRepository } from "./use-repository";
+import { UserFetcherRepository } from "@/entities/user";
 
 const AuthProviderInner = ({ authService, children }: { authService: AuthService; children: React.ReactNode }) => {
   // 세션 복원
@@ -18,15 +18,14 @@ const AuthProviderInner = ({ authService, children }: { authService: AuthService
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // 1. 환경 설정과 fetcher 생성
-  const fetcherBaseUrl = import.meta.env.DEV ? "/api" : import.meta.env.VITE_SERVER_URL || "http://localhost:3000";
-  const { userRepository } = useRepository();
+  const fetcherBaseUrl = import.meta.env.DEV ? "/api" : import.meta.env.VITE_SERVER_URL + "/api";
 
   const { publicFetcher, authenticatedFetcher, authService } = useMemo(() => {
     const publicFetcher = new FetchApiFetcher(fetcherBaseUrl);
 
     // 2. UserRepository 생성
     const authenticatedFetcher = new AuthenticatedFetcher(publicFetcher);
-    // const userRepository = new UserFetcherRepository(publicFetcher, authenticatedFetcher);
+    const userRepository = new UserFetcherRepository(publicFetcher, authenticatedFetcher);
 
     // 3. AuthService 생성
     const authService: AuthService = createAuthService({ userRepository });
@@ -36,7 +35,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     authenticatedFetcher.setSessionProvider(sessionProvider);
 
     return { publicFetcher, authenticatedFetcher, authService };
-  }, [fetcherBaseUrl, userRepository]);
+  }, [fetcherBaseUrl]);
 
   return (
     <authServiceContext.Provider value={authService}>

@@ -8,6 +8,5 @@ export function parseManualRecordDto(dto: ManualRecordDto): ManualRecord {
     value: dto.value,
     recorderName: dto.recorderName,
     createdAt: new Date(dto.createdAt),
-    invalidatedAt: dto.invalidatedAt ? new Date(dto.invalidatedAt) : null,
   };
 }

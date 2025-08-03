@@ -1,4 +1,4 @@
-import type { Competition } from "../model/types";
+import type { Competition, CompetitionForm } from "../model/types";
 
 export interface CompetitionDto {
   id: string;
@@ -15,7 +15,7 @@ export interface CompetitionCreateDto {
 export interface CompetitionRepository {
   getAllCompetitions(): Promise<Competition[]>;
   getCompetitionById(competitionId: string): Promise<Competition | null>;
-  createCompetition(competition: Omit<Competition, "id" | "createdAt">): Promise<Competition>;
+  createCompetition(competition: CompetitionForm): Promise<Competition>;
   updateCompetition(competition: Competition): Promise<Competition>;
   deleteCompetition(competitionId: string): Promise<void>;
 }

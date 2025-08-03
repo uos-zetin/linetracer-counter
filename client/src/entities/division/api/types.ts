@@ -1,4 +1,4 @@
-import type { Division } from "../model/types";
+import type { Division, DivisionForm } from "../model/types";
 
 export interface DivisionDto {
   id: string;
@@ -10,10 +10,16 @@ export interface DivisionDto {
   timeLimit: number;
 }
 
+export interface DivisionCreateDto {
+  name: string;
+  description: string;
+  timeLimit: number;
+}
+
 export interface DivisionRepository {
   getAllDivisions(competitionId: string): Promise<Division[]>;
   getDivisionById(divisionId: string): Promise<Division | null>;
-  createDivision(competitionId: string, division: Omit<Division, "id" | "createdAt" | "status">): Promise<Division>;
-  updateDivision(divisionId: string, division: Division): Promise<Division | null>;
+  createDivision(division: DivisionForm): Promise<Division>;
+  updateDivision(division: Division): Promise<Division | null>;
   deleteDivision(divisionId: string): Promise<void>;
 }

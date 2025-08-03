@@ -11,6 +11,12 @@ export interface Record {
   createdAt: Date;
 }
 
+export interface RecordForm {
+  value: number;
+  source: RecordSource;
+  note: string;
+}
+
 export interface RecordActions {
   init: (records: Record[]) => void;
   add: (record: Record) => void;
@@ -19,10 +25,6 @@ export interface RecordActions {
   remove: (recordId: string) => void;
 }
 
-export interface RecordGetters {
-  getById: (recordId: string) => Record | undefined;
-}
-
-export interface RecordStore extends RecordActions, RecordGetters {
+export interface RecordStore extends RecordActions {
   records: Record[];
 }

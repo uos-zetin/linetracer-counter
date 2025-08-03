@@ -1,32 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { formatMsToTime, integrateLogs, useCountdownTimer } from "@/entities/timer";
+import { useProgressService } from "@/features/progress";
 
-import { getRemainingMs, formatMsToTime } from "@/entities/timer";
-
-import type { TimerState } from "@/entities/timer";
-
-export function TimerView({ timerState }: { timerState: TimerState }) {
-  const [remainingMs, setRemainingMs] = useState(timerState.initialMs);
-  const frameRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    const tick = () => {
-      const now = Date.now();
-      const elapsed = getRemainingMs(timerState, now);
-
-      setRemainingMs(elapsed);
-      if (elapsed > 0) frameRef.current = requestAnimationFrame(tick);
-    };
-
-    frameRef.current = requestAnimationFrame(tick);
-
-    return () => {
-      if (frameRef.current !== null) {
-        cancelAnimationFrame(frameRef.current);
-      }
-    };
-  }, [timerState]);
-
-  const timeComponents = formatMsToTime(remainingMs);
+export function TimerView() {
+  const progress = useProgressService();
+  const currentDivision = progress.useDivision();
+  const currentRunner = progress.useRunner();
+  const timerLogs = currentRunner?.timerLogs || [];
+  const timerState = integrateLogs(currentDivision?.timeLimit || 0, timerLogs);
+  
+  const remainingTime = useCountdownTimer(timerState);
+  const timeComponents = formatMsToTime(remainingTime);
 
   return (
     <div className="flex flex-col items-center justify-center">
