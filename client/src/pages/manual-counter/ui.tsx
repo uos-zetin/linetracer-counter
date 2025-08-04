@@ -11,15 +11,15 @@ export function ManualCounter() {
   const manualRecordService = useManualRecordService();
   const progressService = useProgressService();
   const counterService = useCounterService();
-  
+
   // 로컬 타이머 상태 (서버와 독립적)
   const [localStartedAt, setLocalStartedAt] = useState<number | null>(null);
   const [localStoppedAt, setLocalStoppedAt] = useState<number | null>(null);
-  
+
   // Form state
   const [recorderName, setRecorderName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Counter 서비스 연결 (divisionId 정보 획득용)
   useEffect(() => {
     if (!counterId) {
@@ -31,7 +31,7 @@ export function ManualCounter() {
       try {
         await counterService.connect(counterId);
       } catch (error) {
-        console.error('Failed to connect counter service:', error);
+        console.error("Failed to connect counter service:", error);
       }
     };
 
@@ -44,11 +44,11 @@ export function ManualCounter() {
 
   // Counter state 가져오기 (divisionId 확인용)
   const counterState = counterService.useCounterState(counterId || "");
-  
+
   // 로컬 타이머 사용 (useStopwatchTimer 훅 활용)
   const elapsedTime = useStopwatchTimer(localStartedAt, localStoppedAt);
   const timeComponents = formatElapsedMs(elapsedTime);
-  
+
   // Timer 상태 계산
   const isRunning = !!(localStartedAt && !localStoppedAt);
   const hasRecord = !!(localStartedAt && localStoppedAt);
@@ -77,17 +77,16 @@ export function ManualCounter() {
     setIsSubmitting(true);
     try {
       // 1. counterId로 counter 정보 획득
-      const counter = counterService.useCounterState(counterId);
-      if (!counter?.divisionId) {
-        throw new Error('계수기가 division에 연결되지 않았습니다.');
+      if (!counterState?.divisionId) {
+        throw new Error("계수기가 division에 연결되지 않았습니다.");
       }
 
       // 2. divisionId로 progress 정보 획득 (API 호출)
-      await progressService.connect(counter.divisionId);
+      await progressService.connect(counterState.divisionId);
       const runner = progressService.useRunner();
-      
+
       if (!runner?.participant.id) {
-        throw new Error('현재 경연자 정보를 찾을 수 없습니다.');
+        throw new Error("현재 경연자 정보를 찾을 수 없습니다.");
       }
 
       // 3. Manual record 전송
@@ -95,14 +94,14 @@ export function ManualCounter() {
         value: elapsedTime,
         recorderName: recorderName.trim(),
       });
-      
+
       // 4. 성공 시 자동 리셋
       handleReset();
       setRecorderName("");
       alert("기록이 성공적으로 전송되었습니다!");
     } catch (error) {
       console.error("Failed to submit manual record:", error);
-      alert(`기록 전송에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+      alert(`기록 전송에 실패했습니다: ${error instanceof Error ? error.message : "알 수 없는 오류"}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -129,9 +128,7 @@ export function ManualCounter() {
               연결된 Division: {counterState.divisionId.slice(0, 8)}...
             </p>
           ) : (
-            <p className="text-lg md:text-[2vw] text-red-600 mt-[1vw]">
-              Division에 연결되지 않음
-            </p>
+            <p className="text-lg md:text-[2vw] text-red-600 mt-[1vw]">Division에 연결되지 않음</p>
           )}
         </header>
 
@@ -204,7 +201,12 @@ export function ManualCounter() {
               {counterState && !counterState.divisionId && "계수기가 division에 연결되지 않았습니다"}
               {counterState && counterState.divisionId && !recorderName.trim() && "기록자 이름을 입력하세요"}
               {counterState && counterState.divisionId && recorderName.trim() && isRunning && "타이머를 정지하세요"}
-              {counterState && counterState.divisionId && recorderName.trim() && !isRunning && !hasRecord && "타이머를 시작하고 정지하세요"}
+              {counterState &&
+                counterState.divisionId &&
+                recorderName.trim() &&
+                !isRunning &&
+                !hasRecord &&
+                "타이머를 시작하고 정지하세요"}
               {canSubmit && "전송 준비 완료"}
             </div>
           </div>
