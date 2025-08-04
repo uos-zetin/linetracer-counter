@@ -22,15 +22,15 @@ export function useRealTimeTimer<T>(
       setValue(newValue);
 
       // 실행 중일 때만 계속 업데이트 (startedAt이 있고 stoppedAt이 없을 때)
-      if (startedAt === null && stoppedAt === null) {
+      if (startedAt !== null && stoppedAt === null) {
         frameRef.current = requestAnimationFrame(tick);
       }
     };
 
-    if (startedAt === null && stoppedAt === null) {
+    if (startedAt !== null && stoppedAt === null) {
       frameRef.current = requestAnimationFrame(tick);
     } else {
-      // startedAt이 없으면 초기값으로 설정
+      // 정지 상태이거나 시작하지 않은 상태일 때 한 번만 계산
       setValue(calculateValue(startedAt, stoppedAt, Date.now()));
     }
 

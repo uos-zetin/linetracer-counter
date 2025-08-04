@@ -1,4 +1,4 @@
-import type { ManualRecord } from "../model/types";
+import type { ManualRecord, ManualRecordForm } from "../model/types";
 
 export interface ManualRecordDto {
   id: string;
@@ -15,5 +15,5 @@ export interface ManualRecordCreateDto {
 
 export interface ManualRecordRepository {
   getAllManualRecords(participantId: string): Promise<ManualRecord[]>;
-  createManualRecord(participantId: string, manualRecord: ManualRecordCreateDto): Promise<ManualRecord>;
+  createManualRecord(participantId: string, manualRecord: ManualRecordForm): Promise<ManualRecord>;
 }
