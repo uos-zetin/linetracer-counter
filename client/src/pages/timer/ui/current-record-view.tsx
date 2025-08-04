@@ -1,13 +1,12 @@
-import type { Record } from "@/entities/record";
 import { formatElapsedMs } from "@/entities/counter";
-
-interface CurrentRecordViewProps {
-  currentRecords: Record[];
-}
+import { useProgressService } from "@/features/progress";
 
 const ROW_COUNT = 5;
 
-export function CurrentRecordView({ currentRecords }: CurrentRecordViewProps) {
+export function CurrentRecordView() {
+  const progressService = useProgressService();
+  const runner = progressService.useRunner();
+  const currentRecords = runner?.records || [];
   const rows = Array.from({ length: ROW_COUNT }, (_, i) => i);
 
   return (

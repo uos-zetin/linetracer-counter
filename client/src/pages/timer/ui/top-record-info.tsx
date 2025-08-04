@@ -1,13 +1,12 @@
 import { formatElapsedMs } from "@/entities/counter";
+import { useProgressService } from "@/features/progress";
+import { useAdminParticipantService } from "@/features/admin-participant";
+import { useEffect } from "react";
 
 export interface TopRecord {
   id: string;
   participantName: string;
   timeMs: number;
-}
-
-interface TopRecordViewProps {
-  topRecords: TopRecord[];
 }
 
 const rankBg = (rank: number) => {
@@ -27,7 +26,42 @@ const ROW_COUNT = 5;
 const RIGHT_COLUMN_OFFSET = ROW_COUNT; // 5
 const RIGHT_COLUMN_START_RANK = ROW_COUNT + 1; // 6
 
-export function TopRecordView({ topRecords }: TopRecordViewProps) {
+export function TopRecordView() {
+  const progressService = useProgressService();
+  const adminParticipantService = useAdminParticipantService();
+  const topRecords = progressService.useTopRecords();
+  const division = progressService.useDivision();
+
+  // Division이 있을 때 해당 division의 모든 participant를 로드
+  useEffect(() => {
+    const loadParticipants = async () => {
+      if (division?.id) {
+        try {
+          await adminParticipantService.loadParticipantsByDivision(division.id);
+        } catch (error) {
+          console.error("Failed to load participants for division:", error);
+        }
+      }
+    };
+
+    loadParticipants();
+  }, [division?.id, adminParticipantService]);
+
+  // Division의 모든 participant를 가져와서 매핑에 사용
+  const participants = adminParticipantService.useParticipantsByDivision(division?.id || "");
+
+  // Record를 TopRecord로 변환
+  const formattedTopRecords: TopRecord[] = (topRecords || []).map((record) => {
+    // Division의 participant 목록에서 해당 participantId 찾기
+    const participant = participants.find((p) => p.id === record.participantId);
+    const participantName = participant?.name || `Participant ${record.participantId.slice(0, 8)}`;
+
+    return {
+      id: record.id,
+      participantName,
+      timeMs: record.value,
+    };
+  });
   const rows = Array.from({ length: ROW_COUNT }, (_, i) => i);
 
   return (
@@ -38,8 +72,8 @@ export function TopRecordView({ topRecords }: TopRecordViewProps) {
 
       <ul>
         {rows.map((rowIdx) => {
-          const left = topRecords[rowIdx];
-          const right = topRecords[rowIdx + RIGHT_COLUMN_OFFSET];
+          const left = formattedTopRecords[rowIdx];
+          const right = formattedTopRecords[rowIdx + RIGHT_COLUMN_OFFSET];
 
           const bgLeft = (rowIdx + 1) % 2 ? "bg-gray-50" : "bg-white";
           const bgRight = (rowIdx + RIGHT_COLUMN_START_RANK) % 2 ? "bg-gray-50" : "bg-white";

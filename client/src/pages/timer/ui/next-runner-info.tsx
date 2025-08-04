@@ -1,12 +1,10 @@
-import type { Participant } from "@/entities/participant";
-
-interface NextRunnerInfoProps {
-  nextRunners: Participant[];
-}
+import { useProgressService } from "@/features/progress";
 
 const ROW_COUNT = 5;
 
-export function NextRunnerInfo({ nextRunners }: NextRunnerInfoProps) {
+export function NextRunnerInfo() {
+  const progressService = useProgressService();
+  const nextRunners = progressService.useNextRunners();
   const rows = Array.from({ length: ROW_COUNT }, (_, i) => i);
 
   return (

@@ -1,10 +1,9 @@
 import { useSingleImageUpload } from "../lib/use-image-upload";
+import { useProgressService } from "@/features/progress";
 
-interface TimerHeaderProps {
-  competitionName: string;
-}
-
-export function TimerPageHeader({ competitionName }: TimerHeaderProps) {
+export function TimerPageHeader() {
+  const progressService = useProgressService();
+  const competition = progressService.useCompetition();
   const { image, handleFile, inputRef } = useSingleImageUpload();
 
   return (
@@ -41,7 +40,7 @@ export function TimerPageHeader({ competitionName }: TimerHeaderProps) {
             aspect-banner
           "
         >
-          {competitionName.toUpperCase()}
+          {(competition?.name || "No Competition").toUpperCase()}
         </h1>
       )}
 

@@ -1,9 +1,11 @@
 import { formatElapsedMs, useStopwatchTimer } from "@/entities/counter";
 import { useCounterService } from "@/features/counter";
+import { useParams } from "react-router";
 
 export function StopwatchView() {
+  const { counterId } = useParams();
   const counterService = useCounterService();
-  const stopwatch = counterService.useStopwatch("");
+  const stopwatch = counterService.useStopwatch(counterId || "");
   const elapsedTime = useStopwatchTimer(stopwatch.startedAt, stopwatch.stoppedAt);
   const timeComponents = formatElapsedMs(elapsedTime);
 
