@@ -13,7 +13,6 @@ import { useProgressService } from "@/features/progress";
 import { useCounterService } from "@/features/counter";
 import { SponsorView } from "./ui/sponsor-view";
 import { QRViewer } from "./ui/qr-viewer";
-import { useAdminDivisionService } from "@/features/admin-division";
 
 export function TimerPage() {
   const navigate = useNavigate();
@@ -21,7 +20,6 @@ export function TimerPage() {
 
   const progressService = useProgressService();
   const counterService = useCounterService();
-  const adminDivisionService = useAdminDivisionService();
 
   // Counter 서비스 연결
   useEffect(() => {
@@ -45,27 +43,11 @@ export function TimerPage() {
     };
   }, [counterId, navigate, counterService]);
 
-  // Counter 상태에서 divisionId를 가져와서 Division 정보 로드
+  // Counter 상태에서 divisionId를 가져와서 Progress 서비스 연결
   const counterState = counterService.useCounterState(counterId || "");
   useEffect(() => {
-    const loadDivision = async () => {
-      if (counterState?.divisionId) {
-        try {
-          await adminDivisionService.loadDivisionById(counterState.divisionId);
-        } catch (error) {
-          console.error("Failed to load division:", error);
-        }
-      }
-    };
-
-    loadDivision();
-  }, [counterState?.divisionId, adminDivisionService]);
-
-  // Division 상태를 가져와서 status가 ongoing일 때만 Progress 서비스 연결
-  const division = adminDivisionService.useDivisionById(counterState?.divisionId || "");
-  useEffect(() => {
     const connectProgress = async () => {
-      if (counterState?.divisionId && division?.status === "ongoing") {
+      if (counterState?.divisionId) {
         try {
           await progressService.connect(counterState.divisionId);
         } catch (error) {
@@ -77,11 +59,11 @@ export function TimerPage() {
     connectProgress();
 
     return () => {
-      if (counterState?.divisionId && division?.status === "ongoing") {
+      if (counterState?.divisionId) {
         progressService.disconnect().catch(console.error);
       }
     };
-  }, [counterState?.divisionId, division?.status, progressService]);
+  }, [counterState?.divisionId, progressService]);
 
 
   // counterId가 없으면 로딩 상태 표시
