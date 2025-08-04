@@ -1,4 +1,4 @@
-import { DivisionStatusError, TimerLogConsecutiveError } from "@/core/errors";
+import { DivisionNotReadyError, TimerLogConsecutiveError } from "@/core/errors";
 import {
   Division,
   ManualRecord,
@@ -206,7 +206,7 @@ describe("ParticipantService 단위 테스트", () => {
       );
 
       // Assert
-      await expect(asyncTask).rejects.toThrow(DivisionStatusError);
+      await expect(asyncTask).rejects.toThrow(DivisionNotReadyError);
       expect(mockParticipantRepo.create).not.toHaveBeenCalled();
     });
 

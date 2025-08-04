@@ -1,4 +1,4 @@
-import { DivisionStatusError, TimerLogConsecutiveError } from "@/core/errors";
+import { DivisionNotReadyError, TimerLogConsecutiveError } from "@/core/errors";
 import { Unsubscriber } from "@/core/interfaces";
 import { ManualRecord, Participant, Record, TimerLog } from "@/core/models";
 import {
@@ -71,7 +71,9 @@ export class ParticipantService {
   ): Promise<Participant> {
     const division = await this.divisionRepo.getById(divisionId);
     if (division.status !== "ready") {
-      throw new DivisionStatusError(`Division ${divisionId} is not ready`);
+      throw new DivisionNotReadyError(
+        `Division ${divisionId} is not ready to add participant`
+      );
     }
 
     const participant: Participant = {

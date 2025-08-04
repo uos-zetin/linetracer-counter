@@ -47,10 +47,17 @@ export class TimerLogConsecutiveError extends Error {
   }
 }
 
-export class DivisionStatusError extends Error {
+export class DivisionNotOngoingError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "DivisionStatusError";
+    this.name = "DivisionNotOngoingError";
+  }
+}
+
+export class DivisionNotReadyError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "DivisionNotReadyError";
   }
 }
 
