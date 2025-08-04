@@ -1,5 +1,6 @@
 import { getElapsedMs } from "./selectors";
 import { useRealTimeTimer } from "@/shared";
+import { useCallback } from "react";
 
 /**
  * Stopwatch - 경과 시간을 실시간으로 계산하는 훅
@@ -11,9 +12,11 @@ export function useStopwatchTimer(
   startedAt: number | null,
   stoppedAt: number | null
 ): number {
-  return useRealTimeTimer(
-    startedAt,
-    stoppedAt,
-    (startedAt, stoppedAt, now) => getElapsedMs(startedAt, stoppedAt ?? now)
+  const calculateValue = useCallback(
+    (startedAt: number | null, stoppedAt: number | null, now: number) => 
+      getElapsedMs(startedAt, stoppedAt ?? now),
+    []
   );
+
+  return useRealTimeTimer(startedAt, stoppedAt, calculateValue);
 }
