@@ -52,8 +52,8 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
       }
 
       // Channel 연결 후 구독
-      await counterChannel.connect(counterId);
       unsubscribe = counterChannel.subscribe(updateStore);
+      await counterChannel.connect(counterId);
     } catch (error) {
       console.error("Failed to connect to counter channel:", error);
       // 연결 실패 시 정리

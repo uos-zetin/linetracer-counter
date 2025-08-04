@@ -6,7 +6,8 @@ import { parseProgressDto } from "../lib/parse-dto";
 type ProgressMessageHandler = (progress: ProgressState) => void;
 
 export class ProgressSocketIOChannel implements ProgressChannel {
-  private readonly BASE_URL = import.meta.env.DEV ? "" : import.meta.env.VITE_SERVER_URL + "/socket/divisions/progress";
+  private readonly BASE_URL =
+    (import.meta.env.DEV ? "" : import.meta.env.VITE_SERVER_URL) + "/socket/divisions/progress";
   private socket: Socket | null = null;
   private getSessionKey: () => string | null;
 
@@ -35,8 +36,6 @@ export class ProgressSocketIOChannel implements ProgressChannel {
           authorization: `Session ${sessionKey}`,
         },
       });
-
-      console.log("Progress socket connected to:", this.socket.io.opts.query);
 
       this.socket.on("connect", () => {
         console.log("Progress socket connected successfully");

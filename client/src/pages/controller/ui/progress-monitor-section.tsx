@@ -13,27 +13,44 @@ export const ProgressMonitorSection = ({ counterId }: ProgressMonitorSectionProp
   const progressService = useProgressService();
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
+  const [isSettingRunner, setIsSettingRunner] = useState(false);
 
   const counter = counterService?.useCounterState(counterId) || null;
   const division = divisionService?.useDivisionById(counter?.divisionId || "") || null;
   const progress = progressService?.useProgress() || null;
+  const runner = progressService?.useRunner() || null;
+  const nextRunners = progressService?.useNextRunners() || [];
 
-  // 자동 연결/해제 로직
+  // 다음 참가자를 현재 참가자로 설정
+  const handleSetCurrentRunner = async () => {
+    if (!counter?.divisionId || nextRunners.length === 0) return;
+
+    const nextParticipant = nextRunners[0];
+
+    try {
+      setIsSettingRunner(true);
+      await progressService.setCurrentRunner(counter.divisionId, nextParticipant.id);
+    } catch (error) {
+      console.error("Failed to set current runner:", error);
+      setConnectionError(error instanceof Error ? error.message : "참가자 설정 실패");
+    } finally {
+      setIsSettingRunner(false);
+    }
+  };
+
+  // 자동 연결/해제 로직 - divisionId가 있으면 항상 연결
   useEffect(() => {
     const handleConnection = async () => {
-      if (!progressService || !counter?.divisionId) return;
-
-      const shouldConnect = division?.status === "ongoing";
+      if (!progressService) return;
 
       try {
-        if (shouldConnect) {
-          // Division이 ongoing 상태이면 progress channel 연결
+        if (counter?.divisionId) {
+          // Counter에 divisionId가 있으면 progress channel 연결
           setIsConnecting(true);
           setConnectionError(null);
           await progressService.connect(counter.divisionId);
-          console.log(`Progress channel connected for division: ${counter.divisionId}`);
         } else {
-          // Division이 ongoing이 아니면 연결 해제
+          // Counter에 divisionId가 없으면 연결 해제
           await progressService.disconnect();
           console.log("Progress channel disconnected");
         }
@@ -46,7 +63,7 @@ export const ProgressMonitorSection = ({ counterId }: ProgressMonitorSectionProp
     };
 
     handleConnection();
-  }, [counter?.divisionId, division?.status, progressService]);
+  }, [counter?.divisionId, progressService]);
 
   // 컴포넌트 언마운트 시 연결 해제
   useEffect(() => {
@@ -58,8 +75,8 @@ export const ProgressMonitorSection = ({ counterId }: ProgressMonitorSectionProp
   }, [progressService]);
 
   // 연결 상태 계산
-  const isConnected = division?.status === "ongoing" && progress?.division?.id === division.id && !connectionError;
-  const canConnect = counter?.divisionId && division?.status === "ongoing";
+  const isConnected = counter?.divisionId && progress?.division?.id === counter.divisionId && !connectionError;
+  const canConnect = !!counter?.divisionId;
 
   if (!counterService || !divisionService || !progressService) {
     return (
@@ -102,9 +119,10 @@ export const ProgressMonitorSection = ({ counterId }: ProgressMonitorSectionProp
           <div className="text-xs text-gray-500 mt-2">
             {!counter?.divisionId && "Division이 연결되지 않음"}
             {counter?.divisionId &&
-              division?.status !== "ongoing" &&
-              `Division 상태: ${division?.status || "알 수 없음"}`}
-            {canConnect && "Division이 ongoing 상태일 때 자동 연결됩니다"}
+              division &&
+              `Division 상태: ${division.status === "ongoing" ? "진행 중" : division.status === "ready" ? "준비" : "종료"}`}
+            {canConnect && !isConnected && "Division이 연결되어 있으면 자동으로 progress channel에 연결됩니다"}
+            {isConnected && "Progress channel에 연결되어 실시간 정보를 수신합니다"}
           </div>
         </div>
 
@@ -138,44 +156,62 @@ export const ProgressMonitorSection = ({ counterId }: ProgressMonitorSectionProp
         {/* 현재 러너 정보 */}
         {isConnected && progress && (
           <div className="border rounded-lg p-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">현재 참가자</h3>
-            {progress.runner ? (
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-sm font-medium text-gray-700">현재 참가자</h3>
+              {nextRunners.length > 0 && (
+                <button
+                  onClick={handleSetCurrentRunner}
+                  disabled={isConnecting || isSettingRunner}
+                  className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                >
+                  {isSettingRunner && <div className="animate-spin rounded-full h-3 w-3 border-b border-white"></div>}
+                  <span>{isSettingRunner ? "설정 중..." : runner ? "다음 참가자로 변경" : "다음 참가자 시작"}</span>
+                </button>
+              )}
+            </div>
+            {runner ? (
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">이름:</span>
-                  <span className="text-sm font-medium text-gray-900">{progress.runner.participant.name}</span>
+                  <span className="text-sm font-medium text-gray-900">{runner.participant.name}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">소속:</span>
-                  <span className="text-sm text-gray-900">{progress.runner.participant.teamName || "없음"}</span>
+                  <span className="text-sm text-gray-900">{runner.participant.teamName || "없음"}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">기록 수:</span>
-                  <span className="text-sm text-gray-900">{progress.runner.records.length}개</span>
+                  <span className="text-sm text-gray-900">{runner.records.length}개</span>
                 </div>
+                {nextRunners.length > 0 && (
+                  <div className="pt-2 border-t border-gray-200">
+                    <p className="text-xs text-blue-600">다음 참가자: {nextRunners[0].name}</p>
+                  </div>
+                )}
               </div>
             ) : (
-              <p className="text-sm text-gray-500">대기 중인 참가자가 없습니다</p>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-500">현재 참가자가 없습니다</p>
+                {nextRunners.length > 0 && <p className="text-xs text-blue-600">다음 참가자: {nextRunners[0].name}</p>}
+              </div>
             )}
           </div>
         )}
 
         {/* 대기 중인 참가자들 */}
-        {isConnected && progress && progress.nextRunners.length > 0 && (
+        {isConnected && nextRunners.length > 0 && (
           <div className="border rounded-lg p-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">
-              대기 중인 참가자 ({progress.nextRunners.length}명)
-            </h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-3">대기 중인 참가자 ({nextRunners.length}명)</h3>
             <div className="space-y-1 max-h-32 overflow-y-auto">
-              {progress.nextRunners.slice(0, 5).map((participant, index) => (
+              {nextRunners.slice(0, 5).map((participant, index) => (
                 <div key={participant.id} className="flex justify-between text-xs">
                   <span className="text-gray-600">{index + 1}.</span>
                   <span className="text-gray-900 flex-1 ml-2">{participant.name}</span>
                   <span className="text-gray-500">{participant.teamName}</span>
                 </div>
               ))}
-              {progress.nextRunners.length > 5 && (
-                <div className="text-xs text-gray-500 text-center pt-1">외 {progress.nextRunners.length - 5}명</div>
+              {nextRunners.length > 5 && (
+                <div className="text-xs text-gray-500 text-center pt-1">외 {nextRunners.length - 5}명</div>
               )}
             </div>
           </div>
