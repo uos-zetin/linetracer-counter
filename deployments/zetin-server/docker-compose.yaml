@@ -2,7 +2,7 @@ services:
   linetracer-counter:
     build:
       context: /srv/server-linetracer-counter/repository
-      dockerfile: ./deployment/zetin-server/Dockerfile
+      dockerfile: ./deployments/zetin-server/Dockerfile
     image: linetracer-counter:latest
     container_name: linetracer-counter
     restart: unless-stopped

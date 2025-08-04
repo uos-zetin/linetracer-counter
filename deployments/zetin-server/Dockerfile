@@ -12,6 +12,7 @@ WORKDIR /workspace
 COPY client/package*.json ./
 RUN npm ci
 COPY client/ ./
+ENV VITE_SERVER_URL=https://counter.zetin.uos.ac.kr
 RUN npm run build
 
 # Production stage
