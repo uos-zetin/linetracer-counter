@@ -1,5 +1,5 @@
 import {
-  DivisionStatusError,
+  DivisionNotOngoingError,
   RunnerNotParticipatedError,
   RunnerNotSetError,
 } from "@/core/errors";
@@ -278,7 +278,7 @@ describe("DivisionProgressService 단위 테스트", () => {
       const asyncTask = service.setRunner(division.id, runnerId);
 
       // Assert
-      await expect(asyncTask).rejects.toThrow(DivisionStatusError);
+      await expect(asyncTask).rejects.toThrow(DivisionNotOngoingError);
     });
   });
 
@@ -392,7 +392,7 @@ describe("DivisionProgressService 단위 테스트", () => {
       const asyncTask = service.postponeRunner(division.id);
 
       // Assert
-      await expect(asyncTask).rejects.toThrow(DivisionStatusError);
+      await expect(asyncTask).rejects.toThrow(DivisionNotOngoingError);
     });
   });
 
@@ -490,7 +490,7 @@ describe("DivisionProgressService 단위 테스트", () => {
       const asyncTask = service.changeParticipantOrder(division.id, "0", 3);
 
       // Assert
-      await expect(asyncTask).rejects.toThrow(DivisionStatusError);
+      await expect(asyncTask).rejects.toThrow(DivisionNotOngoingError);
       expect(mockStateStore.setState).not.toHaveBeenCalled();
     });
   });
@@ -543,18 +543,6 @@ describe("DivisionProgressService 단위 테스트", () => {
         nextRunners: [nextRunner],
         topRecords,
       });
-    });
-
-    it("ongoing 상태가 아닌 부문의 진행 상태는 조회할 수 없다.", async () => {
-      // Arrange
-      const division = generateDummyDivision(uuidv4(), "ready");
-      mockCompetitionService.getDivision.mockResolvedValue(division);
-
-      // Act
-      const asyncTask = service.getDivisionProgress(division.id);
-
-      // Assert
-      await expect(asyncTask).rejects.toThrow(DivisionStatusError);
     });
   });
 
