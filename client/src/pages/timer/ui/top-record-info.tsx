@@ -1,5 +1,7 @@
 import { formatElapsedMs } from "@/entities/counter";
 import { useProgressService } from "@/features/progress";
+import { useAdminParticipantService } from "@/features/admin-participant";
+import { useEffect } from "react";
 
 export interface TopRecord {
   id: string;
@@ -26,23 +28,33 @@ const RIGHT_COLUMN_START_RANK = ROW_COUNT + 1; // 6
 
 export function TopRecordView() {
   const progressService = useProgressService();
+  const adminParticipantService = useAdminParticipantService();
   const topRecords = progressService.useTopRecords();
-  const runner = progressService.useRunner();
-  const nextRunners = progressService.useNextRunners();
+  const division = progressService.useDivision();
+
+  // Division이 있을 때 해당 division의 모든 participant를 로드
+  useEffect(() => {
+    const loadParticipants = async () => {
+      if (division?.id) {
+        try {
+          await adminParticipantService.loadParticipantsByDivision(division.id);
+        } catch (error) {
+          console.error("Failed to load participants for division:", error);
+        }
+      }
+    };
+
+    loadParticipants();
+  }, [division?.id, adminParticipantService]);
+
+  // Division의 모든 participant를 가져와서 매핑에 사용
+  const participants = adminParticipantService.useParticipantsByDivision(division?.id || "");
 
   // Record를 TopRecord로 변환
   const formattedTopRecords: TopRecord[] = (topRecords || []).map((record) => {
-    // 현재 runner나 nextRunners에서 participant 이름을 찾아보기
-    let participantName = `Participant ${record.participantId.slice(0, 8)}`;
-    
-    if (runner?.participant.id === record.participantId) {
-      participantName = runner.participant.name;
-    } else {
-      const foundParticipant = nextRunners.find((p) => p.id === record.participantId);
-      if (foundParticipant) {
-        participantName = foundParticipant.name;
-      }
-    }
+    // Division의 participant 목록에서 해당 participantId 찾기
+    const participant = participants.find((p) => p.id === record.participantId);
+    const participantName = participant?.name || `Participant ${record.participantId.slice(0, 8)}`;
 
     return {
       id: record.id,
