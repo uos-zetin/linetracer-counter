@@ -544,18 +544,6 @@ describe("DivisionProgressService 단위 테스트", () => {
         topRecords,
       });
     });
-
-    it("ongoing 상태가 아닌 부문의 진행 상태는 조회할 수 없다.", async () => {
-      // Arrange
-      const division = generateDummyDivision(uuidv4(), "ready");
-      mockCompetitionService.getDivision.mockResolvedValue(division);
-
-      // Act
-      const asyncTask = service.getDivisionProgress(division.id);
-
-      // Assert
-      await expect(asyncTask).rejects.toThrow(DivisionNotOngoingError);
-    });
   });
 
   describe("subscribeDivisionProgress", () => {

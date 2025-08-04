@@ -240,13 +240,12 @@ export class DivisionProgressService {
 
   /**
    * 전반적인 부문 진행 정보를 조회한다.
-   * @throws DivisionNotOngoingError 부문이 진행 중 상태가 아닌 경우
    */
   public async getDivisionProgress(
     divisionId: string
   ): Promise<DivisionProgress> {
     // 부문 및 대회 정보 조회
-    const division = await this.getDivisionAndCheckOngoing(divisionId);
+    const division = await this.competitionSrv.getDivision(divisionId);
     const competition = await this.competitionSrv.getCompetition(
       division.competitionId
     );
