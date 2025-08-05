@@ -54,17 +54,16 @@ export function ManualCounter() {
     setIsSubmitting(true);
     try {
       // 1. API를 통해 최신 counter 정보 로드
-      await counterService.loadCounterById(counterId);
-      
+      const updatedCounter = await counterService.loadCounterById(counterId);
+
       // 2. 업데이트된 counter 정보 확인
-      const updatedCounterState = counterService.useCounterState(counterId);
-      if (!updatedCounterState?.divisionId) {
+      if (!updatedCounter?.divisionId) {
         throw new Error("계수기가 division에 연결되지 않았습니다.");
       }
 
       // 3. progress API를 통해 현재 runner 정보 가져오기
-      await progressService.loadProgressByDivision(updatedCounterState.divisionId);
-      const runner = progressService.useRunner();
+      const progress = await progressService.loadProgressByDivision(updatedCounter.divisionId);
+      const runner = progress?.runner;
 
       if (!runner?.participant.id) {
         throw new Error("현재 경연자 정보를 찾을 수 없습니다.");

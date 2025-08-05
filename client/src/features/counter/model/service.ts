@@ -160,14 +160,16 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
     }
   };
 
-  const loadCounterById = async (counterId: string): Promise<void> => {
+  const loadCounterById = async (counterId: string): Promise<CounterState | null> => {
     try {
       const counter = await counterRepository.getById(counterId);
       if (counter) {
         // Store에 최신 counter 정보 업데이트
         const store = useZustandCounterStore.getState();
         store.init(counter.id, counter);
+        return counter;
       }
+      return null;
     } catch (error) {
       console.error(`Failed to load counter ${counterId}:`, error);
       throw error;
