@@ -582,6 +582,13 @@ describe("DivisionProgressService 단위 테스트", () => {
       );
     });
 
+    /**
+     * 비동기 작업 대기 `setTimeout` 계열 함수를 사용하여 microtask 큐가 모두 비워지고,
+     * macrotask 큐가 돌아간 후의 시점을 기다린다.
+     */
+    const flushMicrotasks = () =>
+      new Promise<void>((resolve) => setTimeout(resolve, 0));
+
     it("경연자를 바꿨을 때 기존 경연자에 대한 구독을 해제한다.", async () => {
       // Arrange
       const callback = jest.fn();
@@ -589,14 +596,10 @@ describe("DivisionProgressService 단위 테스트", () => {
       mockParticipantService.subscribeParticipantEvent.mockReturnValue(
         mockUnsubscribe
       );
-      const unsubscribe = await service.subscribeDivisionProgress(
+      const unsubscribe = service.subscribeDivisionProgress(
         division.id,
         callback
       );
-      mockStateStore.getState.mockResolvedValue({
-        ...meta,
-        runnerId: nextRunner.id,
-      });
 
       // Act
       await service.setRunner(division.id, nextRunner.id);
@@ -614,17 +617,16 @@ describe("DivisionProgressService 단위 테스트", () => {
     it("경연자를 바꿨을 때 바꾼 경연자에 대한 구독이 이루어진다.", async () => {
       // Arrange
       const callback = jest.fn();
-      const unsubscribe = await service.subscribeDivisionProgress(
+      const unsubscribe = service.subscribeDivisionProgress(
         division.id,
         callback
       );
-      mockStateStore.getState.mockResolvedValue({
-        ...meta,
-        runnerId: nextRunner.id,
-      });
 
       // Act
       await service.setRunner(division.id, nextRunner.id);
+
+      // Flush
+      await flushMicrotasks();
 
       // Assert
       expect(
@@ -639,17 +641,16 @@ describe("DivisionProgressService 단위 테스트", () => {
     it("참가자의 순서가 바뀌었을 때 콜백을 호출한다.", async () => {
       // Arrange
       const callback = jest.fn();
-      const unsubscribe = await service.subscribeDivisionProgress(
+      const unsubscribe = service.subscribeDivisionProgress(
         division.id,
         callback
       );
-      mockStateStore.getState.mockResolvedValue({
-        ...meta,
-        participantOrder: [runner.id, nextRunner.id, uuidv4()],
-      });
 
       // Act
       await service.changeParticipantOrder(division.id, nextRunner.id, 0);
+
+      // Flush
+      await flushMicrotasks();
 
       // Assert
       expect(callback).toHaveBeenCalled();
@@ -658,38 +659,42 @@ describe("DivisionProgressService 단위 테스트", () => {
       unsubscribe();
     });
 
-    it("참가자 이벤트(ParticipantEvent)가 발생하면 콜백을 호출한다.", async () => {
+    it("경연자에 이벤트(ParticipantEvent)가 발생하면 콜백을 호출한다.", async () => {
       // Arrange
       const callback = jest.fn();
-      let participantEventCallback: ParticipantEventCallback | undefined;
+      let runnerEventCallback: ParticipantEventCallback | undefined;
       mockParticipantService.subscribeParticipantEvent.mockImplementation(
         (id, cb) => {
-          participantEventCallback = cb;
+          runnerEventCallback = cb;
           return () => {};
         }
       );
 
       // Act
-      const unsubscribe = await service.subscribeDivisionProgress(
+      const unsubscribe = service.subscribeDivisionProgress(
         division.id,
         callback
       );
-      if (participantEventCallback) {
+
+      // Flush & Simulate
+      await flushMicrotasks();
+      if (runnerEventCallback) {
         // 참가자 이벤트 발생 시뮬레이션
-        await participantEventCallback({
+        await runnerEventCallback({
           type: "updated",
           participant: { ...runner, name: "Updated Name" },
         });
       }
 
-      // Assert
+      // Flush & Assert
+      await flushMicrotasks();
       expect(callback).toHaveBeenCalledTimes(1);
 
       // Cleanup
       unsubscribe();
     });
 
-    it("대회 부문 이벤트(DivisionEvent)가 발생하면 콜백을 호출한다.", async () => {
+    it("대회 부문에 이벤트(DivisionEvent)가 발생하면 콜백을 호출한다.", async () => {
       // Arrange
       const callback = jest.fn();
       let divisionEventCallback: DivisionEventCallback | undefined;
@@ -701,10 +706,13 @@ describe("DivisionProgressService 단위 테스트", () => {
       );
 
       // Act
-      const unsubscribe = await service.subscribeDivisionProgress(
+      const unsubscribe = service.subscribeDivisionProgress(
         division.id,
         callback
       );
+
+      // Flush & Simulate
+      await flushMicrotasks();
       if (divisionEventCallback) {
         // 대회 부문 이벤트 발생 시뮬레이션
         await divisionEventCallback({
@@ -713,7 +721,8 @@ describe("DivisionProgressService 단위 테스트", () => {
         });
       }
 
-      // Assert
+      // Flush & Assert
+      await flushMicrotasks();
       expect(callback).toHaveBeenCalledTimes(1);
 
       // Cleanup
@@ -723,16 +732,14 @@ describe("DivisionProgressService 단위 테스트", () => {
     it("구독 해제 시 모든 이벤트 구독이 해제된다.", async () => {
       // Arrange
       const unsubscribeDivisionEvent = jest.fn();
-      const unsubscribeParticipantEvent = jest.fn();
       mockCompetitionService.subscribeDivisionEvent.mockReturnValue(
         unsubscribeDivisionEvent
       );
-      mockParticipantService.subscribeParticipantEvent.mockReturnValue(
-        unsubscribeParticipantEvent
-      );
+      const runnerEventEmitter = (service as any).runnerEventEmitter;
+      const offSpy = jest.spyOn(runnerEventEmitter, "off");
 
       // Act
-      const unsubscribe = await service.subscribeDivisionProgress(
+      const unsubscribe = service.subscribeDivisionProgress(
         division.id,
         jest.fn()
       );
@@ -740,7 +747,10 @@ describe("DivisionProgressService 단위 테스트", () => {
 
       // Assert
       expect(unsubscribeDivisionEvent).toHaveBeenCalledTimes(1);
-      expect(unsubscribeParticipantEvent).toHaveBeenCalledTimes(1);
+      expect(offSpy).toHaveBeenCalledTimes(1);
+
+      // Cleanup
+      offSpy.mockRestore();
     });
 
     it("콜백에서 예외가 발생해도 서비스 로직은 계속 동작한다.", async () => {
@@ -753,13 +763,16 @@ describe("DivisionProgressService 단위 테스트", () => {
       const consoleSpy = jest
         .spyOn(console, "error")
         .mockImplementation(() => {});
-      const unsubscribe = await service.subscribeDivisionProgress(
+      const unsubscribe = service.subscribeDivisionProgress(
         division.id,
         errorCallback
       );
 
       // Act
-      const asyncTask = service.setRunner(division.id, runner.id);
+      const asyncTask = service.setRunner(division.id, nextRunner.id);
+
+      // Flush
+      await flushMicrotasks();
 
       // Assert
       await expect(asyncTask).resolves.not.toThrow();
@@ -767,6 +780,34 @@ describe("DivisionProgressService 단위 테스트", () => {
       // Cleanup
       consoleSpy.mockRestore();
       unsubscribe();
+    });
+
+    it("두 명 이상의 구독자에게 경연자 변경 이벤트를 전달한다.", async () => {
+      // Arrange
+      const callback1 = jest.fn();
+      const callback2 = jest.fn();
+      const unsubscribe1 = service.subscribeDivisionProgress(
+        division.id,
+        callback1
+      );
+      const unsubscribe2 = service.subscribeDivisionProgress(
+        division.id,
+        callback2
+      );
+
+      // Act
+      await service.setRunner(division.id, nextRunner.id);
+
+      // Flush
+      await flushMicrotasks();
+
+      // Assert
+      expect(callback1).toHaveBeenCalledTimes(1);
+      expect(callback2).toHaveBeenCalledTimes(1);
+
+      // Cleanup
+      unsubscribe1();
+      unsubscribe2();
     });
   });
 });
