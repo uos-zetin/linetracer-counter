@@ -19,7 +19,7 @@ export function SponsorView() {
         {images.length > 0 && (
           <>
             <img
-              key={currentIndex}
+              key={`current-${currentIndex}`}
               src={images[currentIndex]}
               alt="sponsor-current"
               style={{ transitionDuration: `${FADE_MS}ms` }}
@@ -29,17 +29,19 @@ export function SponsorView() {
                 ${isTransitioning ? "opacity-0" : "opacity-100"}
               `}
             />
-            <img
-              key={nextIndex}
-              src={images[nextIndex]}
-              alt="sponsor-next"
-              style={{ transitionDuration: `${FADE_MS}ms` }}
-              className={`
-                absolute inset-0 m-auto max-w-full max-h-full object-contain
-                transition-opacity ease-in-out
-                ${isTransitioning ? "opacity-100" : "opacity-0"}
-              `}
-            />
+            {images.length > 1 && (
+              <img
+                key={`next-${nextIndex}`}
+                src={images[nextIndex]}
+                alt="sponsor-next"
+                style={{ transitionDuration: `${FADE_MS}ms` }}
+                className={`
+                  absolute inset-0 m-auto max-w-full max-h-full object-contain
+                  transition-opacity ease-in-out
+                  ${isTransitioning ? "opacity-100" : "opacity-0"}
+                `}
+              />
+            )}
           </>
         )}
         {images.length === 0 && (
