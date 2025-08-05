@@ -5,12 +5,11 @@ import { formatElapsedMs } from "@/entities/counter";
 import { integrateLogs, useCountdownTimer } from "@/entities/timer";
 import { useState, useCallback, useMemo } from "react";
 
-
 export const TimerRunnerControlSection = () => {
   const progressService = useProgressService();
   const divisionService = useAdminDivisionService();
   const timerControlService = useTimerControlService();
-  
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [customTimeAdjustment, setCustomTimeAdjustment] = useState("");
 
@@ -25,60 +24,65 @@ export const TimerRunnerControlSection = () => {
   }, [runner?.timerLogs, division?.timeLimit]);
 
   // 더미 TimerState (Hook 조건부 호출 방지)
-  const dummyTimerState = useMemo(() => ({
-    initialMs: 0,
-    offsetMs: 0,
-    accumulatedMs: 0,
-    startedAt: null,
-  }), []);
-  
+  const dummyTimerState = useMemo(
+    () => ({
+      initialMs: 0,
+      offsetMs: 0,
+      accumulatedMs: 0,
+      startedAt: null,
+    }),
+    [],
+  );
+
   const countdownResult = useCountdownTimer(timerState || dummyTimerState);
   const liveRemainingTimeMs = timerState ? countdownResult : null;
 
   // 타이머 제어 함수들
   const handleStartTimer = useCallback(async () => {
     if (!timerControlService || !runner?.participant.id) return;
-    
+
     try {
       await timerControlService.startTimer(runner.participant.id);
-      console.log("Timer started for participant:", runner.participant.name);
     } catch (error) {
       console.error("Failed to start timer:", error);
     }
-  }, [timerControlService, runner?.participant.id, runner?.participant.name]);
+  }, [timerControlService, runner?.participant.id]);
 
   const handleStopTimer = useCallback(async () => {
     if (!timerControlService || !runner?.participant.id) return;
-    
+
     try {
       await timerControlService.stopTimer(runner.participant.id);
-      console.log("Timer stopped for participant:", runner.participant.name);
     } catch (error) {
       console.error("Failed to stop timer:", error);
     }
-  }, [timerControlService, runner?.participant.id, runner?.participant.name]);
+  }, [timerControlService, runner?.participant.id]);
 
-  const handleAddTime = useCallback(async (timeMs: number) => {
-    if (!timerControlService || !runner?.participant.id) return;
-    
-    try {
-      await timerControlService.adjustTimer(runner.participant.id, "add", timeMs);
-      console.log(`Added ${timeMs}ms to timer for participant:`, runner.participant.name);
-    } catch (error) {
-      console.error("Failed to add time:", error);
-    }
-  }, [timerControlService, runner?.participant.id, runner?.participant.name]);
+  const handleAddTime = useCallback(
+    async (timeMs: number) => {
+      if (!timerControlService || !runner?.participant.id) return;
 
-  const handleSubtractTime = useCallback(async (timeMs: number) => {
-    if (!timerControlService || !runner?.participant.id) return;
-    
-    try {
-      await timerControlService.adjustTimer(runner.participant.id, "sub", timeMs);
-      console.log(`Subtracted ${timeMs}ms from timer for participant:`, runner.participant.name);
-    } catch (error) {
-      console.error("Failed to subtract time:", error);
-    }
-  }, [timerControlService, runner?.participant.id, runner?.participant.name]);
+      try {
+        await timerControlService.adjustTimer(runner.participant.id, "add", timeMs);
+      } catch (error) {
+        console.error("Failed to add time:", error);
+      }
+    },
+    [timerControlService, runner?.participant.id],
+  );
+
+  const handleSubtractTime = useCallback(
+    async (timeMs: number) => {
+      if (!timerControlService || !runner?.participant.id) return;
+
+      try {
+        await timerControlService.adjustTimer(runner.participant.id, "sub", timeMs);
+      } catch (error) {
+        console.error("Failed to subtract time:", error);
+      }
+    },
+    [timerControlService, runner?.participant.id],
+  );
 
   const handleCustomTimeAdjustment = useCallback(() => {
     const adjustment = parseInt(customTimeAdjustment);
@@ -92,7 +96,7 @@ export const TimerRunnerControlSection = () => {
     } else {
       handleSubtractTime(Math.abs(adjustment));
     }
-    
+
     setCustomTimeAdjustment("");
   }, [customTimeAdjustment, handleAddTime, handleSubtractTime]);
 
@@ -103,7 +107,6 @@ export const TimerRunnerControlSection = () => {
       setIsProcessing(true);
       try {
         await progressService.postponeCurrentRunner(division.id);
-        console.log("Runner postponed to last position:", runner.participant.name);
       } catch (error) {
         console.error("Failed to postpone runner:", error);
       } finally {
@@ -137,10 +140,8 @@ export const TimerRunnerControlSection = () => {
       <div className="space-y-6">
         {/* 구역 1: Countdown 타이머 */}
         <div className="border rounded-lg p-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">
-            대회 타이머 - {runner.participant.name}
-          </h3>
-          
+          <h3 className="text-sm font-medium text-gray-700 mb-3">대회 타이머 - {runner.participant.name}</h3>
+
           {/* 실시간 남은 시간 표시 */}
           <div className="text-center mb-4">
             <div className="text-4xl font-mono font-bold text-gray-900 mb-2">
@@ -152,8 +153,8 @@ export const TimerRunnerControlSection = () => {
                   timerState.startedAt
                     ? "bg-green-100 text-green-800"
                     : liveRemainingTimeMs === 0
-                    ? "bg-red-100 text-red-800"
-                    : "bg-gray-100 text-gray-800"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-gray-100 text-gray-800"
                 }`}
               >
                 {timerState.startedAt ? "실행 중" : liveRemainingTimeMs === 0 ? "시간 종료" : "정지"}
@@ -177,7 +178,8 @@ export const TimerRunnerControlSection = () => {
               <div className="flex justify-between">
                 <span className="text-gray-600">시간 조정:</span>
                 <span className="font-mono">
-                  {timerState.offsetMs >= 0 ? '+' : '-'}{formatElapsedMs(Math.abs(timerState.offsetMs)).toString()}
+                  {timerState.offsetMs >= 0 ? "+" : "-"}
+                  {formatElapsedMs(Math.abs(timerState.offsetMs)).toString()}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -270,7 +272,7 @@ export const TimerRunnerControlSection = () => {
               {isProcessing ? "처리 중..." : "마지막 순번으로 미루기"}
             </button>
           </div>
-          
+
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">이름:</span>
@@ -293,8 +295,7 @@ export const TimerRunnerControlSection = () => {
               <div className="space-y-1 max-h-24 overflow-y-auto">
                 {runner.timerLogs.map((log) => (
                   <div key={log.id} className="text-xs text-gray-600 font-mono">
-                    {new Date(log.createdAt).toLocaleTimeString()} - {log.type}:{" "}
-                    {formatElapsedMs(log.value).toString()}
+                    {new Date(log.createdAt).toLocaleTimeString()} - {log.type}: {formatElapsedMs(log.value).toString()}
                   </div>
                 ))}
               </div>

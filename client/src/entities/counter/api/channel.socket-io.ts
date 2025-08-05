@@ -6,7 +6,7 @@ import { parseCounterDto } from "../lib/parse-dto";
 type CounterMessageHandler = (state: CounterState) => void;
 
 export class CounterSocketIOChannel implements CounterChannel {
-  private readonly BASE_URL = import.meta.env.DEV ? "" : import.meta.env.VITE_SERVER_URL + "/socket/counters";
+  private readonly BASE_URL = (import.meta.env.DEV ? "" : import.meta.env.VITE_SERVER_URL) + "/socket/counters";
   private socket: Socket | null = null;
   private getSessionKey: () => string | null;
 

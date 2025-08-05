@@ -1,6 +1,7 @@
 import { useParams } from "react-router";
 import { useEffect } from "react";
 import { useCounterService } from "@/features/counter";
+import { useAuthService } from "@/features/auth";
 import { ControllerLayout } from "./ui/controller-layout";
 import { CounterControlSection } from "./ui/counter-control-section";
 import { StopwatchControlSection } from "./ui/stopwatch-control-section";
@@ -11,13 +12,24 @@ import { TimerRunnerControlSection } from "./ui/timer-runner-control-section";
 export const ControllerPage = () => {
   const { counterId } = useParams<{ counterId: string }>();
   const counterService = useCounterService();
+  const authService = useAuthService();
+  const { isAuthenticated } = authService.useAuth();
 
-  // Counter 채널 연결
+  // Counter 채널 연결 - 인증이 완료된 후에만 시도
   useEffect(() => {
-    if (counterId && counterService) {
+    if (counterId && counterService && isAuthenticated) {
       const connectCounter = async () => {
         try {
+          // Session key가 준비될 때까지 대기
+          const sessionKey = authService.getSessionKey();
+          if (!sessionKey) {
+            console.warn("Session key not available, retrying in 500ms...");
+            setTimeout(() => connectCounter(), 500);
+            return;
+          }
+
           await counterService.connect(counterId);
+          console.log(`Counter connected successfully: ${counterId}`);
         } catch (error) {
           console.error(`Failed to connect to counter ${counterId}:`, error);
         }
@@ -30,7 +42,7 @@ export const ControllerPage = () => {
         counterService.disconnect(counterId).catch(console.error);
       };
     }
-  }, [counterId, counterService]);
+  }, [counterId, counterService, isAuthenticated, authService]);
 
   if (!counterId) {
     return (

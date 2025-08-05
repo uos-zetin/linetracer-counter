@@ -72,7 +72,6 @@ export const RecordControlSection = () => {
 
       // 성공 후 선택 초기화
       setSelectedManualRecords([]);
-      console.log("Record created successfully from manual records");
     } catch (error) {
       console.error("Failed to create record from manual records:", error);
     } finally {
@@ -101,7 +100,6 @@ export const RecordControlSection = () => {
       // 성공 후 입력 필드 초기화
       setManualRecordValue("");
       setManualRecordNote("");
-      console.log("Manual record created successfully");
     } catch (error) {
       console.error("Failed to create manual record:", error);
     } finally {
@@ -115,7 +113,6 @@ export const RecordControlSection = () => {
 
     try {
       await recordControlService.updateRecordStatus(recordId, status);
-      console.log(`Record ${recordId} status updated to ${status}`);
     } catch (error) {
       console.error("Failed to update record status:", error);
     }

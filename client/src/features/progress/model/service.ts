@@ -20,7 +20,6 @@ export const createProgressService = ({
   const update = (progress: ProgressState) => {
     const store = useZustandProgressStore.getState();
     store.setProgress(progress);
-    console.log("Progress updated:", progress, store.division);
   };
 
   const connect = async (divisionId: string) => {
@@ -30,8 +29,8 @@ export const createProgressService = ({
         progressUpdate = null;
       }
 
-      await progressChannel.connect(divisionId);
       progressUpdate = progressChannel.subscribe(update);
+      await progressChannel.connect(divisionId);
     } catch (error) {
       console.error("Failed to connect to progress channel:", error);
       // 연결 실패 시 정리
@@ -74,23 +73,23 @@ export const createProgressService = ({
   };
 
   const useCompetition = () => {
-    return useZustandProgressStore((state) => state.competition);
+    return useZustandProgressStore(useShallow((state) => state.competition));
   };
 
   const useDivision = () => {
-    return useZustandProgressStore((state) => state.division);
+    return useZustandProgressStore(useShallow((state) => state.division));
   };
 
   const useRunner = () => {
-    return useZustandProgressStore((state) => state.runner);
+    return useZustandProgressStore(useShallow((state) => state.runner));
   };
 
   const useNextRunners = () => {
-    return useZustandProgressStore((state) => state.nextRunners);
+    return useZustandProgressStore(useShallow((state) => state.nextRunners));
   };
 
   const useTopRecords = () => {
-    return useZustandProgressStore((state) => state.topRecords);
+    return useZustandProgressStore(useShallow((state) => state.topRecords));
   };
 
   // Runner control methods

@@ -13,17 +13,17 @@ export class TimerFetcherRepository implements TimerRepository {
   }
 
   async getTimerLogs(participantId: string): Promise<TimerLog[]> {
-    const response = await this.fetcher.get<TimerLogDto[]>(`/participants/${participantId}/timers`);
+    const response = await this.fetcher.get<TimerLogDto[]>(`/participants/${participantId}/timer/logs`);
     return response.data?.map((dto) => parseTimerLogDto(dto)) || [];
   }
 
   async startTimer(participantId: string): Promise<TimerLog> {
-    const response = await this.authFetcher.post<TimerLogDto>(`/participants/${participantId}/timers/start`);
+    const response = await this.authFetcher.post<TimerLogDto>(`/participants/${participantId}/timer/start`);
     return parseTimerLogDto(response.data);
   }
 
   async stopTimer(participantId: string): Promise<TimerLog> {
-    const response = await this.authFetcher.post<TimerLogDto>(`/participants/${participantId}/timers/stop`);
+    const response = await this.authFetcher.post<TimerLogDto>(`/participants/${participantId}/timer/stop`);
     return parseTimerLogDto(response.data);
   }
 
@@ -37,7 +37,7 @@ export class TimerFetcherRepository implements TimerRepository {
       throw new Error("Invalid timer log type for adjustment. Use 'add' or 'sub'.");
     }
 
-    const response = await this.authFetcher.post<TimerLogDto>(`/participants/${participantId}/timers/adjust`, {
+    const response = await this.authFetcher.post<TimerLogDto>(`/participants/${participantId}/timer/adjust`, {
       body: { adjustmentMs: adjustedValue },
     });
     return parseTimerLogDto(response.data);
