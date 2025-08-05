@@ -1,18 +1,15 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useState } from "react";
+import { useParams } from "react-router";
 import { useManualRecordService } from "@/features/manual-record";
 import { useProgressService } from "@/features/progress";
 import { useCounterService } from "@/features/counter";
-import { useDivisionService } from "@/features/division";
 import { formatElapsedMs, useStopwatchTimer } from "@/entities/counter";
 
 export function ManualCounter() {
-  const navigate = useNavigate();
   const { counterId } = useParams();
   const manualRecordService = useManualRecordService();
   const progressService = useProgressService();
   const counterService = useCounterService();
-  const divisionService = useDivisionService();
 
   // 로컬 타이머 상태 (서버와 독립적)
   const [localStartedAt, setLocalStartedAt] = useState<number | null>(null);
@@ -22,58 +19,8 @@ export function ManualCounter() {
   const [recorderName, setRecorderName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Counter 서비스 연결 (divisionId 정보 획득용)
-  useEffect(() => {
-    if (!counterId) {
-      navigate("/counter");
-      return;
-    }
-
-    const connectCounter = async () => {
-      try {
-        await counterService.connect(counterId);
-      } catch (error) {
-        console.error("Failed to connect counter service:", error);
-      }
-    };
-
-    connectCounter();
-
-    return () => {
-      counterService.disconnect(counterId).catch(console.error);
-    };
-  }, [counterId, navigate, counterService]);
-
-  // Counter state 가져오기 (divisionId 확인용)
+  // Counter state 가져오기 (API로부터 로드하지 않고 현재 store 상태만 참조)
   const counterState = counterService.useCounterState(counterId || "");
-  
-  // Division 정보 가져오기 (division name 표시용)
-  const division = divisionService.useDivisionById(counterState?.divisionId || "");
-  
-  // Division 로드 및 Progress 연결 (Hook 규칙 준수)
-  useEffect(() => {
-    const divisionId = counterState?.divisionId;
-    if (divisionId) {
-      const loadDivisionAndConnectProgress = async () => {
-        try {
-          // Division 정보 로드
-          await divisionService.loadDivisionById(divisionId);
-          // Progress 서비스 연결
-          await progressService.connect(divisionId);
-        } catch (error) {
-          console.error("Failed to load division or connect progress service:", error);
-        }
-      };
-      loadDivisionAndConnectProgress();
-    }
-    
-    return () => {
-      progressService.disconnect().catch(console.error);
-    };
-  }, [counterState?.divisionId, divisionService, progressService]);
-  
-  // Runner 정보 가져오기 (컴포넌트 레벨에서 Hook 사용)
-  const runner = progressService.useRunner();
 
   // 로컬 타이머 사용 (useStopwatchTimer 훅 활용)
   const elapsedTime = useStopwatchTimer(localStartedAt, localStoppedAt);
@@ -106,23 +53,30 @@ export function ManualCounter() {
 
     setIsSubmitting(true);
     try {
-      // 1. counterId로 counter 정보 획득
-      if (!counterState?.divisionId) {
+      // 1. API를 통해 최신 counter 정보 로드
+      await counterService.loadCounterById(counterId);
+      
+      // 2. 업데이트된 counter 정보 확인
+      const updatedCounterState = counterService.useCounterState(counterId);
+      if (!updatedCounterState?.divisionId) {
         throw new Error("계수기가 division에 연결되지 않았습니다.");
       }
 
-      // 2. runner 정보 확인 (이미 컴포넌트 레벨에서 Hook으로 가져옴)
+      // 3. progress API를 통해 현재 runner 정보 가져오기
+      await progressService.loadProgressByDivision(updatedCounterState.divisionId);
+      const runner = progressService.useRunner();
+
       if (!runner?.participant.id) {
         throw new Error("현재 경연자 정보를 찾을 수 없습니다.");
       }
 
-      // 3. Manual record 전송
+      // 5. Manual record 전송
       await manualRecordService.createManualRecord(runner.participant.id, {
         value: elapsedTime,
         recorderName: recorderName.trim(),
       });
 
-      // 4. 성공 시 자동 리셋
+      // 6. 성공 시 자동 리셋
       handleReset();
       setRecorderName("");
       alert("기록이 성공적으로 전송되었습니다!");
@@ -134,7 +88,7 @@ export function ManualCounter() {
     }
   };
 
-  const canSubmit = !isRunning && hasRecord && recorderName.trim() && !isSubmitting && counterState?.divisionId && runner?.participant.id;
+  const canSubmit = !isRunning && hasRecord && recorderName.trim() && !isSubmitting;
 
   if (!counterId) {
     return (
@@ -150,13 +104,6 @@ export function ManualCounter() {
         <header className="text-center mb-[3vw]">
           <h1 className="text-3xl md:text-[5vw] font-bold text-gray-800 mb-[1vw]">수동 계수</h1>
           <p className="text-lg md:text-[2vw] text-gray-600">계수기: {decodeURIComponent(counterId)}</p>
-          {counterState?.divisionId ? (
-            <p className="text-lg md:text-[2vw] text-blue-600 mt-[1vw]">
-              연결된 Division: {division?.name || "로딩 중..."}
-            </p>
-          ) : (
-            <p className="text-lg md:text-[2vw] text-red-600 mt-[1vw]">Division에 연결되지 않음</p>
-          )}
         </header>
 
         <div className="bg-white rounded-lg shadow-lg px-[3vw] py-[4vw]">

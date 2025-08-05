@@ -156,6 +156,20 @@ export const createProgressService = ({
     }
   };
 
+  const loadProgressByDivision = async (divisionId: string): Promise<void> => {
+    try {
+      const progress = await progressRepository.getProgress(divisionId);
+      if (progress) {
+        // Store에 최신 progress 정보 업데이트
+        const store = useZustandProgressStore.getState();
+        store.setProgress(progress);
+      }
+    } catch (error) {
+      console.error(`Failed to load progress for division ${divisionId}:`, error);
+      throw error;
+    }
+  };
+
   // Manual record methods
   const useCurrentRunnerManualRecords = () => {
     const runner = useZustandProgressStore((state) => state.runner);
@@ -189,6 +203,7 @@ export const createProgressService = ({
     openDivision,
     closeDivision,
     resetDivision,
+    loadProgressByDivision,
     useCurrentRunnerManualRecords,
     addManualRecord,
   };

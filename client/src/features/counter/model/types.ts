@@ -10,6 +10,7 @@ export interface CounterService {
   };
   useCounterState: (counterId: string) => CounterState | null;
   getAllCounters: () => Promise<CounterState[]>;
+  loadCounterById: (counterId: string) => Promise<void>;
   start: (counterId: string, startedAt: number) => void;
   stop: (counterId: string, stoppedAt: number) => void;
   getElapsedMs: (counterId: string, now?: number) => number;

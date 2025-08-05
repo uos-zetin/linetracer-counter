@@ -47,6 +47,7 @@ export interface ProgressService {
   openDivision: (divisionId: string) => Promise<void>;
   closeDivision: (divisionId: string) => Promise<void>;
   resetDivision: (divisionId: string) => Promise<void>;
+  loadProgressByDivision: (divisionId: string) => Promise<void>;
   // Manual record methods
   useCurrentRunnerManualRecords: () => ManualRecord[];
   addManualRecord: (participantId: string, value: number, recorderName: string) => Promise<void>;
