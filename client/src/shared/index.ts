@@ -8,3 +8,4 @@ export * from "./ui/modal-footer";
 export * from "./ui/icon-x";
 export * from "./ui/icon-alert";
 export * from "./lib/use-real-time-timer";
+export * from "./lib/date-utils";
