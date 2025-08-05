@@ -120,7 +120,7 @@ export class DivisionProgressGateway
 
       // 새로운 구독 생성
       const unsubscribe =
-        await this.divisionProgressService.subscribeDivisionProgress(
+        this.divisionProgressService.subscribeDivisionProgress(
           client.actor,
           divisionId,
           async (progress) => {

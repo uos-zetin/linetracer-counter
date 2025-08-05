@@ -14,10 +14,28 @@ import {
   ParticipantEvent,
   ParticipantService,
 } from "@/core/services/participant";
+import EventEmitter from "events";
 
 export type DivisionProgressCallback = (
   progress: DivisionProgress
 ) => Promise<void>;
+
+type RunnerEvent =
+  | {
+      type: "runner-event";
+      participantId: string;
+      event: ParticipantEvent;
+    }
+  | {
+      type: "state-changed";
+      state: DivisionProgressState;
+    };
+
+interface RunnerEventEmitter extends EventEmitter {
+  on(divisionId: string, listener: (event: RunnerEvent) => void): this;
+  off(divisionId: string, listener: (event: RunnerEvent) => void): this;
+  emit(divisionId: string, event: RunnerEvent): boolean;
+}
 
 /**
  * 대회 부문 진행 상황 및 상태 관리 서비스
@@ -32,6 +50,7 @@ export class DivisionProgressService {
   private readonly competitionSrv: CompetitionService;
   private readonly participantSrv: ParticipantService;
   private readonly stateStore: DivisionProgressStateStore;
+  private readonly runnerEventEmitter: RunnerEventEmitter = new EventEmitter();
 
   constructor(di: {
     competitionService: CompetitionService;
@@ -128,7 +147,7 @@ export class DivisionProgressService {
 
     const newState = { ...state, runnerId };
     await this.stateStore.setState(divisionId, newState);
-    await this.onStateChanged(divisionId, newState);
+    this.onStateChanged(divisionId, newState);
   }
 
   /**
@@ -195,7 +214,7 @@ export class DivisionProgressService {
       participantOrder: newParticipantOrder,
     };
     await this.stateStore.setState(divisionId, newState);
-    await this.onStateChanged(divisionId, newState);
+    this.onStateChanged(divisionId, newState);
   }
 
   public async getParticipantOrder(divisionId: string): Promise<string[]> {
@@ -235,7 +254,7 @@ export class DivisionProgressService {
       participantOrder: newParticipantOrder,
     };
     await this.stateStore.setState(divisionId, newState);
-    await this.onStateChanged(divisionId, newState);
+    this.onStateChanged(divisionId, newState);
   }
 
   /**
@@ -291,81 +310,68 @@ export class DivisionProgressService {
   }
 
   /**
-   * 활성 부문 진행 감시자들의 레지스트리
-   * 부문 ID를 구독 상태 및 콜백에 매핑한다.
+   * 특정 부문에 대해 경연자의 이벤트를 구독해야 하는데, 그 구독 정보를 저장해두는 Map이다.
    */
   private runnerWatcher: Map<
     string, // divisionId
     {
-      readonly callback: DivisionProgressCallback; // 콜백 함수
       runnerId: string | null; // 현재 감시 중인 경연자 ID
       unsubscribe: Unsubscriber | null; // 참가자 이벤트 구독 해제 함수
     }
   > = new Map();
 
   /**
-   * 특정 경연자의 참가자 이벤트에 대한 구독을 생성한다.
+   * 경연자 이벤트를 구독 및 관리한다.
    *
-   * @param divisionId - 진행 컨텍스트를 위한 부문 식별자
-   * @param participantId - 이벤트를 모니터링할 참가자
-   * @param callback - 참가자 이벤트 발생 시 호출할 함수
-   * @returns 구독을 정리하기 위한 구독 해제 함수
+   * - 경연 부문의 현재 경연자가 설정되면 이 메서드를 호출하여 경연자 이벤트를 재구독해야 한다.
+   * - 경연자 이벤트가 발생하면 DivisionProgress 메시지 구독자에게 이벤트를 전달한다.
    */
-  private subscribeRunnerEvent(
-    divisionId: string,
-    participantId: string,
-    callback: DivisionProgressCallback
-  ): Unsubscriber {
-    return this.participantSrv.subscribeParticipantEvent(
-      participantId,
-      async (event: ParticipantEvent) => {
-        if (event.type === "deleted") {
-          return;
-        }
-        await callback(await this.getDivisionProgress(divisionId));
-      }
-    );
-  }
-
-  /**
-   * 구독을 업데이트하고 감시자들에게 알림으로 상태 변경을 처리한다.
-   *
-   * 부문 상태가 변경될 때 이 메서드는:
-   * - 업데이트된 진행 상황으로 등록된 콜백들에 알림
-   * - 경연자 이벤트 구독 관리 (기존 구독 해제, 새 구독 생성)
-   * - 활성 경연자가 없을 때 정리 작업 처리
-   *
-   * @param divisionId - 상태 변경이 발생한 부문
-   * @param state - 새로운 부문 진행 상태
-   */
-  private async onStateChanged(
-    divisionId: string,
-    state: DivisionProgressState
-  ) {
+  private watchRunner(divisionId: string, runnerId: string | null) {
     const watcher = this.runnerWatcher.get(divisionId);
-    if (!watcher) {
-      return; // 활성 감시자가 없으면 처리 건너뛰기
-    }
-    await watcher.callback(await this.getDivisionProgress(divisionId));
 
-    // 활성 경연자가 없을 때 구독 정리
-    if (state.runnerId === null) {
-      watcher.unsubscribe?.();
-      watcher.unsubscribe = null;
-      watcher.runnerId = null;
+    // 경연자 초기화 시 watcher 정리
+    if (runnerId === null) {
+      watcher?.unsubscribe?.();
+      this.runnerWatcher.delete(divisionId);
       return;
     }
 
-    // 경연자 변경 처리: 기존 구독 해제, 새 구독 생성
-    if (state.runnerId !== watcher.runnerId) {
-      watcher.unsubscribe?.();
-      watcher.unsubscribe = this.subscribeRunnerEvent(
-        divisionId,
-        state.runnerId,
-        watcher.callback
+    const subscribe = (runnerId: string) => {
+      return this.participantSrv.subscribeParticipantEvent(
+        runnerId,
+        async (event: ParticipantEvent) => {
+          this.runnerEventEmitter.emit(divisionId, {
+            type: "runner-event",
+            participantId: runnerId,
+            event,
+          });
+        }
       );
-      watcher.runnerId = state.runnerId;
+    };
+
+    if (!watcher) {
+      // watcher가 없는 경우 새로 구독
+      this.runnerWatcher.set(divisionId, {
+        runnerId,
+        unsubscribe: subscribe(runnerId),
+      });
+    } else if (watcher.runnerId !== runnerId) {
+      // 경연자 변경 시 watcher 구독 해제 및 새로 구독
+      watcher.unsubscribe?.();
+      watcher.unsubscribe = subscribe(runnerId);
+      watcher.runnerId = runnerId;
     }
+  }
+
+  /**
+   * 부문 상태 변경 시 이 메서드를 호출하여 이벤트 발생 및 경연자 감시 업데이트를 수행한다.
+   */
+  private onStateChanged(divisionId: string, state: DivisionProgressState) {
+    this.watchRunner(divisionId, state.runnerId);
+    this.runnerEventEmitter.emit(divisionId, {
+      type: "state-changed",
+      state,
+    });
   }
 
   /**
@@ -382,29 +388,36 @@ export class DivisionProgressService {
    * @param callback - 진행 데이터 변경 시 호출할 함수
    * @returns 모니터링을 중지하고 리소스를 정리하는 구독 해제 함수
    */
-  public async subscribeDivisionProgress(
+  public subscribeDivisionProgress(
     divisionId: string,
     callback: DivisionProgressCallback
-  ): Promise<Unsubscriber> {
-    const state = await this.stateStore.getState(divisionId);
-
+  ): Unsubscriber {
     // 구독 실패를 방지하기 위해 콜백을 에러 처리로 래핑
-    const safeCb = async (progress: DivisionProgress) => {
+    const safeCb = async () => {
       try {
+        const progress = await this.getDivisionProgress(divisionId);
         await callback(progress);
       } catch (e) {
         console.error(e);
       }
     };
 
-    // 경연자 이벤트 구독 추적 설정
-    this.runnerWatcher.set(divisionId, {
-      callback: safeCb,
-      runnerId: state.runnerId,
-      unsubscribe: state.runnerId
-        ? this.subscribeRunnerEvent(divisionId, state.runnerId, safeCb)
-        : null,
-    });
+    // 경연자의 상태 변경 이벤트 구독
+    this.runnerEventEmitter.on(divisionId, safeCb);
+
+    /**
+     * Lazy Watching
+     *
+     * 인스턴스 생성 시 부문 상태를 모두 조회하고 이벤트 구독하는 것이 비효율적이므로
+     * 이벤트 구독 시 경연자를 감시하도록 한다.
+     */
+    (async () => {
+      const watcher = this.runnerWatcher.get(divisionId);
+      if (!watcher) {
+        const state = await this.stateStore.getState(divisionId);
+        this.watchRunner(divisionId, state.runnerId);
+      }
+    })();
 
     // 부문 레벨 이벤트 구독 (상태 변경 등)
     const unsubscribeDivisionEvent = this.competitionSrv.subscribeDivisionEvent(
@@ -413,21 +426,14 @@ export class DivisionProgressService {
         if (event.type === "deleted") {
           return;
         }
-        await safeCb(await this.getDivisionProgress(event.division.id));
+        await safeCb();
       }
     );
 
     // 모든 구독을 제거하는 정리 함수 반환
     return () => {
-      // 부문 이벤트 구독 해제
-      unsubscribeDivisionEvent();
-
-      // 경연자 이벤트 구독 정리
-      const watcher = this.runnerWatcher.get(divisionId);
-      if (watcher) {
-        watcher.unsubscribe?.();
-        this.runnerWatcher.delete(divisionId);
-      }
+      this.runnerEventEmitter.off(divisionId, safeCb); // 경연자의 상태 변경 이벤트 구독 해제
+      unsubscribeDivisionEvent(); // 부문 이벤트 구독 해제
     };
   }
 }
