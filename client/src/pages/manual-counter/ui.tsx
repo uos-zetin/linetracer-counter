@@ -52,13 +52,14 @@ export function ManualCounter() {
   
   // Division 로드 및 Progress 연결 (Hook 규칙 준수)
   useEffect(() => {
-    if (counterState?.divisionId) {
+    const divisionId = counterState?.divisionId;
+    if (divisionId) {
       const loadDivisionAndConnectProgress = async () => {
         try {
           // Division 정보 로드
-          await divisionService.loadDivisionById(counterState.divisionId!);
+          await divisionService.loadDivisionById(divisionId);
           // Progress 서비스 연결
-          await progressService.connect(counterState.divisionId!);
+          await progressService.connect(divisionId);
         } catch (error) {
           console.error("Failed to load division or connect progress service:", error);
         }
