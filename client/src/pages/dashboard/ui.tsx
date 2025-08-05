@@ -36,26 +36,36 @@ export const DashboardPage = () => {
     loadCompetitions();
   }, [competitionService]);
 
-  // 대회 선택 시 부문 목록 및 참가자 로드
+  // 대회 선택 시 부문 목록 로드
   useEffect(() => {
     if (selectedCompetitionId) {
-      const loadDivisionsAndParticipants = async () => {
+      const loadDivisions = async () => {
         try {
           await divisionService.loadDivisionsByCompetition(selectedCompetitionId);
-          
-          // divisions 로드 후 participants 로드
-          const divisionIds = divisions.map(d => d.id);
-          if (divisionIds.length > 0) {
-            await participantService.loadParticipantsByDivisions(divisionIds);
-          }
         } catch (error) {
-          console.error("Failed to load divisions and participants:", error);
+          console.error("Failed to load divisions:", error);
         }
       };
 
-      loadDivisionsAndParticipants();
+      loadDivisions();
     }
-  }, [selectedCompetitionId, divisionService, participantService, divisions]);
+  }, [selectedCompetitionId, divisionService]);
+
+  // 부문 로드 완료 후 참가자 로드
+  useEffect(() => {
+    if (selectedCompetitionId && divisions.length > 0) {
+      const loadParticipants = async () => {
+        try {
+          const divisionIds = divisions.map((d) => d.id);
+          await participantService.loadParticipantsByDivisions(divisionIds);
+        } catch (error) {
+          console.error("Failed to load participants:", error);
+        }
+      };
+
+      loadParticipants();
+    }
+  }, [selectedCompetitionId, divisions.length, participantService]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 부문별 top record 로드 (특정 부문 선택 시 또는 모든 부문)
   useEffect(() => {
@@ -73,16 +83,14 @@ export const DashboardPage = () => {
       // 모든 부문의 top record 로드
       const loadAllTopRecords = async () => {
         try {
-          await Promise.all(
-            divisions.map(division => recordService.loadTopRecordsByDivision(division.id))
-          );
+          await Promise.all(divisions.map((division) => recordService.loadTopRecordsByDivision(division.id)));
         } catch (error) {
           console.error("Failed to load all top records:", error);
         }
       };
       loadAllTopRecords();
     }
-  }, [selectedDivisionId, selectedCompetitionId, divisions, recordService]);
+  }, [selectedDivisionId, selectedCompetitionId, divisions.length, recordService]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // URL에서 competitionId가 변경되면 상태 업데이트
   useEffect(() => {
@@ -129,15 +137,16 @@ export const DashboardPage = () => {
 
   // 각 참가자별 최고 기록 계산
   const getTopRecordsByParticipant = (divisionRecords: typeof topRecords) => {
-    const recordsByParticipant = new Map<string, typeof topRecords[0]>();
-    
-    divisionRecords.forEach(record => {
+    const recordsByParticipant = new Map<string, (typeof topRecords)[0]>();
+
+    divisionRecords.forEach((record) => {
       const existing = recordsByParticipant.get(record.participantId);
-      if (!existing || record.value < existing.value) { // 더 좋은 기록 (시간이 짧을수록 좋음)
+      if (!existing || record.value < existing.value) {
+        // 더 좋은 기록 (시간이 짧을수록 좋음)
         recordsByParticipant.set(record.participantId, record);
       }
     });
-    
+
     return Array.from(recordsByParticipant.values()).sort((a, b) => a.value - b.value);
   };
 
@@ -213,17 +222,21 @@ export const DashboardPage = () => {
                       {divisionTopRecords.map((record, index) => (
                         <div key={record.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
                           <div className="flex items-center space-x-3">
-                            <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white ${
-                              index === 0 ? 'bg-yellow-500' : 
-                              index === 1 ? 'bg-gray-400' : 
-                              index === 2 ? 'bg-amber-600' : 'bg-gray-300'
-                            }`}>
+                            <span
+                              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white ${
+                                index === 0
+                                  ? "bg-yellow-500"
+                                  : index === 1
+                                    ? "bg-gray-400"
+                                    : index === 2
+                                      ? "bg-amber-600"
+                                      : "bg-gray-300"
+                              }`}
+                            >
                               {index + 1}
                             </span>
                             <div>
-                              <p className="font-medium text-gray-900">
-                                {getParticipantName(record.participantId)}
-                              </p>
+                              <p className="font-medium text-gray-900">{getParticipantName(record.participantId)}</p>
                               <p className="text-sm text-gray-500">
                                 {record.source} • {new Date(record.createdAt).toLocaleDateString()}
                               </p>
@@ -231,12 +244,20 @@ export const DashboardPage = () => {
                           </div>
                           <div className="text-right">
                             <p className="text-lg font-bold text-gray-900">{record.value}ms</p>
-                            <p className={`text-sm ${
-                              record.status === 'approved' ? 'text-green-600' :
-                              record.status === 'rejected' ? 'text-red-600' : 'text-yellow-600'
-                            }`}>
-                              {record.status === 'approved' ? '승인됨' :
-                               record.status === 'rejected' ? '거부됨' : '대기중'}
+                            <p
+                              className={`text-sm ${
+                                record.status === "approved"
+                                  ? "text-green-600"
+                                  : record.status === "rejected"
+                                    ? "text-red-600"
+                                    : "text-yellow-600"
+                              }`}
+                            >
+                              {record.status === "approved"
+                                ? "승인됨"
+                                : record.status === "rejected"
+                                  ? "거부됨"
+                                  : "대기중"}
                             </p>
                           </div>
                         </div>
@@ -246,7 +267,7 @@ export const DashboardPage = () => {
                     <div className="text-center py-8 text-gray-500">
                       <p>해당 부문에 기록이 없습니다.</p>
                       <p className="text-sm mt-2">
-                        선택된 부문: {divisions.find(d => d.id === selectedDivisionId)?.name}
+                        선택된 부문: {divisions.find((d) => d.id === selectedDivisionId)?.name}
                       </p>
                     </div>
                   );
@@ -256,36 +277,41 @@ export const DashboardPage = () => {
                 <div className="space-y-8">
                   {divisions
                     .sort((a, b) => a.name.localeCompare(b.name))
-                    .map(division => {
-                      const divisionRecords = topRecords.filter(record => 
-                        participants.find((p) => p.id === record.participantId)?.divisionId === division.id
+                    .map((division) => {
+                      const divisionRecords = topRecords.filter(
+                        (record) => participants.find((p) => p.id === record.participantId)?.divisionId === division.id,
                       );
                       const divisionTopRecords = getTopRecordsByParticipant(divisionRecords);
-                      
+
                       return (
                         <div key={division.id} className="border-l-4 border-blue-500 pl-4">
-                          <h4 className="text-lg font-semibold text-gray-900 mb-3">
-                            {division.name}
-                          </h4>
+                          <h4 className="text-lg font-semibold text-gray-900 mb-3">{division.name}</h4>
                           {divisionTopRecords.length > 0 ? (
                             <div className="space-y-2">
                               {divisionTopRecords.map((record, index) => (
-                                <div key={record.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
+                                <div
+                                  key={record.id}
+                                  className="flex items-center justify-between p-2 bg-gray-50 rounded-md"
+                                >
                                   <div className="flex items-center space-x-3">
-                                    <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
-                                      index === 0 ? 'bg-yellow-500' : 
-                                      index === 1 ? 'bg-gray-400' : 
-                                      index === 2 ? 'bg-amber-600' : 'bg-gray-300'
-                                    }`}>
+                                    <span
+                                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+                                        index === 0
+                                          ? "bg-yellow-500"
+                                          : index === 1
+                                            ? "bg-gray-400"
+                                            : index === 2
+                                              ? "bg-amber-600"
+                                              : "bg-gray-300"
+                                      }`}
+                                    >
                                       {index + 1}
                                     </span>
                                     <div>
                                       <p className="font-medium text-gray-900">
                                         {getParticipantName(record.participantId)}
                                       </p>
-                                      <p className="text-xs text-gray-500">
-                                        {record.source}
-                                      </p>
+                                      <p className="text-xs text-gray-500">{record.source}</p>
                                     </div>
                                   </div>
                                   <div className="text-right">
