@@ -13,11 +13,16 @@ import { TimerPage } from "@/pages/timer";
 import { CounterSelectorPage } from "@/pages/counter-selector";
 import { ControllerPage } from "@/pages/controller";
 import { ManualCounter } from "@/pages/manual-counter";
+import { DashboardPage } from "@/pages/dashboard";
 
 const routes: RouteObject[] = [
   {
     path: "/",
     element: <HomePage />,
+  },
+  {
+    path: "/dashboard",
+    element: <DashboardPage />,
   },
   {
     path: "/counter",

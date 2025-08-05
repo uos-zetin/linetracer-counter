@@ -65,6 +65,12 @@ export function TimerPage() {
     };
   }, [counterState?.divisionId, progressService]);
 
+  // Dashboard URL 생성을 위한 division 정보
+  const division = progressService.useDivision();
+  const dashboardUrl = division?.competitionId 
+    ? `${window.location.origin}/dashboard?competitionId=${division.competitionId}` 
+    : window.location.href;
+
 
   // counterId가 없으면 로딩 상태 표시
   if (!counterId) {
@@ -114,7 +120,7 @@ export function TimerPage() {
                 <SponsorView />
               </div>
               <div className="flex flex-1 w-full md:flex-[0_0_auto]">
-                <QRViewer url={window.location.href} />
+                <QRViewer url={dashboardUrl} title="대회 대시보드" />
               </div>
             </div>
           </div>
