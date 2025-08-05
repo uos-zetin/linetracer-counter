@@ -90,14 +90,14 @@ export const createRecordService = ({ recordRepository }: RecordServiceProps): R
 
   const useTopRecordsByDivision = (divisionId: string): Record[] => {
     const allRecords = useZustandRecordStore((state) => state.records);
-    
+
     if (!divisionId) {
       return [];
     }
 
     // TODO: participant 정보를 통해 division 필터링 구현 필요
-    // 현재는 값(value)으로 내림차순 정렬하여 최고 기록들 반환
-    return allRecords.sort((a, b) => b.value - a.value);
+    // 현재는 값(value)으로 오름차순 정렬하여 최고 기록들 반환
+    return allRecords.sort((a, b) => a.value - b.value);
   };
 
   const useRecordById = (id: string): Record | null => {
