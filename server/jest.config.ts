@@ -11,6 +11,7 @@ const config: Config = {
     "^@/(.*)$": "<rootDir>/src/$1",
     "^@tests/(.*)$": "<rootDir>/tests/$1",
   },
+  testPathIgnorePatterns: ["<rootDir>/node_modules", "<rootDir>/build"],
 };
 
 export default config;
