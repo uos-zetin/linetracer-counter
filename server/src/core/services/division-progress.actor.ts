@@ -63,11 +63,11 @@ export class DivisionProgressActorService {
     return this.service.getDivisionProgress(divisionId);
   }
 
-  public async subscribeDivisionProgress(
+  public subscribeDivisionProgress(
     actor: Actor,
     divisionId: string,
     callback: DivisionProgressCallback
-  ): Promise<Unsubscriber> {
+  ): Unsubscriber {
     return this.service.subscribeDivisionProgress(divisionId, callback);
   }
 }
