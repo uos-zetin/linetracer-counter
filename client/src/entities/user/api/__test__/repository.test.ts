@@ -1,6 +1,6 @@
 // entities/user/api/__test__/repository.test.ts
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Fetcher } from "@/shared";
+import type { Fetcher } from "@/shared/api";
 import type { User, UserRole } from "../../model/types";
 import { UserFetcherRepository } from "../repository";
 

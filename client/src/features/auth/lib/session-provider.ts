@@ -1,4 +1,4 @@
-import type { SessionProvider } from "@/shared";
+import type { SessionProvider } from "@/shared/api";
 import type { AuthService } from "../model/types";
 
 /**

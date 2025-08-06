@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Fetcher } from "@/shared";
+import type { Fetcher } from "@/shared/api";
 import { parseManualRecordDto } from "../../lib/parse-dto";
 import type { ManualRecord } from "../../model/types";
 import { ManualRecordFetcherRepository } from "../repository";

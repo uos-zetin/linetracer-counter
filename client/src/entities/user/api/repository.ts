@@ -1,4 +1,4 @@
-import type { Fetcher } from "@/shared";
+import type { Fetcher } from "@/shared/api";
 import { parseUserDto } from "../lib/parse-dto";
 import type { UserRegisterForm, User, UserRole, UserLoginForm } from "../model/types";
 import type { LoginUserDto, RegisterUserDto, UserDto, UserRepository, UserRoleDto } from "./types";

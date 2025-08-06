@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { Modal, ModalFooter, IconAlert } from "@/shared/ui";
 import type { Competition } from "@/entities/competition";
-import { Modal, ModalFooter, IconAlert } from "@/shared";
 
 interface CompetitionDeleteModalProps {
   isOpen: boolean;

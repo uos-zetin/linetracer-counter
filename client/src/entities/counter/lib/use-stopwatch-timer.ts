@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useRealTimeTimer } from "@/shared";
+import { useRealTimeTimer } from "@/shared/lib";
 import { getElapsedMs } from "./selectors";
 
 /**

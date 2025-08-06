@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Fetcher } from "@/shared";
+import type { Fetcher } from "@/shared/api";
 import { parseProgressDto } from "../../lib/parse-dto";
 import type { ProgressState } from "../../model/types";
 import { ProgressFetcherRepository } from "../repository";

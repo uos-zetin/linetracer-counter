@@ -1,4 +1,4 @@
-import type { Fetcher } from "@/shared";
+import type { Fetcher } from "@/shared/api";
 import { parseRecordDto } from "../lib/parse-dto";
 import type { Record, RecordForm, RecordStatus } from "../model/types";
 import type { RecordCreateDto, RecordDto, RecordRepository } from "./types";

@@ -1,4 +1,4 @@
-import { useRealTimeTimer } from "@/shared";
+import { useRealTimeTimer } from "@/shared/lib";
 import type { TimerState } from "../model/types";
 import { getRemainingMs } from "./selectors";
 

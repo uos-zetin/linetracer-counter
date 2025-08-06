@@ -1,4 +1,4 @@
-import type { Fetcher } from "@/shared";
+import type { Fetcher } from "@/shared/api";
 import { parseTimerLogDto } from "../lib/parse-dto";
 import type { TimerLog, TimerLogType } from "../model/types";
 import type { TimerLogDto, TimerRepository } from "./types";

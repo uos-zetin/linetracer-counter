@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Fetcher } from "@/shared";
+import type { Fetcher } from "@/shared/api";
 import { parseTimerLogDto } from "../../lib/parse-dto";
 import type { TimerLog } from "../../model/types";
 import { TimerFetcherRepository } from "../repository";

@@ -1,4 +1,4 @@
-import type { Fetcher } from "@/shared";
+import type { Fetcher } from "@/shared/api";
 import { parseCompetitionDto } from "../lib/parse-dto";
 import type { Competition, CompetitionForm } from "../model/types";
 import type { CompetitionCreateDto, CompetitionDto, CompetitionRepository } from "./types";

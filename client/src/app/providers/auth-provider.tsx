@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
+import { FetchApiFetcher, AuthenticatedFetcher } from "@/shared/api";
 import { UserFetcherRepository } from "@/entities/user";
 import { createAuthService, authServiceContext, AuthServiceSessionProvider, type AuthService } from "@/features/auth";
-import { FetchApiFetcher, AuthenticatedFetcher } from "@/shared";
 // import { UserFetcherRepository } from "@/entities/user";
 import { FetcherProvider } from "./fetcher-provider";
 

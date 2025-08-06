@@ -1,6 +1,6 @@
+import { formatDateTime } from "@/shared/lib";
 import { formatElapsedMs } from "@/entities/counter";
 import type { Record, RecordStatus } from "@/entities/record";
-import { formatDateTime } from "@/shared";
 import { useRecordControlService } from "../model/context";
 
 interface RecordListDisplayProps {
