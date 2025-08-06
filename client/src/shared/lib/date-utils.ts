@@ -88,7 +88,7 @@ export function formatDateTime(date: Date | string | number): string {
 /**
  * 상대적 시간 표시 (방금 전, 5분 전, 2시간 전 등)
  * @param date - Date, ISO string, 또는 timestamp
- * @returns "방금 전", "5분 전", "2시간 전" 등
+ * @returns "방금 전", "5분 전", "2시간 전", "2025.08.04" 등
  */
 export function formatRelativeTime(date: Date | string | number): string {
   const now = new Date();
