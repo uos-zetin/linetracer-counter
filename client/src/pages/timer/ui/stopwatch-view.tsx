@@ -1,6 +1,6 @@
+import { useParams } from "react-router";
 import { formatElapsedMs, useStopwatchTimer } from "@/entities/counter";
 import { useCounterService } from "@/features/counter";
-import { useParams } from "react-router";
 
 export function StopwatchView() {
   const { counterId } = useParams();

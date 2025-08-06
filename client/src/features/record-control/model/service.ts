@@ -29,7 +29,7 @@ export const createRecordControlService = ({ recordRepository }: RecordControlSe
 
   const createRecord = async (
     participantId: string,
-    record: Pick<Record, "value" | "source" | "note">,
+    record: Pick<Record, "value" | "source" | "note">
   ): Promise<Record> => {
     try {
       const newRecord = await recordRepository.createRecord(participantId, record);

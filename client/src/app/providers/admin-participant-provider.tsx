@@ -12,8 +12,6 @@ export const AdminParticipantProvider = ({ children }: { children: React.ReactNo
   }, [participantRepository]);
 
   return (
-    <AdminParticipantContext.Provider value={adminParticipantService}>
-      {children}
-    </AdminParticipantContext.Provider>
+    <AdminParticipantContext.Provider value={adminParticipantService}>{children}</AdminParticipantContext.Provider>
   );
 };

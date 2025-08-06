@@ -32,12 +32,7 @@ export function AdminDashboard() {
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 11H5m14-7H5m14 12H5"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14-7H5m14 12H5" />
               </svg>
             </div>
             <div className="ml-4">

@@ -1,18 +1,17 @@
-import { TimerView } from "./ui/timer-view";
-import { TimerPageHeader } from "./ui/timer-header";
-import { DivisionInfo } from "./ui/division-info";
-import { RunnerInfo } from "./ui/runner-info";
-import { StopwatchView } from "./ui/stopwatch-view";
-import { NextRunnerInfo } from "./ui/next-runner-info";
-import { TopRecordView } from "./ui/top-record-info";
-import { CurrentRecordView } from "./ui/current-record-view";
-import { useNavigate, useParams } from "react-router";
 import { useEffect } from "react";
-
-import { useProgressService } from "@/features/progress";
+import { useNavigate, useParams } from "react-router";
 import { useCounterService } from "@/features/counter";
-import { SponsorView } from "./ui/sponsor-view";
+import { useProgressService } from "@/features/progress";
+import { CurrentRecordView } from "./ui/current-record-view";
+import { DivisionInfo } from "./ui/division-info";
+import { NextRunnerInfo } from "./ui/next-runner-info";
 import { QRViewer } from "./ui/qr-viewer";
+import { RunnerInfo } from "./ui/runner-info";
+import { SponsorView } from "./ui/sponsor-view";
+import { StopwatchView } from "./ui/stopwatch-view";
+import { TimerPageHeader } from "./ui/timer-header";
+import { TimerView } from "./ui/timer-view";
+import { TopRecordView } from "./ui/top-record-info";
 
 export function TimerPage() {
   const navigate = useNavigate();
@@ -67,10 +66,9 @@ export function TimerPage() {
 
   // Dashboard URL 생성을 위한 division 정보
   const division = progressService.useDivision();
-  const dashboardUrl = division?.competitionId 
-    ? `${window.location.origin}/dashboard?competitionId=${division.competitionId}` 
+  const dashboardUrl = division?.competitionId
+    ? `${window.location.origin}/dashboard?competitionId=${division.competitionId}`
     : window.location.href;
-
 
   // counterId가 없으면 로딩 상태 표시
   if (!counterId) {

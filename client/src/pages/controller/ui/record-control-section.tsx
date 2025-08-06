@@ -1,8 +1,8 @@
+import { useState, useMemo } from "react";
+import { formatElapsedMs } from "@/entities/counter";
+import type { RecordStatus, RecordSource } from "@/entities/record";
 import { useProgressService } from "@/features/progress";
 import { useRecordControlService } from "@/features/record-control";
-import { formatElapsedMs } from "@/entities/counter";
-import { useState, useMemo } from "react";
-import type { RecordStatus, RecordSource } from "@/entities/record";
 
 export const RecordControlSection = () => {
   const progressService = useProgressService();
@@ -40,7 +40,7 @@ export const RecordControlSection = () => {
   // Manual record 체크박스 토글
   const toggleManualRecord = (recordId: string) => {
     setSelectedManualRecords((prev) =>
-      prev.includes(recordId) ? prev.filter((id) => id !== recordId) : [...prev, recordId],
+      prev.includes(recordId) ? prev.filter((id) => id !== recordId) : [...prev, recordId]
     );
   };
 

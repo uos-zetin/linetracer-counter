@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Modal, ModalFooter } from "@/shared";
 import type { Competition, CompetitionForm } from "@/entities/competition";
+import { Modal, ModalFooter } from "@/shared";
 
 interface CompetitionEditModalProps {
   isOpen: boolean;

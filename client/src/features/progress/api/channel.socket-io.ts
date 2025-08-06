@@ -1,7 +1,7 @@
 import { io, type Socket } from "socket.io-client";
-import type { ProgressChannel, ProgressDto } from "./types";
-import type { ProgressState } from "../model/types";
 import { parseProgressDto } from "../lib/parse-dto";
+import type { ProgressState } from "../model/types";
+import type { ProgressChannel, ProgressDto } from "./types";
 
 type ProgressMessageHandler = (progress: ProgressState) => void;
 

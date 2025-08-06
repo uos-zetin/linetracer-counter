@@ -8,12 +8,7 @@ interface TimerStopButtonProps {
   className?: string;
 }
 
-export const TimerStopButton = ({ 
-  participantId, 
-  disabled = false,
-  onStop,
-  className = ""
-}: TimerStopButtonProps) => {
+export const TimerStopButton = ({ participantId, disabled = false, onStop, className = "" }: TimerStopButtonProps) => {
   const timerControlService = useTimerControlService();
   const [isLoading, setIsLoading] = useState(false);
 

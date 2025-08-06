@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import type { Fetcher, ApiResponse } from "@/shared/api/fetcher";
-import type { DivisionDto } from "../types";
 import type { Division } from "../../model/types";
 import { DivisionFetcherRepository } from "../repository";
+import type { DivisionDto } from "../types";
 
 describe("DivisionFetcherRepository", () => {
   let mockFetcher: Fetcher;

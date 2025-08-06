@@ -1,6 +1,6 @@
+import { useMemo } from "react";
 import { createTimerControlService, TimerControlContext, type TimerControlService } from "@/features/timer-control";
 import { useRepository } from "./use-repository";
-import { useMemo } from "react";
 
 export const TimerControlProvider = ({ children }: { children: React.ReactNode }) => {
   const { timerRepository } = useRepository();

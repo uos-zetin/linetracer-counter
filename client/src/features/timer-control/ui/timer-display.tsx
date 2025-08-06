@@ -10,14 +10,14 @@ interface TimerDisplayProps {
   className?: string;
 }
 
-export const TimerDisplay = ({ 
+export const TimerDisplay = ({
   participantId,
   participantName,
   initialMs = 0,
   offsetMs = 0,
   accumulatedMs = 0,
   startedAt = null,
-  className = ""
+  className = "",
 }: TimerDisplayProps) => {
   const elapsedMs = useStopwatchTimer(startedAt, null);
   const currentMs = initialMs + offsetMs + accumulatedMs + (startedAt ? elapsedMs : 0);
@@ -42,31 +42,22 @@ export const TimerDisplay = ({
     <div className={`p-4 border rounded-lg ${getBgColor()} ${className}`}>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">
-            {participantName || `Participant ${participantId}`}
-          </h3>
-          <div className={`px-2 py-1 rounded text-sm font-medium ${getStatusColor()}`}>
-            {getStatusText()}
-          </div>
+          <h3 className="text-lg font-semibold">{participantName || `Participant ${participantId}`}</h3>
+          <div className={`px-2 py-1 rounded text-sm font-medium ${getStatusColor()}`}>{getStatusText()}</div>
         </div>
-        
-        <div className="text-3xl font-mono font-bold">
-          {formatElapsedMs(currentMs).toString()}
-        </div>
-        
+
+        <div className="text-3xl font-mono font-bold">{formatElapsedMs(currentMs).toString()}</div>
+
         <div className="text-xs text-gray-500 space-y-1">
           <div>Initial: {formatElapsedMs(initialMs).toString()}</div>
           {offsetMs !== 0 && (
             <div>
-              Offset: {offsetMs >= 0 ? "+" : ""}{formatElapsedMs(Math.abs(offsetMs)).toString()}
+              Offset: {offsetMs >= 0 ? "+" : ""}
+              {formatElapsedMs(Math.abs(offsetMs)).toString()}
             </div>
           )}
-          {accumulatedMs > 0 && (
-            <div>Accumulated: {formatElapsedMs(accumulatedMs).toString()}</div>
-          )}
-          {startedAt && (
-            <div>Started: {new Date(startedAt).toLocaleTimeString()}</div>
-          )}
+          {accumulatedMs > 0 && <div>Accumulated: {formatElapsedMs(accumulatedMs).toString()}</div>}
+          {startedAt && <div>Started: {new Date(startedAt).toLocaleTimeString()}</div>}
         </div>
       </div>
     </div>

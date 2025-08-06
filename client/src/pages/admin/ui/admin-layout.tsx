@@ -1,5 +1,5 @@
-import { AppHeader } from "@/widgets/app-header";
 import { AuthDebugWrapper } from "@/features/auth";
+import { AppHeader } from "@/widgets/app-header";
 import { AdminSidebar } from "./admin-sidebar";
 
 interface AdminLayoutProps {

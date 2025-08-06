@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 export function useRealTimeTimer<T>(
   startedAt: number | null,
   stoppedAt: number | null,
-  calculateValue: (startedAt: number | null, stoppedAt: number | null, now: number) => T,
+  calculateValue: (startedAt: number | null, stoppedAt: number | null, now: number) => T
 ): T {
   const [value, setValue] = useState<T>(() => calculateValue(startedAt, stoppedAt, Date.now()));
   const frameRef = useRef<number | null>(null);

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ProgressFetcherRepository } from "../repository";
-import type { ProgressState } from "../../model/types";
-import type { ProgressDto } from "../types";
 import type { Fetcher } from "@/shared";
 import { parseProgressDto } from "../../lib/parse-dto";
+import type { ProgressState } from "../../model/types";
+import { ProgressFetcherRepository } from "../repository";
+import type { ProgressDto } from "../types";
 
 // parseProgressDto 함수 모킹
 vi.mock("../../lib/parse-dto", () => ({
@@ -212,7 +212,7 @@ describe("ProgressFetcherRepository", () => {
 
       // Act & Assert
       await expect(progressRepository.closeProgressDivision(divisionId)).rejects.toThrow(
-        "진행 중이지 않은 디비전입니다",
+        "진행 중이지 않은 디비전입니다"
       );
     });
   });
@@ -240,7 +240,7 @@ describe("ProgressFetcherRepository", () => {
 
       // Act & Assert
       await expect(progressRepository.resetProgressDivision(divisionId)).rejects.toThrow(
-        "진행 중인 디비전은 리셋할 수 없습니다",
+        "진행 중인 디비전은 리셋할 수 없습니다"
       );
     });
 
@@ -282,7 +282,7 @@ describe("ProgressFetcherRepository", () => {
 
       // Act & Assert
       await expect(progressRepository.setCurrentRunner(divisionId, participantId)).rejects.toThrow(
-        "참가자를 찾을 수 없습니다",
+        "참가자를 찾을 수 없습니다"
       );
     });
 
@@ -295,7 +295,7 @@ describe("ProgressFetcherRepository", () => {
 
       // Act & Assert
       await expect(progressRepository.setCurrentRunner(divisionId, participantId)).rejects.toThrow(
-        "주자 설정 권한이 없습니다",
+        "주자 설정 권한이 없습니다"
       );
     });
   });
@@ -323,7 +323,7 @@ describe("ProgressFetcherRepository", () => {
 
       // Act & Assert
       await expect(progressRepository.postponeCurrentRunner(divisionId)).rejects.toThrow(
-        "현재 주자가 설정되지 않았습니다",
+        "현재 주자가 설정되지 않았습니다"
       );
     });
 
@@ -410,7 +410,7 @@ describe("ProgressFetcherRepository", () => {
 
       // Act & Assert
       await expect(progressRepository.changeOrder(divisionId, participantId, order)).rejects.toThrow(
-        "유효하지 않은 순서입니다",
+        "유효하지 않은 순서입니다"
       );
     });
 
@@ -424,7 +424,7 @@ describe("ProgressFetcherRepository", () => {
 
       // Act & Assert
       await expect(progressRepository.changeOrder(divisionId, participantId, order)).rejects.toThrow(
-        "참가자를 찾을 수 없습니다",
+        "참가자를 찾을 수 없습니다"
       );
     });
 
@@ -438,7 +438,7 @@ describe("ProgressFetcherRepository", () => {
 
       // Act & Assert
       await expect(progressRepository.changeOrder(divisionId, participantId, order)).rejects.toThrow(
-        "순서 변경 권한이 없습니다",
+        "순서 변경 권한이 없습니다"
       );
     });
   });

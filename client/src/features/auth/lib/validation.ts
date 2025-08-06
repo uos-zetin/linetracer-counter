@@ -229,10 +229,4 @@ export const parseLoginForm = (data: unknown) => loginFormSchema.parse(data);
 export const parseRegisterForm = (data: unknown) => registerFormSchema.parse(data);
 
 // 추가: 스키마 export (다른 곳에서 재사용 가능)
-export { 
-  loginFormSchema, 
-  registerFormSchema, 
-  userNameSchema, 
-  passwordSchema, 
-  nameSchema,
-};
+export { loginFormSchema, registerFormSchema, userNameSchema, passwordSchema, nameSchema };

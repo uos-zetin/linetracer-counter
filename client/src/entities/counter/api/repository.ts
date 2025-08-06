@@ -1,6 +1,6 @@
 import type { Fetcher } from "@/shared/api/fetcher";
-import type { CounterDto, CounterRepository } from "./types";
 import { parseCounterDto } from "../lib/parse-dto";
+import type { CounterDto, CounterRepository } from "./types";
 
 export class CounterFetcherRepository implements CounterRepository {
   private authFetcher: Fetcher;

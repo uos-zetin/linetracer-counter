@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useParams } from "react-router";
+import { formatElapsedMs, useStopwatchTimer } from "@/entities/counter";
+import { useCounterService } from "@/features/counter";
 import { useManualRecordService } from "@/features/manual-record";
 import { useProgressService } from "@/features/progress";
-import { useCounterService } from "@/features/counter";
-import { formatElapsedMs, useStopwatchTimer } from "@/entities/counter";
 
 export function ManualCounter() {
   const { counterId } = useParams();

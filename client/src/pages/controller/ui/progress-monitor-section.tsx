@@ -1,7 +1,7 @@
-import { useCounterService } from "@/features/counter";
-import { useAdminDivisionService } from "@/features/admin-division";
-import { useProgressService } from "@/features/progress";
 import { useState, useEffect } from "react";
+import { useAdminDivisionService } from "@/features/admin-division";
+import { useCounterService } from "@/features/counter";
+import { useProgressService } from "@/features/progress";
 
 interface ProgressMonitorSectionProps {
   counterId: string;

@@ -81,28 +81,28 @@ describe("Auth Validation", () => {
       };
 
       // Suppress console output for this test
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
       // Act
       const result = parseSessionCredential(invalidSession);
 
       // Assert
       expect(result).toBeNull();
-      
+
       // Restore console
       consoleSpy.mockRestore();
     });
 
     it("null 입력일 때 null을 반환해야 한다", () => {
       // Suppress console output for this test
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
       // Act
       const result = parseSessionCredential(null);
 
       // Assert
       expect(result).toBeNull();
-      
+
       // Restore console
       consoleSpy.mockRestore();
     });
@@ -241,7 +241,7 @@ describe("Auth Validation", () => {
       // Arrange
       const validInput = {
         name: "홍길동",
-        userName: "testuser",  
+        userName: "testuser",
         password: "password123",
       };
 

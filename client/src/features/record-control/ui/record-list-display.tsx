@@ -1,6 +1,7 @@
-import { useRecordControlService } from "../model/context";
 import { formatElapsedMs } from "@/entities/counter";
 import type { Record, RecordStatus } from "@/entities/record";
+import { formatDateTime } from "@/shared";
+import { useRecordControlService } from "../model/context";
 
 interface RecordListDisplayProps {
   participantId?: string;
@@ -10,12 +11,12 @@ interface RecordListDisplayProps {
   className?: string;
 }
 
-export const RecordListDisplay = ({ 
+export const RecordListDisplay = ({
   participantId,
   filterByStatus,
   showParticipantInfo = false,
   onRecordSelect,
-  className = ""
+  className = "",
 }: RecordListDisplayProps) => {
   const recordControlService = useRecordControlService();
   const allRecords = recordControlService.useRecords();
@@ -28,7 +29,7 @@ export const RecordListDisplay = ({
     }
 
     if (filterByStatus) {
-      records = records.filter(record => record.status === filterByStatus);
+      records = records.filter((record) => record.status === filterByStatus);
     }
 
     // Sort by creation date (newest first)
@@ -66,14 +67,13 @@ export const RecordListDisplay = ({
       <div className={`text-center py-8 text-gray-500 ${className}`}>
         <div className="text-lg mb-2">No records found</div>
         <div className="text-sm">
-          {participantId && filterByStatus 
+          {participantId && filterByStatus
             ? `No ${filterByStatus} records for this participant`
-            : participantId 
-            ? "No records for this participant"
-            : filterByStatus
-            ? `No ${filterByStatus} records`
-            : "No records available"
-          }
+            : participantId
+              ? "No records for this participant"
+              : filterByStatus
+                ? `No ${filterByStatus} records`
+                : "No records available"}
         </div>
       </div>
     );
@@ -82,9 +82,7 @@ export const RecordListDisplay = ({
   return (
     <div className={`space-y-2 ${className}`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">
-          Records ({filteredRecords.length})
-        </h3>
+        <h3 className="text-lg font-semibold">Records ({filteredRecords.length})</h3>
         {filterByStatus && (
           <div className={`px-2 py-1 rounded text-sm font-medium ${getStatusColor(filterByStatus)}`}>
             {filterByStatus.charAt(0).toUpperCase() + filterByStatus.slice(1)}
@@ -104,34 +102,22 @@ export const RecordListDisplay = ({
             <div className="flex items-start justify-between">
               <div className="flex-1 space-y-2">
                 <div className="flex items-center space-x-3">
-                  <div className="text-2xl font-mono font-bold">
-                    {formatElapsedMs(record.value).toString()}
-                  </div>
+                  <div className="text-2xl font-mono font-bold">{formatElapsedMs(record.value).toString()}</div>
                   <div className="flex items-center space-x-2">
                     <span className="text-lg">{getSourceIcon(record.source)}</span>
-                    <span className="text-sm text-gray-600 capitalize">
-                      {record.source}
-                    </span>
+                    <span className="text-sm text-gray-600 capitalize">{record.source}</span>
                   </div>
                 </div>
-                
+
                 {showParticipantInfo && (
-                  <div className="text-sm text-gray-600">
-                    Participant ID: {record.participantId}
-                  </div>
+                  <div className="text-sm text-gray-600">Participant ID: {record.participantId}</div>
                 )}
-                
-                {record.note && (
-                  <div className="text-sm text-gray-700 bg-gray-50 p-2 rounded">
-                    {record.note}
-                  </div>
-                )}
-                
-                <div className="text-xs text-gray-500">
-                  Created: {record.createdAt.toLocaleString()}
-                </div>
+
+                {record.note && <div className="text-sm text-gray-700 bg-gray-50 p-2 rounded">{record.note}</div>}
+
+                <div className="text-xs text-gray-500">Created: {formatDateTime(record.createdAt)}</div>
               </div>
-              
+
               <div className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(record.status)}`}>
                 {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
               </div>

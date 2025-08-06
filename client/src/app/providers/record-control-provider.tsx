@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { useRepository } from "./use-repository";
 import { createRecordControlService, RecordControlContext } from "@/features/record-control";
+import { useRepository } from "./use-repository";
 
 export const RecordControlProvider = ({ children }: { children: React.ReactNode }) => {
   const { recordRepository } = useRepository();

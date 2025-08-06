@@ -1,5 +1,4 @@
 import { createBrowserRouter, type RouteObject } from "react-router";
-import { HomePage } from "@/pages/home";
 import {
   AdminPage,
   AdminDashboard,
@@ -9,11 +8,12 @@ import {
   RecordManagement,
   UserManagement,
 } from "@/pages/admin";
-import { TimerPage } from "@/pages/timer";
-import { CounterSelectorPage } from "@/pages/counter-selector";
 import { ControllerPage } from "@/pages/controller";
-import { ManualCounter } from "@/pages/manual-counter";
+import { CounterSelectorPage } from "@/pages/counter-selector";
 import { DashboardPage } from "@/pages/dashboard";
+import { HomePage } from "@/pages/home";
+import { ManualCounter } from "@/pages/manual-counter";
+import { TimerPage } from "@/pages/timer";
 
 const routes: RouteObject[] = [
   {

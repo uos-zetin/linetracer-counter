@@ -1,15 +1,15 @@
 import { useMemo } from "react";
 import { CompetitionFetcherRepository } from "@/entities/competition";
+import { CounterFetcherRepository } from "@/entities/counter";
 import { DivisionFetcherRepository } from "@/entities/division";
+import { ManualRecordFetcherRepository } from "@/entities/manual-record";
 import { ParticipantFetcherRepository } from "@/entities/participant";
 import { RecordFetcherRepository } from "@/entities/record";
-import { ManualRecordFetcherRepository } from "@/entities/manual-record";
-import { UserFetcherRepository } from "@/entities/user";
-import { CounterFetcherRepository } from "@/entities/counter";
 import { TimerFetcherRepository } from "@/entities/timer";
+import { UserFetcherRepository } from "@/entities/user";
 import { ProgressFetcherRepository } from "@/features/progress";
-import { repositoryContext } from "./use-repository";
 import { useFetcher } from "./use-fetcher";
+import { repositoryContext } from "./use-repository";
 
 export const RepositoryProvider = ({ children }: { children: React.ReactNode }) => {
   const { fetcher, authFetcher } = useFetcher();

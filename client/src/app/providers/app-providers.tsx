@@ -1,20 +1,20 @@
-import { CounterProvider } from "./counter-provider";
-import { ProgressProvider } from "./progress-provider";
-import { AuthProvider } from "./auth-provider";
-import { RepositoryProvider } from "./repository-provider";
-import { CompetitionProvider } from "./competition-provider";
-import { DivisionProvider } from "./division-provider";
-import { ParticipantProvider } from "./participant-provider";
-import { RecordProvider } from "./record-provider";
 import { AdminCompetitionProvider } from "./admin-competition-provider";
 import { AdminDivisionProvider } from "./admin-division-provider";
 import { AdminParticipantProvider } from "./admin-participant-provider";
-import { composeProviders } from "./compose-providers";
 import { AdminRecordProvider } from "./admin-record-provider";
 import { AdminUserProvider } from "./admin-user-provider";
-import { TimerControlProvider } from "./timer-control-provicer";
-import { RecordControlProvider } from "./record-control-provider";
+import { AuthProvider } from "./auth-provider";
+import { CompetitionProvider } from "./competition-provider";
+import { composeProviders } from "./compose-providers";
+import { CounterProvider } from "./counter-provider";
+import { DivisionProvider } from "./division-provider";
 import { ManualRecordProvider } from "./manual-record-provider";
+import { ParticipantProvider } from "./participant-provider";
+import { ProgressProvider } from "./progress-provider";
+import { RecordControlProvider } from "./record-control-provider";
+import { RecordProvider } from "./record-provider";
+import { RepositoryProvider } from "./repository-provider";
+import { TimerControlProvider } from "./timer-control-provicer";
 
 const ComposedProviders = composeProviders(
   AuthProvider,
@@ -32,7 +32,7 @@ const ComposedProviders = composeProviders(
   AdminUserProvider,
   TimerControlProvider,
   RecordControlProvider,
-  ManualRecordProvider,
+  ManualRecordProvider
 );
 
 export const AppProviders = ({ children }: { children: React.ReactNode }) => {

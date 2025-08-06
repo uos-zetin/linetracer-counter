@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
-import { useAdminCompetitionService, CompetitionCreateModal, CompetitionEditModal, CompetitionDeleteModal } from "@/features/admin-competition";
 import type { Competition, CompetitionForm } from "@/entities/competition";
+import {
+  useAdminCompetitionService,
+  CompetitionCreateModal,
+  CompetitionEditModal,
+  CompetitionDeleteModal,
+} from "@/features/admin-competition";
 
 export function CompetitionManagement() {
   const adminService = useAdminCompetitionService();

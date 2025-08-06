@@ -19,7 +19,7 @@ export const useZustandDivisionStore = create<DivisionStore>()(
 
         // 생성일시 순서에 맞게 삽입
         const insertIndex = state.divisions.findIndex(
-          (d) => new Date(division.createdAt).getTime() > new Date(d.createdAt).getTime(),
+          (d) => new Date(division.createdAt).getTime() > new Date(d.createdAt).getTime()
         );
 
         if (insertIndex === -1) {
@@ -46,5 +46,5 @@ export const useZustandDivisionStore = create<DivisionStore>()(
       set((state) => {
         state.divisions = [];
       }),
-  })),
+  }))
 );

@@ -1,7 +1,7 @@
 import type { User, UserRepository } from "@/entities/user";
+import { parseSessionCredential, validateLoginInput, validateRegisterInput } from "../lib/validation";
 import { useAuthStore } from "./store.zustand";
 import type { AuthState, AuthService } from "./types";
-import { parseSessionCredential, validateLoginInput, validateRegisterInput } from "../lib/validation";
 
 interface AuthServiceProps {
   userRepository: UserRepository;

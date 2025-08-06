@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { getRemainingMs, getStatus } from "../selectors";
 import type { TimerState } from "../../model/types";
+import { getRemainingMs, getStatus } from "../selectors";
 
 describe("getRemainingMs", () => {
   it("returns remaining time when stopped", () => {

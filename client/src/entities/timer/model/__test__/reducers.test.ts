@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { integrateLogs } from "../reducers";
-
 import type { TimerLog } from "@/entities/timer";
+import { integrateLogs } from "../reducers";
 
 describe("integrateLogs", () => {
   const base = 1_000_000;

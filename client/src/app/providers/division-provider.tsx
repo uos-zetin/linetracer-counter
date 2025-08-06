@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { useRepository } from "./use-repository";
 import { divisionServiceContext, createDivisionService, type DivisionService } from "@/features/division";
+import { useRepository } from "./use-repository";
 
 export const DivisionProvider = ({ children }: { children: React.ReactNode }) => {
   const { divisionRepository } = useRepository();

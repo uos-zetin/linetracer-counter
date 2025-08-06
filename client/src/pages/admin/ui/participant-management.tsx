@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import type { Participant, ParticipantForm } from "@/entities/participant";
+import { useAdminCompetitionService } from "@/features/admin-competition";
+import { useAdminDivisionService } from "@/features/admin-division";
 import {
   useAdminParticipantService,
   ParticipantCreateModal,
   ParticipantEditModal,
   ParticipantDeleteModal,
 } from "@/features/admin-participant";
-import { useAdminCompetitionService } from "@/features/admin-competition";
-import { useAdminDivisionService } from "@/features/admin-division";
-import type { Participant, ParticipantForm } from "@/entities/participant";
 
 // 페이지네이션 설정
 const PARTICIPANTS_PER_PAGE = 5;

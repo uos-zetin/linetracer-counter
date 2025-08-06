@@ -20,12 +20,7 @@ const sidebarItems = [
     path: "/admin/divisions",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M19 11H5m14-7H5m14 12H5"
-        />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14-7H5m14 12H5" />
       </svg>
     ),
   },
@@ -119,9 +114,7 @@ export function AdminSidebar() {
                 <Link
                   to={item.path}
                   className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                    isActive
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    isActive ? "bg-blue-100 text-blue-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   }`}
                 >
                   <span className="mr-3">{item.icon}</span>

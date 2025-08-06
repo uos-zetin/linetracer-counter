@@ -6,15 +6,13 @@ interface ParticipantServiceProps {
   participantRepository: ParticipantRepository;
 }
 
-export const createParticipantService = ({
-  participantRepository,
-}: ParticipantServiceProps): ParticipantService => {
+export const createParticipantService = ({ participantRepository }: ParticipantServiceProps): ParticipantService => {
   // 조회 기능 (공용)
   const loadParticipantsByDivisions = async (divisionIds: string[]): Promise<void> => {
     try {
       // 모든 division의 participants를 동시에 로드
       const allParticipantsPromises = divisionIds.map((divisionId) =>
-        participantRepository.getAllParticipants(divisionId),
+        participantRepository.getAllParticipants(divisionId)
       );
 
       const allParticipantsArrays = await Promise.all(allParticipantsPromises);

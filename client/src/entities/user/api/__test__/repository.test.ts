@@ -1,8 +1,8 @@
 // entities/user/api/__test__/repository.test.ts
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { UserFetcherRepository } from "../repository";
-import type { User, UserRole } from "../../model/types";
 import type { Fetcher } from "@/shared";
+import type { User, UserRole } from "../../model/types";
+import { UserFetcherRepository } from "../repository";
 
 describe("UserFetcherRepository", () => {
   let mockPublicFetcher: Fetcher;

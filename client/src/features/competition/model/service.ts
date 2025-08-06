@@ -6,9 +6,7 @@ interface CompetitionServiceProps {
   competitionRepository: CompetitionRepository;
 }
 
-export const createCompetitionService = ({
-  competitionRepository,
-}: CompetitionServiceProps): CompetitionService => {
+export const createCompetitionService = ({ competitionRepository }: CompetitionServiceProps): CompetitionService => {
   // 조회 기능 (공용)
   const loadAllCompetitions = async (): Promise<void> => {
     try {

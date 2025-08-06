@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Modal, ModalFooter } from "@/shared"; // shared Public API
 import type { Competition } from "@/entities/competition";
 import type { Division, DivisionForm } from "@/entities/division";
+import { Modal, ModalFooter } from "@/shared"; // shared Public API
 
 type DivisionFormErrors = Partial<Record<keyof DivisionForm, string>>;
 

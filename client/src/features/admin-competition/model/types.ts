@@ -7,7 +7,7 @@ export interface AdminCompetitionService {
   createCompetition(data: CompetitionForm): Promise<void>;
   updateCompetition(id: string, data: CompetitionForm): Promise<void>;
   deleteCompetition(id: string): Promise<void>;
-  
+
   // Store 구독 메서드들 (실시간 데이터)
   useCompetitions(): Competition[];
   useCompetitionById(id: string): Competition | null;

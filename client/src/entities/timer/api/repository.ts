@@ -1,7 +1,7 @@
 import type { Fetcher } from "@/shared";
+import { parseTimerLogDto } from "../lib/parse-dto";
 import type { TimerLog, TimerLogType } from "../model/types";
 import type { TimerLogDto, TimerRepository } from "./types";
-import { parseTimerLogDto } from "../lib/parse-dto";
 
 export class TimerFetcherRepository implements TimerRepository {
   private fetcher: Fetcher;

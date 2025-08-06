@@ -19,7 +19,7 @@ export const useZustandParticipantStore = create<ParticipantStore>()(
 
         // 생성일시 순서에 맞게 삽입
         const insertIndex = state.participants.findIndex(
-          (p) => new Date(participant.createdAt).getTime() > new Date(p.createdAt).getTime(),
+          (p) => new Date(participant.createdAt).getTime() > new Date(p.createdAt).getTime()
         );
 
         if (insertIndex === -1) {
@@ -56,5 +56,5 @@ export const useZustandParticipantStore = create<ParticipantStore>()(
       set((state) => {
         state.participants = state.participants.filter((p) => p.id !== participantId);
       }),
-  })),
+  }))
 );

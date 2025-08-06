@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Modal, ModalFooter, IconAlert } from "@/shared"; // shared Public API
 import type { User } from "@/entities/user";
+import { Modal, ModalFooter, IconAlert } from "@/shared"; // shared Public API
 
 interface UserDeleteModalProps {
   isOpen: boolean;

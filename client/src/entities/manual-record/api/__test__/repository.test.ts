@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ManualRecordFetcherRepository } from "../repository";
-import type { ManualRecord } from "../../model/types";
-import type { ManualRecordDto } from "../types";
 import type { Fetcher } from "@/shared";
 import { parseManualRecordDto } from "../../lib/parse-dto";
+import type { ManualRecord } from "../../model/types";
+import { ManualRecordFetcherRepository } from "../repository";
+import type { ManualRecordDto } from "../types";
 
 // parseManualRecordDto 함수 모킹
 vi.mock("../../lib/parse-dto", () => ({
@@ -125,7 +125,7 @@ describe("ManualRecordFetcherRepository", () => {
 
       // Act & Assert
       await expect(manualRecordRepository.getAllManualRecords(participantId)).rejects.toThrow(
-        "참가자를 찾을 수 없습니다",
+        "참가자를 찾을 수 없습니다"
       );
     });
   });
@@ -166,7 +166,7 @@ describe("ManualRecordFetcherRepository", () => {
 
       // Act & Assert
       await expect(manualRecordRepository.createManualRecord(participantId, newManualRecord)).rejects.toThrow(
-        "인증 실패",
+        "인증 실패"
       );
     });
 
@@ -183,7 +183,7 @@ describe("ManualRecordFetcherRepository", () => {
 
       // Act & Assert
       await expect(manualRecordRepository.createManualRecord(participantId, invalidManualRecord)).rejects.toThrow(
-        "유효하지 않은 수동 기록 데이터입니다",
+        "유효하지 않은 수동 기록 데이터입니다"
       );
     });
 
@@ -199,7 +199,7 @@ describe("ManualRecordFetcherRepository", () => {
 
       // Act & Assert
       await expect(manualRecordRepository.createManualRecord(participantId, newManualRecord)).rejects.toThrow(
-        "참가자를 찾을 수 없습니다",
+        "참가자를 찾을 수 없습니다"
       );
     });
 
@@ -215,7 +215,7 @@ describe("ManualRecordFetcherRepository", () => {
 
       // Act & Assert
       await expect(manualRecordRepository.createManualRecord(participantId, newManualRecord)).rejects.toThrow(
-        "서버 내부 오류",
+        "서버 내부 오류"
       );
     });
 
@@ -231,7 +231,7 @@ describe("ManualRecordFetcherRepository", () => {
 
       // Act & Assert
       await expect(manualRecordRepository.createManualRecord(participantId, newManualRecord)).rejects.toThrow(
-        "수동 기록 생성 권한이 없습니다",
+        "수동 기록 생성 권한이 없습니다"
       );
     });
   });

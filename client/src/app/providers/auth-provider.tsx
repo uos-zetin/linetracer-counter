@@ -1,9 +1,9 @@
 import { useEffect, useMemo } from "react";
+import { UserFetcherRepository } from "@/entities/user";
+import { createAuthService, authServiceContext, AuthServiceSessionProvider, type AuthService } from "@/features/auth";
 import { FetchApiFetcher, AuthenticatedFetcher } from "@/shared";
 // import { UserFetcherRepository } from "@/entities/user";
-import { createAuthService, authServiceContext, AuthServiceSessionProvider, type AuthService } from "@/features/auth";
 import { FetcherProvider } from "./fetcher-provider";
-import { UserFetcherRepository } from "@/entities/user";
 
 const AuthProviderInner = ({ authService, children }: { authService: AuthService; children: React.ReactNode }) => {
   // 세션 복원

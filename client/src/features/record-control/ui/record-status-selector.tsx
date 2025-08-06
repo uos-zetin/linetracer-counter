@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useRecordControlService } from "../model/context";
 import type { RecordStatus } from "@/entities/record";
+import { useRecordControlService } from "../model/context";
 
 interface RecordStatusSelectorProps {
   recordId: string;
@@ -16,19 +16,19 @@ const statusOptions: { value: RecordStatus; label: string; color: string }[] = [
   { value: "rejected", label: "Rejected", color: "text-red-600 bg-red-50 border-red-200" },
 ];
 
-export const RecordStatusSelector = ({ 
-  recordId, 
+export const RecordStatusSelector = ({
+  recordId,
   currentStatus,
   disabled = false,
   onStatusChange,
-  className = ""
+  className = "",
 }: RecordStatusSelectorProps) => {
   const recordControlService = useRecordControlService();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleStatusChange = async (newStatus: RecordStatus) => {
     if (newStatus === currentStatus) return;
-    
+
     setIsLoading(true);
     try {
       await recordControlService.updateRecordStatus(recordId, newStatus);
@@ -41,25 +41,21 @@ export const RecordStatusSelector = ({
   };
 
   const getCurrentStatusInfo = () => {
-    return statusOptions.find(option => option.value === currentStatus) || statusOptions[0];
+    return statusOptions.find((option) => option.value === currentStatus) || statusOptions[0];
   };
 
   const currentStatusInfo = getCurrentStatusInfo();
 
   return (
     <div className={`space-y-2 ${className}`}>
-      <label className="block text-sm font-medium text-gray-700">
-        Record Status
-      </label>
-      
+      <label className="block text-sm font-medium text-gray-700">Record Status</label>
+
       <div className="space-y-2">
         {/* Current Status Display */}
         <div className={`px-3 py-2 rounded-lg border ${currentStatusInfo.color}`}>
           <div className="flex items-center justify-between">
             <span className="font-medium">Current: {currentStatusInfo.label}</span>
-            {isLoading && (
-              <div className="text-xs text-gray-500">Updating...</div>
-            )}
+            {isLoading && <div className="text-xs text-gray-500">Updating...</div>}
           </div>
         </div>
 

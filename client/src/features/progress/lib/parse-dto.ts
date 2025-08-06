@@ -1,11 +1,11 @@
 import { parseCompetitionDto } from "@/entities/competition";
+import { parseDivisionDto } from "@/entities/division";
+import { parseManualRecordDto } from "@/entities/manual-record";
+import { parseParticipantDto } from "@/entities/participant";
+import { parseRecordDto } from "@/entities/record";
+import { parseTimerLogDto } from "@/entities/timer";
 import type { ProgressDto } from "../api/types";
 import type { ProgressState } from "../model/types";
-import { parseDivisionDto } from "@/entities/division";
-import { parseParticipantDto } from "@/entities/participant";
-import { parseTimerLogDto } from "@/entities/timer";
-import { parseRecordDto } from "@/entities/record";
-import { parseManualRecordDto } from "@/entities/manual-record";
 
 export const parseProgressDto = (dto: ProgressDto): ProgressState => {
   return {

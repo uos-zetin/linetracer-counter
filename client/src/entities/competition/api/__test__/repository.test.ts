@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import type { Fetcher, ApiResponse } from "@/shared/api/fetcher";
-import type { CompetitionDto } from "../types";
 import type { Competition } from "../../model/types";
 import { CompetitionFetcherRepository } from "../repository";
+import type { CompetitionDto } from "../types";
 
 describe("CompetitionFetcherRepository", () => {
   let mockFetcher: Fetcher;

@@ -1,9 +1,9 @@
 import type { Competition } from "@/entities/competition";
 import type { Division } from "@/entities/division";
-import type { Participant } from "@/entities/participant";
-import type { TimerLog } from "@/entities/timer";
-import type { Record } from "@/entities/record";
 import type { ManualRecord } from "@/entities/manual-record";
+import type { Participant } from "@/entities/participant";
+import type { Record } from "@/entities/record";
+import type { TimerLog } from "@/entities/timer";
 
 export interface Runner {
   participant: Participant;
