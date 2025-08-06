@@ -1,4 +1,4 @@
-import type { Fetcher } from "@/shared/api/fetcher";
+import type { Fetcher } from "@/shared/api";
 import { parseCounterDto } from "../lib/parse-dto";
 import type { CounterDto, CounterRepository } from "./types";
 
