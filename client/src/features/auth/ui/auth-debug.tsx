@@ -13,7 +13,7 @@ export function AuthDebugInfo() {
           <span>{isAuthenticated ? "✅" : "❌"}</span>
         </div>
       </div>
-      
+
       {/* 확장된 상태 - 호버할 때 */}
       <div className="hidden group-hover:block p-4 min-w-[250px]">
         <h4 className="font-bold mb-2 text-lg">인증 디버그</h4>

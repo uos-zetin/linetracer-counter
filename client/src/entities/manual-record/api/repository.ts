@@ -1,7 +1,7 @@
-import type { Fetcher } from "@/shared";
+import type { Fetcher } from "@/shared/api";
+import { parseManualRecordDto } from "../lib/parse-dto";
 import type { ManualRecord, ManualRecordForm } from "../model/types";
 import type { ManualRecordCreateDto, ManualRecordDto, ManualRecordRepository } from "./types";
-import { parseManualRecordDto } from "../lib/parse-dto";
 
 export class ManualRecordFetcherRepository implements ManualRecordRepository {
   private fetcher: Fetcher;

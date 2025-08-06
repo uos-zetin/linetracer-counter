@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useAuthService } from "../model/context";
 import { validateLoginForm, type LoginFormData } from "../lib/validation";
+import { useAuthService } from "../model/context";
 
 export function LoginForm() {
   const [formData, setFormData] = useState<LoginFormData>({
@@ -31,7 +31,7 @@ export function LoginForm() {
           acc[error.field] = error.message;
           return acc;
         },
-        {} as Record<string, string>,
+        {} as Record<string, string>
       );
       setErrors(errorMap);
       return;

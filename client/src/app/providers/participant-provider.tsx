@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { useRepository } from "./use-repository";
 import { participantServiceContext, createParticipantService, type ParticipantService } from "@/features/participant";
+import { useRepository } from "./use-repository";
 
 export const ParticipantProvider = ({ children }: { children: React.ReactNode }) => {
   const { participantRepository } = useRepository();

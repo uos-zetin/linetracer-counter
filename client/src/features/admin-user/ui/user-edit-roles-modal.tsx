@@ -1,6 +1,6 @@
 // src/widgets/edit-user-role-modal.tsx
 import { useState, useEffect } from "react";
-import { Modal, ModalFooter } from "@/shared"; // shared Public API
+import { Modal, ModalFooter } from "@/shared/ui"; // shared Public API
 import type { User, UserRole } from "@/entities/user";
 
 type RoleFormErrors = { roles?: string };

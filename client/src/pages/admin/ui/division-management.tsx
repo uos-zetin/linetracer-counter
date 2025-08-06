@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import type { Division, DivisionForm } from "@/entities/division";
+import { useAdminCompetitionService } from "@/features/admin-competition";
 import {
   useAdminDivisionService,
   DivisionCreateModal,
   DivisionEditModal,
   DivisionDeleteModal,
 } from "@/features/admin-division";
-import { useAdminCompetitionService } from "@/features/admin-competition";
-import type { Division, DivisionForm } from "@/entities/division";
 
 export function DivisionManagement() {
   const [searchParams, setSearchParams] = useSearchParams();

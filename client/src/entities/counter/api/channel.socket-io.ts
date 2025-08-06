@@ -1,7 +1,7 @@
 import { io, type Socket } from "socket.io-client";
-import type { CounterChannel, CounterDto } from "./types";
-import type { CounterState } from "../model/types";
 import { parseCounterDto } from "../lib/parse-dto";
+import type { CounterState } from "../model/types";
+import type { CounterChannel, CounterDto } from "./types";
 
 type CounterMessageHandler = (state: CounterState) => void;
 

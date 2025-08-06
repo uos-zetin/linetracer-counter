@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { RecordFetcherRepository } from "../repository";
-import type { Record, RecordSource, RecordStatus } from "../../model/types";
-import type { RecordDto } from "../types";
-import type { Fetcher } from "@/shared";
+import type { Fetcher } from "@/shared/api";
 import { parseRecordDto } from "../../lib/parse-dto";
+import type { Record, RecordSource, RecordStatus } from "../../model/types";
+import { RecordFetcherRepository } from "../repository";
+import type { RecordDto } from "../types";
 
 // parseRecordDto 함수 모킹
 vi.mock("../../lib/parse-dto", () => ({
@@ -237,7 +237,7 @@ describe("RecordFetcherRepository", () => {
 
       // Act & Assert
       await expect(recordRepository.createRecord(participantId, invalidRecord)).rejects.toThrow(
-        "유효하지 않은 기록 데이터입니다",
+        "유효하지 않은 기록 데이터입니다"
       );
     });
   });
@@ -338,7 +338,7 @@ describe("RecordFetcherRepository", () => {
 
       // Act & Assert
       await expect(recordRepository.updateRecordStatus(recordId, invalidStatus)).rejects.toThrow(
-        "유효하지 않은 상태입니다",
+        "유효하지 않은 상태입니다"
       );
     });
 

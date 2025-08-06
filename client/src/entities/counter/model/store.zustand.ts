@@ -24,7 +24,7 @@ export const useZustandCounterStore = create<CounterStore>()(
     reset: (counterId) =>
       set((state) => {
         state.counters = state.counters.map((c) =>
-          c.id === counterId ? { ...c, startedAt: null, stoppedAt: null } : c,
+          c.id === counterId ? { ...c, startedAt: null, stoppedAt: null } : c
         );
       }),
 
@@ -37,5 +37,5 @@ export const useZustandCounterStore = create<CounterStore>()(
       set((state) => {
         state.counters = [];
       }),
-  })),
+  }))
 );

@@ -1,7 +1,7 @@
-import type { Fetcher } from "@/shared";
-import type { DivisionCreateDto, DivisionDto, DivisionRepository } from "./types";
+import type { Fetcher } from "@/shared/api";
 import { parseDivisionDto } from "../lib/parse-dto";
 import type { Division, DivisionForm } from "../model/types";
+import type { DivisionCreateDto, DivisionDto, DivisionRepository } from "./types";
 
 export class DivisionFetcherRepository implements DivisionRepository {
   private fetcher: Fetcher;

@@ -3,7 +3,7 @@ import type { TimerLog, TimerLogType } from "../model/types";
 
 export function parseTimerLogTypeDto(
   type: TimerLogTypeDto,
-  value: number,
+  value: number
 ): { timerLogType: TimerLogType; value: number } {
   if (type === "start" || type === "stop") {
     return { timerLogType: type, value };

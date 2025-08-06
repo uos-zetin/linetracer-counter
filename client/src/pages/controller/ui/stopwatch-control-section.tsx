@@ -1,6 +1,6 @@
-import { useCounterService } from "@/features/counter";
-import { formatElapsedMs } from "@/entities/counter";
 import { useState, useEffect } from "react";
+import { formatElapsedMs } from "@/entities/counter";
+import { useCounterService } from "@/features/counter";
 
 interface StopwatchControlSectionProps {
   counterId: string;

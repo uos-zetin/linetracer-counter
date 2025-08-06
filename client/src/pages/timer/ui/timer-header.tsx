@@ -1,5 +1,5 @@
-import { useSingleImageUpload } from "../lib/use-image-upload";
 import { useProgressService } from "@/features/progress";
+import { useSingleImageUpload } from "../lib/use-image-upload";
 
 export function TimerPageHeader() {
   const progressService = useProgressService();

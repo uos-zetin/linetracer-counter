@@ -123,9 +123,7 @@ export const createDivisionService = ({ divisionRepository }: DivisionServicePro
     }
 
     // 컴포넌트에서 필터링 및 정렬 (부문 이름으로 정렬)
-    return allDivisions
-      .filter((d) => d.competitionId === competitionId)
-      .sort((a, b) => a.name.localeCompare(b.name));
+    return allDivisions.filter((d) => d.competitionId === competitionId).sort((a, b) => a.name.localeCompare(b.name));
   };
 
   const useDivisionById = (id: string): Division | null => {

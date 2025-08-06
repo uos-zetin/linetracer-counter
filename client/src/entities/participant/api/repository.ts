@@ -1,7 +1,7 @@
-import type { Fetcher } from "@/shared";
+import type { Fetcher } from "@/shared/api";
+import { parseParticipantDto } from "../lib/parse-dto";
 import type { Participant, ParticipantForm } from "../model/types";
 import type { ParticipantCreateDto, ParticipantDto, ParticipantRepository } from "./types";
-import { parseParticipantDto } from "../lib/parse-dto";
 
 export class ParticipantFetcherRepository implements ParticipantRepository {
   private fetcher: Fetcher;

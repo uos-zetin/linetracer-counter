@@ -1,7 +1,7 @@
+import type { Fetcher } from "@/shared/api";
 import { parseUserDto } from "../lib/parse-dto";
 import type { UserRegisterForm, User, UserRole, UserLoginForm } from "../model/types";
 import type { LoginUserDto, RegisterUserDto, UserDto, UserRepository, UserRoleDto } from "./types";
-import type { Fetcher } from "@/shared";
 
 export class UserFetcherRepository implements UserRepository {
   private readonly publicFetcher: Fetcher; // 인증 불필요한 요청용

@@ -1,9 +1,9 @@
-import { useProgressService } from "@/features/progress";
-import { useAdminDivisionService } from "@/features/admin-division";
-import { useTimerControlService } from "@/features/timer-control";
+import { useState, useCallback, useMemo } from "react";
 import { formatElapsedMs } from "@/entities/counter";
 import { integrateLogs, useCountdownTimer } from "@/entities/timer";
-import { useState, useCallback, useMemo } from "react";
+import { useAdminDivisionService } from "@/features/admin-division";
+import { useProgressService } from "@/features/progress";
+import { useTimerControlService } from "@/features/timer-control";
 
 export const TimerRunnerControlSection = () => {
   const progressService = useProgressService();
@@ -31,7 +31,7 @@ export const TimerRunnerControlSection = () => {
       accumulatedMs: 0,
       startedAt: null,
     }),
-    [],
+    []
   );
 
   const countdownResult = useCountdownTimer(timerState || dummyTimerState);
@@ -68,7 +68,7 @@ export const TimerRunnerControlSection = () => {
         console.error("Failed to add time:", error);
       }
     },
-    [timerControlService, runner?.participant.id],
+    [timerControlService, runner?.participant.id]
   );
 
   const handleSubtractTime = useCallback(
@@ -81,7 +81,7 @@ export const TimerRunnerControlSection = () => {
         console.error("Failed to subtract time:", error);
       }
     },
-    [timerControlService, runner?.participant.id],
+    [timerControlService, runner?.participant.id]
   );
 
   const handleCustomTimeAdjustment = useCallback(() => {

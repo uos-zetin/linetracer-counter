@@ -1,7 +1,6 @@
 import { useMemo } from "react";
+import { createAdminUserService, AdminUserContext } from "@/features/admin-user";
 import { useRepository } from "./use-repository";
-import { createAdminUserService } from "@/features/admin-user";
-import { AdminUserContext } from "@/features/admin-user";
 
 export const AdminUserProvider = ({ children }: { children: React.ReactNode }) => {
   const { userRepository } = useRepository();

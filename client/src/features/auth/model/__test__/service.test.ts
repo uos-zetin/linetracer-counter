@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { UserRepository, User } from "@/entities/user";
 import { createAuthService } from "../service";
 import { useAuthStore } from "../store.zustand";
-import type { UserRepository, User } from "@/entities/user";
 
 // Mock localStorage
 const localStorageMock = {
@@ -164,7 +164,7 @@ describe("createAuthService", () => {
 
       // Act & Assert
       await expect(authService.register("Test User", "testuser", "password")).rejects.toThrow(
-        "이미 존재하는 사용자입니다.",
+        "이미 존재하는 사용자입니다."
       );
       expect(useAuthStore.getState().user).toBeNull();
       expect(useAuthStore.getState().isAuthenticated).toBe(false);

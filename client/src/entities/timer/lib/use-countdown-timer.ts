@@ -1,6 +1,6 @@
-import { getRemainingMs } from "./selectors";
-import { useRealTimeTimer } from "@/shared";
+import { useRealTimeTimer } from "@/shared/lib";
 import type { TimerState } from "../model/types";
+import { getRemainingMs } from "./selectors";
 
 /**
  * Countdown Timer - 남은 시간을 실시간으로 계산하는 훅

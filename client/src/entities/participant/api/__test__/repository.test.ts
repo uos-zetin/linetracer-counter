@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ParticipantFetcherRepository } from "../repository";
-import type { Participant } from "../../model/types";
-import type { ParticipantDto } from "../types";
-import type { Fetcher } from "@/shared";
+import type { Fetcher } from "@/shared/api";
 import { parseParticipantDto } from "../../lib/parse-dto";
+import type { Participant } from "../../model/types";
+import { ParticipantFetcherRepository } from "../repository";
+import type { ParticipantDto } from "../types";
 
 // parseParticipantDto 함수 모킹
 vi.mock("../../lib/parse-dto", () => ({
@@ -197,7 +197,7 @@ describe("ParticipantFetcherRepository", () => {
 
       // Act & Assert
       await expect(participantRepository.createParticipant(divisionId, invalidParticipant)).rejects.toThrow(
-        "유효하지 않은 데이터입니다",
+        "유효하지 않은 데이터입니다"
       );
     });
   });
@@ -276,7 +276,7 @@ describe("ParticipantFetcherRepository", () => {
 
       // Act & Assert
       await expect(participantRepository.updateParticipant(participantId, participant)).rejects.toThrow(
-        "권한이 없습니다",
+        "권한이 없습니다"
       );
     });
   });

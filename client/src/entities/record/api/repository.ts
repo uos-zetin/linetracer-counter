@@ -1,7 +1,7 @@
-import type { Fetcher } from "@/shared";
-import type { RecordCreateDto, RecordDto, RecordRepository } from "./types";
-import type { Record, RecordForm, RecordStatus } from "../model/types";
+import type { Fetcher } from "@/shared/api";
 import { parseRecordDto } from "../lib/parse-dto";
+import type { Record, RecordForm, RecordStatus } from "../model/types";
+import type { RecordCreateDto, RecordDto, RecordRepository } from "./types";
 
 export class RecordFetcherRepository implements RecordRepository {
   private fetcher: Fetcher;

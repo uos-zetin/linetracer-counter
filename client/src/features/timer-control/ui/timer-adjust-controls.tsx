@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useTimerControlService } from "../model/context";
 import type { TimerLogType } from "@/entities/timer";
+import { useTimerControlService } from "../model/context";
 
 interface TimerAdjustControlsProps {
   participantId: string;

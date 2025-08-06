@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { TimerFetcherRepository } from "../repository";
-import type { TimerLog } from "../../model/types";
-import type { TimerLogDto } from "../types";
-import type { Fetcher } from "@/shared";
+import type { Fetcher } from "@/shared/api";
 import { parseTimerLogDto } from "../../lib/parse-dto";
+import type { TimerLog } from "../../model/types";
+import { TimerFetcherRepository } from "../repository";
+import type { TimerLogDto } from "../types";
 
 // parseTimerLogDto 함수 모킹
 vi.mock("../../lib/parse-dto", () => ({
@@ -404,7 +404,7 @@ describe("TimerFetcherRepository", () => {
 
       // Act & Assert
       await expect(timerRepository.adjustTimer(participantId, recordType, invalidValue)).rejects.toThrow(
-        "유효하지 않은 조정 값입니다",
+        "유효하지 않은 조정 값입니다"
       );
     });
 
@@ -418,7 +418,7 @@ describe("TimerFetcherRepository", () => {
 
       // Act & Assert
       await expect(timerRepository.adjustTimer(participantId, adjustType, adjustValue)).rejects.toThrow(
-        "타이머 조정 권한이 없습니다",
+        "타이머 조정 권한이 없습니다"
       );
     });
   });

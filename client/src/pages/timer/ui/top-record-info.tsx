@@ -1,7 +1,7 @@
-import { formatElapsedMs } from "@/entities/counter";
-import { useProgressService } from "@/features/progress";
-import { useAdminParticipantService } from "@/features/admin-participant";
 import { useEffect } from "react";
+import { formatElapsedMs } from "@/entities/counter";
+import { useAdminParticipantService } from "@/features/admin-participant";
+import { useProgressService } from "@/features/progress";
 
 export interface TopRecord {
   id: string;

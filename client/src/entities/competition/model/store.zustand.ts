@@ -10,7 +10,7 @@ export const useZustandCompetitionStore = create<CompetitionStore>()(
       set((state) => {
         // 생성일시 역순으로 정렬하여 저장
         state.competitions = [...competitions].sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
       }),
 
@@ -21,7 +21,7 @@ export const useZustandCompetitionStore = create<CompetitionStore>()(
 
         // 생성일시 순서에 맞게 삽입
         const insertIndex = state.competitions.findIndex(
-          (c) => new Date(competition.createdAt).getTime() > new Date(c.createdAt).getTime(),
+          (c) => new Date(competition.createdAt).getTime() > new Date(c.createdAt).getTime()
         );
 
         if (insertIndex === -1) {
@@ -48,5 +48,5 @@ export const useZustandCompetitionStore = create<CompetitionStore>()(
       set((state) => {
         state.competitions = [];
       }),
-  })),
+  }))
 );

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal, ModalFooter } from "@/shared"; // shared Public API
+import { Modal, ModalFooter } from "@/shared/ui"; // shared Public API
 import type { UserRegisterForm } from "@/entities/user";
 
 type UserFormErrors = Partial<Record<keyof UserRegisterForm, string>>;

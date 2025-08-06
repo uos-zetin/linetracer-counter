@@ -1,7 +1,7 @@
-import { useNavigate } from "react-router";
 import { useState, useEffect, useRef } from "react";
-import { useCounterService } from "@/features/counter";
+import { useNavigate } from "react-router";
 import type { CounterState } from "@/entities/counter";
+import { useCounterService } from "@/features/counter";
 
 export function CounterSelectorPage() {
   const navigate = useNavigate();

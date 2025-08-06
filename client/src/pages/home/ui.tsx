@@ -1,5 +1,4 @@
-import { useAuthService } from "@/features/auth";
-import { LoginForm, AuthDebugWrapper } from "@/features/auth";
+import { useAuthService, LoginForm, AuthDebugWrapper } from "@/features/auth";
 import { RootDashboard } from "./ui/root-dashboard";
 
 export function HomePage() {

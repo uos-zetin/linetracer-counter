@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-
 import type { ProgressState, ProgressStore } from "./types";
 
 const initialState: ProgressState = {
@@ -24,5 +23,5 @@ export const useZustandProgressStore = create<ProgressStore>()(
         Object.assign(state, partial);
       }),
     reset: () => set(initialState),
-  })),
+  }))
 );

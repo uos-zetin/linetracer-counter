@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import type { UserStore } from "./types";
 import { immer } from "zustand/middleware/immer";
+import type { UserStore } from "./types";
 
 export const useZustandUserStore = create<UserStore>()(
   immer((set) => ({
@@ -34,5 +34,5 @@ export const useZustandUserStore = create<UserStore>()(
       set((state) => {
         state.users = state.users.filter((u) => u.id !== userId);
       }),
-  })),
+  }))
 );

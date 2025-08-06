@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, ModalFooter } from "@/shared"; // shared Public API
+import { Modal, ModalFooter } from "@/shared/ui"; // shared Public API
 import type { Competition } from "@/entities/competition";
 import type { Division, DivisionForm } from "@/entities/division";
 

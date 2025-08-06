@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal, ModalFooter, IconAlert } from "@/shared"; // shared Public API
+import { Modal, ModalFooter, IconAlert } from "@/shared/ui"; // shared Public API
 import type { Participant } from "@/entities/participant";
 
 interface ParticipantDeleteModalProps {

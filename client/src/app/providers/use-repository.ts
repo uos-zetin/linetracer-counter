@@ -1,12 +1,12 @@
 import { createContext, useContext } from "react";
 import type { CompetitionRepository } from "@/entities/competition";
+import type { CounterRepository } from "@/entities/counter";
 import type { DivisionRepository } from "@/entities/division";
+import type { ManualRecordRepository } from "@/entities/manual-record";
 import type { ParticipantRepository } from "@/entities/participant";
 import type { RecordRepository } from "@/entities/record";
-import type { ManualRecordRepository } from "@/entities/manual-record";
-import type { UserRepository } from "@/entities/user";
-import type { CounterRepository } from "@/entities/counter";
 import type { TimerRepository } from "@/entities/timer";
+import type { UserRepository } from "@/entities/user";
 import type { ProgressRepository } from "@/features/progress";
 
 export interface RepositoryContext {

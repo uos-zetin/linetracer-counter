@@ -1,8 +1,8 @@
-import type { ProgressChannel, ProgressRepository } from "../api/types";
+import { useShallow } from "zustand/shallow";
 import type { ManualRecordRepository } from "@/entities/manual-record";
+import type { ProgressChannel, ProgressRepository } from "../api/types";
 import { useZustandProgressStore } from "./store.zustand";
 import type { ProgressService, ProgressState } from "./types";
-import { useShallow } from "zustand/shallow";
 
 interface ProgressServiceProps {
   manualRecordRepository: ManualRecordRepository;
@@ -66,7 +66,7 @@ export const createProgressService = ({
         runner: state.runner,
         nextRunners: state.nextRunners,
         topRecords: state.topRecords,
-      })),
+      }))
     );
 
     return result;

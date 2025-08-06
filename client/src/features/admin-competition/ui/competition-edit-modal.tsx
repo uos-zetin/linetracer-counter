@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, ModalFooter } from "@/shared";
+import { Modal, ModalFooter } from "@/shared/ui";
 import type { Competition, CompetitionForm } from "@/entities/competition";
 
 interface CompetitionEditModalProps {

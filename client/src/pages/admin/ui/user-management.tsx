@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useAdminUserService, UserCreateModal, UserEditRolesModal, UserDeleteModal } from "@/features/admin-user";
 import type { User, UserRegisterForm } from "@/entities/user";
+import { useAdminUserService, UserCreateModal, UserEditRolesModal, UserDeleteModal } from "@/features/admin-user";
 
 export function UserManagement() {
   /* ───────────────────────── 서비스 & 상태 ───────────────────────── */

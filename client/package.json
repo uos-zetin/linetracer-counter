@@ -16,12 +16,16 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.10",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "immer": "^10.1.1",
+    "lucide-react": "^0.536.0",
     "qrcode.react": "^4.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router": "^7.6.3",
     "socket.io-client": "^4.8.1",
+    "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.10",
     "zod": "^4.0.5",
     "zustand": "^5.0.6"
@@ -43,6 +47,7 @@
     "eslint-plugin-boundaries": "^5.0.1",
     "eslint-plugin-fsd-lint": "^1.0.9",
     "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
@@ -53,6 +58,7 @@
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
+    "tw-animate-css": "^1.3.6",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
     "vite": "^6.3.5",
@@ -78,10 +84,5 @@
         "version": "detect"
       }
     }
-  },
-  "prettier": {
-    "semi": true,
-    "tabWidth": 2,
-    "printWidth": 120
   }
 }

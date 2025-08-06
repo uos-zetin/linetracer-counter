@@ -1,172 +1,172 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { useZustandCounterStore } from '../store.zustand';
-import type { CounterState } from '../types';
-import { isRunning, getElapsedMs } from '../../lib/selectors';
+import { beforeEach, describe, expect, it } from "vitest";
+import { isRunning, getElapsedMs } from "../../lib/selectors";
+import { useZustandCounterStore } from "../store.zustand";
+import type { CounterState } from "../types";
 
-describe('useZustandCounterStore', () => {
+describe("useZustandCounterStore", () => {
   beforeEach(() => {
     // Arrange: 각 테스트 전에 스토어 초기화
     useZustandCounterStore.getState().clearAll();
   });
 
-  describe('init', () => {
-    it('주어진 상태로 카운터를 초기화해야 한다', () => {
+  describe("init", () => {
+    it("주어진 상태로 카운터를 초기화해야 한다", () => {
       // Arrange
-      const counterId = 'test-counter';
+      const counterId = "test-counter";
       const initialState: CounterState = {
         id: counterId,
-        name: 'Test Counter',
+        name: "Test Counter",
         startedAt: null,
         stoppedAt: null,
-        divisionId: 'div-1',
+        divisionId: "div-1",
       };
 
       // Act
       useZustandCounterStore.getState().init(counterId, initialState);
 
       // Assert
-      const counter = useZustandCounterStore.getState().counters.find(c => c.id === counterId);
+      const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
       expect(counter).toEqual(initialState);
     });
   });
 
-  describe('start', () => {
-    it('주어진 타임스탬프로 카운터를 시작해야 한다', () => {
+  describe("start", () => {
+    it("주어진 타임스탬프로 카운터를 시작해야 한다", () => {
       // Arrange
-      const counterId = 'test-counter';
+      const counterId = "test-counter";
       const initialState: CounterState = {
         id: counterId,
-        name: 'Test Counter',
+        name: "Test Counter",
         startedAt: null,
         stoppedAt: null,
-        divisionId: 'div-1',
+        divisionId: "div-1",
       };
       const startTime = Date.now();
-      
+
       useZustandCounterStore.getState().init(counterId, initialState);
 
       // Act
       useZustandCounterStore.getState().start(counterId, startTime);
 
       // Assert
-      const counter = useZustandCounterStore.getState().counters.find(c => c.id === counterId);
+      const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
       expect(counter?.startedAt).toBe(startTime);
       expect(counter?.stoppedAt).toBeNull();
     });
 
-    it('존재하지 않는 카운터는 시작하지 않아야 한다', () => {
+    it("존재하지 않는 카운터는 시작하지 않아야 한다", () => {
       // Arrange
-      const counterId = 'non-existent';
+      const counterId = "non-existent";
       const startTime = Date.now();
 
       // Act
       useZustandCounterStore.getState().start(counterId, startTime);
 
       // Assert
-      const counter = useZustandCounterStore.getState().counters.find(c => c.id === counterId);
+      const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
       expect(counter).toBeUndefined();
     });
   });
 
-  describe('stop', () => {
-    it('실행 중인 카운터를 정지해야 한다', () => {
+  describe("stop", () => {
+    it("실행 중인 카운터를 정지해야 한다", () => {
       // Arrange
-      const counterId = 'test-counter';
+      const counterId = "test-counter";
       const initialState: CounterState = {
         id: counterId,
-        name: 'Test Counter',
+        name: "Test Counter",
         startedAt: Date.now() - 5000,
         stoppedAt: null,
-        divisionId: 'div-1',
+        divisionId: "div-1",
       };
       const stopTime = Date.now();
-      
+
       useZustandCounterStore.getState().init(counterId, initialState);
 
       // Act
       useZustandCounterStore.getState().stop(counterId, stopTime);
 
       // Assert
-      const counter = useZustandCounterStore.getState().counters.find(c => c.id === counterId);
+      const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
       expect(counter?.stoppedAt).toBe(stopTime);
       expect(counter?.startedAt).toBe(initialState.startedAt);
     });
   });
 
-  describe('reset', () => {
-    it('카운터 타임스탬프를 리셋해야 한다', () => {
+  describe("reset", () => {
+    it("카운터 타임스탬프를 리셋해야 한다", () => {
       // Arrange
-      const counterId = 'test-counter';
+      const counterId = "test-counter";
       const initialState: CounterState = {
         id: counterId,
-        name: 'Test Counter',
+        name: "Test Counter",
         startedAt: Date.now() - 5000,
         stoppedAt: Date.now(),
-        divisionId: 'div-1',
+        divisionId: "div-1",
       };
-      
+
       useZustandCounterStore.getState().init(counterId, initialState);
 
       // Act
       useZustandCounterStore.getState().reset(counterId);
 
       // Assert
-      const counter = useZustandCounterStore.getState().counters.find(c => c.id === counterId);
+      const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
       expect(counter?.startedAt).toBeNull();
       expect(counter?.stoppedAt).toBeNull();
-      expect(counter?.name).toBe('Test Counter'); // 다른 속성은 유지
+      expect(counter?.name).toBe("Test Counter"); // 다른 속성은 유지
     });
   });
 
-  describe('getIsRunning', () => {
-    it('실행 중인 카운터에 대해 true를 반환해야 한다', () => {
+  describe("getIsRunning", () => {
+    it("실행 중인 카운터에 대해 true를 반환해야 한다", () => {
       // Arrange
-      const counterId = 'test-counter';
+      const counterId = "test-counter";
       const initialState: CounterState = {
         id: counterId,
-        name: 'Test Counter',
+        name: "Test Counter",
         startedAt: Date.now() - 5000,
         stoppedAt: null,
-        divisionId: 'div-1',
+        divisionId: "div-1",
       };
-      
+
       useZustandCounterStore.getState().init(counterId, initialState);
 
       // Act
-      const counter = useZustandCounterStore.getState().counters.find(c => c.id === counterId);
+      const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
       const running = counter ? isRunning(counter.startedAt, counter.stoppedAt) : false;
 
       // Assert
       expect(running).toBe(true);
     });
 
-    it('정지된 카운터에 대해 false를 반환해야 한다', () => {
+    it("정지된 카운터에 대해 false를 반환해야 한다", () => {
       // Arrange
-      const counterId = 'test-counter';
+      const counterId = "test-counter";
       const initialState: CounterState = {
         id: counterId,
-        name: 'Test Counter',
+        name: "Test Counter",
         startedAt: Date.now() - 5000,
         stoppedAt: Date.now(),
-        divisionId: 'div-1',
+        divisionId: "div-1",
       };
-      
+
       useZustandCounterStore.getState().init(counterId, initialState);
 
       // Act
-      const counter = useZustandCounterStore.getState().counters.find(c => c.id === counterId);
+      const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
       const running = counter ? isRunning(counter.startedAt, counter.stoppedAt) : false;
 
       // Assert
       expect(running).toBe(false);
     });
 
-    it('존재하지 않는 카운터에 대해 false를 반환해야 한다', () => {
+    it("존재하지 않는 카운터에 대해 false를 반환해야 한다", () => {
       // Arrange
-      const counterId = 'non-existent';
+      const counterId = "non-existent";
 
       // Act
-      const counter = useZustandCounterStore.getState().counters.find(c => c.id === counterId);
+      const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
       const running = counter ? isRunning(counter.startedAt, counter.stoppedAt) : false;
 
       // Assert
@@ -174,36 +174,36 @@ describe('useZustandCounterStore', () => {
     });
   });
 
-  describe('getElapsedMs', () => {
-    it('실행 중인 카운터의 경과 시간을 계산해야 한다', () => {
+  describe("getElapsedMs", () => {
+    it("실행 중인 카운터의 경과 시간을 계산해야 한다", () => {
       // Arrange
-      const counterId = 'test-counter';
+      const counterId = "test-counter";
       const startTime = Date.now() - 5000;
       const currentTime = Date.now();
       const initialState: CounterState = {
         id: counterId,
-        name: 'Test Counter',
+        name: "Test Counter",
         startedAt: startTime,
         stoppedAt: null,
-        divisionId: 'div-1',
+        divisionId: "div-1",
       };
-      
+
       useZustandCounterStore.getState().init(counterId, initialState);
 
       // Act
-      const counter = useZustandCounterStore.getState().counters.find(c => c.id === counterId);
+      const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
       const elapsed = counter ? getElapsedMs(counter.startedAt, counter.stoppedAt) : 0;
 
       // Assert
       expect(elapsed).toBeGreaterThanOrEqual(currentTime - startTime);
     });
 
-    it('존재하지 않는 카운터에 대해 0을 반환해야 한다', () => {
+    it("존재하지 않는 카운터에 대해 0을 반환해야 한다", () => {
       // Arrange
-      const counterId = 'non-existent';
+      const counterId = "non-existent";
 
       // Act
-      const counter = useZustandCounterStore.getState().counters.find(c => c.id === counterId);
+      const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
       const elapsed = counter ? getElapsedMs(counter.startedAt, counter.stoppedAt) : 0;
 
       // Assert
@@ -211,35 +211,35 @@ describe('useZustandCounterStore', () => {
     });
   });
 
-  describe('getDivisionId', () => {
-    it('존재하는 카운터의 구역 ID를 반환해야 한다', () => {
+  describe("getDivisionId", () => {
+    it("존재하는 카운터의 구역 ID를 반환해야 한다", () => {
       // Arrange
-      const counterId = 'test-counter';
-      const divisionId = 'div-123';
+      const counterId = "test-counter";
+      const divisionId = "div-123";
       const initialState: CounterState = {
         id: counterId,
-        name: 'Test Counter',
+        name: "Test Counter",
         startedAt: null,
         stoppedAt: null,
         divisionId,
       };
-      
+
       useZustandCounterStore.getState().init(counterId, initialState);
 
       // Act
-      const counter = useZustandCounterStore.getState().counters.find(c => c.id === counterId);
+      const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
       const result = counter?.divisionId || null;
 
       // Assert
       expect(result).toBe(divisionId);
     });
 
-    it('존재하지 않는 카운터에 대해 null을 반환해야 한다', () => {
+    it("존재하지 않는 카운터에 대해 null을 반환해야 한다", () => {
       // Arrange
-      const counterId = 'non-existent';
+      const counterId = "non-existent";
 
       // Act
-      const counter = useZustandCounterStore.getState().counters.find(c => c.id === counterId);
+      const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
       const result = counter?.divisionId || null;
 
       // Assert

@@ -8,11 +8,11 @@ interface TimerStartButtonProps {
   className?: string;
 }
 
-export const TimerStartButton = ({ 
-  participantId, 
+export const TimerStartButton = ({
+  participantId,
   disabled = false,
   onStart,
-  className = ""
+  className = "",
 }: TimerStartButtonProps) => {
   const timerControlService = useTimerControlService();
   const [isLoading, setIsLoading] = useState(false);

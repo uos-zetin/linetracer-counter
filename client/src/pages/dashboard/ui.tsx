@@ -279,7 +279,7 @@ export const DashboardPage = () => {
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((division) => {
                       const divisionRecords = topRecords.filter(
-                        (record) => participants.find((p) => p.id === record.participantId)?.divisionId === division.id,
+                        (record) => participants.find((p) => p.id === record.participantId)?.divisionId === division.id
                       );
                       const divisionTopRecords = getTopRecordsByParticipant(divisionRecords);
 

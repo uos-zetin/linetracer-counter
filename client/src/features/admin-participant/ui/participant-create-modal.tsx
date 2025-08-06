@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Modal, ModalFooter } from "@/shared";
-import type { ParticipantForm } from "@/entities/participant";
+import { Modal, ModalFooter } from "@/shared/ui";
 import type { Division } from "@/entities/division";
+import type { ParticipantForm } from "@/entities/participant";
 
 type ParticipantFormErrors = Partial<Record<keyof ParticipantForm, string>>;
 

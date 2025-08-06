@@ -1,17 +1,15 @@
 import { useMemo } from "react";
-import type { ProgressChannel, ProgressService } from "@/features/progress";
-import { useRepository } from "./use-repository";
-import { createProgressService, ProgressSocketIOChannel, progressServiceContext } from "@/features/progress";
 import { useAuthService } from "@/features/auth";
+import type { ProgressChannel, ProgressService } from "@/features/progress";
+import { createProgressService, ProgressSocketIOChannel, progressServiceContext } from "@/features/progress";
+import { useRepository } from "./use-repository";
 
 export const ProgressProvider = ({ children }: { children: React.ReactNode }) => {
   const { progressRepository, manualRecordRepository } = useRepository();
   const authService = useAuthService();
 
   const { progressService, ProgressServiceProvider } = useMemo(() => {
-    const progressChannel: ProgressChannel = new ProgressSocketIOChannel(() => 
-      authService.getSessionKey()
-    );
+    const progressChannel: ProgressChannel = new ProgressSocketIOChannel(() => authService.getSessionKey());
 
     const progressService: ProgressService = createProgressService({
       progressRepository,

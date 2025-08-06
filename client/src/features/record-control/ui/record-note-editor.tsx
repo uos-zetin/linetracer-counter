@@ -9,12 +9,12 @@ interface RecordNoteEditorProps {
   className?: string;
 }
 
-export const RecordNoteEditor = ({ 
-  recordId, 
+export const RecordNoteEditor = ({
+  recordId,
   currentNote,
   disabled = false,
   onNoteChange,
-  className = ""
+  className = "",
 }: RecordNoteEditorProps) => {
   const recordControlService = useRecordControlService();
   const [note, setNote] = useState(currentNote);
@@ -32,7 +32,7 @@ export const RecordNoteEditor = ({
 
   const handleSave = async () => {
     if (!hasChanges) return;
-    
+
     setIsLoading(true);
     try {
       await recordControlService.updateRecordNote(recordId, note);
@@ -54,10 +54,10 @@ export const RecordNoteEditor = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       handleSave();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       e.preventDefault();
       handleCancel();
     }
@@ -65,10 +65,8 @@ export const RecordNoteEditor = ({
 
   return (
     <div className={`space-y-2 ${className}`}>
-      <label className="block text-sm font-medium text-gray-700">
-        Record Note
-      </label>
-      
+      <label className="block text-sm font-medium text-gray-700">Record Note</label>
+
       <div className="space-y-2">
         <textarea
           value={note}
@@ -79,12 +77,10 @@ export const RecordNoteEditor = ({
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           rows={3}
         />
-        
+
         {hasChanges && (
           <div className="flex items-center justify-between text-sm">
-            <div className="text-gray-500">
-              Press Ctrl+Enter to save, Esc to cancel
-            </div>
+            <div className="text-gray-500">Press Ctrl+Enter to save, Esc to cancel</div>
             <div className="flex space-x-2">
               <button
                 onClick={handleCancel}
