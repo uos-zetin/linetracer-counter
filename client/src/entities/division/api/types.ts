@@ -1,12 +1,14 @@
 import type { Division, DivisionForm } from "../model/types";
 
+export type DivisionStatusDto = "ready" | "ongoing" | "closed";
+
 export interface DivisionDto {
   id: string;
   competitionId: string;
   name: string;
   description: string;
   createdAt: string;
-  status: "ready" | "ongoing" | "closed";
+  status: DivisionStatusDto;
   timeLimit: number;
 }
 
