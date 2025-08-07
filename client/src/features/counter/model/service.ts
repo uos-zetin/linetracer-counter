@@ -25,7 +25,7 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
       currentCounter.id !== counter.id ||
       currentCounter.divisionId !== counter.divisionId
     ) {
-      store.update(counter);
+      store.add(counter);
       return;
     }
 
