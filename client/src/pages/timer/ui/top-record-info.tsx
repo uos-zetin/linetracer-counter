@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { formatElapsedMs } from "@/entities/counter";
-import { useAdminParticipantService } from "@/features/admin-participant";
+import { useParticipantService } from "@/features/participant";
 import { useProgressService } from "@/features/progress";
 
 export interface TopRecord {
@@ -28,7 +28,7 @@ const RIGHT_COLUMN_START_RANK = ROW_COUNT + 1; // 6
 
 export function TopRecordView() {
   const progressService = useProgressService();
-  const adminParticipantService = useAdminParticipantService();
+  const adminParticipantService = useParticipantService();
   const topRecords = progressService.useTopRecords();
   const division = progressService.useDivision();
 
@@ -37,7 +37,7 @@ export function TopRecordView() {
     const loadParticipants = async () => {
       if (division?.id) {
         try {
-          await adminParticipantService.loadParticipantsByDivision(division.id);
+          await adminParticipantService.load.byDivision(division.id);
         } catch (error) {
           console.error("Failed to load participants for division:", error);
         }
@@ -48,8 +48,7 @@ export function TopRecordView() {
   }, [division?.id, adminParticipantService]);
 
   // Division의 모든 participant를 가져와서 매핑에 사용
-  const participants = adminParticipantService.useParticipantsByDivision(division?.id || "");
-
+  const participants = adminParticipantService.use.participantsByDivision(division?.id || "") || [];
   // Record를 TopRecord로 변환
   const formattedTopRecords: TopRecord[] = (topRecords || []).map((record) => {
     // Division의 participant 목록에서 해당 participantId 찾기

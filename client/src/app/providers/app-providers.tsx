@@ -1,4 +1,3 @@
-import { AdminParticipantProvider } from "./admin-participant-provider";
 import { AdminUserProvider } from "./admin-user-provider";
 import { AuthProvider } from "./auth-provider";
 import { CompetitionProvider } from "./competition-provider";
@@ -21,7 +20,6 @@ const ComposedProviders = composeProviders(
   RecordProvider,
   CounterProvider,
   ProgressProvider,
-  AdminParticipantProvider,
   AdminUserProvider,
   TimerControlProvider,
   ManualRecordProvider

@@ -22,6 +22,7 @@ import {
 } from "@/shared/ui";
 import type { Competition, CompetitionForm } from "@/entities/competition";
 import type { Division, DivisionForm } from "@/entities/division";
+import type { Participant, ParticipantForm } from "@/entities/participant";
 import type { Record, RecordStatus } from "@/entities/record";
 import {
   AdminCompetitionCreateModal,
@@ -35,7 +36,12 @@ import {
   AdminDivisionDeleteModal,
   useDivisionService,
 } from "@/features/division";
-import { useParticipantService } from "@/features/participant";
+import {
+  AdminParticipantCreateModal,
+  AdminParticipantEditModal,
+  AdminParticipantDeleteModal,
+  useParticipantService,
+} from "@/features/participant";
 import { RecordListDisplay, RecordNoteEditor, RecordStatusSelector, useRecordService } from "@/features/record";
 
 export const ComponentShowcasePage = () => {
@@ -53,7 +59,9 @@ export const ComponentShowcasePage = () => {
   const [selectedCompetitionId, setSelectedCompetitionId] = useState<string>("");
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>("");
   const [selectedParticipantId, setSelectedParticipantId] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<"shared" | "record" | "competition" | "division" | "data">("shared");
+  const [activeTab, setActiveTab] = useState<"shared" | "record" | "competition" | "division" | "participant" | "data">(
+    "shared"
+  );
 
   // Modal states for Competition
   const [isCompetitionCreateModalOpen, setIsCompetitionCreateModalOpen] = useState(false);
@@ -66,6 +74,12 @@ export const ComponentShowcasePage = () => {
   const [isDivisionEditModalOpen, setIsDivisionEditModalOpen] = useState(false);
   const [isDivisionDeleteModalOpen, setIsDivisionDeleteModalOpen] = useState(false);
   const [selectedDivision, setSelectedDivision] = useState<Division | null>(null);
+
+  // Modal states for Participant
+  const [isParticipantCreateModalOpen, setIsParticipantCreateModalOpen] = useState(false);
+  const [isParticipantEditModalOpen, setIsParticipantEditModalOpen] = useState(false);
+  const [isParticipantDeleteModalOpen, setIsParticipantDeleteModalOpen] = useState(false);
+  const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
 
   // Data loading
   useEffect(() => {
@@ -95,7 +109,7 @@ export const ComponentShowcasePage = () => {
   // Load participants when division changes
   useEffect(() => {
     if (selectedDivisionId && participantService) {
-      participantService.loadParticipantsByDivisions([selectedDivisionId]);
+      participantService.load.byDivisions([selectedDivisionId]);
     }
   }, [selectedDivisionId, participantService]);
 
@@ -109,7 +123,7 @@ export const ComponentShowcasePage = () => {
   // Get data from services
   const competitions = competitionService?.use.competitions() || [];
   const divisions = divisionService?.use.divisionsByCompetition(selectedCompetitionId) || [];
-  const participants = participantService?.useAllParticipants() || [];
+  const participants = participantService?.use.allParticipants() || [];
   const records = recordService?.use.records() || [];
 
   const handleRecordSelect = (record: Record) => {
@@ -220,6 +234,55 @@ export const ComponentShowcasePage = () => {
       console.log("Division deleted:", selectedDivision.id);
     } catch (error) {
       console.error("Failed to delete division:", error);
+    }
+  };
+
+  // Participant handlers
+  const handleParticipantCreate = () => {
+    setIsParticipantCreateModalOpen(true);
+  };
+
+  const handleParticipantEdit = (participant: Participant) => {
+    setSelectedParticipant(participant);
+    setIsParticipantEditModalOpen(true);
+  };
+
+  const handleParticipantDelete = (participant: Participant) => {
+    setSelectedParticipant(participant);
+    setIsParticipantDeleteModalOpen(true);
+  };
+
+  const handleParticipantCreateSubmit = async (data: ParticipantForm) => {
+    try {
+      await participantService?.admin.create(data.divisionId, data);
+      setIsParticipantCreateModalOpen(false);
+      console.log("Participant created:", data);
+    } catch (error) {
+      console.error("Failed to create participant:", error);
+    }
+  };
+
+  const handleParticipantEditSubmit = async (data: ParticipantForm) => {
+    if (!selectedParticipant) return;
+    try {
+      await participantService?.admin.update(selectedParticipant.id, data);
+      setIsParticipantEditModalOpen(false);
+      setSelectedParticipant(null);
+      console.log("Participant updated:", data);
+    } catch (error) {
+      console.error("Failed to update participant:", error);
+    }
+  };
+
+  const handleParticipantDeleteConfirm = async () => {
+    if (!selectedParticipant) return;
+    try {
+      await participantService?.admin.delete(selectedParticipant.id);
+      setIsParticipantDeleteModalOpen(false);
+      setSelectedParticipant(null);
+      console.log("Participant deleted:", selectedParticipant.id);
+    } catch (error) {
+      console.error("Failed to delete participant:", error);
     }
   };
 
@@ -507,6 +570,73 @@ export const ComponentShowcasePage = () => {
     </div>
   );
 
+  const ParticipantComponentsTab = () => (
+    <div className="space-y-6">
+      <Card className="p-6">
+        <h3 className="text-xl font-semibold mb-4">Participant Management</h3>
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={handleParticipantCreate} disabled={!selectedDivisionId}>
+              Create Participant
+            </Button>
+          </div>
+
+          {!selectedDivisionId && (
+            <Alert>
+              <AlertTitle>Select Division First</AlertTitle>
+              <AlertDescription>
+                Please select a division from the Data tab to create and manage participants.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Participant List */}
+          {selectedDivisionId && (
+            <div className="space-y-2">
+              <h4 className="font-medium">Participants for Selected Division</h4>
+              {participants.filter((p) => p.divisionId === selectedDivisionId).length > 0 ? (
+                <div className="space-y-2">
+                  {participants
+                    .filter((p: Participant) => p.divisionId === selectedDivisionId)
+                    .sort((a: Participant, b: Participant) => a.orderRaw - b.orderRaw)
+                    .map((participant: Participant) => (
+                      <div key={participant.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <h5 className="font-medium">{participant.name}</h5>
+                          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                            <span>Order: {participant.orderRaw}</span>
+                            {participant.teamName && (
+                              <>
+                                <span>•</span>
+                                <span>{participant.teamName}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button variant="outline" size="sm" onClick={() => handleParticipantEdit(participant)}>
+                            Edit
+                          </Button>
+                          <Button variant="destructive" size="sm" onClick={() => handleParticipantDelete(participant)}>
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <Alert>
+                  <AlertTitle>No Participants</AlertTitle>
+                  <AlertDescription>No participants found for the selected division.</AlertDescription>
+                </Alert>
+              )}
+            </div>
+          )}
+        </div>
+      </Card>
+    </div>
+  );
+
   const DataSelectionTab = () => (
     <div className="space-y-6">
       <Card className="p-6">
@@ -679,6 +809,13 @@ export const ComponentShowcasePage = () => {
             >
               Division Components
             </Button>
+            <Button
+              variant={activeTab === "participant" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setActiveTab("participant")}
+            >
+              Participant Components
+            </Button>
             <Button variant={activeTab === "data" ? "default" : "ghost"} size="sm" onClick={() => setActiveTab("data")}>
               Data Selection
             </Button>
@@ -690,6 +827,7 @@ export const ComponentShowcasePage = () => {
         {activeTab === "record" && <RecordComponentsTab />}
         {activeTab === "competition" && <CompetitionComponentsTab />}
         {activeTab === "division" && <DivisionComponentsTab />}
+        {activeTab === "participant" && <ParticipantComponentsTab />}
         {activeTab === "data" && <DataSelectionTab />}
       </div>
 
@@ -748,6 +886,36 @@ export const ComponentShowcasePage = () => {
         }}
         onConfirm={handleDivisionDeleteConfirm}
         division={selectedDivision}
+      />
+
+      {/* Participant Modals */}
+      <AdminParticipantCreateModal
+        isOpen={isParticipantCreateModalOpen}
+        onClose={() => setIsParticipantCreateModalOpen(false)}
+        onSubmit={handleParticipantCreateSubmit}
+        divisions={divisions}
+        preSelectedDivisionId={selectedDivisionId}
+      />
+
+      <AdminParticipantEditModal
+        isOpen={isParticipantEditModalOpen}
+        onClose={() => {
+          setIsParticipantEditModalOpen(false);
+          setSelectedParticipant(null);
+        }}
+        onSubmit={handleParticipantEditSubmit}
+        participant={selectedParticipant}
+        divisions={divisions}
+      />
+
+      <AdminParticipantDeleteModal
+        isOpen={isParticipantDeleteModalOpen}
+        onClose={() => {
+          setIsParticipantDeleteModalOpen(false);
+          setSelectedParticipant(null);
+        }}
+        onConfirm={handleParticipantDeleteConfirm}
+        participant={selectedParticipant}
       />
     </div>
   );

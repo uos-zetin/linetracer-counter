@@ -22,7 +22,7 @@ export const DashboardPage = () => {
 
   const competitions = competitionService.use.competitions();
   const divisions = divisionService.use.divisionsByCompetition(competitionId || "");
-  const participants = participantService.useAllParticipants();
+  const participants = participantService.use.allParticipants();
   const topRecords = recordService.use.topRecordsByDivision(selectedDivisionId || "");
 
   // 대회 목록 로드
@@ -59,7 +59,7 @@ export const DashboardPage = () => {
       const loadParticipants = async () => {
         try {
           const divisionIds = divisions.map((d: Division) => d.id);
-          await participantService.loadParticipantsByDivisions(divisionIds);
+          await participantService.load.byDivisions(divisionIds);
         } catch (error) {
           console.error("Failed to load participants:", error);
         }

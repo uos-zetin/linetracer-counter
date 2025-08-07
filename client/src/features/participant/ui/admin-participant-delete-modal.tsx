@@ -9,7 +9,7 @@ interface ParticipantDeleteModalProps {
   participant: Participant | null;
 }
 
-export function ParticipantDeleteModal({ isOpen, onClose, onConfirm, participant }: ParticipantDeleteModalProps) {
+export function AdminParticipantDeleteModal({ isOpen, onClose, onConfirm, participant }: ParticipantDeleteModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   if (!participant) return null;
 
@@ -33,7 +33,7 @@ export function ParticipantDeleteModal({ isOpen, onClose, onConfirm, participant
       title="참가자 삭제"
     >
       {/* 본문 */}
-      <div className="px-6 pt-6 flex items-start gap-3">
+      <div className="p-6 flex items-start gap-3">
         <IconAlert className="w-6 h-6 shrink-0 text-red-600" />
         <p className="text-sm text-gray-700">
           '{participant.name}' 참가자를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.

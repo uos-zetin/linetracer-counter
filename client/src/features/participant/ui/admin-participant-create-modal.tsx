@@ -13,7 +13,7 @@ interface ParticipantCreateModalProps {
   preSelectedDivisionId?: string;
 }
 
-export function ParticipantCreateModal({
+export function AdminParticipantCreateModal({
   isOpen,
   onClose,
   onSubmit,

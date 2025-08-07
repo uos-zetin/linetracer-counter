@@ -113,16 +113,22 @@ export const createParticipantService = ({ participantRepository }: ParticipantS
   };
 
   return {
-    // 조회 기능 (공용)
-    loadParticipantsByDivisions,
-    loadParticipantsByDivision,
-    useAllParticipants,
-    useParticipantsByDivision,
-    useParticipantById,
-
-    // 관리 기능 (admin 전용)
-    createParticipant,
-    updateParticipant,
-    deleteParticipant,
+    // Load functions (공용)
+    load: {
+      byDivisions: loadParticipantsByDivisions,
+      byDivision: loadParticipantsByDivision,
+    },
+    // Admin functions (관리자 전용)
+    admin: {
+      create: createParticipant,
+      update: updateParticipant,
+      delete: deleteParticipant,
+    },
+    // Subscription hooks (구독)
+    use: {
+      allParticipants: useAllParticipants,
+      participantsByDivision: useParticipantsByDivision,
+      participantById: useParticipantById,
+    },
   };
 };

@@ -13,7 +13,7 @@ interface ParticipantEditModalProps {
   divisions: Division[];
 }
 
-export function ParticipantEditModal({ isOpen, onClose, onSubmit, participant, divisions }: ParticipantEditModalProps) {
+export function AdminParticipantEditModal({ isOpen, onClose, onSubmit, participant, divisions }: ParticipantEditModalProps) {
   const [formData, setFormData] = useState<ParticipantForm>({
     divisionId: "",
     name: "",
