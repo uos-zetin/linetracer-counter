@@ -1,34 +1,29 @@
+import type { BaseEntityActions } from "@/shared/lib";
+
 export type UserRole = "administrator" | "manualRecorder" | "stopwatchRecorder";
 
-export interface User {
+export type User = {
   id: string;
   name: string;
   roles: UserRole[];
   createdAt: Date;
-}
+};
 
-export interface UserForm {
-  name: string;
-  roles: UserRole[];
-}
+export type UserForm = Pick<User, "name" | "roles">;
 
-export interface UserLoginForm {
+export type UserLoginForm = {
   userName: string;
   password: string;
-}
+};
 
-export interface UserRegisterForm {
+export type UserRegisterForm = {
   name: string;
   userName: string;
   password: string;
-}
+};
 
-export interface UserActions {
-  init: (users: User[]) => void;
-  add: (user: User) => void;
+export interface UserActions extends BaseEntityActions<User> {
   addMany: (users: User[]) => void;
-  update: (user: User) => void;
-  remove: (userId: string) => void;
 }
 
 export interface UserStore extends UserActions {

@@ -1,7 +1,7 @@
 import type { Fetcher } from "@/shared/api";
-import { parseUserDto } from "../lib/parse-dto";
+import { parseUserDto, parseUserLoginForm, parseUserRegisterForm } from "../lib/parse-dto";
 import type { UserRegisterForm, User, UserRole, UserLoginForm } from "../model/types";
-import type { LoginUserDto, RegisterUserDto, UserDto, UserRepository, UserRoleDto } from "./types";
+import type { UserDto, UserRepository, UserRoleDto } from "./types";
 
 export class UserFetcherRepository implements UserRepository {
   private readonly publicFetcher: Fetcher; // 인증 불필요한 요청용
@@ -24,11 +24,7 @@ export class UserFetcherRepository implements UserRepository {
 
   async registerUser(user: UserRegisterForm): Promise<User> {
     const response = await this.publicFetcher.post<UserDto>("/actors/register", {
-      body: {
-        name: user.name,
-        username: user.userName, // 서버는 username을 사용
-        password: user.password,
-      } as RegisterUserDto,
+      body: parseUserRegisterForm(user),
     });
     return parseUserDto(response.data);
   }
@@ -36,10 +32,7 @@ export class UserFetcherRepository implements UserRepository {
   async loginUser(user: UserLoginForm): Promise<string> {
     // 서버에서 세션 키를 직접 반환하므로, 로그인 성공 시 별도로 사용자 정보를 조회해야 함
     const sessionKeyResponse = await this.publicFetcher.post<string>("/actors/login", {
-      body: {
-        username: user.userName,
-        password: user.password,
-      } as LoginUserDto,
+      body: parseUserLoginForm(user),
     });
 
     return sessionKeyResponse.data;
