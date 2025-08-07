@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { sortByCreatedAtAsc } from "@/shared/lib";
 import type { Participant, ParticipantStore } from "./types";
 
 export const useZustandParticipantStore = create<ParticipantStore>()(
@@ -14,19 +15,11 @@ export const useZustandParticipantStore = create<ParticipantStore>()(
 
     add: (participant: Participant) =>
       set((state) => {
-        // 중복 제거 후 추가
+        // 기존 항목 제거
         state.participants = state.participants.filter((p) => p.id !== participant.id);
-
-        // 생성일시 순서에 맞게 삽입
-        const insertIndex = state.participants.findIndex(
-          (p) => new Date(participant.createdAt).getTime() > new Date(p.createdAt).getTime()
-        );
-
-        if (insertIndex === -1) {
-          state.participants.push(participant);
-        } else {
-          state.participants.splice(insertIndex, 0, participant);
-        }
+        // 추가 후 정렬
+        state.participants.push(participant);
+        state.participants.sort(sortByCreatedAtAsc);
       }),
 
     addMany: (participants: Participant[]) =>

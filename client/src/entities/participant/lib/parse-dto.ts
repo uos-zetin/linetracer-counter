@@ -1,5 +1,5 @@
-import type { ParticipantDto } from "../api/types";
-import type { Participant } from "../model/types";
+import type { ParticipantCreateDto, ParticipantDto } from "../api/types";
+import type { Participant, ParticipantForm } from "../model/types";
 
 export function parseParticipantDto(dto: ParticipantDto): Participant {
   return {
@@ -11,5 +11,15 @@ export function parseParticipantDto(dto: ParticipantDto): Participant {
     comment: dto.comment,
     orderRaw: dto.orderRaw,
     createdAt: new Date(dto.createdAt), // ISO 문자열을 Date 객체로 변환
+  };
+}
+
+export function parseParticipantForm(form: ParticipantForm): ParticipantCreateDto {
+  return {
+    name: form.name,
+    teamName: form.teamName,
+    robotName: form.robotName,
+    comment: form.comment,
+    orderRaw: form.orderRaw,
   };
 }

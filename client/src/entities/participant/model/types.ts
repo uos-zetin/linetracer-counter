@@ -1,4 +1,6 @@
-export interface Participant {
+import type { BaseEntityActions } from "@/shared/lib";
+
+export type Participant = {
   id: string;
   divisionId: string;
   name: string;
@@ -7,23 +9,15 @@ export interface Participant {
   comment: string;
   orderRaw: number;
   createdAt: Date;
-}
+};
 
-export interface ParticipantForm {
-  divisionId: string;
-  name: string;
-  teamName: string;
-  robotName: string;
-  comment: string;
-  orderRaw: number;
-}
+export type ParticipantForm = Pick<
+  Participant,
+  "divisionId" | "name" | "teamName" | "robotName" | "comment" | "orderRaw"
+>;
 
-export interface ParticipantActions {
-  init: (participants: Participant[]) => void;
-  add: (participant: Participant) => void;
+export interface ParticipantActions extends BaseEntityActions<Participant> {
   addMany: (participants: Participant[]) => void;
-  update: (participant: Participant) => void;
-  remove: (participantId: string) => void;
 }
 
 export interface ParticipantStore extends ParticipantActions {
