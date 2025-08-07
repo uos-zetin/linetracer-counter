@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import type { Record } from "@/entities/record";
 import { useCompetitionService } from "@/features/competition";
 import { useDivisionService } from "@/features/division";
 import { useParticipantService } from "@/features/participant";
@@ -18,16 +19,16 @@ export const DashboardPage = () => {
   const [selectedCompetitionId, setSelectedCompetitionId] = useState<string>(competitionId || "");
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>(divisionId || "");
 
-  const competitions = competitionService.useCompetitions();
+  const competitions = competitionService.use.competitions();
   const divisions = divisionService.useDivisionsByCompetition(competitionId || "");
   const participants = participantService.useAllParticipants();
-  const topRecords = recordService.useTopRecordsByDivision(selectedDivisionId || "");
+  const topRecords = recordService.use.topRecordsByDivision(selectedDivisionId || "");
 
   // 대회 목록 로드
   useEffect(() => {
     const loadCompetitions = async () => {
       try {
-        await competitionService.loadAllCompetitions();
+        await competitionService.load.all();
       } catch (error) {
         console.error("Failed to load competitions:", error);
       }
@@ -73,7 +74,7 @@ export const DashboardPage = () => {
       // 특정 부문의 top record 로드
       const loadTopRecords = async () => {
         try {
-          await recordService.loadTopRecordsByDivision(selectedDivisionId);
+          await recordService.load.topByDivision(selectedDivisionId);
         } catch (error) {
           console.error("Failed to load top records:", error);
         }
@@ -83,7 +84,7 @@ export const DashboardPage = () => {
       // 모든 부문의 top record 로드
       const loadAllTopRecords = async () => {
         try {
-          await Promise.all(divisions.map((division) => recordService.loadTopRecordsByDivision(division.id)));
+          await Promise.all(divisions.map((division) => recordService.load.topByDivision(division.id)));
         } catch (error) {
           console.error("Failed to load all top records:", error);
         }
@@ -139,7 +140,7 @@ export const DashboardPage = () => {
   const getTopRecordsByParticipant = (divisionRecords: typeof topRecords) => {
     const recordsByParticipant = new Map<string, (typeof topRecords)[0]>();
 
-    divisionRecords.forEach((record) => {
+    divisionRecords.forEach((record: Record) => {
       const existing = recordsByParticipant.get(record.participantId);
       if (!existing || record.value < existing.value) {
         // 더 좋은 기록 (시간이 짧을수록 좋음)
@@ -279,7 +280,7 @@ export const DashboardPage = () => {
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((division) => {
                       const divisionRecords = topRecords.filter(
-                        (record) => participants.find((p) => p.id === record.participantId)?.divisionId === division.id
+                        (record: Record) => participants.find((p) => p.id === record.participantId)?.divisionId === division.id
                       );
                       const divisionTopRecords = getTopRecordsByParticipant(divisionRecords);
 

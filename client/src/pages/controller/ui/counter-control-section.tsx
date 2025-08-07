@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { useAdminCompetitionService } from "@/features/admin-competition";
+import type { Competition } from "@/entities/competition";
 import { useAdminDivisionService } from "@/features/admin-division";
+import { useCompetitionService } from "@/features/competition";
 import { useCounterService } from "@/features/counter";
 import { useProgressService } from "@/features/progress";
 
@@ -10,7 +11,7 @@ interface CounterControlSectionProps {
 
 export const CounterControlSection = ({ counterId }: CounterControlSectionProps) => {
   const counterService = useCounterService();
-  const competitionService = useAdminCompetitionService();
+  const competitionService = useCompetitionService();
   const divisionService = useAdminDivisionService();
   const progressService = useProgressService();
   const [selectedCompetitionId, setSelectedCompetitionId] = useState<string>("");
@@ -18,7 +19,7 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
 
   const counter = counterService?.useCounterState(counterId) || null;
   const isConnected = !!counter;
-  const competitions = competitionService?.useCompetitions() || [];
+  const competitions = competitionService?.use.competitions() || [];
   const divisions = divisionService?.useDivisionsByCompetition(selectedCompetitionId);
   const division = divisionService?.useDivisionById(counter?.divisionId || "");
 
@@ -27,7 +28,7 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
     const loadData = async () => {
       if (competitionService) {
         try {
-          await competitionService.loadAllCompetitions();
+          await competitionService.load.all();
         } catch (error) {
           console.error("Failed to load competitions:", error);
         }
@@ -205,7 +206,7 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
               >
                 <option value="">Competition 선택</option>
-                {competitions.map((comp) => (
+                {competitions.map((comp: Competition) => (
                   <option key={comp.id} value={comp.id}>
                     {comp.name}
                   </option>

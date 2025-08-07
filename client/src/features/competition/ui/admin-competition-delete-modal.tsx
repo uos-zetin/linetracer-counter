@@ -13,7 +13,7 @@ interface CompetitionDeleteModalProps {
  * CompetitionDeleteModal – SkeletonModal 기반 삭제 확인 다이얼로그
  * lucide‑react 제거 & IconAlert 사용
  */
-export function CompetitionDeleteModal({ isOpen, onClose, onConfirm, competition }: CompetitionDeleteModalProps) {
+export function AdminCompetitionDeleteModal({ isOpen, onClose, onConfirm, competition }: CompetitionDeleteModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!competition) return null;

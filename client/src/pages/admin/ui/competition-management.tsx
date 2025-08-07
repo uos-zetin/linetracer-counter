@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import type { Competition, CompetitionForm } from "@/entities/competition";
 import {
-  useAdminCompetitionService,
-  CompetitionCreateModal,
-  CompetitionEditModal,
-  CompetitionDeleteModal,
-} from "@/features/admin-competition";
+  useCompetitionService,
+  AdminCompetitionCreateModal,
+  AdminCompetitionEditModal,
+  AdminCompetitionDeleteModal,
+} from "@/features/competition";
 
 export function CompetitionManagement() {
-  const adminService = useAdminCompetitionService();
-  const competitions = adminService.useCompetitions();
+  const competitionService = useCompetitionService();
+  const competitions = competitionService.use.competitions();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -18,10 +18,10 @@ export function CompetitionManagement() {
 
   // 초기 데이터 로드
   useEffect(() => {
-    adminService.loadAllCompetitions().catch((error) => {
+    competitionService.load.all().catch((error) => {
       console.error("Failed to load competitions:", error);
     });
-  }, [adminService]);
+  }, [competitionService]);
 
   const handleCreate = () => {
     setIsCreateModalOpen(true);
@@ -39,7 +39,7 @@ export function CompetitionManagement() {
 
   const handleCreateSubmit = async (data: CompetitionForm) => {
     try {
-      await adminService.createCompetition(data);
+      await competitionService.admin.create(data);
       setIsCreateModalOpen(false);
     } catch (error) {
       console.error("Failed to create competition:", error);
@@ -51,7 +51,7 @@ export function CompetitionManagement() {
     if (!selectedCompetition) return;
 
     try {
-      await adminService.updateCompetition(selectedCompetition.id, data);
+      await competitionService.admin.update(selectedCompetition.id, data);
       setIsEditModalOpen(false);
       setSelectedCompetition(null);
     } catch (error) {
@@ -64,7 +64,7 @@ export function CompetitionManagement() {
     if (!selectedCompetition) return;
 
     try {
-      await adminService.deleteCompetition(selectedCompetition.id);
+      await competitionService.admin.delete(selectedCompetition.id);
       setIsDeleteModalOpen(false);
       setSelectedCompetition(null);
     } catch (error) {
@@ -158,13 +158,13 @@ export function CompetitionManagement() {
       </div>
 
       {/* 모달들 */}
-      <CompetitionCreateModal
+      <AdminCompetitionCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateSubmit}
       />
 
-      <CompetitionEditModal
+      <AdminCompetitionEditModal
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
@@ -174,7 +174,7 @@ export function CompetitionManagement() {
         competition={selectedCompetition}
       />
 
-      <CompetitionDeleteModal
+      <AdminCompetitionDeleteModal
         isOpen={isDeleteModalOpen}
         onClose={() => {
           setIsDeleteModalOpen(false);

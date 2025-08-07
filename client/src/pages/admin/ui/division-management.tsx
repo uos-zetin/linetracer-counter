@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import type { Competition } from "@/entities/competition";
 import type { Division, DivisionForm } from "@/entities/division";
-import { useAdminCompetitionService } from "@/features/admin-competition";
 import {
   useAdminDivisionService,
   DivisionCreateModal,
   DivisionEditModal,
   DivisionDeleteModal,
 } from "@/features/admin-division";
+import { useCompetitionService } from "@/features/competition";
 
 export function DivisionManagement() {
   const [searchParams, setSearchParams] = useSearchParams();
   const divisionService = useAdminDivisionService();
-  const competitionService = useAdminCompetitionService();
-  const competitions = competitionService.useCompetitions();
+  const competitionService = useCompetitionService();
+  const competitions = competitionService.use.competitions();
 
   const selectedCompetitionId = searchParams.get("competitionId") || "";
   const divisions = divisionService.useDivisionsByCompetition(selectedCompetitionId);
@@ -25,7 +26,7 @@ export function DivisionManagement() {
 
   // 초기 데이터 로드
   useEffect(() => {
-    competitionService.loadAllCompetitions().catch((error) => {
+    competitionService.load.all().catch((error: unknown) => {
       console.error("Failed to load competitions:", error);
     });
   }, [divisionService, competitionService]);
@@ -41,7 +42,7 @@ export function DivisionManagement() {
 
   // 대회 이름 찾기 헬퍼 함수
   const getCompetitionName = (competitionId: string): string => {
-    const competition = competitions.find((c) => c.id === competitionId);
+    const competition = competitions.find((c: Competition) => c.id === competitionId);
     return competition?.name || "알 수 없는 대회";
   };
 
@@ -151,7 +152,7 @@ export function DivisionManagement() {
             className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">대회를 선택하세요</option>
-            {competitions.map((competition) => (
+            {competitions.map((competition: Competition) => (
               <option key={competition.id} value={competition.id}>
                 {competition.name}
               </option>
