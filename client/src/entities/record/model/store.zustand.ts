@@ -23,9 +23,9 @@ export const useZustandRecordStore = create<RecordStore>()(
 
     addMany: (records: Record[]) =>
       set((state) => {
-        // 기존 항목 제거
-        const existingIds = new Set(state.records.map((r) => r.id));
-        state.records = state.records.filter((r) => !existingIds.has(r.id));
+        // 중복된 새 레코드 제거 (새로 추가할 레코드들의 ID)
+        const newRecordIds = new Set(records.map((r) => r.id));
+        state.records = state.records.filter((r) => !newRecordIds.has(r.id));
         // 추가 후 정렬
         state.records.push(...records);
       }),

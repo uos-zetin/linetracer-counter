@@ -6,7 +6,7 @@ import type { CounterState } from "../types";
 describe("useZustandCounterStore", () => {
   beforeEach(() => {
     // Arrange: 각 테스트 전에 스토어 초기화
-    useZustandCounterStore.getState().clearAll();
+    useZustandCounterStore.getState().clearAll?.();
   });
 
   describe("init", () => {
@@ -22,7 +22,7 @@ describe("useZustandCounterStore", () => {
       };
 
       // Act
-      useZustandCounterStore.getState().init(counterId, initialState);
+      useZustandCounterStore.getState().init([initialState]);
 
       // Assert
       const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
@@ -43,7 +43,7 @@ describe("useZustandCounterStore", () => {
       };
       const startTime = Date.now();
 
-      useZustandCounterStore.getState().init(counterId, initialState);
+      useZustandCounterStore.getState().init([initialState]);
 
       // Act
       useZustandCounterStore.getState().start(counterId, startTime);
@@ -81,7 +81,7 @@ describe("useZustandCounterStore", () => {
       };
       const stopTime = Date.now();
 
-      useZustandCounterStore.getState().init(counterId, initialState);
+      useZustandCounterStore.getState().init([initialState]);
 
       // Act
       useZustandCounterStore.getState().stop(counterId, stopTime);
@@ -105,7 +105,7 @@ describe("useZustandCounterStore", () => {
         divisionId: "div-1",
       };
 
-      useZustandCounterStore.getState().init(counterId, initialState);
+      useZustandCounterStore.getState().init([initialState]);
 
       // Act
       useZustandCounterStore.getState().reset(counterId);
@@ -130,7 +130,7 @@ describe("useZustandCounterStore", () => {
         divisionId: "div-1",
       };
 
-      useZustandCounterStore.getState().init(counterId, initialState);
+      useZustandCounterStore.getState().init([initialState]);
 
       // Act
       const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
@@ -151,7 +151,7 @@ describe("useZustandCounterStore", () => {
         divisionId: "div-1",
       };
 
-      useZustandCounterStore.getState().init(counterId, initialState);
+      useZustandCounterStore.getState().init([initialState]);
 
       // Act
       const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
@@ -188,7 +188,7 @@ describe("useZustandCounterStore", () => {
         divisionId: "div-1",
       };
 
-      useZustandCounterStore.getState().init(counterId, initialState);
+      useZustandCounterStore.getState().init([initialState]);
 
       // Act
       const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
@@ -224,7 +224,7 @@ describe("useZustandCounterStore", () => {
         divisionId,
       };
 
-      useZustandCounterStore.getState().init(counterId, initialState);
+      useZustandCounterStore.getState().init([initialState]);
 
       // Act
       const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);

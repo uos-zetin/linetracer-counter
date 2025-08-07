@@ -49,5 +49,10 @@ export const useZustandParticipantStore = create<ParticipantStore>()(
       set((state) => {
         state.participants = state.participants.filter((p) => p.id !== participantId);
       }),
+
+    clearAll: () =>
+      set((state) => {
+        state.participants = [];
+      }),
   }))
 );

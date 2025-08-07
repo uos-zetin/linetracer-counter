@@ -6,18 +6,17 @@ export const useZustandCounterStore = create<CounterStore>()(
   immer((set) => ({
     counters: [] as CounterState[],
 
-    init: (initialState) =>
+    init: (counters: CounterState[]) =>
       set((state) => {
-        state.counters = initialState;
+        state.counters = counters;
       }),
 
     add: (counter) =>
       set((state) => {
         // 기존 항목 제거
         state.counters = state.counters.filter((c) => c.id !== counter.id);
-        // 추가 후 정렬
+        // 새로운 항목 추가
         state.counters.push(counter);
-        state.counters.sort((a, b) => (a.startedAt || 0) - (b.startedAt || 0));
       }),
 
     update: (counter) =>
