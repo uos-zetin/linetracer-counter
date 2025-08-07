@@ -1,7 +1,7 @@
 import type { Fetcher } from "@/shared/api";
-import { parseDivisionDto } from "../lib/parse-dto";
+import { parseDivisionDto, parseDivisionForm } from "../lib/parse-dto";
 import type { Division, DivisionForm } from "../model/types";
-import type { DivisionCreateDto, DivisionDto, DivisionRepository } from "./types";
+import type { DivisionDto, DivisionRepository } from "./types";
 
 export class DivisionFetcherRepository implements DivisionRepository {
   private fetcher: Fetcher;
@@ -24,22 +24,14 @@ export class DivisionFetcherRepository implements DivisionRepository {
 
   async createDivision(division: DivisionForm): Promise<Division> {
     const response = await this.authFetcher.post<DivisionDto>(`/competitions/${division.competitionId}/divisions`, {
-      body: {
-        name: division.name,
-        description: division.description,
-        timeLimit: division.timeLimit,
-      } as DivisionCreateDto,
+      body: parseDivisionForm(division),
     });
     return parseDivisionDto(response.data);
   }
 
   async updateDivision(division: Division): Promise<Division | null> {
     const response = await this.authFetcher.patch<DivisionDto>(`/divisions/${division.id}`, {
-      body: {
-        name: division.name,
-        description: division.description,
-        timeLimit: division.timeLimit,
-      } as DivisionCreateDto,
+      body: parseDivisionForm(division),
     });
     return response.data ? parseDivisionDto(response.data) : null;
   }

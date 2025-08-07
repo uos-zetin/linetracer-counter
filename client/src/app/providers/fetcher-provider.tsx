@@ -1,4 +1,4 @@
-import type { Fetcher } from "@/shared/api/fetcher";
+import type { Fetcher } from "@/shared/api";
 import { fetcherContext } from "./use-fetcher";
 
 interface FetcherProviderProps {

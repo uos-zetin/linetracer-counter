@@ -1,5 +1,5 @@
-import { ClientError, ServerError, NetworkError } from "./errors";
-import type { Fetcher, HttpMethod, RequestOptions, ApiResponse } from "./fetcher";
+import { NetworkError, createApiError, ApiError, ServerError } from "./errors";
+import type { Fetcher, HttpMethod, RequestOptions, ApiResponse, ApiErrorResponse } from "./types";
 
 /**
  * Fetch API를 사용한 Fetcher 구현체
@@ -75,11 +75,18 @@ export class FetchApiFetcher implements Fetcher {
 
       // HTTP 에러 상태 처리
       if (!response.ok) {
-        if (response.status >= 400 && response.status < 500) {
-          throw new ClientError(`클라이언트 에러: ${response.status} ${response.statusText}`, response.status);
-        } else if (response.status >= 500) {
-          throw new ServerError(`서버 에러: ${response.status} ${response.statusText}`, response.status);
+        // 에러 응답 body 파싱 시도
+        let errorResponse: ApiErrorResponse | undefined = undefined;
+        try {
+          if (contentType.includes("application/json")) {
+            errorResponse = data as ApiErrorResponse;
+          }
+        } catch {
+          // 에러 응답 파싱 실패 시 기본 처리
         }
+
+        const fallbackMessage = `HTTP ${response.status}: ${response.statusText}`;
+        throw createApiError(response.status, errorResponse, fallbackMessage);
       }
 
       return {
@@ -88,7 +95,7 @@ export class FetchApiFetcher implements Fetcher {
         headers: responseHeaders,
       };
     } catch (error) {
-      if (error instanceof ClientError || error instanceof ServerError || error instanceof NetworkError) {
+      if (error instanceof ApiError || error instanceof NetworkError) {
         throw error;
       }
 

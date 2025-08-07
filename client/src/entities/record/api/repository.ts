@@ -1,7 +1,7 @@
 import type { Fetcher } from "@/shared/api";
-import { parseRecordDto } from "../lib/parse-dto";
+import { parseRecordDto, parseRecordForm } from "../lib/parse-dto";
 import type { Record, RecordForm, RecordStatus } from "../model/types";
-import type { RecordCreateDto, RecordDto, RecordRepository } from "./types";
+import type { RecordDto, RecordRepository } from "./types";
 
 export class RecordFetcherRepository implements RecordRepository {
   private fetcher: Fetcher;
@@ -24,11 +24,7 @@ export class RecordFetcherRepository implements RecordRepository {
 
   async createRecord(participantId: string, record: RecordForm): Promise<Record> {
     const response = await this.authFetcher.post<RecordDto>(`/participants/${participantId}/records`, {
-      body: {
-        value: record.value,
-        source: record.source,
-        note: record.note,
-      } as RecordCreateDto,
+      body: parseRecordForm(record),
     });
     return parseRecordDto(response.data);
   }

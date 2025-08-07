@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { Fetcher } from "@/shared/api/fetcher";
+import type { Fetcher } from "@/shared/api";
 
 export interface FetcherContext {
   fetcher: Fetcher;

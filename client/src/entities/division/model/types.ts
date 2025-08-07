@@ -1,30 +1,20 @@
+import type { BaseEntityActions } from "@/shared/lib";
+
 export type DivisionStatus = "ready" | "ongoing" | "closed";
 
-export interface Division {
+export type Division = {
   id: string;
   competitionId: string;
   name: string;
   description: string;
   createdAt: Date;
   status: DivisionStatus;
-  timeLimit: number;
-}
+  timeLimit: number; // 밀리초 단위
+};
 
-export interface DivisionForm {
-  competitionId: string;
-  name: string;
-  description: string;
-  timeLimit: number;
-}
+// DivisionForm의 timeLimit은 분 단위로 설정
+export type DivisionForm = Pick<Division, "competitionId" | "name" | "description" | "timeLimit">;
 
-export interface DivisionActions {
-  init: (divisions: Division[]) => void;
-  add: (division: Division) => void;
-  update: (division: Division) => void;
-  remove: (divisionId: string) => void;
-  clearAll: () => void;
-}
-
-export interface DivisionStore extends DivisionActions {
+export interface DivisionStore extends BaseEntityActions<Division> {
   divisions: Division[];
 }

@@ -25,7 +25,7 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
       currentCounter.id !== counter.id ||
       currentCounter.divisionId !== counter.divisionId
     ) {
-      store.init(counter.id, counter);
+      store.add(counter);
       return;
     }
 
@@ -166,7 +166,7 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
       if (counter) {
         // Store에 최신 counter 정보 업데이트
         const store = useZustandCounterStore.getState();
-        store.init(counter.id, counter);
+        store.add(counter);
         return counter;
       }
       return null;

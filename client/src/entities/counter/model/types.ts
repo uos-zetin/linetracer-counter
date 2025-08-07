@@ -1,3 +1,5 @@
+import type { BaseEntityActions } from "@/shared/lib";
+
 export interface CounterState {
   id: string; // 계수기 ID
   name: string; // 계수기 이름
@@ -6,13 +8,10 @@ export interface CounterState {
   divisionId: string | null; // 계수기가 속한 종목 ID
 }
 
-export interface CounterActions {
-  init: (counterId: string, initialState: CounterState) => void; // 계수기 초기화
+export interface CounterActions extends BaseEntityActions<CounterState> {
   start: (counterId: string, startedAt: number) => void; // 계수기 시작
   stop: (counterId: string, stoppedAt: number) => void; // 계수기 정지
   reset: (counterId: string) => void; // 계수기 리셋
-  remove: (counterId: string) => void; // 계수기 제거
-  clearAll: () => void; // 모든 계수기 초기화 (테스트용)
 }
 
 export interface CounterStore extends CounterActions {

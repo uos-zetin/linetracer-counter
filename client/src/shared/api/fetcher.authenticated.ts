@@ -1,4 +1,4 @@
-import type { Fetcher, RequestOptions, ApiResponse, HttpMethod } from "./fetcher";
+import type { Fetcher, RequestOptions, ApiResponse, HttpMethod } from "./types";
 
 /**
  * 세션 키 공급자 인터페이스

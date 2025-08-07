@@ -9,13 +9,13 @@ export interface UserDto {
   createdAt: string; // ISO date string
 }
 
-export interface RegisterUserDto {
+export interface UserRegisterDto {
   name: string;
   username: string;
   password: string;
 }
 
-export interface LoginUserDto {
+export interface UserLoginDto {
   username: string;
   password: string;
 }

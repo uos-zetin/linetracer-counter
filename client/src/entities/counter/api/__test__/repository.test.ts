@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import type { Fetcher, ApiResponse } from "@/shared/api/fetcher";
+import type { Fetcher, ApiResponse } from "@/shared/api";
 import type { CounterState } from "../../model/types";
 import { CounterFetcherRepository } from "../repository";
 import type { CounterDto } from "../types";
