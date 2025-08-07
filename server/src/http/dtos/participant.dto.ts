@@ -57,7 +57,6 @@ export class CreateParticipantDto {
     example: "멍때리면서 라인트레이서를 굴려보겠습니다!",
   })
   @IsString()
-  @IsNotEmpty()
   comment!: string;
 
   @ApiProperty({ description: "원본 경연 순번", example: 1 })
@@ -69,6 +68,7 @@ export class UpdateParticipantDto {
   @ApiProperty({ description: "참가자 이름", example: "김태환" })
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
   name?: string;
 
   @ApiProperty({ description: "팀 이름", example: "멍때리기팀" })
@@ -79,6 +79,7 @@ export class UpdateParticipantDto {
   @ApiProperty({ description: "로봇 이름", example: "멍때리기로봇" })
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
   robotName?: string;
 
   @ApiProperty({
@@ -92,5 +93,6 @@ export class UpdateParticipantDto {
   @ApiProperty({ description: "원본 경연 순번", example: 1 })
   @IsNumber()
   @IsOptional()
+  @IsNotEmpty()
   orderRaw?: number;
 }

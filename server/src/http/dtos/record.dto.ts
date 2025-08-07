@@ -51,14 +51,12 @@ export class AddRecordDto {
 
   @ApiProperty({ type: String, description: "비고", example: "테스트 기록" })
   @IsString()
-  @IsNotEmpty()
   note!: string;
 }
 
 export class SetRecordNoteDto {
   @ApiProperty({ type: String, description: "비고", example: "수정된 비고" })
   @IsString()
-  @IsNotEmpty()
   note!: string;
 }
 

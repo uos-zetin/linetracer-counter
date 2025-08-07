@@ -61,13 +61,13 @@ export class CreateDivisionDto {
     example: "멍때리면서 DC 모터 라인트레이서를 굴려보세요!",
   })
   @IsString()
-  @IsNotEmpty()
   description!: string;
 }
 
 export class UpdateDivisionDto {
   @ApiProperty({ description: "대회 부문 이름", example: "Expert-DC 본선" })
   @IsString()
+  @IsNotEmpty()
   @IsOptional()
   name?: string;
 
@@ -76,6 +76,7 @@ export class UpdateDivisionDto {
     example: 4 * 60 * 1000, // 4분
   })
   @IsNumber()
+  @IsNotEmpty()
   @IsOptional()
   timeLimit?: number;
 
