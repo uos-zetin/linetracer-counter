@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { sortByCreatedAtDesc } from "@/shared/lib";
 import type { CompetitionStore } from "./types";
 
 export const useZustandCompetitionStore = create<CompetitionStore>()(
@@ -9,26 +10,16 @@ export const useZustandCompetitionStore = create<CompetitionStore>()(
     init: (competitions) =>
       set((state) => {
         // 생성일시 역순으로 정렬하여 저장
-        state.competitions = [...competitions].sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
+        state.competitions = competitions.sort(sortByCreatedAtDesc);
       }),
 
     add: (competition) =>
       set((state) => {
-        // 기존 항목이 있으면 제거 후 추가
+        // 기존 항목 제거
         state.competitions = state.competitions.filter((c) => c.id !== competition.id);
-
-        // 생성일시 순서에 맞게 삽입
-        const insertIndex = state.competitions.findIndex(
-          (c) => new Date(competition.createdAt).getTime() > new Date(c.createdAt).getTime()
-        );
-
-        if (insertIndex === -1) {
-          state.competitions.push(competition);
-        } else {
-          state.competitions.splice(insertIndex, 0, competition);
-        }
+        // 추가 후 정렬
+        state.competitions.push(competition);
+        state.competitions.sort(sortByCreatedAtDesc);
       }),
 
     update: (competition) =>
