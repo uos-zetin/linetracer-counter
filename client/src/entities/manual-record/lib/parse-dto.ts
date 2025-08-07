@@ -1,5 +1,5 @@
-import type { ManualRecordDto } from "../api/types";
-import type { ManualRecord } from "../model/types";
+import type { ManualRecordCreateDto, ManualRecordDto } from "../api/types";
+import type { ManualRecord, ManualRecordForm } from "../model/types";
 
 export function parseManualRecordDto(dto: ManualRecordDto): ManualRecord {
   return {
@@ -8,5 +8,12 @@ export function parseManualRecordDto(dto: ManualRecordDto): ManualRecord {
     value: dto.value,
     recorderName: dto.recorderName,
     createdAt: new Date(dto.createdAt),
+  };
+}
+
+export function parseManualRecordForm(form: ManualRecordForm): ManualRecordCreateDto {
+  return {
+    value: form.value,
+    recorderName: form.recorderName,
   };
 }

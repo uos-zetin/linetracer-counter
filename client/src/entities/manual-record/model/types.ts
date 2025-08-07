@@ -1,12 +1,9 @@
-export interface ManualRecord {
+export type ManualRecord = {
   id: string;
   participantId: string;
   value: number;
   recorderName: string;
   createdAt: Date;
-}
+};
 
-export interface ManualRecordForm {
-  value: number;
-  recorderName: string;
-}
+export type ManualRecordForm = Pick<ManualRecord, "value" | "recorderName">;

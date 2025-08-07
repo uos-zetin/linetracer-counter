@@ -1,7 +1,7 @@
 import type { Fetcher } from "@/shared/api";
-import { parseManualRecordDto } from "../lib/parse-dto";
+import { parseManualRecordDto, parseManualRecordForm } from "../lib/parse-dto";
 import type { ManualRecord, ManualRecordForm } from "../model/types";
-import type { ManualRecordCreateDto, ManualRecordDto, ManualRecordRepository } from "./types";
+import type { ManualRecordDto, ManualRecordRepository } from "./types";
 
 export class ManualRecordFetcherRepository implements ManualRecordRepository {
   private fetcher: Fetcher;
@@ -19,10 +19,7 @@ export class ManualRecordFetcherRepository implements ManualRecordRepository {
 
   async createManualRecord(participantId: string, manualRecord: ManualRecordForm): Promise<ManualRecord> {
     const response = await this.authFetcher.post<ManualRecordDto>(`/participants/${participantId}/manual-records`, {
-      body: {
-        value: manualRecord.value,
-        recorderName: manualRecord.recorderName,
-      } as ManualRecordCreateDto,
+      body: parseManualRecordForm(manualRecord),
     });
     return parseManualRecordDto(response.data);
   }
