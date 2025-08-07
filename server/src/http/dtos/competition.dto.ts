@@ -29,13 +29,13 @@ export class CreateCompetitionDto {
     example: "멍때리기는 뇌를 쉬게 해준대요.",
   })
   @IsString()
-  @IsNotEmpty()
   description!: string;
 }
 
 export class UpdateCompetitionDto {
   @ApiProperty({ description: "대회 이름", example: "제0회 멍때리기 대회" })
   @IsString()
+  @IsNotEmpty()
   @IsOptional()
   name?: string;
 
