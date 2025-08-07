@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { sortByCreatedAtDesc } from "@/shared/lib";
 import type { RecordStore, Record } from "./types";
 
 export const useZustandRecordStore = create<RecordStore>()(
@@ -9,7 +10,7 @@ export const useZustandRecordStore = create<RecordStore>()(
     // Actions
     init: (records: Record[]) =>
       set((state) => {
-        state.records = records;
+        state.records = records.sort(sortByCreatedAtDesc);
       }),
 
     add: (record: Record) =>
@@ -18,7 +19,7 @@ export const useZustandRecordStore = create<RecordStore>()(
         state.records = state.records.filter((r) => r.id !== record.id);
         // 추가 후 정렬
         state.records.push(record);
-        state.records.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        state.records.sort(sortByCreatedAtDesc);
       }),
 
     addMany: (records: Record[]) =>
@@ -28,6 +29,7 @@ export const useZustandRecordStore = create<RecordStore>()(
         state.records = state.records.filter((r) => !newRecordIds.has(r.id));
         // 추가 후 정렬
         state.records.push(...records);
+        state.records.sort(sortByCreatedAtDesc);
       }),
 
     update: (record: Record) =>
