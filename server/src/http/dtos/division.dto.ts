@@ -1,5 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from "class-validator";
 
 import { CompetitionResponseDto } from "./competition.dto";
 import { ManualRecordResponseDto } from "./manual-record.dto";
@@ -53,7 +59,7 @@ export class CreateDivisionDto {
     example: 4 * 60 * 1000, // 4분
   })
   @IsNumber()
-  @IsNotEmpty()
+  @Min(0)
   timeLimit!: number;
 
   @ApiProperty({
@@ -76,7 +82,7 @@ export class UpdateDivisionDto {
     example: 4 * 60 * 1000, // 4분
   })
   @IsNumber()
-  @IsNotEmpty()
+  @Min(0)
   @IsOptional()
   timeLimit?: number;
 
@@ -129,6 +135,6 @@ export class ChangeParticipantOrderDto {
 
   @ApiProperty({ description: "변경할 참가자의 순번" })
   @IsNumber()
-  @IsNotEmpty()
+  @Min(0)
   order!: number;
 }

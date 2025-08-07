@@ -1,7 +1,7 @@
 import { ManualRecord } from "@/core/models";
 
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, Min } from "class-validator";
 
 export class ManualRecordResponseDto implements ManualRecord {
   @ApiProperty({
@@ -45,7 +45,7 @@ export class AddManualRecordDto {
     example: 5000,
   })
   @IsNumber()
-  @IsNotEmpty()
+  @Min(0)
   value!: number;
 
   @ApiProperty({

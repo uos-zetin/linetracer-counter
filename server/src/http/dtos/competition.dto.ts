@@ -35,8 +35,8 @@ export class CreateCompetitionDto {
 export class UpdateCompetitionDto {
   @ApiProperty({ description: "대회 이름", example: "제0회 멍때리기 대회" })
   @IsString()
-  @IsOptional()
   @IsNotEmpty()
+  @IsOptional()
   name?: string;
 
   @ApiProperty({

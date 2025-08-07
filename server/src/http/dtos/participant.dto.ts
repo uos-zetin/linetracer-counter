@@ -1,11 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import {
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-} from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class ParticipantResponseDto {
   @ApiProperty({ description: "참가자 ID" })
@@ -67,8 +61,8 @@ export class CreateParticipantDto {
 export class UpdateParticipantDto {
   @ApiProperty({ description: "참가자 이름", example: "김태환" })
   @IsString()
-  @IsOptional()
   @IsNotEmpty()
+  @IsOptional()
   name?: string;
 
   @ApiProperty({ description: "팀 이름", example: "멍때리기팀" })
@@ -78,8 +72,8 @@ export class UpdateParticipantDto {
 
   @ApiProperty({ description: "로봇 이름", example: "멍때리기로봇" })
   @IsString()
-  @IsOptional()
   @IsNotEmpty()
+  @IsOptional()
   robotName?: string;
 
   @ApiProperty({
@@ -93,6 +87,5 @@ export class UpdateParticipantDto {
   @ApiProperty({ description: "원본 경연 순번", example: 1 })
   @IsNumber()
   @IsOptional()
-  @IsNotEmpty()
   orderRaw?: number;
 }
