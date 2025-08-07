@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useAdminDivisionService } from "@/features/admin-division";
 import { useCounterService } from "@/features/counter";
+import { useDivisionService } from "@/features/division";
 import { useProgressService } from "@/features/progress";
 
 interface ProgressMonitorSectionProps {
@@ -9,14 +9,14 @@ interface ProgressMonitorSectionProps {
 
 export const ProgressMonitorSection = ({ counterId }: ProgressMonitorSectionProps) => {
   const counterService = useCounterService();
-  const divisionService = useAdminDivisionService();
+  const divisionService = useDivisionService();
   const progressService = useProgressService();
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [isSettingRunner, setIsSettingRunner] = useState(false);
 
   const counter = counterService?.useCounterState(counterId) || null;
-  const division = divisionService?.useDivisionById(counter?.divisionId || "") || null;
+  const division = divisionService?.use.divisionById(counter?.divisionId || "") || null;
   const progress = progressService?.useProgress() || null;
   const runner = progressService?.useRunner() || null;
   const nextRunners = progressService?.useNextRunners() || [];

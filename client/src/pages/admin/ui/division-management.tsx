@@ -2,22 +2,22 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import type { Competition } from "@/entities/competition";
 import type { Division, DivisionForm } from "@/entities/division";
-import {
-  useAdminDivisionService,
-  DivisionCreateModal,
-  DivisionEditModal,
-  DivisionDeleteModal,
-} from "@/features/admin-division";
 import { useCompetitionService } from "@/features/competition";
+import {
+  useDivisionService,
+  AdminDivisionCreateModal,
+  AdminDivisionEditModal,
+  AdminDivisionDeleteModal,
+} from "@/features/division";
 
 export function DivisionManagement() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const divisionService = useAdminDivisionService();
+  const divisionService = useDivisionService();
   const competitionService = useCompetitionService();
   const competitions = competitionService.use.competitions();
 
   const selectedCompetitionId = searchParams.get("competitionId") || "";
-  const divisions = divisionService.useDivisionsByCompetition(selectedCompetitionId);
+  const divisions = divisionService.use.divisionsByCompetition(selectedCompetitionId);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -34,7 +34,7 @@ export function DivisionManagement() {
   // 선택된 대회의 부문들 로드
   useEffect(() => {
     if (selectedCompetitionId) {
-      divisionService.loadDivisionsByCompetition(selectedCompetitionId).catch((error) => {
+      divisionService.load.byCompetition(selectedCompetitionId).catch((error: unknown) => {
         console.error("Failed to load divisions:", error);
       });
     }
@@ -85,7 +85,7 @@ export function DivisionManagement() {
 
   const handleCreateSubmit = async (data: DivisionForm) => {
     try {
-      await divisionService.createDivision(data);
+      await divisionService.admin.create(data);
       setIsCreateModalOpen(false);
     } catch (error) {
       console.error("Failed to create division:", error);
@@ -97,7 +97,7 @@ export function DivisionManagement() {
     if (!selectedDivision) return;
 
     try {
-      await divisionService.updateDivision(selectedDivision.id, data);
+      await divisionService.admin.update(selectedDivision.id, data);
       setIsEditModalOpen(false);
       setSelectedDivision(null);
     } catch (error) {
@@ -110,7 +110,7 @@ export function DivisionManagement() {
     if (!selectedDivision) return;
 
     try {
-      await divisionService.deleteDivision(selectedDivision.id);
+      await divisionService.admin.delete(selectedDivision.id);
       setIsDeleteModalOpen(false);
       setSelectedDivision(null);
     } catch (error) {
@@ -190,7 +190,7 @@ export function DivisionManagement() {
             </p>
           </div>
         ) : (
-          divisions.map((division) => {
+          divisions.map((division: Division) => {
             const statusInfo = getStatusInfo(division.status);
             return (
               <div
@@ -255,7 +255,7 @@ export function DivisionManagement() {
       </div>
 
       {/* 모달들 */}
-      <DivisionCreateModal
+      <AdminDivisionCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateSubmit}
@@ -263,7 +263,7 @@ export function DivisionManagement() {
         competitions={competitions}
       />
 
-      <DivisionEditModal
+      <AdminDivisionEditModal
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
@@ -274,7 +274,7 @@ export function DivisionManagement() {
         competitions={competitions}
       />
 
-      <DivisionDeleteModal
+      <AdminDivisionDeleteModal
         isOpen={isDeleteModalOpen}
         onClose={() => {
           setIsDeleteModalOpen(false);

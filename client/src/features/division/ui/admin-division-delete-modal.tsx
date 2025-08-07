@@ -9,7 +9,7 @@ interface DivisionDeleteModalProps {
   division: Division | null;
 }
 
-export function DivisionDeleteModal({ isOpen, onClose, onConfirm, division }: DivisionDeleteModalProps) {
+export function AdminDivisionDeleteModal({ isOpen, onClose, onConfirm, division }: DivisionDeleteModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   if (!division) return null;
 
@@ -33,7 +33,7 @@ export function DivisionDeleteModal({ isOpen, onClose, onConfirm, division }: Di
       title="부문 삭제"
     >
       {/* 본문 */}
-      <div className="px-6 pt-6 flex items-start gap-3">
+      <div className="px-6 py-6 flex items-start gap-3">
         <IconAlert className="w-6 h-6 shrink-0 text-red-600" />
         <p className="text-sm text-gray-700">
           '{division.name}' 부문을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.

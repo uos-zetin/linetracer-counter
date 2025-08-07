@@ -13,7 +13,7 @@ interface DivisionCreateModalProps {
 
 type DivisionFormError = Record<keyof DivisionForm, string>;
 
-export function DivisionCreateModal({
+export function AdminDivisionCreateModal({
   isOpen,
   onClose,
   onSubmit,

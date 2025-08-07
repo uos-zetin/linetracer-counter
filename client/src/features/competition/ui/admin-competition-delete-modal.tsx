@@ -37,7 +37,7 @@ export function AdminCompetitionDeleteModal({ isOpen, onClose, onConfirm, compet
       closeOnBackdrop={false}
       title="대회 삭제"
     >
-      <div className="px-6 pt-6 flex items-start gap-3">
+      <div className="px-6 py-6 flex items-start gap-3">
         <IconAlert className="w-6 h-6 shrink-0 text-red-600" />
         <p className="text-sm text-gray-700">
           '{competition.name}' 대회를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.

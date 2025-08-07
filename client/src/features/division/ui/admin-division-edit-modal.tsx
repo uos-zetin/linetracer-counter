@@ -13,7 +13,7 @@ interface DivisionEditModalProps {
   competitions: Competition[]; // ← 훅 대신 주입
 }
 
-export function DivisionEditModal({ isOpen, onClose, onSubmit, division, competitions }: DivisionEditModalProps) {
+export function AdminDivisionEditModal({ isOpen, onClose, onSubmit, division, competitions }: DivisionEditModalProps) {
   const [formData, setFormData] = useState<DivisionForm>({
     competitionId: "",
     name: "",

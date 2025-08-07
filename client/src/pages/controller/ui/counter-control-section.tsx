@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import type { Competition } from "@/entities/competition";
-import { useAdminDivisionService } from "@/features/admin-division";
 import { useCompetitionService } from "@/features/competition";
 import { useCounterService } from "@/features/counter";
+import { useDivisionService } from "@/features/division";
 import { useProgressService } from "@/features/progress";
 
 interface CounterControlSectionProps {
@@ -12,7 +12,7 @@ interface CounterControlSectionProps {
 export const CounterControlSection = ({ counterId }: CounterControlSectionProps) => {
   const counterService = useCounterService();
   const competitionService = useCompetitionService();
-  const divisionService = useAdminDivisionService();
+  const divisionService = useDivisionService();
   const progressService = useProgressService();
   const [selectedCompetitionId, setSelectedCompetitionId] = useState<string>("");
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>("");
@@ -20,8 +20,8 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
   const counter = counterService?.useCounterState(counterId) || null;
   const isConnected = !!counter;
   const competitions = competitionService?.use.competitions() || [];
-  const divisions = divisionService?.useDivisionsByCompetition(selectedCompetitionId);
-  const division = divisionService?.useDivisionById(counter?.divisionId || "");
+  const divisions = divisionService?.use.divisionsByCompetition(selectedCompetitionId);
+  const division = divisionService?.use.divisionById(counter?.divisionId || "");
 
   // 초기 데이터 로딩
   useEffect(() => {
@@ -42,7 +42,7 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
     const loadDivisions = async () => {
       if (selectedCompetitionId && divisionService) {
         try {
-          await divisionService.loadDivisionsByCompetition(selectedCompetitionId);
+          await divisionService.load.byCompetition(selectedCompetitionId);
         } catch (error) {
           console.error("Failed to load divisions:", error);
         }
@@ -56,7 +56,7 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
     const loadDivisionData = async () => {
       if (counter?.divisionId && !division && divisionService) {
         try {
-          await divisionService.loadDivisionById(counter.divisionId);
+          await divisionService.load.byId(counter.divisionId);
         } catch (error) {
           console.error("Failed to load division:", error);
         }
@@ -78,7 +78,7 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
 
     try {
       await counterService.connectDivision(counterId, selectedDivisionId);
-      await divisionService.loadDivisionById(selectedDivisionId);
+      await divisionService.load.byId(selectedDivisionId);
     } catch (error) {
       console.error("Division 연결 실패:", error);
     }
@@ -120,7 +120,7 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
             await progressService.resetDivision(counter.divisionId);
             break;
         }
-        await divisionService.loadDivisionById(counter.divisionId);
+        await divisionService.load.byId(counter.divisionId);
       } catch (error) {
         console.error(`Division ${action} 실패:`, error);
       }

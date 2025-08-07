@@ -132,17 +132,23 @@ export const createDivisionService = ({ divisionRepository }: DivisionServicePro
   };
 
   return {
-    // 조회 기능 (공용)
-    loadAllDivisions,
-    loadDivisionsByCompetition,
-    loadDivisionById,
-    useDivisions,
-    useDivisionsByCompetition,
-    useDivisionById,
-
-    // 관리 기능 (admin 전용)
-    createDivision,
-    updateDivision,
-    deleteDivision,
+    // Load functions (공용)
+    load: {
+      all: loadAllDivisions,
+      byCompetition: loadDivisionsByCompetition,
+      byId: loadDivisionById,
+    },
+    // Admin functions (관리자 전용)
+    admin: {
+      create: createDivision,
+      update: updateDivision,
+      delete: deleteDivision,
+    },
+    // Subscription hooks (구독)
+    use: {
+      divisions: useDivisions,
+      divisionsByCompetition: useDivisionsByCompetition,
+      divisionById: useDivisionById,
+    },
   };
 };

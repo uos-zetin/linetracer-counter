@@ -1,13 +1,13 @@
 import { useState, useCallback, useMemo } from "react";
 import { formatElapsedMs } from "@/entities/counter";
 import { integrateLogs, useCountdownTimer } from "@/entities/timer";
-import { useAdminDivisionService } from "@/features/admin-division";
+import { useDivisionService } from "@/features/division";
 import { useProgressService } from "@/features/progress";
 import { useTimerControlService } from "@/features/timer-control";
 
 export const TimerRunnerControlSection = () => {
   const progressService = useProgressService();
-  const divisionService = useAdminDivisionService();
+  const divisionService = useDivisionService();
   const timerControlService = useTimerControlService();
 
   const [isProcessing, setIsProcessing] = useState(false);

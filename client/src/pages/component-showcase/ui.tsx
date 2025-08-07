@@ -1,8 +1,40 @@
 import { useState, useEffect } from "react";
-import { Button, Badge, Card, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Alert, AlertTitle, AlertDescription, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui";
+import {
+  Button,
+  Badge,
+  Card,
+  Input,
+  Textarea,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Alert,
+  AlertTitle,
+  AlertDescription,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/ui";
+import type { Competition, CompetitionForm } from "@/entities/competition";
+import type { Division, DivisionForm } from "@/entities/division";
 import type { Record, RecordStatus } from "@/entities/record";
-import { useCompetitionService } from "@/features/competition";
-import { useDivisionService } from "@/features/division";
+import {
+  AdminCompetitionCreateModal,
+  AdminCompetitionEditModal,
+  AdminCompetitionDeleteModal,
+  useCompetitionService,
+} from "@/features/competition";
+import {
+  AdminDivisionCreateModal,
+  AdminDivisionEditModal,
+  AdminDivisionDeleteModal,
+  useDivisionService,
+} from "@/features/division";
 import { useParticipantService } from "@/features/participant";
 import { RecordListDisplay, RecordNoteEditor, RecordStatusSelector, useRecordService } from "@/features/record";
 
@@ -21,17 +53,26 @@ export const ComponentShowcasePage = () => {
   const [selectedCompetitionId, setSelectedCompetitionId] = useState<string>("");
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>("");
   const [selectedParticipantId, setSelectedParticipantId] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<"shared" | "record" | "data">("shared");
+  const [activeTab, setActiveTab] = useState<"shared" | "record" | "competition" | "division" | "data">("shared");
+
+  // Modal states for Competition
+  const [isCompetitionCreateModalOpen, setIsCompetitionCreateModalOpen] = useState(false);
+  const [isCompetitionEditModalOpen, setIsCompetitionEditModalOpen] = useState(false);
+  const [isCompetitionDeleteModalOpen, setIsCompetitionDeleteModalOpen] = useState(false);
+  const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
+
+  // Modal states for Division
+  const [isDivisionCreateModalOpen, setIsDivisionCreateModalOpen] = useState(false);
+  const [isDivisionEditModalOpen, setIsDivisionEditModalOpen] = useState(false);
+  const [isDivisionDeleteModalOpen, setIsDivisionDeleteModalOpen] = useState(false);
+  const [selectedDivision, setSelectedDivision] = useState<Division | null>(null);
 
   // Data loading
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true);
-        await Promise.all([
-          competitionService?.load.all(),
-          recordService?.load.allRecords(),
-        ]);
+        await Promise.all([competitionService?.load.all(), recordService?.load.allRecords()]);
         setIsLoading(false);
       } catch (error) {
         console.error("Failed to load data:", error);
@@ -47,7 +88,7 @@ export const ComponentShowcasePage = () => {
   // Load divisions when competition changes
   useEffect(() => {
     if (selectedCompetitionId && divisionService) {
-      divisionService.loadDivisionsByCompetition(selectedCompetitionId);
+      divisionService.load.byCompetition(selectedCompetitionId);
     }
   }, [selectedCompetitionId, divisionService]);
 
@@ -67,7 +108,7 @@ export const ComponentShowcasePage = () => {
 
   // Get data from services
   const competitions = competitionService?.use.competitions() || [];
-  const divisions = divisionService?.useDivisionsByCompetition(selectedCompetitionId) || [];
+  const divisions = divisionService?.use.divisionsByCompetition(selectedCompetitionId) || [];
   const participants = participantService?.useAllParticipants() || [];
   const records = recordService?.use.records() || [];
 
@@ -85,6 +126,101 @@ export const ComponentShowcasePage = () => {
   const handleStatusChange = (newStatus: RecordStatus) => {
     setCurrentStatus(newStatus);
     console.log("Status updated:", newStatus);
+  };
+
+  // Competition handlers
+
+  const handleCompetitionEdit = (competition: Competition) => {
+    setSelectedCompetition(competition);
+    setIsCompetitionEditModalOpen(true);
+  };
+
+  const handleCompetitionDelete = (competition: Competition) => {
+    setSelectedCompetition(competition);
+    setIsCompetitionDeleteModalOpen(true);
+  };
+
+  const handleCompetitionCreateSubmit = async (data: CompetitionForm) => {
+    try {
+      await competitionService?.admin.create(data);
+      setIsCompetitionCreateModalOpen(false);
+      console.log("Competition created:", data);
+    } catch (error) {
+      console.error("Failed to create competition:", error);
+    }
+  };
+
+  const handleCompetitionEditSubmit = async (data: CompetitionForm) => {
+    if (!selectedCompetition) return;
+    try {
+      await competitionService?.admin.update(selectedCompetition.id, data);
+      setIsCompetitionEditModalOpen(false);
+      setSelectedCompetition(null);
+      console.log("Competition updated:", data);
+    } catch (error) {
+      console.error("Failed to update competition:", error);
+    }
+  };
+
+  const handleCompetitionDeleteConfirm = async () => {
+    if (!selectedCompetition) return;
+    try {
+      await competitionService?.admin.delete(selectedCompetition.id);
+      setIsCompetitionDeleteModalOpen(false);
+      setSelectedCompetition(null);
+      console.log("Competition deleted:", selectedCompetition.id);
+    } catch (error) {
+      console.error("Failed to delete competition:", error);
+    }
+  };
+
+  // Division handlers
+  const handleDivisionCreate = () => {
+    setIsDivisionCreateModalOpen(true);
+  };
+
+  const handleDivisionEdit = (division: Division) => {
+    setSelectedDivision(division);
+    setIsDivisionEditModalOpen(true);
+  };
+
+  const handleDivisionDelete = (division: Division) => {
+    setSelectedDivision(division);
+    setIsDivisionDeleteModalOpen(true);
+  };
+
+  const handleDivisionCreateSubmit = async (data: DivisionForm) => {
+    try {
+      await divisionService?.admin.create(data);
+      setIsDivisionCreateModalOpen(false);
+      console.log("Division created:", data);
+    } catch (error) {
+      console.error("Failed to create division:", error);
+    }
+  };
+
+  const handleDivisionEditSubmit = async (data: DivisionForm) => {
+    if (!selectedDivision) return;
+    try {
+      await divisionService?.admin.update(selectedDivision.id, data);
+      setIsDivisionEditModalOpen(false);
+      setSelectedDivision(null);
+      console.log("Division updated:", data);
+    } catch (error) {
+      console.error("Failed to update division:", error);
+    }
+  };
+
+  const handleDivisionDeleteConfirm = async () => {
+    if (!selectedDivision) return;
+    try {
+      await divisionService?.admin.delete(selectedDivision.id);
+      setIsDivisionDeleteModalOpen(false);
+      setSelectedDivision(null);
+      console.log("Division deleted:", selectedDivision.id);
+    } catch (error) {
+      console.error("Failed to delete division:", error);
+    }
   };
 
   if (isLoading) {
@@ -192,12 +328,16 @@ export const ComponentShowcasePage = () => {
           <TableBody>
             <TableRow>
               <TableCell>John Doe</TableCell>
-              <TableCell><Badge variant="default">Active</Badge></TableCell>
+              <TableCell>
+                <Badge variant="default">Active</Badge>
+              </TableCell>
               <TableCell>1,234</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Jane Smith</TableCell>
-              <TableCell><Badge variant="secondary">Pending</Badge></TableCell>
+              <TableCell>
+                <Badge variant="secondary">Pending</Badge>
+              </TableCell>
               <TableCell>5,678</TableCell>
             </TableRow>
           </TableBody>
@@ -211,11 +351,7 @@ export const ComponentShowcasePage = () => {
       <Card className="p-6">
         <h3 className="text-xl font-semibold mb-4">Record Status Selector</h3>
         <div className="space-y-4">
-          <RecordStatusSelector
-            recordId="demo-1"
-            currentStatus={currentStatus}
-            onStatusChange={handleStatusChange}
-          />
+          <RecordStatusSelector recordId="demo-1" currentStatus={currentStatus} onStatusChange={handleStatusChange} />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <RecordStatusSelector recordId="demo-approved" currentStatus="approved" />
             <RecordStatusSelector recordId="demo-pending" currentStatus="pending" />
@@ -226,11 +362,7 @@ export const ComponentShowcasePage = () => {
 
       <Card className="p-6">
         <h3 className="text-xl font-semibold mb-4">Record Note Editor</h3>
-        <RecordNoteEditor
-          recordId="demo-note"
-          currentNote={currentNote}
-          onNoteChange={handleNoteChange}
-        />
+        <RecordNoteEditor recordId="demo-note" currentNote={currentNote} onNoteChange={handleNoteChange} />
       </Card>
 
       <Card className="p-6">
@@ -264,6 +396,117 @@ export const ComponentShowcasePage = () => {
     </div>
   );
 
+  const CompetitionComponentsTab = () => (
+    <div className="space-y-6">
+      <Card className="p-6">
+        <h3 className="text-xl font-semibold mb-4">Competition Management</h3>
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={() => setIsCompetitionCreateModalOpen(true)}>Create Competition</Button>
+          </div>
+
+          {/* Competition List */}
+          <div className="space-y-2">
+            <h4 className="font-medium">Existing Competitions</h4>
+            {competitions.length > 0 ? (
+              <div className="space-y-2">
+                {competitions.map((competition: Competition) => (
+                  <div key={competition.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <h5 className="font-medium">{competition.name}</h5>
+                      <p className="text-sm text-muted-foreground">{competition.description}</p>
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button variant="outline" size="sm" onClick={() => handleCompetitionEdit(competition)}>
+                        Edit
+                      </Button>
+                      <Button variant="destructive" size="sm" onClick={() => handleCompetitionDelete(competition)}>
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <Alert>
+                <AlertTitle>No Competitions</AlertTitle>
+                <AlertDescription>No competitions available. Create one to see it here.</AlertDescription>
+              </Alert>
+            )}
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+
+  const DivisionComponentsTab = () => (
+    <div className="space-y-6">
+      <Card className="p-6">
+        <h3 className="text-xl font-semibold mb-4">Division Management</h3>
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={handleDivisionCreate} disabled={!selectedCompetitionId}>
+              Create Division
+            </Button>
+          </div>
+
+          {!selectedCompetitionId && (
+            <Alert>
+              <AlertTitle>Select Competition First</AlertTitle>
+              <AlertDescription>
+                Please select a competition from the Data tab to create and manage divisions.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Division List */}
+          {selectedCompetitionId && (
+            <div className="space-y-2">
+              <h4 className="font-medium">Divisions for Selected Competition</h4>
+              {divisions.length > 0 ? (
+                <div className="space-y-2">
+                  {divisions.map((division: Division) => (
+                    <div key={division.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <h5 className="font-medium">{division.name}</h5>
+                        <p className="text-sm text-muted-foreground">{division.description}</p>
+                        <Badge
+                          variant={
+                            division.status === "ongoing"
+                              ? "default"
+                              : division.status === "closed"
+                                ? "destructive"
+                                : "secondary"
+                          }
+                          className="capitalize"
+                        >
+                          {division.status}
+                        </Badge>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button variant="outline" size="sm" onClick={() => handleDivisionEdit(division)}>
+                          Edit
+                        </Button>
+                        <Button variant="destructive" size="sm" onClick={() => handleDivisionDelete(division)}>
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <Alert>
+                  <AlertTitle>No Divisions</AlertTitle>
+                  <AlertDescription>No divisions found for the selected competition.</AlertDescription>
+                </Alert>
+              )}
+            </div>
+          )}
+        </div>
+      </Card>
+    </div>
+  );
+
   const DataSelectionTab = () => (
     <div className="space-y-6">
       <Card className="p-6">
@@ -271,7 +514,7 @@ export const ComponentShowcasePage = () => {
         <p className="text-muted-foreground mb-4">
           Select competition, division, and participant to load relevant records
         </p>
-        
+
         <div className="space-y-4 max-w-md">
           <div>
             <label className="block text-sm font-medium mb-2">Competition</label>
@@ -280,13 +523,15 @@ export const ComponentShowcasePage = () => {
                 <SelectValue placeholder="Select Competition" />
               </SelectTrigger>
               <SelectContent>
-                {competitions.map(comp => (
-                  <SelectItem key={comp.id} value={comp.id}>{comp.name}</SelectItem>
+                {competitions.map((comp) => (
+                  <SelectItem key={comp.id} value={comp.id}>
+                    {comp.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-          
+
           {selectedCompetitionId && (
             <div>
               <label className="block text-sm font-medium mb-2">Division</label>
@@ -295,14 +540,16 @@ export const ComponentShowcasePage = () => {
                   <SelectValue placeholder="Select Division" />
                 </SelectTrigger>
                 <SelectContent>
-                  {divisions.map(div => (
-                    <SelectItem key={div.id} value={div.id}>{div.name}</SelectItem>
+                  {divisions.map((div: Division) => (
+                    <SelectItem key={div.id} value={div.id}>
+                      {div.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
           )}
-          
+
           {selectedDivisionId && (
             <div>
               <label className="block text-sm font-medium mb-2">Participant</label>
@@ -311,9 +558,13 @@ export const ComponentShowcasePage = () => {
                   <SelectValue placeholder="Select Participant" />
                 </SelectTrigger>
                 <SelectContent>
-                  {participants.filter(p => p.divisionId === selectedDivisionId).map(participant => (
-                    <SelectItem key={participant.id} value={participant.id}>{participant.name}</SelectItem>
-                  ))}
+                  {participants
+                    .filter((p) => p.divisionId === selectedDivisionId)
+                    .map((participant) => (
+                      <SelectItem key={participant.id} value={participant.id}>
+                        {participant.name}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -349,16 +600,38 @@ export const ComponentShowcasePage = () => {
         <Card className="p-6">
           <h3 className="text-xl font-semibold mb-4">Selected Record</h3>
           <div className="space-y-2 text-sm">
-            <div><strong>ID:</strong> {selectedRecord.id}</div>
-            <div><strong>Participant:</strong> {selectedRecord.participantId}</div>
-            <div><strong>Value:</strong> {selectedRecord.value}ms</div>
-            <div><strong>Source:</strong> {selectedRecord.source}</div>
-            <div><strong>Status:</strong> <Badge variant={
-              selectedRecord.status === 'approved' ? 'default' :
-              selectedRecord.status === 'rejected' ? 'destructive' : 'secondary'
-            }>{selectedRecord.status}</Badge></div>
-            <div><strong>Note:</strong> {selectedRecord.note || "No note"}</div>
-            <div><strong>Created:</strong> {selectedRecord.createdAt.toLocaleString()}</div>
+            <div>
+              <strong>ID:</strong> {selectedRecord.id}
+            </div>
+            <div>
+              <strong>Participant:</strong> {selectedRecord.participantId}
+            </div>
+            <div>
+              <strong>Value:</strong> {selectedRecord.value}ms
+            </div>
+            <div>
+              <strong>Source:</strong> {selectedRecord.source}
+            </div>
+            <div>
+              <strong>Status:</strong>{" "}
+              <Badge
+                variant={
+                  selectedRecord.status === "approved"
+                    ? "default"
+                    : selectedRecord.status === "rejected"
+                      ? "destructive"
+                      : "secondary"
+                }
+              >
+                {selectedRecord.status}
+              </Badge>
+            </div>
+            <div>
+              <strong>Note:</strong> {selectedRecord.note || "No note"}
+            </div>
+            <div>
+              <strong>Created:</strong> {selectedRecord.createdAt.toLocaleString()}
+            </div>
           </div>
         </Card>
       )}
@@ -393,10 +666,20 @@ export const ComponentShowcasePage = () => {
               Record Components
             </Button>
             <Button
-              variant={activeTab === "data" ? "default" : "ghost"}
+              variant={activeTab === "competition" ? "default" : "ghost"}
               size="sm"
-              onClick={() => setActiveTab("data")}
+              onClick={() => setActiveTab("competition")}
             >
+              Competition Components
+            </Button>
+            <Button
+              variant={activeTab === "division" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setActiveTab("division")}
+            >
+              Division Components
+            </Button>
+            <Button variant={activeTab === "data" ? "default" : "ghost"} size="sm" onClick={() => setActiveTab("data")}>
               Data Selection
             </Button>
           </div>
@@ -405,8 +688,67 @@ export const ComponentShowcasePage = () => {
         {/* Tab Content */}
         {activeTab === "shared" && <SharedComponentsTab />}
         {activeTab === "record" && <RecordComponentsTab />}
+        {activeTab === "competition" && <CompetitionComponentsTab />}
+        {activeTab === "division" && <DivisionComponentsTab />}
         {activeTab === "data" && <DataSelectionTab />}
       </div>
+
+      {/* Competition Modals */}
+      <AdminCompetitionCreateModal
+        isOpen={isCompetitionCreateModalOpen}
+        onClose={() => setIsCompetitionCreateModalOpen(false)}
+        onSubmit={handleCompetitionCreateSubmit}
+      />
+
+      <AdminCompetitionEditModal
+        isOpen={isCompetitionEditModalOpen}
+        onClose={() => {
+          setIsCompetitionEditModalOpen(false);
+          setSelectedCompetition(null);
+        }}
+        onSubmit={handleCompetitionEditSubmit}
+        competition={selectedCompetition}
+      />
+
+      <AdminCompetitionDeleteModal
+        isOpen={isCompetitionDeleteModalOpen}
+        onClose={() => {
+          setIsCompetitionDeleteModalOpen(false);
+          setSelectedCompetition(null);
+        }}
+        onConfirm={handleCompetitionDeleteConfirm}
+        competition={selectedCompetition}
+      />
+
+      {/* Division Modals */}
+      <AdminDivisionCreateModal
+        isOpen={isDivisionCreateModalOpen}
+        onClose={() => setIsDivisionCreateModalOpen(false)}
+        onSubmit={handleDivisionCreateSubmit}
+        competitions={competitions}
+        preSelectedCompetitionId={selectedCompetitionId}
+      />
+
+      <AdminDivisionEditModal
+        isOpen={isDivisionEditModalOpen}
+        onClose={() => {
+          setIsDivisionEditModalOpen(false);
+          setSelectedDivision(null);
+        }}
+        onSubmit={handleDivisionEditSubmit}
+        division={selectedDivision}
+        competitions={competitions}
+      />
+
+      <AdminDivisionDeleteModal
+        isOpen={isDivisionDeleteModalOpen}
+        onClose={() => {
+          setIsDivisionDeleteModalOpen(false);
+          setSelectedDivision(null);
+        }}
+        onConfirm={handleDivisionDeleteConfirm}
+        division={selectedDivision}
+      />
     </div>
   );
 };

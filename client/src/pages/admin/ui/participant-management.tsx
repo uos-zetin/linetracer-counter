@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import type { Competition } from "@/entities/competition";
 import type { Participant, ParticipantForm } from "@/entities/participant";
-import { useAdminDivisionService } from "@/features/admin-division";
 import {
   useAdminParticipantService,
   ParticipantCreateModal,
@@ -10,6 +9,7 @@ import {
   ParticipantDeleteModal,
 } from "@/features/admin-participant";
 import { useCompetitionService } from "@/features/competition";
+import { useDivisionService } from "@/features/division";
 
 // 페이지네이션 설정
 const PARTICIPANTS_PER_PAGE = 5;
@@ -18,11 +18,11 @@ export function ParticipantManagement() {
   const [searchParams, setSearchParams] = useSearchParams();
   const participantService = useAdminParticipantService();
   const competitionService = useCompetitionService();
-  const divisionService = useAdminDivisionService();
+  const divisionService = useDivisionService();
 
   const competitions = competitionService.use.competitions();
   const selectedCompetitionId = searchParams.get("competitionId") || "";
-  const divisions = divisionService.useDivisionsByCompetition(selectedCompetitionId);
+  const divisions = divisionService.use.divisionsByCompetition(selectedCompetitionId);
   const allParticipants = participantService.useParticipants();
 
   // 페이지네이션 상태
@@ -44,7 +44,7 @@ export function ParticipantManagement() {
   // 선택된 대회의 부문들 로드
   useEffect(() => {
     if (selectedCompetitionId) {
-      divisionService.loadDivisionsByCompetition(selectedCompetitionId).catch((error) => {
+      divisionService.load.byCompetition(selectedCompetitionId).catch((error: unknown) => {
         console.error("Failed to load divisions:", error);
       });
     }
