@@ -1,7 +1,9 @@
+import type { BaseEntityActions } from "@/shared/lib";
+
 export type RecordSource = "stopwatch" | "manual" | "other";
 export type RecordStatus = "pending" | "approved" | "rejected";
 
-export interface Record {
+export type Record = {
   id: string;
   participantId: string;
   value: number;
@@ -9,20 +11,12 @@ export interface Record {
   status: RecordStatus;
   note: string;
   createdAt: Date;
-}
+};
 
-export interface RecordForm {
-  value: number;
-  source: RecordSource;
-  note: string;
-}
+export type RecordForm = Pick<Record, "value" | "source" | "note">;
 
-export interface RecordActions {
-  init: (records: Record[]) => void;
-  add: (record: Record) => void;
+export interface RecordActions extends BaseEntityActions<Record> {
   addMany: (records: Record[]) => void;
-  update: (record: Record) => void;
-  remove: (recordId: string) => void;
 }
 
 export interface RecordStore extends RecordActions {
