@@ -1,17 +1,31 @@
-import type { Record } from "@/entities/record";
+import type { Record, RecordStatus } from "@/entities/record";
 
 export interface RecordService {
-  // 조회 기능 (공용)
-  loadAllRecords: () => Promise<void>;
-  loadRecordsByParticipant: (participantId: string) => Promise<void>;
-  loadTopRecordsByDivision: (divisionId: string) => Promise<void>;
-  useRecords: () => Record[];
-  useRecordsByParticipant: (participantId: string) => Record[];
-  useTopRecordsByDivision: (divisionId: string) => Record[];
-  useRecordById: (id: string) => Record | null;
+  // Load functions (공용)
+  load: {
+    allRecords: () => Promise<void>;
+    byParticipant: (participantId: string) => Promise<Record[]>;
+    topByDivision: (divisionId: string) => Promise<Record[]>;
+  };
 
-  // 관리 기능 (admin 전용, authFetcher에서 인증 확인)
-  createRecord: (data: Record) => Promise<void>;
-  updateRecordNote: (id: string, note: string) => Promise<void>;
-  updateRecordStatus: (id: string, status: Record["status"]) => Promise<void>;
+  // Admin functions (관리자 전용)
+  admin: {
+    create: (participantId: string, recordData: Pick<Record, "value" | "source" | "note">) => Promise<Record>;
+    updateNote: (recordId: string, note: string) => Promise<Record>;
+    updateStatus: (recordId: string, status: RecordStatus) => Promise<Record>;
+  };
+
+  // Filter functions (제어용)
+  filter: {
+    byParticipant: (participantId: string) => Record[];
+    byStatus: (status: RecordStatus) => Record[];
+  };
+
+  // Subscription hooks (구독)
+  use: {
+    records: () => Record[];
+    recordsByParticipant: (participantId: string) => Record[];
+    topRecordsByDivision: (divisionId: string) => Record[];
+    recordById: (recordId: string) => Record | null;
+  };
 }

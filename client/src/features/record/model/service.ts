@@ -1,4 +1,4 @@
-import { useZustandRecordStore, type Record, type RecordRepository } from "@/entities/record";
+import { useZustandRecordStore, type Record, type RecordRepository, type RecordStatus } from "@/entities/record";
 import type { RecordService } from "./types";
 
 interface RecordServiceProps {
@@ -6,10 +6,10 @@ interface RecordServiceProps {
 }
 
 export const createRecordService = ({ recordRepository }: RecordServiceProps): RecordService => {
-  // 조회 기능 (공용)
+  // ===== Load Functions (Public) =====
   const loadAllRecords = async (): Promise<void> => {
     try {
-      // 빈 배열로 초기화
+      // 빈 배열로 초기화 (전체 초기화용)
       const store = useZustandRecordStore.getState();
       store.init([]);
     } catch (error) {
@@ -18,74 +18,90 @@ export const createRecordService = ({ recordRepository }: RecordServiceProps): R
     }
   };
 
-  const loadRecordsByParticipant = async (participantId: string): Promise<void> => {
+  const loadRecordsByParticipant = async (participantId: string): Promise<Record[]> => {
     try {
       const records = await recordRepository.getAllRecords(participantId);
-
-      // 한 번에 여러 records 추가
       const store = useZustandRecordStore.getState();
       store.addMany(records);
+      return records;
     } catch (error) {
       console.error(`Failed to load records for participant ${participantId}:`, error);
       throw error;
     }
   };
 
-  const loadTopRecordsByDivision = async (divisionId: string): Promise<void> => {
+  const loadTopRecordsByDivision = async (divisionId: string): Promise<Record[]> => {
     try {
       const topRecords = await recordRepository.getTopRecords(divisionId);
-
-      // Top records를 store에 추가/업데이트
       const store = useZustandRecordStore.getState();
       store.addMany(topRecords);
+      return topRecords;
     } catch (error) {
       console.error(`Failed to load top records for division ${divisionId}:`, error);
       throw error;
     }
   };
 
-  // 관리 기능 (admin 전용, authFetcher에서 인증 확인됨)
-  const createRecord = async (data: Record): Promise<void> => {
+  // ===== CRUD Functions (Admin) =====
+  const createRecord = async (
+    participantId: string,
+    recordData: Pick<Record, "value" | "source" | "note">
+  ): Promise<Record> => {
     try {
-      const newRecord = await recordRepository.createRecord(data.participantId, data);
+      const newRecord = await recordRepository.createRecord(participantId, recordData);
       const store = useZustandRecordStore.getState();
       store.add(newRecord);
+      return newRecord;
     } catch (error) {
       console.error("Failed to create record:", error);
       throw error;
     }
   };
 
-  const updateRecordNote = async (id: string, note: string): Promise<void> => {
+  const updateRecordNote = async (recordId: string, note: string): Promise<Record> => {
     try {
-      const updatedRecord = await recordRepository.updateRecordNote(id, note);
+      const updatedRecord = await recordRepository.updateRecordNote(recordId, note);
       const store = useZustandRecordStore.getState();
       store.update(updatedRecord);
+      return updatedRecord;
     } catch (error) {
-      console.error(`Failed to update record with id ${id}:`, error);
+      console.error(`Failed to update record note for id ${recordId}:`, error);
       throw error;
     }
   };
 
-  const updateRecordStatus = async (id: string, status: Record["status"]): Promise<void> => {
+  const updateRecordStatus = async (recordId: string, status: RecordStatus): Promise<Record> => {
     try {
-      const updatedRecord = await recordRepository.updateRecordStatus(id, status);
+      const updatedRecord = await recordRepository.updateRecordStatus(recordId, status);
       const store = useZustandRecordStore.getState();
       store.update(updatedRecord);
+      return updatedRecord;
     } catch (error) {
-      console.error(`Failed to update record status for id ${id}:`, error);
+      console.error(`Failed to update record status for id ${recordId}:`, error);
       throw error;
     }
   };
 
-  // Store 구독 메서드들 (공용)
+  // ===== Filter Functions (Control) =====
+  const getRecordsByParticipant = (participantId: string): Record[] => {
+    const store = useZustandRecordStore.getState();
+    return store.records.filter((record) => record.participantId === participantId);
+  };
+
+  const getRecordsByStatus = (status: RecordStatus): Record[] => {
+    const store = useZustandRecordStore.getState();
+    return store.records.filter((record) => record.status === status);
+  };
+
+  // ===== Subscription Hooks =====
   const useRecords = (): Record[] => {
     return useZustandRecordStore((state) => state.records);
   };
 
   const useRecordsByParticipant = (participantId: string): Record[] => {
-    const allRecords = useZustandRecordStore((state) => state.records);
-    return allRecords.filter((record) => record.participantId === participantId);
+    return useZustandRecordStore((state) => 
+      state.records.filter((record) => record.participantId === participantId)
+    );
   };
 
   const useTopRecordsByDivision = (divisionId: string): Record[] => {
@@ -100,24 +116,40 @@ export const createRecordService = ({ recordRepository }: RecordServiceProps): R
     return allRecords.sort((a, b) => a.value - b.value);
   };
 
-  const useRecordById = (id: string): Record | null => {
-    const record = useZustandRecordStore((state) => state.records.find((record) => record.id === id));
-    return record || null;
+  const useRecordById = (recordId: string): Record | null => {
+    return useZustandRecordStore((state) => 
+      state.records.find((record) => record.id === recordId) || null
+    );
   };
 
+  // ===== Public API =====
   return {
-    // 조회 기능 (공용)
-    loadAllRecords,
-    loadRecordsByParticipant,
-    loadTopRecordsByDivision,
-    useRecords,
-    useRecordsByParticipant,
-    useTopRecordsByDivision,
-    useRecordById,
+    // Load functions (공용)
+    load: {
+      allRecords: loadAllRecords,
+      byParticipant: loadRecordsByParticipant,
+      topByDivision: loadTopRecordsByDivision,
+    },
 
-    // 관리 기능 (admin 전용)
-    createRecord,
-    updateRecordNote,
-    updateRecordStatus,
+    // Admin functions (관리자 전용)
+    admin: {
+      create: createRecord,
+      updateNote: updateRecordNote,
+      updateStatus: updateRecordStatus,
+    },
+
+    // Filter functions (제어용)
+    filter: {
+      byParticipant: getRecordsByParticipant,
+      byStatus: getRecordsByStatus,
+    },
+
+    // Subscription hooks (구독)
+    use: {
+      records: useRecords,
+      recordsByParticipant: useRecordsByParticipant,
+      topRecordsByDivision: useTopRecordsByDivision,
+      recordById: useRecordById,
+    },
   };
 };

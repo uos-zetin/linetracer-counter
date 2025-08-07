@@ -1,7 +1,8 @@
 import { formatDateTime } from "@/shared/lib";
+import { Button } from "@/shared/ui";
 import { formatElapsedMs } from "@/entities/counter";
 import type { Record, RecordStatus } from "@/entities/record";
-import { useRecordControlService } from "../model/context";
+import { useRecordService } from "../model/context";
 
 interface RecordListDisplayProps {
   participantId?: string;
@@ -18,22 +19,22 @@ export const RecordListDisplay = ({
   onRecordSelect,
   className = "",
 }: RecordListDisplayProps) => {
-  const recordControlService = useRecordControlService();
-  const allRecords = recordControlService.useRecords();
+  const recordService = useRecordService();
+  const allRecords = recordService.use.records();
 
   const getFilteredRecords = (): Record[] => {
     let records = allRecords;
 
     if (participantId) {
-      records = recordControlService.getRecordsByParticipant(participantId);
+      records = recordService.filter.byParticipant(participantId);
     }
 
     if (filterByStatus) {
-      records = records.filter((record) => record.status === filterByStatus);
+      records = recordService.filter.byStatus(filterByStatus);
     }
 
     // Sort by creation date (newest first)
-    return records.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return records.sort((a: Record, b: Record) => b.createdAt.getTime() - a.createdAt.getTime());
   };
 
   const getStatusColor = (status: RecordStatus) => {
@@ -91,39 +92,46 @@ export const RecordListDisplay = ({
       </div>
 
       <div className="space-y-2 max-h-96 overflow-y-auto">
-        {filteredRecords.map((record) => (
-          <div
-            key={record.id}
-            onClick={() => onRecordSelect?.(record)}
-            className={`p-4 border rounded-lg transition-colors ${
-              onRecordSelect ? "cursor-pointer hover:bg-gray-50" : ""
-            }`}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex-1 space-y-2">
-                <div className="flex items-center space-x-3">
-                  <div className="text-2xl font-mono font-bold">{formatElapsedMs(record.value).toString()}</div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg">{getSourceIcon(record.source)}</span>
-                    <span className="text-sm text-gray-600 capitalize">{record.source}</span>
+        {filteredRecords.map((record) => {
+          const RecordWrapper = onRecordSelect ? Button : "div";
+          const wrapperProps = onRecordSelect
+            ? {
+                variant: "ghost" as const,
+                className: "h-auto p-4 justify-start text-left border rounded-lg w-full",
+                onClick: () => onRecordSelect(record),
+              }
+            : {
+                className: "p-4 border rounded-lg",
+              };
+
+          return (
+            <RecordWrapper key={record.id} {...wrapperProps}>
+              <div className="flex items-start justify-between">
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center space-x-3">
+                    <div className="text-2xl font-mono font-bold">{formatElapsedMs(record.value).toString()}</div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg">{getSourceIcon(record.source)}</span>
+                      <span className="text-sm text-gray-600 capitalize">{record.source}</span>
+                    </div>
                   </div>
+
+                  {showParticipantInfo && (
+                    <div className="text-sm text-gray-600">Participant ID: {record.participantId}</div>
+                  )}
+
+                  {record.note && <div className="text-sm text-gray-700 bg-gray-50 p-2 rounded">{record.note}</div>}
+
+                  <div className="text-xs text-gray-500">Created: {formatDateTime(record.createdAt)}</div>
                 </div>
 
-                {showParticipantInfo && (
-                  <div className="text-sm text-gray-600">Participant ID: {record.participantId}</div>
-                )}
-
-                {record.note && <div className="text-sm text-gray-700 bg-gray-50 p-2 rounded">{record.note}</div>}
-
-                <div className="text-xs text-gray-500">Created: {formatDateTime(record.createdAt)}</div>
+                <div className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(record.status)}`}>
+                  {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                </div>
               </div>
-
-              <div className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(record.status)}`}>
-                {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
-              </div>
-            </div>
-          </div>
-        ))}
+            </RecordWrapper>
+          );
+        })}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { Button, Badge } from "@/shared/ui";
 import type { RecordStatus } from "@/entities/record";
-import { useRecordControlService } from "../model/context";
+import { useRecordService } from "../model/context";
 
 interface RecordStatusSelectorProps {
   recordId: string;
@@ -10,10 +11,10 @@ interface RecordStatusSelectorProps {
   className?: string;
 }
 
-const statusOptions: { value: RecordStatus; label: string; color: string }[] = [
-  { value: "pending", label: "Pending", color: "text-yellow-600 bg-yellow-50 border-yellow-200" },
-  { value: "approved", label: "Approved", color: "text-green-600 bg-green-50 border-green-200" },
-  { value: "rejected", label: "Rejected", color: "text-red-600 bg-red-50 border-red-200" },
+const statusOptions: { value: RecordStatus; label: string; variant: "default" | "secondary" | "destructive" }[] = [
+  { value: "pending", label: "Pending", variant: "secondary" },
+  { value: "approved", label: "Approved", variant: "default" },
+  { value: "rejected", label: "Rejected", variant: "destructive" },
 ];
 
 export const RecordStatusSelector = ({
@@ -23,7 +24,7 @@ export const RecordStatusSelector = ({
   onStatusChange,
   className = "",
 }: RecordStatusSelectorProps) => {
-  const recordControlService = useRecordControlService();
+  const recordService = useRecordService();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleStatusChange = async (newStatus: RecordStatus) => {
@@ -31,7 +32,7 @@ export const RecordStatusSelector = ({
 
     setIsLoading(true);
     try {
-      await recordControlService.updateRecordStatus(recordId, newStatus);
+      await recordService.admin.updateStatus(recordId, newStatus);
       onStatusChange?.(newStatus);
     } catch (error) {
       console.error("Failed to update record status:", error);
@@ -48,32 +49,32 @@ export const RecordStatusSelector = ({
 
   return (
     <div className={`space-y-2 ${className}`}>
-      <label className="block text-sm font-medium text-gray-700">Record Status</label>
+      <label className="block text-sm font-medium text-foreground">Record Status</label>
 
       <div className="space-y-2">
         {/* Current Status Display */}
-        <div className={`px-3 py-2 rounded-lg border ${currentStatusInfo.color}`}>
-          <div className="flex items-center justify-between">
-            <span className="font-medium">Current: {currentStatusInfo.label}</span>
-            {isLoading && <div className="text-xs text-gray-500">Updating...</div>}
+        <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/50">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-medium">Current:</span>
+            <Badge variant={currentStatusInfo.variant}>
+              {currentStatusInfo.label}
+            </Badge>
           </div>
+          {isLoading && <div className="text-xs text-muted-foreground">Updating...</div>}
         </div>
 
         {/* Status Change Buttons */}
         <div className="flex space-x-2">
           {statusOptions.map((option) => (
-            <button
+            <Button
               key={option.value}
+              variant={option.value === currentStatus ? option.variant : "outline"}
+              size="sm"
               onClick={() => handleStatusChange(option.value)}
               disabled={disabled || isLoading || option.value === currentStatus}
-              className={`px-3 py-1 text-sm rounded border transition-colors ${
-                option.value === currentStatus
-                  ? `${option.color} cursor-default`
-                  : `hover:${option.color} border-gray-300 text-gray-700 hover:border-opacity-50`
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {option.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

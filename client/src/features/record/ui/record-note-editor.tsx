@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useRecordControlService } from "../model/context";
+import { Button, Textarea } from "@/shared/ui";
+import { useRecordService } from "../model/context";
 
 interface RecordNoteEditorProps {
   recordId: string;
@@ -16,7 +17,7 @@ export const RecordNoteEditor = ({
   onNoteChange,
   className = "",
 }: RecordNoteEditorProps) => {
-  const recordControlService = useRecordControlService();
+  const recordService = useRecordService();
   const [note, setNote] = useState(currentNote);
   const [isLoading, setIsLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -35,7 +36,7 @@ export const RecordNoteEditor = ({
 
     setIsLoading(true);
     try {
-      await recordControlService.updateRecordNote(recordId, note);
+      await recordService.admin.updateNote(recordId, note);
       onNoteChange?.(note);
       setHasChanges(false);
     } catch (error) {
@@ -65,37 +66,38 @@ export const RecordNoteEditor = ({
 
   return (
     <div className={`space-y-2 ${className}`}>
-      <label className="block text-sm font-medium text-gray-700">Record Note</label>
+      <label className="block text-sm font-medium text-foreground">Record Note</label>
 
       <div className="space-y-2">
-        <textarea
+        <Textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={disabled || isLoading}
           placeholder="Add a note about this record..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="resize-none"
           rows={3}
         />
 
         {hasChanges && (
           <div className="flex items-center justify-between text-sm">
-            <div className="text-gray-500">Press Ctrl+Enter to save, Esc to cancel</div>
+            <div className="text-muted-foreground">Press Ctrl+Enter to save, Esc to cancel</div>
             <div className="flex space-x-2">
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleCancel}
                 disabled={disabled || isLoading}
-                className="px-3 py-1 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                size="sm"
                 onClick={handleSave}
                 disabled={disabled || isLoading}
-                className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? "Saving..." : "Save"}
-              </button>
+              </Button>
             </div>
           </div>
         )}
