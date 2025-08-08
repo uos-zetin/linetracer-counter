@@ -1,13 +1,14 @@
 import { toast } from "sonner";
 import type { ApiError } from "@/shared/api";
 import { classifyError } from "../lib/error-classifier";
-import { showErrorModal } from "../lib/modal-controller";
-import type { ErrorHandlingService } from "./types";
+import type { ErrorHandlingService, ErrorHandlingConfig } from "./types";
 
 /**
  * 에러 핸들링 서비스 구현
  */
-export function createErrorHandlingService(): ErrorHandlingService {
+export function createErrorHandlingService(
+  showModal?: (config: ErrorHandlingConfig, onAction?: () => void) => void
+): ErrorHandlingService {
   return {
     handle: (error: ApiError | Error, context?: string, onRedirect?: (path: string) => void) => {
       // 에러 분류
@@ -36,7 +37,9 @@ export function createErrorHandlingService(): ErrorHandlingService {
           modalCallback = () => onRedirect(redirectPath);
         }
 
-        showErrorModal(config, modalCallback);
+        if (showModal) {
+          showModal(config, modalCallback);
+        }
       } else {
         // Toast 표시
         toast.error(config.message, {

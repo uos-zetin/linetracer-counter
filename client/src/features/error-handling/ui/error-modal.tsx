@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import {
@@ -9,28 +8,16 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/shared/ui/dialog";
-import { getInitialModalState, registerModalStateSetter } from "../lib/modal-controller";
+import { useErrorModal } from "../model/modal-context";
 
 /**
  * 에러 모달 컴포넌트
  */
 export function ErrorModal() {
-  const [state, setState] = useState(getInitialModalState());
-
-  // 상태 업데이트 함수 등록
-  useEffect(() => {
-    return registerModalStateSetter(setState);
-  }, []);
+  const { state, hideModal } = useErrorModal();
 
   const handleClose = () => {
     if (!state.config) return;
-
-    // 모달 닫기
-    setState({
-      isOpen: false,
-      config: null,
-      onAction: undefined,
-    });
 
     // 액션 콜백이 있으면 호출
     if (state.onAction) {
@@ -49,6 +36,9 @@ export function ErrorModal() {
           break;
       }
     }
+
+    // 모달 닫기
+    hideModal();
   };
 
   const handleOpenChange = (open: boolean) => {

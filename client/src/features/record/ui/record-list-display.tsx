@@ -93,46 +93,48 @@ export const RecordListDisplay = ({
 
       <div className="space-y-2 max-h-96 overflow-y-auto">
         {filteredRecords.map((record) => {
-          const RecordWrapper = onRecordSelect ? Button : "div";
-          const wrapperProps = onRecordSelect
-            ? {
-                variant: "ghost" as const,
-                className: "h-auto p-4 justify-start text-left border rounded-lg w-full",
-                onClick: () => onRecordSelect(record),
-              }
-            : {
-                className: "p-4 border rounded-lg",
-              };
-
-          return (
-            <RecordWrapper key={record.id} {...wrapperProps}>
-              <div className="space-y-2">
-                {/* Top row: Time and Status - fixed gap */}
-                <div className="flex items-center gap-3">
-                  <div className="text-2xl font-mono font-bold">{formatElapsedMs(record.value).toString()}</div>
-                  <div className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${getStatusColor(record.status)}`}>
-                    {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
-                  </div>
+          const recordContent = (
+            <div className="space-y-2">
+              {/* Top row: Time and Status - fixed gap */}
+              <div className="flex items-center gap-3">
+                <div className="text-2xl font-mono font-bold">{formatElapsedMs(record.value).toString()}</div>
+                <div className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${getStatusColor(record.status)}`}>
+                  {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
                 </div>
-                
-                {/* Source info */}
-                <div className="flex items-center space-x-2">
-                  <span className="text-lg">{getSourceIcon(record.source)}</span>
-                  <span className="text-sm text-gray-600 capitalize">{record.source}</span>
-                </div>
-
-                {/* Participant info if enabled */}
-                {showParticipantInfo && (
-                  <div className="text-sm text-gray-600">Participant ID: {record.participantId}</div>
-                )}
-
-                {/* Note if exists */}
-                {record.note && <div className="text-sm text-gray-700 bg-gray-50 p-2 rounded">{record.note}</div>}
-
-                {/* Created date */}
-                <div className="text-xs text-gray-500">Created: {formatDateTime(record.createdAt)}</div>
               </div>
-            </RecordWrapper>
+              
+              {/* Source info */}
+              <div className="flex items-center space-x-2">
+                <span className="text-lg">{getSourceIcon(record.source)}</span>
+                <span className="text-sm text-gray-600 capitalize">{record.source}</span>
+              </div>
+
+              {/* Participant info if enabled */}
+              {showParticipantInfo && (
+                <div className="text-sm text-gray-600">Participant ID: {record.participantId}</div>
+              )}
+
+              {/* Note if exists */}
+              {record.note && <div className="text-sm text-gray-700 bg-gray-50 p-2 rounded">{record.note}</div>}
+
+              {/* Created date */}
+              <div className="text-xs text-gray-500">Created: {formatDateTime(record.createdAt)}</div>
+            </div>
+          );
+
+          return onRecordSelect ? (
+            <Button
+              key={record.id}
+              variant="ghost"
+              className="h-auto p-4 justify-start text-left border rounded-lg w-full"
+              onClick={() => onRecordSelect(record)}
+            >
+              {recordContent}
+            </Button>
+          ) : (
+            <div key={record.id} className="p-4 border rounded-lg">
+              {recordContent}
+            </div>
           );
         })}
       </div>
