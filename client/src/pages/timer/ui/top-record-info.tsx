@@ -29,8 +29,8 @@ const RIGHT_COLUMN_START_RANK = ROW_COUNT + 1; // 6
 export function TopRecordView() {
   const progressService = useProgressService();
   const adminParticipantService = useParticipantService();
-  const topRecords = progressService.useTopRecords();
-  const division = progressService.useDivision();
+  const topRecords = progressService.use.topRecords();
+  const division = progressService.use.division();
 
   // Division이 있을 때 해당 division의 모든 participant를 로드
   useEffect(() => {

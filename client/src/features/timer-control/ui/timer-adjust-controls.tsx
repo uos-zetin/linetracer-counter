@@ -24,7 +24,7 @@ export const TimerAdjustControls = ({
     try {
       const { type, adjustValue }: { type: TimerLogType; adjustValue: number } =
         value < 0 ? { type: "sub", adjustValue: Math.abs(value) } : { type: "add", adjustValue: value };
-      await timerControlService.adjustTimer(participantId, type, adjustValue);
+      await timerControlService.admin.adjust(participantId, type, adjustValue);
       onAdjust?.(value);
     } catch (error) {
       console.error("Failed to adjust timer:", error);

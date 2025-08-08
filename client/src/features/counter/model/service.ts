@@ -117,21 +117,6 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
     store.stop(counterId, stoppedAt);
   };
 
-  const getElapsedMs = (counterId: string, now?: number) => {
-    const counter = useZustandCounterStore.getState().counters.find((c) => c.id === counterId);
-
-    if (!counter) {
-      return 0;
-    }
-    if (!counter.startedAt) {
-      return 0;
-    }
-    const elapsed = (now || Date.now()) - counter.startedAt;
-    if (counter.stoppedAt) {
-      return Math.max(counter.stoppedAt - counter.startedAt, 0);
-    }
-    return Math.max(elapsed, 0);
-  };
 
   const connectDivision = async (counterId: string, divisionId: string) => {
     try {
@@ -177,17 +162,35 @@ export const createCounterService = ({ counterRepository, counterChannel }: Coun
   };
 
   return {
-    connect,
-    disconnect,
-    reset,
-    useStopwatch,
-    useCounterState,
-    getAllCounters,
-    loadCounterById,
-    start,
-    stop,
-    getElapsedMs,
-    connectDivision,
-    disconnectDivision,
+    // Load functions (데이터 조회)
+    load: {
+      all: getAllCounters,
+      byId: loadCounterById,
+    },
+
+    // Admin functions (카운터 관리)
+    admin: {
+      reset,
+      connectDivision,
+      disconnectDivision,
+    },
+
+    // Real-time connection functions (실시간 연결)
+    connection: {
+      connect,
+      disconnect,
+    },
+
+    // Local state functions (로컬 상태 조작)
+    local: {
+      start,
+      stop,
+    },
+
+    // Subscription hooks (구독)
+    use: {
+      stopwatch: useStopwatch,
+      counterState: useCounterState,
+    },
   };
 };

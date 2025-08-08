@@ -2,7 +2,7 @@ import { useProgressService } from "@/features/progress";
 
 export function RunnerInfo() {
   const progressService = useProgressService();
-  const runner = progressService.useRunner();
+  const runner = progressService.use.runner();
 
   const runnerName = runner?.participant.name || "No Runner";
   const runnerTeam = runner?.participant.teamName || "No Team";

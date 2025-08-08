@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { formatElapsedMs } from "@/entities/counter";
+import { formatElapsedMs, getElapsedMs } from "@/entities/counter";
 import { useCounterService } from "@/features/counter";
 
 interface StopwatchControlSectionProps {
@@ -10,8 +10,8 @@ export const StopwatchControlSection = ({ counterId }: StopwatchControlSectionPr
   const counterService = useCounterService();
   const [currentTime, setCurrentTime] = useState(Date.now());
 
-  const counter = counterService?.useCounterState(counterId) || null;
-  const stopwatch = counterService?.useStopwatch(counterId) || null;
+  const counter = counterService?.use.counterState(counterId) || null;
+  const stopwatch = counterService?.use.stopwatch(counterId) || null;
 
   // 실시간 시간 업데이트
   useEffect(() => {
@@ -24,11 +24,11 @@ export const StopwatchControlSection = ({ counterId }: StopwatchControlSectionPr
 
   // 경과 시간 계산
   const getElapsedTime = () => {
-    if (!stopwatch?.startedAt || !counterService) return 0;
+    if (!stopwatch?.startedAt) return 0;
 
     // 종료시간이 있으면 종료시간 기준으로 계산, 없으면 현재시간 기준
     const endTime = stopwatch.stoppedAt || currentTime;
-    return counterService.getElapsedMs(counterId, endTime);
+    return getElapsedMs(stopwatch.startedAt, endTime);
   };
 
   // 시간 포맷팅 (기존 formatter 사용)
@@ -41,7 +41,7 @@ export const StopwatchControlSection = ({ counterId }: StopwatchControlSectionPr
 
     if (confirm("스톱워치를 리셋하시겠습니까?")) {
       try {
-        await counterService.reset(counterId);
+        await counterService.admin.reset(counterId);
       } catch (error) {
         console.error("스톱워치 리셋 실패:", error);
       }

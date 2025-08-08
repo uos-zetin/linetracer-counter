@@ -3,7 +3,7 @@ import { useSingleImageUpload } from "../lib/use-image-upload";
 
 export function TimerPageHeader() {
   const progressService = useProgressService();
-  const competition = progressService.useCompetition();
+  const competition = progressService.use.competition();
   const { image, handleFile, inputRef } = useSingleImageUpload();
 
   return (

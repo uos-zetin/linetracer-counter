@@ -1,4 +1,4 @@
-import type { ManualRecordForm, ManualRecordRepository } from "@/entities/manual-record";
+import type { ManualRecord, ManualRecordForm, ManualRecordRepository } from "@/entities/manual-record";
 import type { ManualRecordService } from "./types";
 
 interface ManualRecordServiceProps {
@@ -8,10 +8,18 @@ interface ManualRecordServiceProps {
 export const createManualRecordService = ({
   manualRecordRepository,
 }: ManualRecordServiceProps): ManualRecordService => {
-  const createManualRecord = async (participantId: string, form: ManualRecordForm) => {
+  const loadManualRecordsByParticipant = async (participantId: string): Promise<ManualRecord[]> => {
     try {
-      const manualRecord = await manualRecordRepository.createManualRecord(participantId, form);
-      return manualRecord;
+      return await manualRecordRepository.getAllManualRecords(participantId);
+    } catch (error) {
+      console.error("Failed to load manual records:", error);
+      throw error;
+    }
+  };
+
+  const createManualRecord = async (participantId: string, form: ManualRecordForm): Promise<ManualRecord> => {
+    try {
+      return await manualRecordRepository.createManualRecord(participantId, form);
     } catch (error) {
       console.error("Failed to create manual record:", error);
       throw error;
@@ -19,6 +27,14 @@ export const createManualRecordService = ({
   };
 
   return {
-    createManualRecord,
+    // Load functions (데이터 조회)
+    load: {
+      byParticipant: loadManualRecordsByParticipant,
+    },
+    
+    // Admin functions (수동 기록 관리)
+    admin: {
+      create: createManualRecord,
+    },
   };
 };

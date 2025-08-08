@@ -17,7 +17,7 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
   const [selectedCompetitionId, setSelectedCompetitionId] = useState<string>("");
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>("");
 
-  const counter = counterService?.useCounterState(counterId) || null;
+  const counter = counterService?.use.counterState(counterId) || null;
   const isConnected = !!counter;
   const competitions = competitionService?.use.competitions() || [];
   const divisions = divisionService?.use.divisionsByCompetition(selectedCompetitionId);
@@ -77,7 +77,7 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
     if (!counterService || !selectedDivisionId) return;
 
     try {
-      await counterService.connectDivision(counterId, selectedDivisionId);
+      await counterService.admin.connectDivision(counterId, selectedDivisionId);
       await divisionService.load.byId(selectedDivisionId);
     } catch (error) {
       console.error("Division 연결 실패:", error);
@@ -89,7 +89,7 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
 
     if (confirm("Division 연결을 해제하시겠습니까?")) {
       try {
-        await counterService.disconnectDivision(counterId);
+        await counterService.admin.disconnectDivision(counterId);
         setSelectedCompetitionId("");
         setSelectedDivisionId("");
       } catch (error) {
@@ -111,13 +111,13 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
       try {
         switch (action) {
           case "start":
-            await progressService.openDivision(counter.divisionId);
+            await progressService.admin.openDivision(counter.divisionId);
             break;
           case "stop":
-            await progressService.closeDivision(counter.divisionId);
+            await progressService.admin.closeDivision(counter.divisionId);
             break;
           case "reset":
-            await progressService.resetDivision(counter.divisionId);
+            await progressService.admin.resetDivision(counter.divisionId);
             break;
         }
         await divisionService.load.byId(counter.divisionId);

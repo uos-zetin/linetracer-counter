@@ -20,7 +20,7 @@ export function ManualCounter() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Counter state 가져오기 (API로부터 로드하지 않고 현재 store 상태만 참조)
-  const counterState = counterService.useCounterState(counterId || "");
+  const counterState = counterService.use.counterState(counterId || "");
 
   // 로컬 타이머 사용 (useStopwatchTimer 훅 활용)
   const elapsedTime = useStopwatchTimer(localStartedAt, localStoppedAt);
@@ -54,7 +54,7 @@ export function ManualCounter() {
     setIsSubmitting(true);
     try {
       // 1. API를 통해 최신 counter 정보 로드
-      const updatedCounter = await counterService.loadCounterById(counterId);
+      const updatedCounter = await counterService.load.byId(counterId);
 
       // 2. 업데이트된 counter 정보 확인
       if (!updatedCounter?.divisionId) {
@@ -62,7 +62,7 @@ export function ManualCounter() {
       }
 
       // 3. progress API를 통해 현재 runner 정보 가져오기
-      const progress = await progressService.loadProgressByDivision(updatedCounter.divisionId);
+      const progress = await progressService.load.byDivision(updatedCounter.divisionId);
       const runner = progress?.runner;
 
       if (!runner?.participant.id) {
@@ -70,7 +70,7 @@ export function ManualCounter() {
       }
 
       // 5. Manual record 전송
-      await manualRecordService.createManualRecord(runner.participant.id, {
+      await manualRecordService.admin.create(runner.participant.id, {
         value: elapsedTime,
         recorderName: recorderName.trim(),
       });

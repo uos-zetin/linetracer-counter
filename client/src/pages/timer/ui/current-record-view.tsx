@@ -5,7 +5,7 @@ const ROW_COUNT = 5;
 
 export function CurrentRecordView() {
   const progressService = useProgressService();
-  const runner = progressService.useRunner();
+  const runner = progressService.use.runner();
   const currentRecords = runner?.records || [];
   const rows = Array.from({ length: ROW_COUNT }, (_, i) => i);
 

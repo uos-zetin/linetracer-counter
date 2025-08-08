@@ -30,7 +30,7 @@ export function CounterSelectorPage() {
       try {
         setIsLoading(true);
         setError(null);
-        const counterList = await counterService.getAllCounters();
+        const counterList = await counterService.load.all();
         setCounters(counterList);
       } catch (err) {
         console.error("Failed to load counters:", err);

@@ -13,7 +13,7 @@ export const RecordControlSection = () => {
   const [manualRecordNote, setManualRecordNote] = useState("");
   const [isCreatingRecord, setIsCreatingRecord] = useState(false);
 
-  const progress = progressService?.useProgress() || null;
+  const progress = progressService?.use.progress() || null;
   const runner = progress?.runner;
   const manualRecords = useMemo(() => runner?.manualRecords || [], [runner?.manualRecords]);
 

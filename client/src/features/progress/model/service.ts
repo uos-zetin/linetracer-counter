@@ -189,24 +189,43 @@ export const createProgressService = ({
   };
 
   return {
-    connect,
-    disconnect,
-    setProgress,
-    useProgress,
-    useCompetition,
-    useDivision,
-    useRunner,
-    useNextRunners,
-    useTopRecords,
-    postponeCurrentRunner,
-    setCurrentRunner,
-    changeOrder,
-    getOrder,
-    openDivision,
-    closeDivision,
-    resetDivision,
-    loadProgressByDivision,
-    useCurrentRunnerManualRecords,
-    addManualRecord,
+    // Load functions (데이터 조회)
+    load: {
+      byDivision: loadProgressByDivision,
+      order: getOrder,
+    },
+
+    // Admin functions (관리자 전용)
+    admin: {
+      postponeCurrentRunner,
+      setCurrentRunner,
+      changeOrder,
+      openDivision,
+      closeDivision,
+      resetDivision,
+      addManualRecord,
+    },
+
+    // Real-time connection functions (실시간 연결)
+    connection: {
+      connect,
+      disconnect,
+    },
+
+    // Local state functions (로컬 상태 조작)
+    local: {
+      setProgress,
+    },
+
+    // Subscription hooks (구독)
+    use: {
+      progress: useProgress,
+      competition: useCompetition,
+      division: useDivision,
+      runner: useRunner,
+      nextRunners: useNextRunners,
+      topRecords: useTopRecords,
+      currentRunnerManualRecords: useCurrentRunnerManualRecords,
+    },
   };
 };

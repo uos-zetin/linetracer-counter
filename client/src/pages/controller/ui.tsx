@@ -28,7 +28,7 @@ export const ControllerPage = () => {
             return;
           }
 
-          await counterService.connect(counterId);
+          await counterService.connection.connect(counterId);
           console.log(`Counter connected successfully: ${counterId}`);
         } catch (error) {
           console.error(`Failed to connect to counter ${counterId}:`, error);
@@ -39,7 +39,7 @@ export const ControllerPage = () => {
 
       // 컴포넌트 언마운트 시 연결 해제
       return () => {
-        counterService.disconnect(counterId).catch(console.error);
+        counterService.connection.disconnect(counterId).catch(console.error);
       };
     }
   }, [counterId, counterService, isAuthenticated, authService]);

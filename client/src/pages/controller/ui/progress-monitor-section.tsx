@@ -15,11 +15,11 @@ export const ProgressMonitorSection = ({ counterId }: ProgressMonitorSectionProp
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [isSettingRunner, setIsSettingRunner] = useState(false);
 
-  const counter = counterService?.useCounterState(counterId) || null;
+  const counter = counterService?.use.counterState(counterId) || null;
   const division = divisionService?.use.divisionById(counter?.divisionId || "") || null;
-  const progress = progressService?.useProgress() || null;
-  const runner = progressService?.useRunner() || null;
-  const nextRunners = progressService?.useNextRunners() || [];
+  const progress = progressService?.use.progress() || null;
+  const runner = progressService?.use.runner() || null;
+  const nextRunners = progressService?.use.nextRunners() || [];
 
   // 다음 참가자를 현재 참가자로 설정
   const handleSetCurrentRunner = async () => {
@@ -29,7 +29,7 @@ export const ProgressMonitorSection = ({ counterId }: ProgressMonitorSectionProp
 
     try {
       setIsSettingRunner(true);
-      await progressService.setCurrentRunner(counter.divisionId, nextParticipant.id);
+      await progressService.admin.setCurrentRunner(counter.divisionId, nextParticipant.id);
     } catch (error) {
       console.error("Failed to set current runner:", error);
       setConnectionError(error instanceof Error ? error.message : "참가자 설정 실패");
@@ -48,10 +48,10 @@ export const ProgressMonitorSection = ({ counterId }: ProgressMonitorSectionProp
           // Counter에 divisionId가 있으면 progress channel 연결
           setIsConnecting(true);
           setConnectionError(null);
-          await progressService.connect(counter.divisionId);
+          await progressService.connection.connect(counter.divisionId);
         } else {
           // Counter에 divisionId가 없으면 연결 해제
-          await progressService.disconnect();
+          await progressService.connection.disconnect();
           console.log("Progress channel disconnected");
         }
       } catch (error) {
@@ -69,7 +69,7 @@ export const ProgressMonitorSection = ({ counterId }: ProgressMonitorSectionProp
   useEffect(() => {
     return () => {
       if (progressService) {
-        progressService.disconnect().catch(console.error);
+        progressService.connection.disconnect().catch(console.error);
       }
     };
   }, [progressService]);

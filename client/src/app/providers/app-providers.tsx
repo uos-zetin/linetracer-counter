@@ -8,7 +8,7 @@ import { ParticipantProvider } from "./participant-provider";
 import { ProgressProvider } from "./progress-provider";
 import { RecordProvider } from "./record-provider";
 import { RepositoryProvider } from "./repository-provider";
-import { TimerControlProvider } from "./timer-control-provicer";
+import { TimerControlProvider } from "./timer-control-provider";
 import { UserProvider } from "./user-provider";
 
 const ComposedProviders = composeProviders(
