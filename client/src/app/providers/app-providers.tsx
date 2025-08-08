@@ -1,4 +1,3 @@
-import { AdminUserProvider } from "./admin-user-provider";
 import { AuthProvider } from "./auth-provider";
 import { CompetitionProvider } from "./competition-provider";
 import { composeProviders } from "./compose-providers";
@@ -10,6 +9,7 @@ import { ProgressProvider } from "./progress-provider";
 import { RecordProvider } from "./record-provider";
 import { RepositoryProvider } from "./repository-provider";
 import { TimerControlProvider } from "./timer-control-provicer";
+import { UserProvider } from "./user-provider";
 
 const ComposedProviders = composeProviders(
   AuthProvider,
@@ -20,7 +20,7 @@ const ComposedProviders = composeProviders(
   RecordProvider,
   CounterProvider,
   ProgressProvider,
-  AdminUserProvider,
+  UserProvider,
   TimerControlProvider,
   ManualRecordProvider
 );

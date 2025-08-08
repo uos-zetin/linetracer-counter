@@ -1,11 +1,11 @@
-import { useZustandUserStore, type UserRegisterForm, type UserRepository, type UserRole } from "@/entities/user";
-import type { AdminUserService } from "./types";
+import { useZustandUserStore, type UserRegisterForm, type UserRepository, type UserRole, type User } from "@/entities/user";
+import type { UserService } from "./types";
 
-interface AdminUserServiceProps {
+interface UserServiceProps {
   userRepository: UserRepository;
 }
 
-export const createAdminUserService = ({ userRepository }: AdminUserServiceProps): AdminUserService => {
+export const createUserService = ({ userRepository }: UserServiceProps): UserService => {
   const loadAllUsers = async (): Promise<void> => {
     try {
       const store = useZustandUserStore.getState();
@@ -17,22 +17,24 @@ export const createAdminUserService = ({ userRepository }: AdminUserServiceProps
     }
   };
 
-  const createUser = async (data: UserRegisterForm): Promise<void> => {
+  const createUser = async (data: UserRegisterForm): Promise<User> => {
     try {
       const newUser = await userRepository.registerUser(data);
       const store = useZustandUserStore.getState();
       store.add(newUser);
+      return newUser;
     } catch (error) {
       console.error("Failed to create user:", error);
       throw error;
     }
   };
 
-  const updateUserRoles = async (id: string, newRole: UserRole[]): Promise<void> => {
+  const updateUserRoles = async (id: string, newRole: UserRole[]): Promise<User> => {
     try {
       const updatedUser = await userRepository.updateUserRoles(id, newRole);
       const store = useZustandUserStore.getState();
       store.update(updatedUser);
+      return updatedUser;
     } catch (error) {
       console.error(`Failed to update user ${id}:`, error);
       throw error;
@@ -61,11 +63,20 @@ export const createAdminUserService = ({ userRepository }: AdminUserServiceProps
   };
 
   return {
-    loadAllUsers,
-    createUser,
-    updateUserRoles,
-    deleteUser,
-    useUsers,
-    useUserById,
+    // Load functions (공용)
+    load: {
+      all: loadAllUsers,
+    },
+    // Admin functions (관리자 전용)
+    admin: {
+      create: createUser,
+      updateRoles: updateUserRoles,
+      delete: deleteUser,
+    },
+    // Subscription hooks (구독)
+    use: {
+      users: useUsers,
+      userById: useUserById,
+    },
   };
 };

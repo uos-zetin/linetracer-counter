@@ -24,6 +24,7 @@ import type { Competition, CompetitionForm } from "@/entities/competition";
 import type { Division, DivisionForm } from "@/entities/division";
 import type { Participant, ParticipantForm } from "@/entities/participant";
 import type { Record, RecordStatus } from "@/entities/record";
+import type { User, UserRegisterForm, UserRole } from "@/entities/user";
 import {
   AdminCompetitionCreateModal,
   AdminCompetitionEditModal,
@@ -43,6 +44,7 @@ import {
   useParticipantService,
 } from "@/features/participant";
 import { RecordListDisplay, RecordNoteEditor, RecordStatusSelector, useRecordService } from "@/features/record";
+import { AdminUserCreateModal, AdminUserEditRolesModal, AdminUserDeleteModal, useUserService } from "@/features/user";
 
 export const ComponentShowcasePage = () => {
   // Services
@@ -50,6 +52,7 @@ export const ComponentShowcasePage = () => {
   const competitionService = useCompetitionService();
   const divisionService = useDivisionService();
   const participantService = useParticipantService();
+  const userService = useUserService();
 
   // States
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
@@ -59,9 +62,9 @@ export const ComponentShowcasePage = () => {
   const [selectedCompetitionId, setSelectedCompetitionId] = useState<string>("");
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>("");
   const [selectedParticipantId, setSelectedParticipantId] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<"shared" | "record" | "competition" | "division" | "participant" | "data">(
-    "shared"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "shared" | "record" | "competition" | "division" | "participant" | "user" | "data"
+  >("shared");
 
   // Modal states for Competition
   const [isCompetitionCreateModalOpen, setIsCompetitionCreateModalOpen] = useState(false);
@@ -81,12 +84,18 @@ export const ComponentShowcasePage = () => {
   const [isParticipantDeleteModalOpen, setIsParticipantDeleteModalOpen] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
 
+  // Modal states for User
+  const [isUserCreateModalOpen, setIsUserCreateModalOpen] = useState(false);
+  const [isUserEditRolesModalOpen, setIsUserEditRolesModalOpen] = useState(false);
+  const [isUserDeleteModalOpen, setIsUserDeleteModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
   // Data loading
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true);
-        await Promise.all([competitionService?.load.all(), recordService?.load.allRecords()]);
+        await Promise.all([competitionService?.load.all(), recordService?.load.allRecords(), userService?.load.all()]);
         setIsLoading(false);
       } catch (error) {
         console.error("Failed to load data:", error);
@@ -94,10 +103,10 @@ export const ComponentShowcasePage = () => {
       }
     };
 
-    if (competitionService && recordService) {
+    if (competitionService && recordService && userService) {
       loadData();
     }
-  }, [competitionService, recordService]);
+  }, [competitionService, recordService, userService]);
 
   // Load divisions when competition changes
   useEffect(() => {
@@ -283,6 +292,55 @@ export const ComponentShowcasePage = () => {
       console.log("Participant deleted:", selectedParticipant.id);
     } catch (error) {
       console.error("Failed to delete participant:", error);
+    }
+  };
+
+  // User handlers
+  const handleUserCreate = () => {
+    setIsUserCreateModalOpen(true);
+  };
+
+  const handleUserEditRoles = (user: User) => {
+    setSelectedUser(user);
+    setIsUserEditRolesModalOpen(true);
+  };
+
+  const handleUserDelete = (user: User) => {
+    setSelectedUser(user);
+    setIsUserDeleteModalOpen(true);
+  };
+
+  const handleUserCreateSubmit = async (data: UserRegisterForm) => {
+    try {
+      await userService?.admin.create(data);
+      setIsUserCreateModalOpen(false);
+      console.log("User created:", data);
+    } catch (error) {
+      console.error("Failed to create user:", error);
+    }
+  };
+
+  const handleUserEditRolesSubmit = async (roles: UserRole[]) => {
+    if (!selectedUser) return;
+    try {
+      await userService?.admin.updateRoles(selectedUser.id, roles);
+      setIsUserEditRolesModalOpen(false);
+      setSelectedUser(null);
+      console.log("User roles updated:", selectedUser.id, roles);
+    } catch (error) {
+      console.error("Failed to update user roles:", error);
+    }
+  };
+
+  const handleUserDeleteConfirm = async () => {
+    if (!selectedUser) return;
+    try {
+      await userService?.admin.delete(selectedUser.id);
+      setIsUserDeleteModalOpen(false);
+      setSelectedUser(null);
+      console.log("User deleted:", selectedUser.id);
+    } catch (error) {
+      console.error("Failed to delete user:", error);
     }
   };
 
@@ -637,6 +695,57 @@ export const ComponentShowcasePage = () => {
     </div>
   );
 
+  const UserComponentsTab = () => {
+    const users = userService?.use.users() || [];
+
+    return (
+      <div className="space-y-6">
+        <Card className="p-6">
+          <h3 className="text-xl font-semibold mb-4">User Management</h3>
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={handleUserCreate}>Create User</Button>
+            </div>
+
+            {/* User List */}
+            <div className="space-y-2">
+              <h4 className="font-medium">Users</h4>
+              {users.length > 0 ? (
+                <div className="space-y-2">
+                  {users.map((user: User) => (
+                    <div key={user.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <h5 className="font-medium">{user.name}</h5>
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                          <span>ID: {user.id}</span>
+                          <span>•</span>
+                          <span>Roles: {user.roles.length > 0 ? user.roles.join(", ") : "None"}</span>
+                        </div>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button variant="outline" size="sm" onClick={() => handleUserEditRoles(user)}>
+                          Edit Roles
+                        </Button>
+                        <Button variant="destructive" size="sm" onClick={() => handleUserDelete(user)}>
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <Alert>
+                  <AlertTitle>No Users</AlertTitle>
+                  <AlertDescription>No users found. Create a user to get started.</AlertDescription>
+                </Alert>
+              )}
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
   const DataSelectionTab = () => (
     <div className="space-y-6">
       <Card className="p-6">
@@ -816,6 +925,9 @@ export const ComponentShowcasePage = () => {
             >
               Participant Components
             </Button>
+            <Button variant={activeTab === "user" ? "default" : "ghost"} size="sm" onClick={() => setActiveTab("user")}>
+              User Components
+            </Button>
             <Button variant={activeTab === "data" ? "default" : "ghost"} size="sm" onClick={() => setActiveTab("data")}>
               Data Selection
             </Button>
@@ -828,6 +940,7 @@ export const ComponentShowcasePage = () => {
         {activeTab === "competition" && <CompetitionComponentsTab />}
         {activeTab === "division" && <DivisionComponentsTab />}
         {activeTab === "participant" && <ParticipantComponentsTab />}
+        {activeTab === "user" && <UserComponentsTab />}
         {activeTab === "data" && <DataSelectionTab />}
       </div>
 
@@ -916,6 +1029,33 @@ export const ComponentShowcasePage = () => {
         }}
         onConfirm={handleParticipantDeleteConfirm}
         participant={selectedParticipant}
+      />
+
+      {/* User Modals */}
+      <AdminUserCreateModal
+        isOpen={isUserCreateModalOpen}
+        onClose={() => setIsUserCreateModalOpen(false)}
+        onSubmit={handleUserCreateSubmit}
+      />
+
+      <AdminUserEditRolesModal
+        isOpen={isUserEditRolesModalOpen}
+        onClose={() => {
+          setIsUserEditRolesModalOpen(false);
+          setSelectedUser(null);
+        }}
+        onSubmit={handleUserEditRolesSubmit}
+        user={selectedUser}
+      />
+
+      <AdminUserDeleteModal
+        isOpen={isUserDeleteModalOpen}
+        onClose={() => {
+          setIsUserDeleteModalOpen(false);
+          setSelectedUser(null);
+        }}
+        onConfirm={handleUserDeleteConfirm}
+        user={selectedUser}
       />
     </div>
   );
