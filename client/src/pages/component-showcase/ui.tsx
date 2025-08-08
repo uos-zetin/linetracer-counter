@@ -20,6 +20,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui";
+import { 
+  AuthenticationError, 
+  AuthorizationError, 
+  ServerError, 
+  ValidationError, 
+  NotFoundError,
+  TimerLogConsecutiveError,
+} from "@/shared/api/errors";
 import type { Competition, CompetitionForm } from "@/entities/competition";
 import type { Division, DivisionForm } from "@/entities/division";
 import type { Participant, ParticipantForm } from "@/entities/participant";
@@ -37,6 +45,7 @@ import {
   AdminDivisionDeleteModal,
   useDivisionService,
 } from "@/features/division";
+import { useErrorHandlingService } from "@/features/error-handling";
 import {
   AdminParticipantCreateModal,
   AdminParticipantEditModal,
@@ -63,7 +72,7 @@ export const ComponentShowcasePage = () => {
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>("");
   const [selectedParticipantId, setSelectedParticipantId] = useState<string>("");
   const [activeTab, setActiveTab] = useState<
-    "shared" | "record" | "competition" | "division" | "participant" | "user" | "data"
+    "shared" | "record" | "competition" | "division" | "participant" | "user" | "error-handling" | "data"
   >("shared");
 
   // Modal states for Competition
@@ -928,6 +937,9 @@ export const ComponentShowcasePage = () => {
             <Button variant={activeTab === "user" ? "default" : "ghost"} size="sm" onClick={() => setActiveTab("user")}>
               User Components
             </Button>
+            <Button variant={activeTab === "error-handling" ? "default" : "ghost"} size="sm" onClick={() => setActiveTab("error-handling")}>
+              Error Handling
+            </Button>
             <Button variant={activeTab === "data" ? "default" : "ghost"} size="sm" onClick={() => setActiveTab("data")}>
               Data Selection
             </Button>
@@ -941,6 +953,7 @@ export const ComponentShowcasePage = () => {
         {activeTab === "division" && <DivisionComponentsTab />}
         {activeTab === "participant" && <ParticipantComponentsTab />}
         {activeTab === "user" && <UserComponentsTab />}
+        {activeTab === "error-handling" && <ErrorHandlingComponentsTab />}
         {activeTab === "data" && <DataSelectionTab />}
       </div>
 
@@ -1060,3 +1073,104 @@ export const ComponentShowcasePage = () => {
     </div>
   );
 };
+
+// Error Handling Components Tab
+function ErrorHandlingComponentsTab() {
+  const errorHandlingService = useErrorHandlingService();
+
+  // 다양한 에러 시뮬레이션 함수들
+  const simulateAuthError = () => {
+    const authError = new AuthenticationError("세션이 만료되었습니다. 다시 로그인해주세요.");
+    errorHandlingService.handle(authError, "Showcase Demo", (path) => {
+      console.log("Would redirect to:", path);
+      // 실제 페이지에서는 navigate(path) 호출
+    });
+  };
+
+  const simulateAuthzError = () => {
+    const authzError = new AuthorizationError("관리자 권한이 필요합니다.");
+    errorHandlingService.handle(authzError, "Showcase Demo", (path) => {
+      console.log("Would redirect to:", path);
+      // 실제 페이지에서는 navigate(path) 호출
+    });
+  };
+
+  const simulateServerError = () => {
+    const serverError = new ServerError("내부 서버 오류가 발생했습니다.", 500);
+    errorHandlingService.handle(serverError, "Showcase Demo");
+  };
+
+  const simulateValidationError = () => {
+    const validationError = new ValidationError("입력값이 올바르지 않습니다. 이메일 형식을 확인해주세요.");
+    errorHandlingService.handle(validationError, "Showcase Demo");
+  };
+
+  const simulateNotFoundError = () => {
+    const notFoundError = new NotFoundError("요청한 리소스를 찾을 수 없습니다.");
+    errorHandlingService.handle(notFoundError, "Showcase Demo");
+  };
+
+  const simulateBusinessError = () => {
+    const businessError = new TimerLogConsecutiveError("연속된 타이머 로그는 생성할 수 없습니다.");
+    errorHandlingService.handle(businessError, "Showcase Demo");
+  };
+
+  const simulateJavaScriptError = () => {
+    const jsError = new Error("예기치 못한 JavaScript 에러가 발생했습니다.");
+    errorHandlingService.handle(jsError, "Showcase Demo");
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Error Handling Components</h2>
+        <p className="text-muted-foreground mb-6">
+          에러 처리 시스템을 테스트할 수 있는 컴포넌트들입니다. 
+          각 버튼을 클릭하여 다양한 유형의 에러가 어떻게 처리되는지 확인해보세요.
+        </p>
+      </div>
+
+      {/* Modal 에러 테스트 */}
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold mb-4">Modal 에러 (페이지 이동 포함)</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          치명적이거나 페이지 이동이 필요한 에러들입니다. 모달로 표시되며, 확인 시 적절한 액션이 수행됩니다.
+        </p>
+        <div className="grid grid-cols-2 gap-3">
+          <Button onClick={simulateAuthError} variant="destructive">
+            인증 에러 (401)
+          </Button>
+          <Button onClick={simulateAuthzError} variant="destructive">
+            권한 에러 (403)
+          </Button>
+        </div>
+      </Card>
+
+      {/* Toast 에러 테스트 */}
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold mb-4">Toast 에러</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          일반적인 에러들입니다. 토스트로 표시되며 자동으로 사라집니다.
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <Button onClick={simulateServerError} variant="outline">
+            서버 에러 (5xx)
+          </Button>
+          <Button onClick={simulateValidationError} variant="outline">
+            검증 에러 (422)
+          </Button>
+          <Button onClick={simulateNotFoundError} variant="outline">
+            404 에러
+          </Button>
+          <Button onClick={simulateBusinessError} variant="outline">
+            비즈니스 에러
+          </Button>
+          <Button onClick={simulateJavaScriptError} variant="outline">
+            JavaScript 에러
+          </Button>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
