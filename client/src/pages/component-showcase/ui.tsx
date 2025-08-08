@@ -1,4 +1,12 @@
 import { useState, useEffect } from "react";
+import { 
+  AuthenticationError, 
+  AuthorizationError, 
+  ServerError, 
+  ValidationError, 
+  NotFoundError,
+  TimerLogConsecutiveError,
+} from "@/shared/api/errors";
 import {
   Button,
   Badge,
@@ -20,14 +28,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui";
-import { 
-  AuthenticationError, 
-  AuthorizationError, 
-  ServerError, 
-  ValidationError, 
-  NotFoundError,
-  TimerLogConsecutiveError,
-} from "@/shared/api/errors";
 import type { Competition, CompetitionForm } from "@/entities/competition";
 import type { Division, DivisionForm } from "@/entities/division";
 import type { Participant, ParticipantForm } from "@/entities/participant";
