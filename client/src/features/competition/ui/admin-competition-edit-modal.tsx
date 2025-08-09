@@ -1,7 +1,23 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button, Input, Textarea } from "@/shared/ui";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  Textarea,
+} from "@/shared/ui";
 import type { Competition, CompetitionForm } from "@/entities/competition";
 import { CompetitionFormSchema } from "@/entities/competition";
 
@@ -13,13 +29,7 @@ interface CompetitionEditModalProps {
 }
 
 export function AdminCompetitionEditModal({ isOpen, onClose, onSubmit, competition }: CompetitionEditModalProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
-    watch,
-  } = useForm<CompetitionForm>({
+  const form = useForm<CompetitionForm>({
     resolver: zodResolver(CompetitionFormSchema),
     defaultValues: {
       name: "",
@@ -27,17 +37,17 @@ export function AdminCompetitionEditModal({ isOpen, onClose, onSubmit, competiti
     },
   });
 
-  const descriptionValue = watch("description", "");
+  const descriptionValue = form.watch("description", "");
 
   // 모달 열릴 때 기존 데이터로 초기화
   useEffect(() => {
     if (isOpen && competition) {
-      reset({
+      form.reset({
         name: competition.name,
         description: competition.description,
       });
     }
-  }, [isOpen, competition, reset]);
+  }, [isOpen, competition, form]);
 
   const onSubmitHandler = async (data: CompetitionForm) => {
     try {
@@ -49,74 +59,74 @@ export function AdminCompetitionEditModal({ isOpen, onClose, onSubmit, competiti
   };
 
   const handleClose = () => {
-    if (isSubmitting) return;
+    if (form.formState.isSubmitting) return;
+    form.reset();
     onClose();
   };
 
-  if (!competition) return null;
-
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>대회 수정</DialogTitle>
-          <DialogDescription>
-            대회 정보를 수정해주세요.
-          </DialogDescription>
+          <DialogDescription>대회 정보를 수정하세요.</DialogDescription>
         </DialogHeader>
-        
-        <form id="competition-edit-form" onSubmit={handleSubmit(onSubmitHandler)} className="space-y-4">
-          {/* 대회명 */}
-          <div>
-            <label htmlFor="competition-name" className="block text-sm font-medium text-gray-700 mb-1">
-              대회명 <span className="text-red-500">*</span>
-            </label>
-            <Input
-              id="competition-name"
-              type="text"
-              {...register("name")}
-              maxLength={100}
-              disabled={isSubmitting}
-              placeholder="대회명을 입력하세요"
-              className={errors.name ? "border-red-300" : ""}
-            />
-            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
-          </div>
 
-          {/* 설명 */}
-          <div>
-            <label htmlFor="competition-description" className="block text-sm font-medium text-gray-700 mb-1">
-              설명 <span className="text-red-500">*</span>
-            </label>
-            <Textarea
-              id="competition-description"
-              {...register("description")}
-              rows={4}
-              maxLength={1000}
-              disabled={isSubmitting}
-              placeholder="대회 설명을 입력하세요"
-              className={errors.description ? "border-red-300" : ""}
+        <Form {...form}>
+          <form id="competition-edit-form" onSubmit={form.handleSubmit(onSubmitHandler)} className="space-y-4">
+            {/* 대회명 */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    대회명 <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="대회명을 입력하세요"
+                      maxLength={100}
+                      disabled={form.formState.isSubmitting}
+                      autoComplete="organization"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>}
-            <p className="mt-1 text-sm text-gray-500">{descriptionValue.length}/1000자</p>
-          </div>
-        </form>
+
+            {/* 설명 */}
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>설명 (선택사항)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      rows={3}
+                      placeholder="대회 설명을 입력하세요 (선택사항)"
+                      maxLength={1000}
+                      disabled={form.formState.isSubmitting}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  <p className="mt-1 text-sm text-gray-500">{descriptionValue.length}/1000자</p>
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleClose}
-            disabled={isSubmitting}
-          >
+          <Button type="button" variant="outline" onClick={handleClose} disabled={form.formState.isSubmitting}>
             취소
           </Button>
-          <Button
-            type="submit"
-            form="competition-edit-form"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "수정 중..." : "수정"}
+          <Button type="submit" form="competition-edit-form" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? "수정 중..." : "수정"}
           </Button>
         </DialogFooter>
       </DialogContent>

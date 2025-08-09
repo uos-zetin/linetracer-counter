@@ -1,8 +1,23 @@
-import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button } from "@/shared/ui";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/shared/ui";
 import type { User, UserRole } from "@/entities/user";
-
-type RoleFormErrors = { roles?: string };
+import { UserFormSchema } from "@/entities/user";
 
 interface UserEditRolesModalProps {
   isOpen: boolean;
@@ -18,52 +33,41 @@ const roleLabels: Record<UserRole, string> = {
   stopwatchRecorder: "스톱워치 기록자",
 };
 
+type RoleFormData = {
+  name: string;
+  roles: UserRole[];
+};
+
 export function AdminUserEditRolesModal({ isOpen, onClose, onSubmit, user }: UserEditRolesModalProps) {
-  const [selectedRoles, setSelectedRoles] = useState<UserRole[]>([]);
-  const [errors, setErrors] = useState<RoleFormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const form = useForm<RoleFormData>({
+    resolver: zodResolver(UserFormSchema),
+    defaultValues: {
+      name: "",
+      roles: [],
+    },
+  });
 
   useEffect(() => {
     if (isOpen && user) {
-      setSelectedRoles(user.roles);
-      setErrors({});
+      form.reset({
+        name: user.name,
+        roles: user.roles,
+      });
     }
-  }, [isOpen, user]);
+  }, [isOpen, user, form]);
 
-  const toggleRole = (role: UserRole) => {
-    setSelectedRoles((prev) => 
-      prev.includes(role) 
-        ? prev.filter((r) => r !== role) 
-        : [...prev, role]
-    );
-    if (errors.roles) setErrors({});
-  };
-
-  const validate = () => {
-    if (selectedRoles.length === 0) {
-      setErrors({ roles: "최소 1개 이상의 역할을 선택해주세요" });
-      return false;
-    }
-    setErrors({});
-    return true;
-  };
-
-  const handleSubmit = async () => {
-    if (!validate()) return;
-    
-    setIsSubmitting(true);
+  const onSubmitHandler = async (data: RoleFormData) => {
     try {
-      await onSubmit(selectedRoles);
+      await onSubmit(data.roles);
       onClose();
     } catch (err) {
       console.error("권한 수정 실패:", err);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   const handleClose = () => {
-    if (isSubmitting) return;
+    if (form.formState.isSubmitting) return;
+    form.reset();
     onClose();
   };
 
@@ -79,44 +83,61 @@ export function AdminUserEditRolesModal({ isOpen, onClose, onSubmit, user }: Use
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <div className="space-y-3">
-            {allRoles.map((role) => (
-              <div key={role} className="flex items-center space-x-2">
-                <input
-                  id={role}
-                  type="checkbox"
-                  checked={selectedRoles.includes(role)}
-                  onChange={() => toggleRole(role)}
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  disabled={isSubmitting}
-                />
-                <label htmlFor={role} className="text-sm font-medium text-gray-700">
-                  {roleLabels[role]}
-                </label>
-              </div>
-            ))}
-          </div>
-          {errors.roles && (
-            <p className="text-sm text-red-600">{errors.roles}</p>
-          )}
-        </div>
+        <Form {...form}>
+          <form id="user-roles-form" onSubmit={form.handleSubmit(onSubmitHandler)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="roles"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    역할 <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <div className="space-y-3">
+                    {allRoles.map((role) => (
+                      <FormItem key={role} className="flex flex-row items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value?.includes(role) || false}
+                            onChange={(e) => {
+                              const updatedRoles = e.target.checked
+                                ? [...(field.value || []), role]
+                                : field.value?.filter((r) => r !== role) || [];
+                              field.onChange(updatedRoles);
+                            }}
+                            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                            disabled={form.formState.isSubmitting}
+                          />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal cursor-pointer">
+                          {roleLabels[role]}
+                        </FormLabel>
+                      </FormItem>
+                    ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
 
         <DialogFooter>
           <Button
             type="button"
             variant="outline"
             onClick={handleClose}
-            disabled={isSubmitting}
+            disabled={form.formState.isSubmitting}
           >
             취소
           </Button>
           <Button
-            type="button"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
+            type="submit"
+            form="user-roles-form"
+            disabled={form.formState.isSubmitting}
           >
-            {isSubmitting ? "저장 중..." : "저장"}
+            {form.formState.isSubmitting ? "저장 중..." : "저장"}
           </Button>
         </DialogFooter>
       </DialogContent>
