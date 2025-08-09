@@ -1,4 +1,6 @@
 import { Link } from "react-router";
+import { ChevronLeft } from "lucide-react";
+import { Button } from "@/shared/ui/button";
 import { useAuthService } from "@/features/auth";
 
 interface AppHeaderProps {
@@ -22,40 +24,33 @@ export function AppHeader({ title, showBackButton = false, backPath = "/", showL
 
   return (
     <header className="bg-white shadow">
-      <div className="max-w-7xl mx-auto px-[1vw] sm:px-[1.5vw] lg:px-[2vw]">
-        <div className="flex justify-between items-center py-[1vw]">
-          <div className="flex items-center space-x-[1vw]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center py-4">
+          <div className="flex items-center min-w-0 flex-1">
             {showBackButton && (
               <Link
                 to={backPath}
-                className="text-gray-500 hover:text-gray-700 flex items-center transition-colors duration-200"
+                className="text-gray-500 hover:text-gray-700 flex items-center transition-colors duration-200 -ml-2 sm:-ml-3 lg:-ml-4 mr-2 sm:mr-4 flex-shrink-0"
               >
-                <svg
-                  className="w-[1.25vw] h-[1.25vw] mr-[0.25vw]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                <span className="text-[3vw] sm:text-[2vw] md:text-[1.5vw]">뒤로</span>
+                <ChevronLeft className="w-5 h-5" />
+                <span className="text-sm sm:text-base ml-1 hidden sm:inline">뒤로</span>
               </Link>
             )}
-            <h1 className="text-[4vw] sm:text-[3vw] md:text-[2.5vw] font-bold text-gray-900">{title}</h1>
+            <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-900 truncate">{title}</h1>
           </div>
-          <div className="flex items-center space-x-[1vw]">
+          <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
             {user && (
-              <span className="text-[2.5vw] sm:text-[2vw] md:text-[1.5vw] text-gray-700">
-                안녕하세요, {user.name}님
-              </span>
+              <span className="text-sm sm:text-base text-gray-700 hidden sm:inline">안녕하세요, {user.name}님</span>
             )}
             {showLogout && (
-              <button
+              <Button
                 onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white px-[1vw] py-[0.5vw] rounded-md text-[2.5vw] sm:text-[2vw] md:text-[1.5vw] font-medium transition-colors duration-200"
+                variant="destructive"
+                size="sm"
+                className="min-h-[44px] min-w-[44px] sm:min-h-[auto] sm:min-w-[auto] text-xs sm:text-sm px-2 sm:px-3"
               >
                 로그아웃
-              </button>
+              </Button>
             )}
           </div>
         </div>
