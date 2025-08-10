@@ -8,23 +8,28 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/shared/ui/dialog";
-import { useErrorModal } from "../model/modal-context";
+import type { ErrorHandlingConfig } from "../model/types";
+
+interface ErrorModalProps {
+  isOpen: boolean;
+  config: ErrorHandlingConfig | null;
+  onAction?: () => void;
+  onClose: () => void;
+}
 
 /**
  * 에러 모달 컴포넌트
  */
-export function ErrorModal() {
-  const { state, hideModal } = useErrorModal();
-
+export function ErrorModal({ isOpen, config, onAction, onClose }: ErrorModalProps) {
   const handleClose = () => {
-    if (!state.config) return;
+    if (!config) return;
 
     // 액션 콜백이 있으면 호출
-    if (state.onAction) {
-      state.onAction();
+    if (onAction) {
+      onAction();
     } else {
       // 기본 액션 처리
-      switch (state.config.actionType) {
+      switch (config.actionType) {
         case "reload":
           window.location.reload();
           break;
@@ -38,7 +43,7 @@ export function ErrorModal() {
     }
 
     // 모달 닫기
-    hideModal();
+    onClose();
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -47,28 +52,28 @@ export function ErrorModal() {
     }
   };
 
-  if (!state.config) {
+  if (!config) {
     return null;
   }
 
   return (
-    <Dialog open={state.isOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="space-y-3">
           <div className="flex items-center space-x-2">
             <AlertTriangle className="h-5 w-5 text-destructive" />
             <DialogTitle className="text-lg">
-              {state.config.title}
+              {config.title}
             </DialogTitle>
           </div>
           <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
-            {state.config.message}
+            {config.message}
           </DialogDescription>
         </DialogHeader>
 
         <DialogFooter>
           <Button onClick={handleClose} className="w-full">
-            {state.config.actionText || "확인"}
+            {config.actionText || "확인"}
           </Button>
         </DialogFooter>
       </DialogContent>

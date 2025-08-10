@@ -1,6 +1,5 @@
 // Context and Service
 export { ErrorHandlingContext, useErrorHandlingService } from "./model/context";
-export { ErrorModalProvider, useErrorModal } from "./model/modal-context";
 export { createErrorHandlingService } from "./model/service";
 export type { ErrorHandlingService, ErrorHandlingConfig } from "./model/types";
 
