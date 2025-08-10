@@ -2,18 +2,18 @@ import { useState, useMemo } from "react";
 import { formatElapsedMs } from "@/entities/counter";
 import type { RecordStatus, RecordSource } from "@/entities/record";
 import { useProgressService } from "@/features/progress";
-import { useRecordControlService } from "@/features/record-control";
+import { useRecordService } from "@/features/record";
 
 export const RecordControlSection = () => {
   const progressService = useProgressService();
-  const recordControlService = useRecordControlService();
+  const recordService = useRecordService();
 
   const [selectedManualRecords, setSelectedManualRecords] = useState<string[]>([]);
   const [manualRecordValue, setManualRecordValue] = useState("");
   const [manualRecordNote, setManualRecordNote] = useState("");
   const [isCreatingRecord, setIsCreatingRecord] = useState(false);
 
-  const progress = progressService?.useProgress() || null;
+  const progress = progressService?.use.progress() || null;
   const runner = progress?.runner;
   const manualRecords = useMemo(() => runner?.manualRecords || [], [runner?.manualRecords]);
 
@@ -55,11 +55,11 @@ export const RecordControlSection = () => {
 
   // Manual records 취합해서 Record 생성
   const handleCreateFromManualRecords = async () => {
-    if (!runner || !recordControlService || aggregatedValue === null) return;
+    if (!runner || !recordService || aggregatedValue === null) return;
 
     setIsCreatingRecord(true);
     try {
-      await recordControlService.createRecord(runner.participant.id, {
+      await recordService.admin.create(runner.participant.id, {
         value: aggregatedValue,
         source: "manual" as RecordSource,
         note: `${selectedManualRecords.length}개 수동 기록 취합: ${selectedManualRecords
@@ -81,7 +81,7 @@ export const RecordControlSection = () => {
 
   // 임의 Record 생성
   const handleCreateManualRecord = async () => {
-    if (!runner || !recordControlService || !manualRecordValue.trim()) return;
+    if (!runner || !recordService || !manualRecordValue.trim()) return;
 
     const value = parseFloat(manualRecordValue);
     if (isNaN(value)) {
@@ -91,7 +91,7 @@ export const RecordControlSection = () => {
 
     setIsCreatingRecord(true);
     try {
-      await recordControlService.createRecord(runner.participant.id, {
+      await recordService.admin.create(runner.participant.id, {
         value,
         source: "manual" as RecordSource,
         note: manualRecordNote || "수동 입력 기록",
@@ -109,10 +109,10 @@ export const RecordControlSection = () => {
 
   // Record 상태 변경
   const handleUpdateRecordStatus = async (recordId: string, status: RecordStatus) => {
-    if (!recordControlService) return;
+    if (!recordService) return;
 
     try {
-      await recordControlService.updateRecordStatus(recordId, status);
+      await recordService.admin.updateStatus(recordId, status);
     } catch (error) {
       console.error("Failed to update record status:", error);
     }
@@ -123,7 +123,7 @@ export const RecordControlSection = () => {
     return formatElapsedMs(value).toString();
   };
 
-  if (!progressService || !recordControlService) {
+  if (!progressService || !recordService) {
     return (
       <div className="bg-white rounded-lg shadow p-6">
         <h2 className="text-xl font-semibold mb-4">기록 관리</h2>

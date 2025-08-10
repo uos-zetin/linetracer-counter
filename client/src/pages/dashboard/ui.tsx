@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import type { Division } from "@/entities/division";
+import type { Record } from "@/entities/record";
 import { useCompetitionService } from "@/features/competition";
 import { useDivisionService } from "@/features/division";
 import { useParticipantService } from "@/features/participant";
@@ -18,16 +20,16 @@ export const DashboardPage = () => {
   const [selectedCompetitionId, setSelectedCompetitionId] = useState<string>(competitionId || "");
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>(divisionId || "");
 
-  const competitions = competitionService.useCompetitions();
-  const divisions = divisionService.useDivisionsByCompetition(competitionId || "");
-  const participants = participantService.useAllParticipants();
-  const topRecords = recordService.useTopRecordsByDivision(selectedDivisionId || "");
+  const competitions = competitionService.use.competitions();
+  const divisions = divisionService.use.divisionsByCompetition(competitionId || "");
+  const participants = participantService.use.allParticipants();
+  const topRecords = recordService.use.topRecordsByDivision(selectedDivisionId || "");
 
   // 대회 목록 로드
   useEffect(() => {
     const loadCompetitions = async () => {
       try {
-        await competitionService.loadAllCompetitions();
+        await competitionService.load.all();
       } catch (error) {
         console.error("Failed to load competitions:", error);
       }
@@ -41,7 +43,7 @@ export const DashboardPage = () => {
     if (selectedCompetitionId) {
       const loadDivisions = async () => {
         try {
-          await divisionService.loadDivisionsByCompetition(selectedCompetitionId);
+          await divisionService.load.byCompetition(selectedCompetitionId);
         } catch (error) {
           console.error("Failed to load divisions:", error);
         }
@@ -56,8 +58,8 @@ export const DashboardPage = () => {
     if (selectedCompetitionId && divisions.length > 0) {
       const loadParticipants = async () => {
         try {
-          const divisionIds = divisions.map((d) => d.id);
-          await participantService.loadParticipantsByDivisions(divisionIds);
+          const divisionIds = divisions.map((d: Division) => d.id);
+          await participantService.load.byDivisions(divisionIds);
         } catch (error) {
           console.error("Failed to load participants:", error);
         }
@@ -73,7 +75,7 @@ export const DashboardPage = () => {
       // 특정 부문의 top record 로드
       const loadTopRecords = async () => {
         try {
-          await recordService.loadTopRecordsByDivision(selectedDivisionId);
+          await recordService.load.topByDivision(selectedDivisionId);
         } catch (error) {
           console.error("Failed to load top records:", error);
         }
@@ -83,7 +85,7 @@ export const DashboardPage = () => {
       // 모든 부문의 top record 로드
       const loadAllTopRecords = async () => {
         try {
-          await Promise.all(divisions.map((division) => recordService.loadTopRecordsByDivision(division.id)));
+          await Promise.all(divisions.map((division: Division) => recordService.load.topByDivision(division.id)));
         } catch (error) {
           console.error("Failed to load all top records:", error);
         }
@@ -139,7 +141,7 @@ export const DashboardPage = () => {
   const getTopRecordsByParticipant = (divisionRecords: typeof topRecords) => {
     const recordsByParticipant = new Map<string, (typeof topRecords)[0]>();
 
-    divisionRecords.forEach((record) => {
+    divisionRecords.forEach((record: Record) => {
       const existing = recordsByParticipant.get(record.participantId);
       if (!existing || record.value < existing.value) {
         // 더 좋은 기록 (시간이 짧을수록 좋음)
@@ -190,7 +192,7 @@ export const DashboardPage = () => {
                 className="block w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               >
                 <option value="">-- 모든 부문 --</option>
-                {divisions.map((division) => (
+                {divisions.map((division: Division) => (
                   <option key={division.id} value={division.id}>
                     {division.name}
                   </option>
@@ -276,10 +278,10 @@ export const DashboardPage = () => {
                 // 모든 부문별 top record 표시
                 <div className="space-y-8">
                   {divisions
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                    .map((division) => {
+                    .sort((a: Division, b: Division) => a.name.localeCompare(b.name))
+                    .map((division: Division) => {
                       const divisionRecords = topRecords.filter(
-                        (record) => participants.find((p) => p.id === record.participantId)?.divisionId === division.id
+                        (record: Record) => participants.find((p) => p.id === record.participantId)?.divisionId === division.id
                       );
                       const divisionTopRecords = getTopRecordsByParticipant(divisionRecords);
 

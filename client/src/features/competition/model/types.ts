@@ -1,14 +1,22 @@
 import type { Competition, CompetitionForm } from "@/entities/competition";
 
 export interface CompetitionService {
-  // 조회 기능 (공용)
-  loadAllCompetitions: () => Promise<void>;
-  loadCompetitionById: (id: string) => Promise<void>;
-  useCompetitions: () => Competition[];
-  useCompetitionById: (id: string) => Competition | null;
+  // Load functions (공용)
+  load: {
+    all: () => Promise<void>;
+    byId: (id: string) => Promise<void>;
+  };
 
-  // 관리 기능 (admin 전용, authFetcher에서 인증 확인)
-  createCompetition: (data: CompetitionForm) => Promise<void>;
-  updateCompetition: (id: string, data: CompetitionForm) => Promise<void>;
-  deleteCompetition: (id: string) => Promise<void>;
+  // Admin functions (관리자 전용)
+  admin: {
+    create: (data: CompetitionForm) => Promise<Competition>;
+    update: (id: string, data: CompetitionForm) => Promise<Competition>;
+    delete: (id: string) => Promise<void>;
+  };
+
+  // Subscription hooks (구독)
+  use: {
+    competitions: () => Competition[];
+    competitionById: (id: string) => Competition | null;
+  };
 }

@@ -7,7 +7,7 @@ interface CompetitionServiceProps {
 }
 
 export const createCompetitionService = ({ competitionRepository }: CompetitionServiceProps): CompetitionService => {
-  // 조회 기능 (공용)
+  // ===== Load Functions (Public) =====
   const loadAllCompetitions = async (): Promise<void> => {
     try {
       const competitions = await competitionRepository.getAllCompetitions();
@@ -37,8 +37,8 @@ export const createCompetitionService = ({ competitionRepository }: CompetitionS
     }
   };
 
-  // 관리 기능 (admin 전용, authFetcher에서 인증 확인됨)
-  const createCompetition = async (data: CompetitionForm): Promise<void> => {
+  // ===== CRUD Functions (Admin) =====
+  const createCompetition = async (data: CompetitionForm): Promise<Competition> => {
     try {
       const validatedData = CompetitionFormSchema.parse(data);
       const newCompetition = await competitionRepository.createCompetition(validatedData);
@@ -46,13 +46,14 @@ export const createCompetitionService = ({ competitionRepository }: CompetitionS
       // Store 업데이트
       const store = useZustandCompetitionStore.getState();
       store.add(newCompetition);
+      return newCompetition;
     } catch (error) {
       console.error("Failed to create competition:", error);
       throw error;
     }
   };
 
-  const updateCompetition = async (id: string, data: CompetitionForm): Promise<void> => {
+  const updateCompetition = async (id: string, data: CompetitionForm): Promise<Competition> => {
     try {
       const validatedData = CompetitionFormSchema.parse(data);
       const updatedCompetition = await competitionRepository.updateCompetition({ id, ...validatedData } as Competition);
@@ -60,6 +61,7 @@ export const createCompetitionService = ({ competitionRepository }: CompetitionS
       // Store 업데이트
       const store = useZustandCompetitionStore.getState();
       store.update(updatedCompetition);
+      return updatedCompetition;
     } catch (error) {
       console.error(`Failed to update competition ${id}:`, error);
       throw error;
@@ -79,7 +81,7 @@ export const createCompetitionService = ({ competitionRepository }: CompetitionS
     }
   };
 
-  // Store 구독 메서드들 (공용)
+  // ===== Subscription Hooks =====
   const useCompetitions = (): Competition[] => {
     return useZustandCompetitionStore((state) => state.competitions);
   };
@@ -89,16 +91,25 @@ export const createCompetitionService = ({ competitionRepository }: CompetitionS
     return competition;
   };
 
+  // ===== Public API =====
   return {
-    // 조회 기능 (공용)
-    loadAllCompetitions,
-    loadCompetitionById,
-    useCompetitions,
-    useCompetitionById,
+    // Load functions (공용)
+    load: {
+      all: loadAllCompetitions,
+      byId: loadCompetitionById,
+    },
 
-    // 관리 기능 (admin 전용)
-    createCompetition,
-    updateCompetition,
-    deleteCompetition,
+    // Admin functions (관리자 전용)
+    admin: {
+      create: createCompetition,
+      update: updateCompetition,
+      delete: deleteCompetition,
+    },
+
+    // Subscription hooks (구독)
+    use: {
+      competitions: useCompetitions,
+      competitionById: useCompetitionById,
+    },
   };
 };

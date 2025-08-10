@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { useAdminCompetitionService } from "@/features/admin-competition";
-import { useAdminDivisionService } from "@/features/admin-division";
+import type { Competition } from "@/entities/competition";
+import { useCompetitionService } from "@/features/competition";
 import { useCounterService } from "@/features/counter";
+import { useDivisionService } from "@/features/division";
 import { useProgressService } from "@/features/progress";
 
 interface CounterControlSectionProps {
@@ -10,24 +11,24 @@ interface CounterControlSectionProps {
 
 export const CounterControlSection = ({ counterId }: CounterControlSectionProps) => {
   const counterService = useCounterService();
-  const competitionService = useAdminCompetitionService();
-  const divisionService = useAdminDivisionService();
+  const competitionService = useCompetitionService();
+  const divisionService = useDivisionService();
   const progressService = useProgressService();
   const [selectedCompetitionId, setSelectedCompetitionId] = useState<string>("");
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>("");
 
-  const counter = counterService?.useCounterState(counterId) || null;
+  const counter = counterService?.use.counterState(counterId) || null;
   const isConnected = !!counter;
-  const competitions = competitionService?.useCompetitions() || [];
-  const divisions = divisionService?.useDivisionsByCompetition(selectedCompetitionId);
-  const division = divisionService?.useDivisionById(counter?.divisionId || "");
+  const competitions = competitionService?.use.competitions() || [];
+  const divisions = divisionService?.use.divisionsByCompetition(selectedCompetitionId);
+  const division = divisionService?.use.divisionById(counter?.divisionId || "");
 
   // 초기 데이터 로딩
   useEffect(() => {
     const loadData = async () => {
       if (competitionService) {
         try {
-          await competitionService.loadAllCompetitions();
+          await competitionService.load.all();
         } catch (error) {
           console.error("Failed to load competitions:", error);
         }
@@ -41,7 +42,7 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
     const loadDivisions = async () => {
       if (selectedCompetitionId && divisionService) {
         try {
-          await divisionService.loadDivisionsByCompetition(selectedCompetitionId);
+          await divisionService.load.byCompetition(selectedCompetitionId);
         } catch (error) {
           console.error("Failed to load divisions:", error);
         }
@@ -55,7 +56,7 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
     const loadDivisionData = async () => {
       if (counter?.divisionId && !division && divisionService) {
         try {
-          await divisionService.loadDivisionById(counter.divisionId);
+          await divisionService.load.byId(counter.divisionId);
         } catch (error) {
           console.error("Failed to load division:", error);
         }
@@ -76,8 +77,8 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
     if (!counterService || !selectedDivisionId) return;
 
     try {
-      await counterService.connectDivision(counterId, selectedDivisionId);
-      await divisionService.loadDivisionById(selectedDivisionId);
+      await counterService.admin.connectDivision(counterId, selectedDivisionId);
+      await divisionService.load.byId(selectedDivisionId);
     } catch (error) {
       console.error("Division 연결 실패:", error);
     }
@@ -88,7 +89,7 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
 
     if (confirm("Division 연결을 해제하시겠습니까?")) {
       try {
-        await counterService.disconnectDivision(counterId);
+        await counterService.admin.disconnectDivision(counterId);
         setSelectedCompetitionId("");
         setSelectedDivisionId("");
       } catch (error) {
@@ -110,16 +111,16 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
       try {
         switch (action) {
           case "start":
-            await progressService.openDivision(counter.divisionId);
+            await progressService.admin.openDivision(counter.divisionId);
             break;
           case "stop":
-            await progressService.closeDivision(counter.divisionId);
+            await progressService.admin.closeDivision(counter.divisionId);
             break;
           case "reset":
-            await progressService.resetDivision(counter.divisionId);
+            await progressService.admin.resetDivision(counter.divisionId);
             break;
         }
-        await divisionService.loadDivisionById(counter.divisionId);
+        await divisionService.load.byId(counter.divisionId);
       } catch (error) {
         console.error(`Division ${action} 실패:`, error);
       }
@@ -205,7 +206,7 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
               >
                 <option value="">Competition 선택</option>
-                {competitions.map((comp) => (
+                {competitions.map((comp: Competition) => (
                   <option key={comp.id} value={comp.id}>
                     {comp.name}
                   </option>

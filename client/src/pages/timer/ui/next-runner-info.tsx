@@ -4,7 +4,7 @@ const ROW_COUNT = 5;
 
 export function NextRunnerInfo() {
   const progressService = useProgressService();
-  const nextRunners = progressService.useNextRunners();
+  const nextRunners = progressService.use.nextRunners();
   const rows = Array.from({ length: ROW_COUNT }, (_, i) => i);
 
   return (

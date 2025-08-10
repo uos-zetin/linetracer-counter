@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import type { Competition } from "@/entities/competition";
 import type { Division, DivisionForm } from "@/entities/division";
-import { useAdminCompetitionService } from "@/features/admin-competition";
+import { useCompetitionService } from "@/features/competition";
 import {
-  useAdminDivisionService,
-  DivisionCreateModal,
-  DivisionEditModal,
-  DivisionDeleteModal,
-} from "@/features/admin-division";
+  useDivisionService,
+  AdminDivisionCreateModal,
+  AdminDivisionEditModal,
+  AdminDivisionDeleteModal,
+} from "@/features/division";
 
 export function DivisionManagement() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const divisionService = useAdminDivisionService();
-  const competitionService = useAdminCompetitionService();
-  const competitions = competitionService.useCompetitions();
+  const divisionService = useDivisionService();
+  const competitionService = useCompetitionService();
+  const competitions = competitionService.use.competitions();
 
   const selectedCompetitionId = searchParams.get("competitionId") || "";
-  const divisions = divisionService.useDivisionsByCompetition(selectedCompetitionId);
+  const divisions = divisionService.use.divisionsByCompetition(selectedCompetitionId);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -25,7 +26,7 @@ export function DivisionManagement() {
 
   // 초기 데이터 로드
   useEffect(() => {
-    competitionService.loadAllCompetitions().catch((error) => {
+    competitionService.load.all().catch((error: unknown) => {
       console.error("Failed to load competitions:", error);
     });
   }, [divisionService, competitionService]);
@@ -33,7 +34,7 @@ export function DivisionManagement() {
   // 선택된 대회의 부문들 로드
   useEffect(() => {
     if (selectedCompetitionId) {
-      divisionService.loadDivisionsByCompetition(selectedCompetitionId).catch((error) => {
+      divisionService.load.byCompetition(selectedCompetitionId).catch((error: unknown) => {
         console.error("Failed to load divisions:", error);
       });
     }
@@ -41,7 +42,7 @@ export function DivisionManagement() {
 
   // 대회 이름 찾기 헬퍼 함수
   const getCompetitionName = (competitionId: string): string => {
-    const competition = competitions.find((c) => c.id === competitionId);
+    const competition = competitions.find((c: Competition) => c.id === competitionId);
     return competition?.name || "알 수 없는 대회";
   };
 
@@ -84,7 +85,7 @@ export function DivisionManagement() {
 
   const handleCreateSubmit = async (data: DivisionForm) => {
     try {
-      await divisionService.createDivision(data);
+      await divisionService.admin.create(data);
       setIsCreateModalOpen(false);
     } catch (error) {
       console.error("Failed to create division:", error);
@@ -96,7 +97,7 @@ export function DivisionManagement() {
     if (!selectedDivision) return;
 
     try {
-      await divisionService.updateDivision(selectedDivision.id, data);
+      await divisionService.admin.update(selectedDivision.id, data);
       setIsEditModalOpen(false);
       setSelectedDivision(null);
     } catch (error) {
@@ -109,7 +110,7 @@ export function DivisionManagement() {
     if (!selectedDivision) return;
 
     try {
-      await divisionService.deleteDivision(selectedDivision.id);
+      await divisionService.admin.delete(selectedDivision.id);
       setIsDeleteModalOpen(false);
       setSelectedDivision(null);
     } catch (error) {
@@ -151,7 +152,7 @@ export function DivisionManagement() {
             className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">대회를 선택하세요</option>
-            {competitions.map((competition) => (
+            {competitions.map((competition: Competition) => (
               <option key={competition.id} value={competition.id}>
                 {competition.name}
               </option>
@@ -189,7 +190,7 @@ export function DivisionManagement() {
             </p>
           </div>
         ) : (
-          divisions.map((division) => {
+          divisions.map((division: Division) => {
             const statusInfo = getStatusInfo(division.status);
             return (
               <div
@@ -254,7 +255,7 @@ export function DivisionManagement() {
       </div>
 
       {/* 모달들 */}
-      <DivisionCreateModal
+      <AdminDivisionCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateSubmit}
@@ -262,7 +263,7 @@ export function DivisionManagement() {
         competitions={competitions}
       />
 
-      <DivisionEditModal
+      <AdminDivisionEditModal
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
@@ -273,7 +274,7 @@ export function DivisionManagement() {
         competitions={competitions}
       />
 
-      <DivisionDeleteModal
+      <AdminDivisionDeleteModal
         isOpen={isDeleteModalOpen}
         onClose={() => {
           setIsDeleteModalOpen(false);

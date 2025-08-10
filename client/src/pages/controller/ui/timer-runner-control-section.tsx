@@ -1,19 +1,19 @@
 import { useState, useCallback, useMemo } from "react";
 import { formatElapsedMs } from "@/entities/counter";
 import { integrateLogs, useCountdownTimer } from "@/entities/timer";
-import { useAdminDivisionService } from "@/features/admin-division";
+import { useDivisionService } from "@/features/division";
 import { useProgressService } from "@/features/progress";
 import { useTimerControlService } from "@/features/timer-control";
 
 export const TimerRunnerControlSection = () => {
   const progressService = useProgressService();
-  const divisionService = useAdminDivisionService();
+  const divisionService = useDivisionService();
   const timerControlService = useTimerControlService();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [customTimeAdjustment, setCustomTimeAdjustment] = useState("");
 
-  const progress = progressService?.useProgress() || null;
+  const progress = progressService?.use.progress() || null;
   const runner = progress?.runner;
   const division = progress?.division;
 
@@ -42,7 +42,7 @@ export const TimerRunnerControlSection = () => {
     if (!timerControlService || !runner?.participant.id) return;
 
     try {
-      await timerControlService.startTimer(runner.participant.id);
+      await timerControlService.admin.start(runner.participant.id);
     } catch (error) {
       console.error("Failed to start timer:", error);
     }
@@ -52,7 +52,7 @@ export const TimerRunnerControlSection = () => {
     if (!timerControlService || !runner?.participant.id) return;
 
     try {
-      await timerControlService.stopTimer(runner.participant.id);
+      await timerControlService.admin.stop(runner.participant.id);
     } catch (error) {
       console.error("Failed to stop timer:", error);
     }
@@ -63,7 +63,7 @@ export const TimerRunnerControlSection = () => {
       if (!timerControlService || !runner?.participant.id) return;
 
       try {
-        await timerControlService.adjustTimer(runner.participant.id, "add", timeMs);
+        await timerControlService.admin.adjust(runner.participant.id, "add", timeMs);
       } catch (error) {
         console.error("Failed to add time:", error);
       }
@@ -76,7 +76,7 @@ export const TimerRunnerControlSection = () => {
       if (!timerControlService || !runner?.participant.id) return;
 
       try {
-        await timerControlService.adjustTimer(runner.participant.id, "sub", timeMs);
+        await timerControlService.admin.adjust(runner.participant.id, "sub", timeMs);
       } catch (error) {
         console.error("Failed to subtract time:", error);
       }
@@ -106,7 +106,7 @@ export const TimerRunnerControlSection = () => {
     if (confirm(`${runner.participant.name}을(를) 마지막 순번으로 미루시겠습니까?`)) {
       setIsProcessing(true);
       try {
-        await progressService.postponeCurrentRunner(division.id);
+        await progressService.admin.postponeCurrentRunner(division.id);
       } catch (error) {
         console.error("Failed to postpone runner:", error);
       } finally {

@@ -8,8 +8,8 @@ interface DivisionInfoProps {
 export function DivisionInfo({ counterId }: DivisionInfoProps) {
   const counterService = useCounterService();
   const progressService = useProgressService();
-  const counter = counterService.useCounterState(counterId);
-  const division = progressService.useDivision();
+  const counter = counterService.use.counterState(counterId);
+  const division = progressService.use.division();
 
   const divisionName = division?.name || "No Division";
   const stopwatchName = counter?.name || "No Stopwatch";

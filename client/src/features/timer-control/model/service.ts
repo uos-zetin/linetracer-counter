@@ -1,4 +1,4 @@
-import type { TimerLogType, TimerRepository } from "@/entities/timer";
+import type { TimerLog, TimerLogType, TimerRepository } from "@/entities/timer";
 import type { TimerControlService } from "./types";
 
 interface TimerControlServiceProps {
@@ -6,46 +6,53 @@ interface TimerControlServiceProps {
 }
 
 export const createTimerControlService = ({ timerRepository }: TimerControlServiceProps): TimerControlService => {
-  const startTimer = async (participantId: string) => {
+  const loadTimerLogs = async (participantId: string): Promise<TimerLog[]> => {
     try {
-      await timerRepository.startTimer(participantId);
-    } catch (error) {
-      console.error("Failed to start timer:", error);
-      throw error;
-    }
-  };
-
-  const stopTimer = async (participantId: string) => {
-    try {
-      await timerRepository.stopTimer(participantId);
-    } catch (error) {
-      console.error("Failed to stop timer:", error);
-      throw error;
-    }
-  };
-
-  const adjustTimer = async (participantId: string, type: TimerLogType, value: number) => {
-    try {
-      await timerRepository.adjustTimer(participantId, type, value);
-    } catch (error) {
-      console.error("Failed to adjust timer:", error);
-      throw error;
-    }
-  };
-
-  const getTimerLogs = async (participantId: string) => {
-    try {
-      await timerRepository.getTimerLogs(participantId);
+      return await timerRepository.getTimerLogs(participantId);
     } catch (error) {
       console.error("Failed to get timer logs:", error);
       throw error;
     }
   };
 
+  const startTimer = async (participantId: string): Promise<TimerLog> => {
+    try {
+      return await timerRepository.startTimer(participantId);
+    } catch (error) {
+      console.error("Failed to start timer:", error);
+      throw error;
+    }
+  };
+
+  const stopTimer = async (participantId: string): Promise<TimerLog> => {
+    try {
+      return await timerRepository.stopTimer(participantId);
+    } catch (error) {
+      console.error("Failed to stop timer:", error);
+      throw error;
+    }
+  };
+
+  const adjustTimer = async (participantId: string, type: TimerLogType, value: number): Promise<TimerLog> => {
+    try {
+      return await timerRepository.adjustTimer(participantId, type, value);
+    } catch (error) {
+      console.error("Failed to adjust timer:", error);
+      throw error;
+    }
+  };
+
   return {
-    startTimer,
-    stopTimer,
-    adjustTimer,
-    getTimerLogs,
+    // Load functions (데이터 조회)
+    load: {
+      logs: loadTimerLogs,
+    },
+    
+    // Admin functions (타이머 제어)
+    admin: {
+      start: startTimer,
+      stop: stopTimer,
+      adjust: adjustTimer,
+    },
   };
 };

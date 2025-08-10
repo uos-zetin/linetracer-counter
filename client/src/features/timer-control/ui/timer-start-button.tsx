@@ -20,7 +20,7 @@ export const TimerStartButton = ({
   const handleStart = async () => {
     setIsLoading(true);
     try {
-      await timerControlService.startTimer(participantId);
+      await timerControlService.admin.start(participantId);
       onStart?.();
     } catch (error) {
       console.error("Failed to start timer:", error);

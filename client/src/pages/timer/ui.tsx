@@ -29,7 +29,7 @@ export function TimerPage() {
 
     const connectCounter = async () => {
       try {
-        await counterService.connect(counterId);
+        await counterService.connection.connect(counterId);
       } catch (error) {
         console.error("Failed to connect counter service:", error);
       }
@@ -38,17 +38,17 @@ export function TimerPage() {
     connectCounter();
 
     return () => {
-      counterService.disconnect(counterId).catch(console.error);
+      counterService.connection.disconnect(counterId).catch(console.error);
     };
   }, [counterId, navigate, counterService]);
 
   // Counter 상태에서 divisionId를 가져와서 Progress 서비스 연결
-  const counterState = counterService.useCounterState(counterId || "");
+  const counterState = counterService.use.counterState(counterId || "");
   useEffect(() => {
     const connectProgress = async () => {
       if (counterState?.divisionId) {
         try {
-          await progressService.connect(counterState.divisionId);
+          await progressService.connection.connect(counterState.divisionId);
         } catch (error) {
           console.error("Failed to connect progress service:", error);
         }
@@ -59,13 +59,13 @@ export function TimerPage() {
 
     return () => {
       if (counterState?.divisionId) {
-        progressService.disconnect().catch(console.error);
+        progressService.connection.disconnect().catch(console.error);
       }
     };
   }, [counterState?.divisionId, progressService]);
 
   // Dashboard URL 생성을 위한 division 정보
-  const division = progressService.useDivision();
+  const division = progressService.use.division();
   const dashboardUrl = division?.competitionId
     ? `${window.location.origin}/dashboard?competitionId=${division.competitionId}`
     : window.location.href;

@@ -1,28 +1,29 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import type { Competition } from "@/entities/competition";
 import type { Participant, ParticipantForm } from "@/entities/participant";
-import { useAdminCompetitionService } from "@/features/admin-competition";
-import { useAdminDivisionService } from "@/features/admin-division";
+import { useCompetitionService } from "@/features/competition";
+import { useDivisionService } from "@/features/division";
 import {
-  useAdminParticipantService,
-  ParticipantCreateModal,
-  ParticipantEditModal,
-  ParticipantDeleteModal,
-} from "@/features/admin-participant";
+  useParticipantService,
+  AdminParticipantCreateModal,
+  AdminParticipantEditModal,
+  AdminParticipantDeleteModal,
+} from "@/features/participant";
 
 // 페이지네이션 설정
 const PARTICIPANTS_PER_PAGE = 5;
 
 export function ParticipantManagement() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const participantService = useAdminParticipantService();
-  const competitionService = useAdminCompetitionService();
-  const divisionService = useAdminDivisionService();
+  const participantService = useParticipantService();
+  const competitionService = useCompetitionService();
+  const divisionService = useDivisionService();
 
-  const competitions = competitionService.useCompetitions();
+  const competitions = competitionService.use.competitions();
   const selectedCompetitionId = searchParams.get("competitionId") || "";
-  const divisions = divisionService.useDivisionsByCompetition(selectedCompetitionId);
-  const allParticipants = participantService.useParticipants();
+  const divisions = divisionService.use.divisionsByCompetition(selectedCompetitionId);
+  const allParticipants = participantService.use.allParticipants();
 
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState<Record<string, number>>({});
@@ -35,7 +36,7 @@ export function ParticipantManagement() {
 
   // 초기 데이터 로드
   useEffect(() => {
-    competitionService.loadAllCompetitions().catch((error) => {
+    competitionService.load.all().catch((error: unknown) => {
       console.error("Failed to load competitions:", error);
     });
   }, [competitionService]);
@@ -43,7 +44,7 @@ export function ParticipantManagement() {
   // 선택된 대회의 부문들 로드
   useEffect(() => {
     if (selectedCompetitionId) {
-      divisionService.loadDivisionsByCompetition(selectedCompetitionId).catch((error) => {
+      divisionService.load.byCompetition(selectedCompetitionId).catch((error: unknown) => {
         console.error("Failed to load divisions:", error);
       });
     }
@@ -53,7 +54,7 @@ export function ParticipantManagement() {
   useEffect(() => {
     if (divisions.length > 0) {
       const divisionIds = divisions.map((division) => division.id);
-      participantService.loadParticipantsByDivisions(divisionIds).catch((error) => {
+      participantService.load.byDivisions(divisionIds).catch((error: unknown) => {
         console.error("Failed to load participants:", error);
       });
     }
@@ -61,13 +62,13 @@ export function ParticipantManagement() {
 
   // 대회 이름 찾기 헬퍼 함수
   const getCompetitionName = (competitionId: string): string => {
-    const competition = competitions.find((c) => c.id === competitionId);
+    const competition = competitions.find((c: Competition) => c.id === competitionId);
     return competition?.name || "알 수 없는 대회";
   };
 
   // 부문별 참가자 그룹화
   const getParticipantsByDivision = (divisionId: string): Participant[] => {
-    return allParticipants.filter((p) => p.divisionId === divisionId).sort((a, b) => a.orderRaw - b.orderRaw);
+    return allParticipants.filter((p: Participant) => p.divisionId === divisionId).sort((a: Participant, b: Participant) => a.orderRaw - b.orderRaw);
   };
 
   // 페이지네이션 헬퍼 함수
@@ -118,7 +119,7 @@ export function ParticipantManagement() {
 
   const handleCreateSubmit = async (data: ParticipantForm) => {
     try {
-      await participantService.createParticipant(data);
+      await participantService.admin.create(data.divisionId, data);
       setIsCreateModalOpen(false);
     } catch (error) {
       console.error("Failed to create participant:", error);
@@ -130,7 +131,7 @@ export function ParticipantManagement() {
     if (!selectedParticipant) return;
 
     try {
-      await participantService.updateParticipant(selectedParticipant.id, data);
+      await participantService.admin.update(selectedParticipant.id, data);
       setIsEditModalOpen(false);
       setSelectedParticipant(null);
     } catch (error) {
@@ -143,7 +144,7 @@ export function ParticipantManagement() {
     if (!selectedParticipant) return;
 
     try {
-      await participantService.deleteParticipant(selectedParticipant.id);
+      await participantService.admin.delete(selectedParticipant.id);
 
       setIsDeleteModalOpen(false);
       setSelectedParticipant(null);
@@ -186,7 +187,7 @@ export function ParticipantManagement() {
             className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">대회를 선택하세요</option>
-            {competitions.map((competition) => (
+            {competitions.map((competition: Competition) => (
               <option key={competition.id} value={competition.id}>
                 {competition.name}
               </option>
@@ -359,14 +360,14 @@ export function ParticipantManagement() {
       </div>
 
       {/* 모달들 */}
-      <ParticipantCreateModal
+      <AdminParticipantCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateSubmit}
         divisions={divisions}
       />
 
-      <ParticipantEditModal
+      <AdminParticipantEditModal
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
@@ -377,7 +378,7 @@ export function ParticipantManagement() {
         divisions={divisions}
       />
 
-      <ParticipantDeleteModal
+      <AdminParticipantDeleteModal
         isOpen={isDeleteModalOpen}
         onClose={() => {
           setIsDeleteModalOpen(false);

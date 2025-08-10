@@ -5,7 +5,7 @@ import { useCounterService } from "@/features/counter";
 export function StopwatchView() {
   const { counterId } = useParams();
   const counterService = useCounterService();
-  const stopwatch = counterService.useStopwatch(counterId || "");
+  const stopwatch = counterService.use.stopwatch(counterId || "");
   const elapsedTime = useStopwatchTimer(stopwatch.startedAt, stopwatch.stoppedAt);
   const timeComponents = formatElapsedMs(elapsedTime);
 

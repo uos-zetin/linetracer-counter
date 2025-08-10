@@ -15,7 +15,7 @@ export const TimerStopButton = ({ participantId, disabled = false, onStop, class
   const handleStop = async () => {
     setIsLoading(true);
     try {
-      await timerControlService.stopTimer(participantId);
+      await timerControlService.admin.stop(participantId);
       onStop?.();
     } catch (error) {
       console.error("Failed to stop timer:", error);

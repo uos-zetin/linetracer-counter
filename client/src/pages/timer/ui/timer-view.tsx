@@ -3,8 +3,8 @@ import { useProgressService } from "@/features/progress";
 
 export function TimerView() {
   const progress = useProgressService();
-  const currentDivision = progress.useDivision();
-  const currentRunner = progress.useRunner();
+  const currentDivision = progress.use.division();
+  const currentRunner = progress.use.runner();
   const timerLogs = currentRunner?.timerLogs || [];
   const timerState = integrateLogs(currentDivision?.timeLimit || 0, timerLogs);
 

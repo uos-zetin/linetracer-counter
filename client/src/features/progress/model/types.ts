@@ -30,25 +30,42 @@ export interface ProgressActions {
 export type ProgressStore = ProgressState & ProgressActions;
 
 export interface ProgressService {
-  connect: (divisionId: string) => Promise<void>;
-  disconnect: () => Promise<void>;
-  setProgress: (progress: ProgressState) => void;
-  useProgress: () => ProgressState;
-  useCompetition: () => Competition | null;
-  useDivision: () => Division | null;
-  useRunner: () => Runner | null;
-  useNextRunners: () => Participant[];
-  useTopRecords: () => Record[];
-  // Runner control methods
-  postponeCurrentRunner: (divisionId: string) => Promise<void>;
-  setCurrentRunner: (divisionId: string, participantId: string) => Promise<void>;
-  changeOrder: (divisionId: string, participantId: string, order: number) => Promise<void>;
-  getOrder: (divisionId: string) => Promise<string[]>;
-  openDivision: (divisionId: string) => Promise<void>;
-  closeDivision: (divisionId: string) => Promise<void>;
-  resetDivision: (divisionId: string) => Promise<void>;
-  loadProgressByDivision: (divisionId: string) => Promise<ProgressState | null>;
-  // Manual record methods
-  useCurrentRunnerManualRecords: () => ManualRecord[];
-  addManualRecord: (participantId: string, value: number, recorderName: string) => Promise<void>;
+  // Load functions (데이터 조회)
+  load: {
+    byDivision: (divisionId: string) => Promise<ProgressState | null>;
+    order: (divisionId: string) => Promise<string[]>;
+  };
+
+  // Admin functions (관리자 전용)
+  admin: {
+    postponeCurrentRunner: (divisionId: string) => Promise<void>;
+    setCurrentRunner: (divisionId: string, participantId: string) => Promise<void>;
+    changeOrder: (divisionId: string, participantId: string, order: number) => Promise<void>;
+    openDivision: (divisionId: string) => Promise<void>;
+    closeDivision: (divisionId: string) => Promise<void>;
+    resetDivision: (divisionId: string) => Promise<void>;
+    addManualRecord: (participantId: string, value: number, recorderName: string) => Promise<void>;
+  };
+
+  // Real-time connection functions (실시간 연결)
+  connection: {
+    connect: (divisionId: string) => Promise<void>;
+    disconnect: () => Promise<void>;
+  };
+
+  // Local state functions (로컬 상태 조작)
+  local: {
+    setProgress: (progress: ProgressState) => void;
+  };
+
+  // Subscription hooks (구독)
+  use: {
+    progress: () => ProgressState;
+    competition: () => Competition | null;
+    division: () => Division | null;
+    runner: () => Runner | null;
+    nextRunners: () => Participant[];
+    topRecords: () => Record[];
+    currentRunnerManualRecords: () => ManualRecord[];
+  };
 }

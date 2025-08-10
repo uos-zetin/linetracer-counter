@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import type { User, UserRegisterForm } from "@/entities/user";
-import { useAdminUserService, UserCreateModal, UserEditRolesModal, UserDeleteModal } from "@/features/admin-user";
+import { useUserService, AdminUserCreateModal, AdminUserEditRolesModal, AdminUserDeleteModal } from "@/features/user";
 
 export function UserManagement() {
   /* ───────────────────────── 서비스 & 상태 ───────────────────────── */
-  const adminService = useAdminUserService();
-  const users = adminService.useUsers(); // zustand / react‑query 등 내부 구현에 맞춰 가져오기
+  const userService = useUserService();
+  const users = userService.use.users();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditRolesModalOpen, setIsEditRolesModalOpen] = useState(false);
@@ -14,8 +14,8 @@ export function UserManagement() {
 
   /* ───────────────────────── 초기 로딩 ───────────────────────── */
   useEffect(() => {
-    adminService.loadAllUsers().catch((e) => console.error("Failed to load users:", e));
-  }, [adminService]);
+    userService.load.all().catch((e) => console.error("Failed to load users:", e));
+  }, [userService]);
 
   /* ───────────────────────── 핸들러 ───────────────────────── */
   const openCreate = () => setIsCreateModalOpen(true);
@@ -32,7 +32,7 @@ export function UserManagement() {
 
   const handleCreateSubmit = async (data: UserRegisterForm) => {
     try {
-      await adminService.createUser(data);
+      await userService.admin.create(data);
       setIsCreateModalOpen(false);
     } catch (e) {
       console.error("Failed to create user:", e);
@@ -42,7 +42,7 @@ export function UserManagement() {
   const handleEditRolesSubmit = async (roles: User["roles"]) => {
     if (!selectedUser) return;
     try {
-      await adminService.updateUserRoles(selectedUser.id, roles);
+      await userService.admin.updateRoles(selectedUser.id, roles);
       setIsEditRolesModalOpen(false);
       setSelectedUser(null);
     } catch (e) {
@@ -53,7 +53,7 @@ export function UserManagement() {
   const handleDeleteConfirm = async () => {
     if (!selectedUser) return;
     try {
-      await adminService.deleteUser(selectedUser.id);
+      await userService.admin.delete(selectedUser.id);
       setIsDeleteModalOpen(false);
       setSelectedUser(null);
     } catch (e) {
@@ -143,13 +143,13 @@ export function UserManagement() {
       </div>
 
       {/* ───────────────────────── 모달 ───────────────────────── */}
-      <UserCreateModal
+      <AdminUserCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateSubmit}
       />
 
-      <UserEditRolesModal
+      <AdminUserEditRolesModal
         isOpen={isEditRolesModalOpen}
         onClose={() => {
           setIsEditRolesModalOpen(false);
@@ -159,7 +159,7 @@ export function UserManagement() {
         onSubmit={handleEditRolesSubmit}
       />
 
-      <UserDeleteModal
+      <AdminUserDeleteModal
         isOpen={isDeleteModalOpen}
         onClose={() => {
           setIsDeleteModalOpen(false);
