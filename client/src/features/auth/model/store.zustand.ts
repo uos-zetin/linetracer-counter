@@ -6,32 +6,28 @@ import type { AuthStore } from "./types";
 
 export const useAuthStore = create<AuthStore>()(
   persist(
-    immer((set, get) => ({
-      // Initial State
-      user: null,
-      isAuthenticated: false,
+    immer((set) => ({
+      authState: {
+        user: null,
+        isAuthenticated: false,
+      },
 
-      // Actions
       setAuth: (user: User | null, isAuthenticated: boolean) =>
         set((state) => {
-          state.user = user;
-          state.isAuthenticated = isAuthenticated;
-        }),
-      clearAuth: () =>
-        set((state) => {
-          state.user = null;
-          state.isAuthenticated = false;
+          state.authState.user = user;
+          state.authState.isAuthenticated = isAuthenticated;
         }),
 
-      // Getters
-      getUser: () => get().user || null,
-      getIsAuthenticated: () => get().isAuthenticated,
+      clearAuth: () =>
+        set((state) => {
+          state.authState.user = null;
+          state.authState.isAuthenticated = false;
+        }),
     })),
     {
       name: "auth-store",
       partialize: (state) => ({
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
+        authState: state.authState,
       }),
     }
   )

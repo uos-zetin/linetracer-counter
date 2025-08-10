@@ -9,7 +9,7 @@ export const CounterProvider = ({ children }: { children: React.ReactNode }) => 
   const authService = useAuthService();
 
   const counterService = useMemo(() => {
-    const counterChannel: CounterChannel = new CounterSocketIOChannel(() => authService.getSessionKey());
+    const counterChannel: CounterChannel = new CounterSocketIOChannel(() => authService.session.getSessionKey());
     const counterService: CounterService = createCounterService({
       counterRepository,
       counterChannel,

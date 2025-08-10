@@ -21,7 +21,7 @@ export const RepositoryProvider = ({ children }: { children: React.ReactNode }) 
       participantRepository: new ParticipantFetcherRepository(fetcher, authFetcher),
       recordRepository: new RecordFetcherRepository(fetcher, authFetcher),
       manualRecordRepository: new ManualRecordFetcherRepository(fetcher, authFetcher),
-      userRepository: new UserFetcherRepository(fetcher, authFetcher),
+      userRepository: new UserFetcherRepository(authFetcher),
       counterRepository: new CounterFetcherRepository(authFetcher),
       timerRepository: new TimerFetcherRepository(fetcher, authFetcher),
       progressRepository: new ProgressFetcherRepository(fetcher, authFetcher),

@@ -12,11 +12,11 @@ interface AppHeaderProps {
 
 export function AppHeader({ title, showBackButton = false, backPath = "/", showLogout = true }: AppHeaderProps) {
   const authService = useAuthService();
-  const { user } = authService.useAuth();
+  const { user } = authService.use.auth();
 
   const handleLogout = async () => {
     try {
-      await authService.logout();
+      await authService.auth.logout();
     } catch (error) {
       console.error("로그아웃 실패:", error);
     }

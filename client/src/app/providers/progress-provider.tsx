@@ -9,7 +9,7 @@ export const ProgressProvider = ({ children }: { children: React.ReactNode }) =>
   const authService = useAuthService();
 
   const { progressService, ProgressServiceProvider } = useMemo(() => {
-    const progressChannel: ProgressChannel = new ProgressSocketIOChannel(() => authService.getSessionKey());
+    const progressChannel: ProgressChannel = new ProgressSocketIOChannel(() => authService.session.getSessionKey());
 
     const progressService: ProgressService = createProgressService({
       progressRepository,

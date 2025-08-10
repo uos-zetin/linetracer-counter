@@ -23,8 +23,8 @@ describe("useAuthStore", () => {
 
       // Assert
       const state = useAuthStore.getState();
-      expect(state.user).toEqual(user);
-      expect(state.isAuthenticated).toBe(true);
+      expect(state.authState.user).toEqual(user);
+      expect(state.authState.isAuthenticated).toBe(true);
     });
 
     it("사용자가 null이고 인증되지 않은 상태를 설정해야 한다", () => {
@@ -43,8 +43,8 @@ describe("useAuthStore", () => {
 
       // Assert
       const state = useAuthStore.getState();
-      expect(state.user).toBeNull();
-      expect(state.isAuthenticated).toBe(false);
+      expect(state.authState.user).toBeNull();
+      expect(state.authState.isAuthenticated).toBe(false);
     });
   });
 
@@ -65,8 +65,8 @@ describe("useAuthStore", () => {
 
       // Assert
       const state = useAuthStore.getState();
-      expect(state.user).toBeNull();
-      expect(state.isAuthenticated).toBe(false);
+      expect(state.authState.user).toBeNull();
+      expect(state.authState.isAuthenticated).toBe(false);
     });
 
     it("이미 초기화된 상태에서도 문제없이 동작해야 한다", () => {
@@ -78,8 +78,8 @@ describe("useAuthStore", () => {
 
       // Assert
       const state = useAuthStore.getState();
-      expect(state.user).toBeNull();
-      expect(state.isAuthenticated).toBe(false);
+      expect(state.authState.user).toBeNull();
+      expect(state.authState.isAuthenticated).toBe(false);
     });
   });
 
@@ -96,7 +96,7 @@ describe("useAuthStore", () => {
       useAuthStore.getState().setAuth(user, true);
 
       // Act
-      const result = useAuthStore.getState().getUser();
+      const result = useAuthStore.getState().authState.user;
 
       // Assert
       expect(result).toEqual(user);
@@ -107,7 +107,7 @@ describe("useAuthStore", () => {
       useAuthStore.getState().clearAuth();
 
       // Act
-      const result = useAuthStore.getState().getUser();
+      const result = useAuthStore.getState().authState.user;
 
       // Assert
       expect(result).toBeNull();
@@ -127,7 +127,7 @@ describe("useAuthStore", () => {
       useAuthStore.getState().setAuth(user, true);
 
       // Act
-      const result = useAuthStore.getState().getIsAuthenticated();
+      const result = useAuthStore.getState().authState.isAuthenticated;
 
       // Assert
       expect(result).toBe(true);
@@ -138,7 +138,7 @@ describe("useAuthStore", () => {
       useAuthStore.getState().clearAuth();
 
       // Act
-      const result = useAuthStore.getState().getIsAuthenticated();
+      const result = useAuthStore.getState().authState.isAuthenticated;
 
       // Assert
       expect(result).toBe(false);
@@ -156,7 +156,7 @@ describe("useAuthStore", () => {
       useAuthStore.getState().setAuth(user, false);
 
       // Act
-      const result = useAuthStore.getState().getIsAuthenticated();
+      const result = useAuthStore.getState().authState.isAuthenticated;
 
       // Assert
       expect(result).toBe(false);
@@ -177,8 +177,8 @@ describe("useAuthStore", () => {
       useAuthStore.getState().setAuth(user, true);
 
       // Assert
-      expect(useAuthStore.getState().getUser()).toEqual(user);
-      expect(useAuthStore.getState().getIsAuthenticated()).toBe(true);
+      expect(useAuthStore.getState().authState.user).toEqual(user);
+      expect(useAuthStore.getState().authState.isAuthenticated).toBe(true);
     });
 
     it("clearAuth 후 모든 getter가 초기값을 반환해야 한다", () => {
@@ -196,8 +196,8 @@ describe("useAuthStore", () => {
       useAuthStore.getState().clearAuth();
 
       // Assert
-      expect(useAuthStore.getState().getUser()).toBeNull();
-      expect(useAuthStore.getState().getIsAuthenticated()).toBe(false);
+      expect(useAuthStore.getState().authState.user).toBeNull();
+      expect(useAuthStore.getState().authState.isAuthenticated).toBe(false);
     });
   });
 });

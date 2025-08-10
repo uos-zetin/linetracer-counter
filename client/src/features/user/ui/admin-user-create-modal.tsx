@@ -16,8 +16,7 @@ import {
   FormMessage,
   Input,
 } from "@/shared/ui";
-import type { UserRegisterForm } from "@/entities/user";
-import { UserRegisterFormSchema } from "@/entities/user";
+import { UserRegisterFormSchema, type UserRegisterForm } from "@/entities/user";
 
 interface UserCreateModalProps {
   isOpen: boolean;

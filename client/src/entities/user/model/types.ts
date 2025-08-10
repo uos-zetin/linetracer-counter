@@ -11,11 +11,6 @@ export type User = {
 
 export type UserForm = Pick<User, "name" | "roles">;
 
-export type UserLoginForm = {
-  userName: string;
-  password: string;
-};
-
 export type UserRegisterForm = {
   name: string;
   userName: string;
