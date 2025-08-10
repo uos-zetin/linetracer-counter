@@ -2,12 +2,12 @@ import { useEffect } from "react";
 import { useParams } from "react-router";
 import { useAuthService } from "@/features/auth";
 import { useCounterService } from "@/features/counter";
-import { ControllerLayout } from "./ui/controller-layout";
-import { CounterControlSection } from "./ui/counter-control-section";
-import { ProgressMonitorSection } from "./ui/progress-monitor-section";
-import { RecordControlSection } from "./ui/record-control-section";
-import { StopwatchControlSection } from "./ui/stopwatch-control-section";
-import { TimerRunnerControlSection } from "./ui/timer-runner-control-section";
+import { ControllerLayout } from "./controller-layout";
+import { CounterControlSection } from "./counter-control-section";
+import { ProgressMonitorSection } from "./progress-monitor-section";
+import { RecordControlSection } from "./record-control-section";
+import { StopwatchControlSection } from "./stopwatch-control-section";
+import { TimerRunnerControlSection } from "./timer-runner-control-section";
 
 export const ControllerPage = () => {
   const { counterId } = useParams<{ counterId: string }>();

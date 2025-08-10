@@ -2,16 +2,16 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useCounterService } from "@/features/counter";
 import { useProgressService } from "@/features/progress";
-import { CurrentRecordView } from "./ui/current-record-view";
-import { DivisionInfo } from "./ui/division-info";
-import { NextRunnerInfo } from "./ui/next-runner-info";
-import { QRViewer } from "./ui/qr-viewer";
-import { RunnerInfo } from "./ui/runner-info";
-import { SponsorView } from "./ui/sponsor-view";
-import { StopwatchView } from "./ui/stopwatch-view";
-import { TimerPageHeader } from "./ui/timer-header";
-import { TimerView } from "./ui/timer-view";
-import { TopRecordView } from "./ui/top-record-info";
+import { CurrentRecordView } from "./current-record-view";
+import { DivisionInfo } from "./division-info";
+import { NextRunnerInfo } from "./next-runner-info";
+import { QRViewer } from "./qr-viewer";
+import { RunnerInfo } from "./runner-info";
+import { SponsorView } from "./sponsor-view";
+import { StopwatchView } from "./stopwatch-view";
+import { TimerPageHeader } from "./timer-header";
+import { TimerView } from "./timer-view";
+import { TopRecordView } from "./top-record-info";
 
 export function TimerPage() {
   const navigate = useNavigate();

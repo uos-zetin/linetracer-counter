@@ -1,1 +1,1 @@
-export { ComponentShowcasePage } from "./ui";
+export { ComponentShowcasePage } from "./ui/component-showcase-page";

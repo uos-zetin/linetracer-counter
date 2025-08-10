@@ -1,4 +1,4 @@
-export { AdminPage } from "./ui";
+export { AdminPage } from "./ui/admin-page";
 export { AdminDashboard } from "./ui/admin-dashboard";
 export { CompetitionManagement } from "./ui/competition-management";
 export { DivisionManagement } from "./ui/division-management";
