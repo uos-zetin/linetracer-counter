@@ -3,9 +3,10 @@ import { Toaster } from "@/shared/ui/sonner";
 import { 
   ErrorHandlingContext, 
   createErrorHandlingService, 
-  ErrorModal 
+  ErrorModal,
+  ErrorModalProvider,
+  useErrorModal
 } from "@/features/error-handling";
-import { ErrorModalProvider, useErrorModal } from "@/features/error-handling/model/modal-context";
 
 interface ErrorHandlingProviderProps {
   children: React.ReactNode;

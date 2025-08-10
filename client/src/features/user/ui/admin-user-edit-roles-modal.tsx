@@ -29,8 +29,8 @@ interface UserEditRolesModalProps {
 const allRoles: UserRole[] = ["administrator", "manualRecorder", "stopwatchRecorder"];
 const roleLabels: Record<UserRole, string> = {
   administrator: "관리자",
-  manualRecorder: "수동 기록자",
-  stopwatchRecorder: "스톱워치 기록자",
+  manualRecorder: "수동 계수자",
+  stopwatchRecorder: "계수기",
 };
 
 type RoleFormData = {
@@ -90,9 +90,7 @@ export function AdminUserEditRolesModal({ isOpen, onClose, onSubmit, user }: Use
               name="roles"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    역할 <span className="text-red-500">*</span>
-                  </FormLabel>
+                  <FormLabel>역할</FormLabel>
                   <div className="space-y-3">
                     {allRoles.map((role) => (
                       <FormItem key={role} className="flex flex-row items-center space-x-2 space-y-0">
@@ -110,9 +108,7 @@ export function AdminUserEditRolesModal({ isOpen, onClose, onSubmit, user }: Use
                             disabled={form.formState.isSubmitting}
                           />
                         </FormControl>
-                        <FormLabel className="text-sm font-normal cursor-pointer">
-                          {roleLabels[role]}
-                        </FormLabel>
+                        <FormLabel className="text-sm font-normal cursor-pointer">{roleLabels[role]}</FormLabel>
                       </FormItem>
                     ))}
                   </div>
@@ -124,19 +120,10 @@ export function AdminUserEditRolesModal({ isOpen, onClose, onSubmit, user }: Use
         </Form>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleClose}
-            disabled={form.formState.isSubmitting}
-          >
+          <Button type="button" variant="outline" onClick={handleClose} disabled={form.formState.isSubmitting}>
             취소
           </Button>
-          <Button
-            type="submit"
-            form="user-roles-form"
-            disabled={form.formState.isSubmitting}
-          >
+          <Button type="submit" form="user-roles-form" disabled={form.formState.isSubmitting}>
             {form.formState.isSubmitting ? "저장 중..." : "저장"}
           </Button>
         </DialogFooter>
