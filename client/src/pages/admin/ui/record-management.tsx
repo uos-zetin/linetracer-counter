@@ -9,7 +9,9 @@ import {
   Badge,
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui";
@@ -196,57 +198,72 @@ export function RecordManagement() {
           {/* 대회 선택 */}
           <Card>
             <CardContent className="px-6 py-3">
-              <label htmlFor="competition-select" className="block text-sm font-medium text-foreground mb-2">대회 선택</label>
-              <Select value={selectedCompetitionId} onValueChange={handleCompetitionSelect}>
-                <SelectTrigger>
-                  <SelectValue placeholder="대회를 선택하세요" />
-                </SelectTrigger>
-                <SelectContent>
-                  {competitions.map((competition: Competition) => (
-                    <SelectItem key={competition.id} value={competition.id}>
-                      {competition.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <span className="block text-sm font-medium text-foreground">대회 선택</span>
+                <Select value={selectedCompetitionId} onValueChange={handleCompetitionSelect}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="대회를 선택하세요" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>대회 목록</SelectLabel>
+                      {competitions.map((competition: Competition) => (
+                        <SelectItem key={competition.id} value={competition.id}>
+                          {competition.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
             </CardContent>
           </Card>
 
           {/* 부문 선택 */}
           <Card>
             <CardContent className="px-6 py-3">
-              <label className="block text-sm font-medium text-foreground mb-2">부문 선택</label>
-              <Select value={selectedDivisionId} onValueChange={handleDivisionSelect} disabled={!selectedCompetitionId}>
-                <SelectTrigger>
-                  <SelectValue placeholder={selectedCompetitionId ? "부문을 선택하세요" : "먼저 대회를 선택하세요"} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">전체 부문</SelectItem>
-                  {divisions.map((division: Division) => (
-                    <SelectItem key={division.id} value={division.id}>
-                      {division.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <span className="block text-sm font-medium text-foreground">부문 선택</span>
+                <Select value={selectedDivisionId} onValueChange={handleDivisionSelect} disabled={!selectedCompetitionId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={selectedCompetitionId ? "부문을 선택하세요" : "먼저 대회를 선택하세요"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>부문 목록</SelectLabel>
+                      <SelectItem value="all">전체 부문</SelectItem>
+                      {divisions.map((division: Division) => (
+                        <SelectItem key={division.id} value={division.id}>
+                          {division.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
             </CardContent>
           </Card>
 
           {/* 상태 필터 */}
           <Card>
             <CardContent className="px-6 py-3">
-              <label className="block text-sm font-medium text-foreground mb-2">상태 필터</label>
-              <Select value={selectedStatus || "all"} onValueChange={handleStatusSelect}>
-                <SelectTrigger>
-                  <SelectValue placeholder="상태를 선택하세요" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">전체 상태</SelectItem>
-                  <SelectItem value="pending">승인 대기</SelectItem>
-                  <SelectItem value="approved">승인됨</SelectItem>
-                  <SelectItem value="rejected">거부됨</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <span className="block text-sm font-medium text-foreground">상태 필터</span>
+                <Select value={selectedStatus || "all"} onValueChange={handleStatusSelect}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="상태를 선택하세요" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>상태 목록</SelectLabel>
+                      <SelectItem value="all">전체 상태</SelectItem>
+                      <SelectItem value="pending">승인 대기</SelectItem>
+                      <SelectItem value="approved">승인됨</SelectItem>
+                      <SelectItem value="rejected">거부됨</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
             </CardContent>
           </Card>
         </div>

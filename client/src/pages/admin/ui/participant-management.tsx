@@ -11,6 +11,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectLabel,
+  SelectGroup,
   Badge,
 } from "@/shared/ui";
 import type { Competition } from "@/entities/competition";
@@ -186,21 +188,24 @@ export function ParticipantManagement() {
         {/* 대회 선택 드롭다운 */}
         <Card>
           <CardContent className="px-6">
-            <label htmlFor="competition-select" className="block text-sm font-medium text-foreground mb-2">
-              대회 선택
-            </label>
-            <Select value={selectedCompetitionId} onValueChange={handleCompetitionSelect}>
-              <SelectTrigger className="w-full max-w-md">
-                <SelectValue placeholder="대회를 선택하세요" />
-              </SelectTrigger>
-              <SelectContent>
-                {competitions.map((competition: Competition) => (
-                  <SelectItem key={competition.id} value={competition.id}>
-                    {competition.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="space-y-2">
+              <span className="block text-sm font-medium text-foreground">대회 선택</span>
+              <Select value={selectedCompetitionId} onValueChange={handleCompetitionSelect}>
+                <SelectTrigger className="w-full max-w-md">
+                  <SelectValue placeholder="대회를 선택하세요" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>대회 목록</SelectLabel>
+                    {competitions.map((competition: Competition) => (
+                      <SelectItem key={competition.id} value={competition.id}>
+                        {competition.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
             {selectedCompetitionId && (
               <p className="mt-2 text-sm text-primary">선택된 대회: {getCompetitionName(selectedCompetitionId)}</p>
             )}
