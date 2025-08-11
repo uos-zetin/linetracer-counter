@@ -2,9 +2,11 @@
 
 #include <string>
 #include <sstream>
+#include <mutex>
 
 class Logger {
 private:
+    static std::once_flag once_flag_;
     static Logger* instance_;
     
     // Private constructor for singleton

@@ -5,12 +5,13 @@
 #include <iomanip>
 #include <sstream>
 
+std::once_flag Logger::once_flag_;
 Logger* Logger::instance_ = nullptr;
 
 Logger& Logger::get_instance() {
-    if (instance_ == nullptr) {
+    std::call_once(once_flag_, []() {
         instance_ = new Logger();
-    }
+    });
     return *instance_;
 }
 
