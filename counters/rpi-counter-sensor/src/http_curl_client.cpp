@@ -121,13 +121,9 @@ HttpCurlClient& HttpCurlClient::set_body(const std::string& body) {
     return *this;
 }
 
-HttpCurlClient& HttpCurlClient::set_timeout(int timeout_seconds) {
+HttpCurlClient& HttpCurlClient::set_timeout(int timeout_seconds, int connect_timeout_seconds) {
     curl_easy_setopt(curl_, CURLOPT_TIMEOUT, timeout_seconds);
-    return *this;
-}
-
-HttpCurlClient& HttpCurlClient::set_connect_timeout(int timeout_seconds) {
-    curl_easy_setopt(curl_, CURLOPT_CONNECTTIMEOUT, timeout_seconds);
+    curl_easy_setopt(curl_, CURLOPT_CONNECTTIMEOUT, connect_timeout_seconds);
     return *this;
 }
 

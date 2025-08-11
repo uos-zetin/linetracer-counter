@@ -77,12 +77,14 @@ Bpw34SensorDataReader::~Bpw34SensorDataReader() {
 }
 
 SensorDataItem Bpw34SensorDataReader::read_sensor_data() {
-    uint64_t timestamp = std::chrono::system_clock::now().time_since_epoch().count();
-    uint16_t front_ir_raw = read_adc(0);
-    uint16_t back_ir_raw = read_adc(1);
+    uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::system_clock::now().time_since_epoch()
+    ).count();
+    uint16_t front_ir_raw = (read_adc(0) + read_adc(1)) / 2;
+    uint16_t back_ir_raw = (read_adc(2) + read_adc(3)) / 2;
 
-    uint8_t front_ir = static_cast<uint8_t>(0xFF - (front_ir_raw >> 2));
-    uint8_t back_ir = static_cast<uint8_t>(0xFF - (back_ir_raw >> 2));
+    uint8_t front_ir = static_cast<uint8_t>(front_ir_raw >> 2);
+    uint8_t back_ir = static_cast<uint8_t>(back_ir_raw >> 2);
 
     return SensorDataItem{
         .timestamp = timestamp,

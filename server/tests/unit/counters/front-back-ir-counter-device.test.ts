@@ -14,37 +14,58 @@ describe("FrontBackIrCounterDevice 단위 테스트", () => {
   const endDebouncingTime = 3;
 
   const endToRunningTransitionData = convertToTransitionData([
-    [80, 0],
-    [110, 0],
-    [60, 0],
+    [255, 255],
+    [70, 255],
+    [255, 255],
   ]);
   const runningToEndBeginTransitionData = convertToTransitionData([
-    [110, 0],
-    [0, 0],
-    [0, 80],
-    [0, 90],
-    [0, 110],
+    [70, 255],
+    [255, 255],
+    [255, 80],
+    [255, 70],
+    [255, 90],
   ]);
   const endBeginToEndDebouncingTransitionData = convertToTransitionData([
-    [110, 0],
-    [0, 110],
-    [0, 60],
-    [0, 70],
+    [80, 255],
+    [255, 80],
+    [255, 200],
+    [255, 255],
   ]);
   const endDebouncingToEndBeginTransitionData = convertToTransitionData([
-    [110, 0],
-    [0, 110],
-    [0, 60],
-    [0, 70],
-    [0, 110],
+    [80, 255],
+    [255, 80],
+    [255, 200],
+    [255, 255],
+    [255, 90],
   ]);
   const endDebouncingToEndTransitionData = convertToTransitionData([
-    [110, 0],
-    [0, 110],
-    [0, 60],
-    [0, 70],
-    [0, 50],
-    [0, 0],
+    [80, 255],
+    [255, 80],
+    [255, 200],
+    [255, 200],
+    [255, 200],
+    [255, 255],
+  ]);
+  const debouncingTestData = convertToTransitionData([
+    [255, 255],
+    [70, 255], // start
+    [255, 255],
+    [255, 255],
+    [255, 70], // end trigger
+    [255, 80],
+    [255, 255], // debouncing
+    [255, 255], // debouncing
+    [255, 90], // end trigger
+    [255, 80],
+    [255, 70],
+    [255, 60],
+    [255, 50],
+    [255, 60],
+    [255, 70],
+    [255, 80], // final end trigger
+    [255, 255], // debouncing
+    [255, 255], // debouncing
+    [255, 255], // debouncing
   ]);
 
   let device: FrontBackIrCounterDevice;
@@ -115,16 +136,27 @@ describe("FrontBackIrCounterDevice 단위 테스트", () => {
       // Assert
       expect(device.state).toBe("end");
     });
+
+    it("debouncing 테스트", async () => {
+      // Act
+      for (const data of debouncingTestData) {
+        device.transitState(data.timestamp, data.startSensor, data.endSensor);
+      }
+
+      // Assert
+      expect(device.state).toBe("end");
+      expect((await device.getStatus()).stoppedAt).toBe(15);
+    });
   });
 
   describe("이벤트 구독 테스트", () => {
     it("출발 이벤트를 받을 수 있다.", () => {
       // Arrange
       const startEventData = convertToTransitionData([
-        [0, 0],
-        [110, 0],
-        [60, 0],
-        [0, 0],
+        [255, 255],
+        [70, 255],
+        [60, 255],
+        [255, 255],
       ]);
       const callback = jest.fn();
       device.subscribe(callback);
@@ -145,17 +177,17 @@ describe("FrontBackIrCounterDevice 단위 테스트", () => {
     it("도착 이벤트를 받을 수 있다.", () => {
       // Arrange
       const endEventData = convertToTransitionData([
-        [0, 0],
-        [110, 0],
-        [60, 0],
-        [0, 60],
-        [0, 110],
-        [0, 80],
-        [0, 110],
-        [0, 80],
-        [0, 60],
-        [0, 50],
-        [0, 0],
+        [255, 255],
+        [70, 255],
+        [240, 255],
+        [255, 200],
+        [255, 210],
+        [255, 220],
+        [255, 80],
+        [255, 210],
+        [255, 240],
+        [255, 250],
+        [255, 255],
       ]);
       const callback = jest.fn();
       device.subscribe(callback);
@@ -169,7 +201,7 @@ describe("FrontBackIrCounterDevice 단위 테스트", () => {
       expect(callback).toHaveBeenCalledWith({
         type: "stop",
         startedAt: 1,
-        stoppedAt: 4,
+        stoppedAt: 6,
       });
       expect(callback).toHaveBeenCalledTimes(2); // 시작 이벤트도 발생했을 것이므로 2번 호출된다.
     });

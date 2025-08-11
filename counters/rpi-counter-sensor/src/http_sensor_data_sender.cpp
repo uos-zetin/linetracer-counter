@@ -25,6 +25,7 @@ std::string HttpSensorDataSender::login(const std::string& username, const std::
                 { "Content-Type", "application/json" }
             })
             .set_body(request_body.dump())
+            .set_timeout(2, 2)
             .execute();
         
         if (res.is_ok()) {
@@ -46,6 +47,7 @@ void HttpSensorDataSender::logout() {
             .set_headers({
                 { "Authorization", "Session " + session_key_ }
             })
+            .set_timeout(2, 2)
             .execute();
 
         if (!res.is_ok()) {
@@ -75,6 +77,7 @@ void HttpSensorDataSender::register_device(const DeviceInfo& device_info) {
                 { "Authorization", "Session " + session_key_ }
             })
             .set_body(request_body.dump())
+            .set_timeout(2, 2)
             .execute();
 
         if (!res.is_ok()) {
@@ -94,6 +97,7 @@ void HttpSensorDataSender::unregister_device(const std::string& device_id) {
             .set_headers({
                 { "Authorization", "Session " + session_key_ }
             })
+            .set_timeout(2, 2)
             .execute();
 
         if (!res.is_ok()) {
@@ -123,6 +127,7 @@ void HttpSensorDataSender::send_data(const std::string& device_id, const std::ve
                 { "Authorization", "Session " + session_key_ }
             })
             .set_body(request_body.dump())
+            .set_timeout(1, 1)
             .execute();
 
         if (!res.is_ok()) {
@@ -162,7 +167,10 @@ void HttpSensorDataSender::ensure_connect(bool reconnect) {
 
 void HttpSensorDataSender::send_sensor_data(const std::vector<SensorDataItem>& data) {
     try {
-        ensure_connect(have_to_reconnect_);
+        if (have_to_reconnect_) {
+            have_to_reconnect_ = false;
+            ensure_connect(true);
+        }
         send_data(device_info_.device_id, data);
     } catch (const SenderException& e) {
         Logger::error("send_sensor_data: ", e.what());
