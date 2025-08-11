@@ -22,7 +22,7 @@ export class CounterDeviceActorManager {
     endThreshold: number,
     endDebouncingTime: number
   ): Promise<void> {
-    requireAnyRole(actor, "administrator");
+    requireAnyRole(actor, "administrator", "stopwatchRecorder");
     this.manager.registerFrontBackIrCounter(
       name,
       deviceId,
@@ -37,7 +37,7 @@ export class CounterDeviceActorManager {
     deviceId: string,
     data: FrontBackIrCounterDeviceDataItem[]
   ): Promise<void> {
-    requireAnyRole(actor, "administrator");
+    requireAnyRole(actor, "administrator", "stopwatchRecorder");
     this.manager.pushFrontBackIrCounterData(deviceId, data);
   }
 }
