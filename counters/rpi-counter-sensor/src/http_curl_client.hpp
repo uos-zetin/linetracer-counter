@@ -52,8 +52,7 @@ public:
     HttpCurlClient& set_method(const std::string& method);
     HttpCurlClient& set_headers(const std::vector<std::pair<std::string, std::string>>& headers);
     HttpCurlClient& set_body(const std::string& body);
-    HttpCurlClient& set_timeout(int timeout_seconds);
-    HttpCurlClient& set_connect_timeout(int timeout_seconds);
+    HttpCurlClient& set_timeout(int timeout_seconds, int connect_timeout_seconds);
     HttpResponse execute();
 
     HttpCurlClient(const HttpCurlClient&) noexcept = delete;
