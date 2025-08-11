@@ -31,7 +31,7 @@ void Bpw34SensorDataReader::initialize_spi(const std::string& spi_dev_path) {
     }
 }
 
-uint16_t Bpw34SensorDataReader::read_adc(uint8_t channel) {
+uint16_t Bpw34SensorDataReader::read_adc(int channel) {
     if (channel < 0 || channel > 7) {
         throw std::invalid_argument("Invalid channel number");
     }
