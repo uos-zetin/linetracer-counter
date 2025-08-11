@@ -102,8 +102,11 @@ export class FrontBackIrCounterDevice implements CounterDevice {
         }
         break;
       case "end-begin":
-        // 도착 센서가 동작하지 않으면(=로봇이 모두 지나간 경우) 도착 시작 시간을 기록하고 다음 상태(end-debouncing)로 전이한다.
-        if (!endDetected) {
+        if (endDetected) {
+          // 도착 센서가 동작하는 동안(=로봇이 지나가고 있는 경우) 새로운 도착 시작 시간을 기록한다.
+          this.endBeginAt = timestamp;
+        } else {
+          // 도착 센서가 동작하지 않으면(=로봇이 모두 지나간 경우) 다음 상태(end-debouncing)로 전이한다.
           this.state = "end-debouncing";
         }
         break;

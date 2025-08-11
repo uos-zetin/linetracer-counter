@@ -46,6 +46,27 @@ describe("FrontBackIrCounterDevice 단위 테스트", () => {
     [255, 200],
     [255, 255],
   ]);
+  const debouncingTestData = convertToTransitionData([
+    [255, 255],
+    [70, 255], // start
+    [255, 255],
+    [255, 255],
+    [255, 70], // end trigger
+    [255, 80],
+    [255, 255], // debouncing
+    [255, 255], // debouncing
+    [255, 90], // end trigger
+    [255, 80],
+    [255, 70],
+    [255, 60],
+    [255, 50],
+    [255, 60],
+    [255, 70],
+    [255, 80], // final end trigger
+    [255, 255], // debouncing
+    [255, 255], // debouncing
+    [255, 255], // debouncing
+  ]);
 
   let device: FrontBackIrCounterDevice;
 
@@ -114,6 +135,17 @@ describe("FrontBackIrCounterDevice 단위 테스트", () => {
 
       // Assert
       expect(device.state).toBe("end");
+    });
+
+    it("debouncing 테스트", async () => {
+      // Act
+      for (const data of debouncingTestData) {
+        device.transitState(data.timestamp, data.startSensor, data.endSensor);
+      }
+
+      // Assert
+      expect(device.state).toBe("end");
+      expect((await device.getStatus()).stoppedAt).toBe(15);
     });
   });
 
