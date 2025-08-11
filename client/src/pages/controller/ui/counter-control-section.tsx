@@ -1,8 +1,31 @@
 import { useState, useEffect } from "react";
+import { AlertCircle, CheckCircle, XCircle, Settings, Info, Link, Wifi, Play } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Badge,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/ui";
 import type { Competition } from "@/entities/competition";
 import { useCompetitionService } from "@/features/competition";
 import { useCounterService } from "@/features/counter";
 import { useDivisionService } from "@/features/division";
+import { useErrorHandlingService } from "@/features/error-handling";
 import { useProgressService } from "@/features/progress";
 
 interface CounterControlSectionProps {
@@ -14,8 +37,22 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
   const competitionService = useCompetitionService();
   const divisionService = useDivisionService();
   const progressService = useProgressService();
+  const errorHandler = useErrorHandlingService();
   const [selectedCompetitionId, setSelectedCompetitionId] = useState<string>("");
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>("");
+  const [dialogState, setDialogState] = useState<{
+    isOpen: boolean;
+    type: "disconnect" | "start" | "stop" | "reset";
+    title: string;
+    description: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    type: "disconnect",
+    title: "",
+    description: "",
+    onConfirm: () => {},
+  });
 
   const counter = counterService?.use.counterState(counterId) || null;
   const isConnected = !!counter;
@@ -30,12 +67,12 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
         try {
           await competitionService.load.all();
         } catch (error) {
-          console.error("Failed to load competitions:", error);
+          errorHandler.handle(error as Error, "대회 목록을 불러오는데 실패했습니다");
         }
       }
     };
     loadData();
-  }, [competitionService]);
+  }, [competitionService, errorHandler]);
 
   // Division 관련 데이터 로딩
   useEffect(() => {
@@ -44,12 +81,12 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
         try {
           await divisionService.load.byCompetition(selectedCompetitionId);
         } catch (error) {
-          console.error("Failed to load divisions:", error);
+          errorHandler.handle(error as Error, "부문 목록을 불러오는데 실패했습니다");
         }
       }
     };
     loadDivisions();
-  }, [selectedCompetitionId, divisionService]);
+  }, [selectedCompetitionId, divisionService, errorHandler]);
 
   // Counter에 divisionId가 있을 때 division 데이터 로딩
   useEffect(() => {
@@ -58,12 +95,12 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
         try {
           await divisionService.load.byId(counter.divisionId);
         } catch (error) {
-          console.error("Failed to load division:", error);
+          errorHandler.handle(error as Error, "부문 정보를 불러오는데 실패했습니다");
         }
       }
     };
     loadDivisionData();
-  }, [counter?.divisionId, division, divisionService]);
+  }, [counter?.divisionId, division, divisionService, errorHandler]);
 
   // Counter의 division 정보가 있을 때 선택 상태 설정
   useEffect(() => {
@@ -80,63 +117,84 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
       await counterService.admin.connectDivision(counterId, selectedDivisionId);
       await divisionService.load.byId(selectedDivisionId);
     } catch (error) {
-      console.error("Division 연결 실패:", error);
+      errorHandler.handle(error as Error, "부문 연결에 실패했습니다");
     }
   };
 
-  const handleDisconnectDivision = async () => {
+  const handleDisconnectDivision = () => {
     if (!counterService) return;
 
-    if (confirm("Division 연결을 해제하시겠습니까?")) {
-      try {
-        await counterService.admin.disconnectDivision(counterId);
-        setSelectedCompetitionId("");
-        setSelectedDivisionId("");
-      } catch (error) {
-        console.error("Division 연결 해제 실패:", error);
-      }
-    }
+    setDialogState({
+      isOpen: true,
+      type: "disconnect",
+      title: "부문 연결 해제",
+      description: "부문 연결을 해제하시겠습니까?",
+      onConfirm: async () => {
+        try {
+          await counterService.admin.disconnectDivision(counterId);
+          setSelectedCompetitionId("");
+          setSelectedDivisionId("");
+          setDialogState(prev => ({ ...prev, isOpen: false }));
+        } catch (error) {
+          errorHandler.handle(error as Error, "부문 연결 해제에 실패했습니다");
+        }
+      },
+    });
   };
 
-  const handleDivisionStatusChange = async (action: "start" | "stop" | "reset") => {
+  const handleDivisionStatusChange = (action: "start" | "stop" | "reset") => {
     if (!progressService || !counter?.divisionId) return;
 
-    const actionMessages = {
-      start: "부문을 시작하시겠습니까?",
-      stop: "부문을 종료하시겠습니까?",
-      reset: "부문을 초기화하시겠습니까?",
+    const actionConfig = {
+      start: {
+        title: "부문 시작",
+        description: "부문을 시작하시겠습니까?",
+        errorMessage: "부문 시작에 실패했습니다",
+        apiCall: () => progressService.admin.openDivision(counter.divisionId!),
+      },
+      stop: {
+        title: "부문 종료",
+        description: "부문을 종료하시겠습니까?",
+        errorMessage: "부문 종료에 실패했습니다",
+        apiCall: () => progressService.admin.closeDivision(counter.divisionId!),
+      },
+      reset: {
+        title: "부문 초기화",
+        description: "부문을 초기화하시겠습니까?",
+        errorMessage: "부문 초기화에 실패했습니다",
+        apiCall: () => progressService.admin.resetDivision(counter.divisionId!),
+      },
     };
 
-    if (confirm(actionMessages[action])) {
-      try {
-        switch (action) {
-          case "start":
-            await progressService.admin.openDivision(counter.divisionId);
-            break;
-          case "stop":
-            await progressService.admin.closeDivision(counter.divisionId);
-            break;
-          case "reset":
-            await progressService.admin.resetDivision(counter.divisionId);
-            break;
+    const config = actionConfig[action];
+    
+    setDialogState({
+      isOpen: true,
+      type: action,
+      title: config.title,
+      description: config.description,
+      onConfirm: async () => {
+        try {
+          await config.apiCall();
+          await divisionService.load.byId(counter.divisionId!);
+          setDialogState(prev => ({ ...prev, isOpen: false }));
+        } catch (error) {
+          errorHandler.handle(error as Error, config.errorMessage);
         }
-        await divisionService.load.byId(counter.divisionId);
-      } catch (error) {
-        console.error(`Division ${action} 실패:`, error);
-      }
-    }
+      },
+    });
   };
 
   const getDivisionStatusBadge = (status?: string) => {
     const statusConfig = {
-      ready: { bg: "bg-blue-100", text: "text-blue-800", label: "Ready" },
-      ongoing: { bg: "bg-green-100", text: "text-green-800", label: "Ongoing" },
-      closed: { bg: "bg-gray-100", text: "text-gray-800", label: "Closed" },
+      ready: { variant: "secondary" as const, label: "Ready" },
+      ongoing: { variant: "default" as const, label: "Ongoing" },
+      closed: { variant: "outline" as const, label: "Closed" },
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.ready;
 
-    return <span className={`px-2 py-1 text-xs rounded-full ${config.bg} ${config.text}`}>{config.label}</span>;
+    return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
   const canStart = division?.status === "ready";
@@ -145,96 +203,143 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
 
   if (!counterService) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold mb-4">카운터 제어</h2>
-        <p className="text-red-500">카운터 서비스를 사용할 수 없습니다.</p>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Settings className="h-5 w-5" />
+            <span>계수기 제어</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center space-x-2 text-destructive">
+            <AlertCircle className="h-4 w-4" />
+            <p>계수기 서비스를 사용할 수 없습니다.</p>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-semibold mb-4">카운터 제어</h2>
-
-      <div className="space-y-4">
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Settings className="h-5 w-5" />
+            <span>계수기 제어</span>
+          </CardTitle>
+        </CardHeader>
+      <CardContent className="space-y-4">
         {/* 연결 상태 */}
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-700">연결 상태</span>
-          <span
-            className={`px-2 py-1 text-xs rounded-full ${
-              isConnected ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-            }`}
-          >
-            {isConnected ? "연결됨" : "연결 안됨"}
+          <span className="text-sm font-medium text-foreground flex items-center space-x-2">
+            <Wifi className="h-4 w-4" />
+            <span>연결 상태</span>
           </span>
+          <div className="flex items-center space-x-2">
+            {isConnected ? (
+              <>
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <Badge variant="default">연결됨</Badge>
+              </>
+            ) : (
+              <>
+                <XCircle className="h-4 w-4 text-red-600" />
+                <Badge variant="destructive">연결 안됨</Badge>
+              </>
+            )}
+          </div>
         </div>
 
-        {/* 카운터 정보 */}
+        {/* 계수기 정보 */}
         {counter && (
           <div className="border-t pt-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">카운터 정보</h3>
-            <p className="text-sm text-gray-900">ID: {counter.id}</p>
-            <p className="text-sm text-gray-900">이름: {counter.name || "이름 없음"}</p>
+            <h3 className="text-sm font-medium text-foreground mb-2 flex items-center space-x-2">
+              <Info className="h-4 w-4" />
+              <span>계수기 정보</span>
+            </h3>
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">ID: <span className="text-foreground">{counter.id}</span></p>
+              <p className="text-sm text-muted-foreground">이름: <span className="text-foreground">{counter.name || "이름 없음"}</span></p>
+              {counter.divisionId && (
+                <>
+                  <p className="text-sm text-muted-foreground">부문 ID: <span className="text-foreground">{counter.divisionId}</span></p>
+                  {division && (
+                    <p className="text-sm text-muted-foreground">부문명: <span className="text-foreground">{division.name}</span></p>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         )}
 
         {/* Division 연결 */}
         <div className="border-t pt-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">Division 연결</h3>
+          <h3 className="text-sm font-medium text-foreground mb-2 flex items-center space-x-2">
+            <Link className="h-4 w-4" />
+            <span>부문 연결</span>
+          </h3>
 
           {counter?.divisionId ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-900">{division?.name || `Division ${counter.divisionId}`}</span>
+                <span className="text-sm text-foreground">{division?.name || `부문 ${counter.divisionId}`}</span>
                 {getDivisionStatusBadge(division?.status)}
               </div>
-              <button
+              <Button
                 onClick={handleDisconnectDivision}
-                className="w-full bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-sm transition-colors"
+                variant="destructive"
+                className="w-full"
               >
-                Division 연결 해제
-              </button>
+                부문 연결 해제
+              </Button>
             </div>
           ) : (
             <div className="space-y-3">
-              <select
+              <Select
                 value={selectedCompetitionId}
-                onChange={(e) => {
-                  setSelectedCompetitionId(e.target.value);
+                onValueChange={(value) => {
+                  setSelectedCompetitionId(value);
                   setSelectedDivisionId("");
                 }}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
               >
-                <option value="">Competition 선택</option>
-                {competitions.map((comp: Competition) => (
-                  <option key={comp.id} value={comp.id}>
-                    {comp.name}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger>
+                  <SelectValue placeholder="대회 선택" />
+                </SelectTrigger>
+                <SelectContent>
+                  {competitions.map((comp: Competition) => (
+                    <SelectItem key={comp.id} value={comp.id}>
+                      {comp.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
               {selectedCompetitionId && (
-                <select
+                <Select
                   value={selectedDivisionId}
-                  onChange={(e) => setSelectedDivisionId(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                  onValueChange={setSelectedDivisionId}
                 >
-                  <option value="">Division 선택</option>
-                  {divisions.map((div) => (
-                    <option key={div.id} value={div.id}>
-                      {div.name}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="부문 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {divisions.map((div) => (
+                      <SelectItem key={div.id} value={div.id}>
+                        {div.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               )}
 
-              <button
+              <Button
                 onClick={handleConnectDivision}
                 disabled={!selectedDivisionId}
-                className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white px-3 py-2 rounded-md text-sm transition-colors"
+                className="w-full"
               >
-                Division 연결
-              </button>
+                부문 연결
+              </Button>
             </div>
           )}
         </div>
@@ -242,38 +347,58 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
         {/* Division 상태 제어 */}
         {counter?.divisionId && division && (
           <div className="border-t pt-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Division 상태 제어</h3>
+            <h3 className="text-sm font-medium text-foreground mb-3 flex items-center space-x-2">
+              <Play className="h-4 w-4" />
+              <span>부문 상태 제어</span>
+            </h3>
             <div className="space-y-2">
               {canStart && (
-                <button
+                <Button
                   onClick={() => handleDivisionStatusChange("start")}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-md text-sm transition-colors"
+                  className="w-full bg-green-600 hover:bg-green-700"
                 >
                   부문 시작 (Ready → Ongoing)
-                </button>
+                </Button>
               )}
 
               {canStop && (
-                <button
+                <Button
                   onClick={() => handleDivisionStatusChange("stop")}
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-md text-sm transition-colors"
+                  className="w-full bg-yellow-600 hover:bg-yellow-700"
                 >
                   부문 종료 (Ongoing → Closed)
-                </button>
+                </Button>
               )}
 
               {canReset && (
-                <button
+                <Button
                   onClick={() => handleDivisionStatusChange("reset")}
-                  className="w-full bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-md text-sm transition-colors"
+                  className="w-full bg-purple-600 hover:bg-purple-700"
                 >
                   부문 초기화 (Closed → Ready)
-                </button>
+                </Button>
               )}
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
+
+    {/* AlertDialog */}
+    <AlertDialog open={dialogState.isOpen} onOpenChange={(open) => setDialogState(prev => ({ ...prev, isOpen: open }))}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{dialogState.title}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {dialogState.description}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>취소</AlertDialogCancel>
+          <AlertDialogAction onClick={dialogState.onConfirm}>확인</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 };
