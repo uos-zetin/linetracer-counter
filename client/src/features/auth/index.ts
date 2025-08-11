@@ -12,6 +12,7 @@ export type { AuthRepository } from "./api/types";
 // Library exports
 export { parseLoginForm } from "./lib/parse-dto";
 export { parseSessionCredential } from "./model/validation";
+export { useAdminAuthorization } from "./lib/use-admin-authorization";
 
 // Auth Service exports
 export { createAuthService } from "./model/service";

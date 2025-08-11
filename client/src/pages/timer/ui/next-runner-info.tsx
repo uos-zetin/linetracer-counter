@@ -8,12 +8,12 @@ export function NextRunnerInfo() {
   const rows = Array.from({ length: ROW_COUNT }, (_, i) => i);
 
   return (
-    <div className="w-full border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-      <div className="bg-gray-100 py-[0.25vw]">
-        <h2 className="text-center text-[1.5vw] font-semibold">다음 경연자</h2>
+    <div className="w-full h-full border border-border rounded-lg overflow-hidden shadow-sm bg-card flex flex-col">
+      <div className="bg-muted py-1 sm:py-1.5 md:py-2">
+        <h2 className="text-center text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-foreground">다음 경연자</h2>
       </div>
 
-      <ul>
+      <ul className="flex-1 flex flex-col">
         {rows.map((idx) => {
           const runner = nextRunners[idx];
           const highlight = idx === 0 && runner;
@@ -22,18 +22,19 @@ export function NextRunnerInfo() {
             <li
               key={idx}
               className={`
-                grid grid-cols-[15%_1fr]
-                border-t border-gray-200 text-[1.5vw]
+                flex-1 grid grid-cols-[15%_1fr]
+                border-t border-border 
+                text-xs sm:text-sm md:text-base lg:text-lg
                 ${
                   highlight
                     ? "bg-yellow-100 text-yellow-800 font-bold"
-                    : "odd:bg-gray-50 even:bg-white text-gray-800 font-medium"
-                }  // 줄무늬
+                    : "odd:bg-muted/50 even:bg-card text-foreground font-medium"
+                }
               `}
             >
-              <span className="flex items-center justify-center aspect-[3/4] border-r border-gray-200">{idx + 1}</span>
-              <span className="flex items-center justify-center truncate px-[0.5vw]">
-                {runner ? runner.name : <span className="text-gray-400">—</span>}
+              <span className="flex items-center justify-center py-2 border-r border-border ">{idx + 1}</span>
+              <span className="flex items-center justify-center truncate py-2 px-2 sm:px-3 md:px-4 ">
+                {runner ? runner.name : <span className="text-muted-foreground">—</span>}
               </span>
             </li>
           );

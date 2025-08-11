@@ -7,33 +7,34 @@ export function CurrentRecordView() {
   const progressService = useProgressService();
   const runner = progressService.use.runner();
   const currentRecords = runner?.records || [];
+  const filteredRecords = currentRecords.filter((record) => record.status === "approved");
   const rows = Array.from({ length: ROW_COUNT }, (_, i) => i);
 
   return (
-    <div className="w-full border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-      <div className="bg-gray-100 py-[0.25vw]">
-        <h2 className="text-center text-[1.5vw] font-semibold">현재 경연자 기록</h2>
+    <div className="w-full h-full border border-border rounded-lg overflow-hidden shadow-sm bg-card flex flex-col">
+      <div className="bg-muted py-1 sm:py-1.5 md:py-2">
+        <h2 className="text-center text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-foreground">
+          현재 경연자 기록
+        </h2>
       </div>
-      <ul>
+      <ul className="flex-1 flex flex-col">
         {rows.map((idx) => {
-          const rec = currentRecords[idx];
-          const bg = idx % 2 === 0 ? "bg-gray-50" : "bg-white";
+          const rec = filteredRecords[idx];
+          const bg = idx % 2 === 0 ? "bg-muted/50" : "bg-card";
 
           return (
             <li
               key={idx}
               className={`
-                grid grid-cols-[15%_1fr]
-                border-t border-gray-200 text-[1.5vw]
-                ${bg} text-gray-800 font-medium
+                flex-1 grid grid-cols-[15%_1fr]
+                border-t border-border 
+                text-xs sm:text-sm md:text-base lg:text-lg
+                ${bg} text-foreground font-medium
               `}
             >
-              {/* 순번 셀 ― 정사각형 + 중앙 */}
-              <span className="flex items-center justify-center aspect-[3/4] border-r border-gray-200">{idx + 1}</span>
-
-              {/* 기록(초) 셀 */}
-              <span className="flex items-center justify-center truncate px-[0.5vw]">
-                {rec ? formatElapsedMs(rec.value).toString() : <span className="text-gray-400">—</span>}
+              <span className="flex items-center justify-center py-2 border-r border-border ">{idx + 1}</span>
+              <span className="flex items-center justify-center truncate py-2 px-2 sm:px-3 md:px-4 ">
+                {rec ? formatElapsedMs(rec.value).toString() : <span className="text-muted-foreground">—</span>}
               </span>
             </li>
           );

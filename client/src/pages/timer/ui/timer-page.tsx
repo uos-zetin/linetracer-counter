@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
+import { useAdminAuthorization } from "@/features/auth";
 import { useCounterService } from "@/features/counter";
 import { useProgressService } from "@/features/progress";
 import { CurrentRecordView } from "./current-record-view";
@@ -17,6 +18,7 @@ export function TimerPage() {
   const navigate = useNavigate();
   const { counterId } = useParams();
 
+  const { isAuthorized } = useAdminAuthorization();
   const progressService = useProgressService();
   const counterService = useCounterService();
 
@@ -70,54 +72,60 @@ export function TimerPage() {
     ? `${window.location.origin}/dashboard?competitionId=${division.competitionId}`
     : window.location.href;
 
-  // counterId가 없으면 로딩 상태 표시
-  if (!counterId) {
+  // 권한 체크 또는 counterId가 없으면 로딩 상태 표시
+  if (!isAuthorized || !counterId) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-uos-gray-mist">
-        <div className="text-[2vw] font-bold text-gray-600">로딩 중...</div>
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-muted-foreground">로딩 중...</div>
       </div>
     );
   }
 
   return (
-    <main className="flex flex-col min-h-screen h-full w-full bg-gray-200">
+    <main className="flex flex-col h-screen w-full bg-background">
       <TimerPageHeader />
       <section
         id="timer-content"
-        className="grid gap-x-[1.5vw] gap-y-[1vw] grid-cols-1 md:grid-cols-2 px-[1vw] md:px-[1.5vw] py-[2vw] md:py-[3vw] h-full"
+        className="flex-1 flex flex-col px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 gap-4 sm:gap-6 md:gap-8"
       >
-        <div className="order-1 md:row-start-1 md:col-start-1">
-          <DivisionInfo counterId={counterId} />
+        {/* 상단 4개 컴포넌트를 하나의 Card로 감싸기 */}
+        <div className="border border-border rounded-lg bg-muted/30 shadow-sm p-4 sm:p-6 md:p-8">
+          <div className="grid gap-x-4 gap-y-3 sm:gap-x-6 sm:gap-y-4 md:gap-x-8 md:gap-y-6 grid-cols-1 md:grid-cols-2">
+            <div className="order-1 md:row-start-1 md:col-start-1">
+              <DivisionInfo counterId={counterId} />
+            </div>
+            <div className="order-2 md:row-start-1 md:col-start-2">
+              <RunnerInfo />
+            </div>
+            <div className="order-3 md:row-start-2 md:col-start-1">
+              <TimerView />
+            </div>
+            <div className="order-4 md:row-start-2 md:col-start-2">
+              <StopwatchView />
+            </div>
+          </div>
         </div>
-        <div className="order-2 md:row-start-1 md:col-start-2">
-          <RunnerInfo />
-        </div>
-        <div className="order-3 md:row-start-2 md:col-start-1">
-          <TimerView />
-        </div>
-        <div className="order-4 md:row-start-2 md:col-start-2">
-          <StopwatchView />
-        </div>
-        <div className="order-5 md:col-span-2 mt-[1.5vw] mx-[20vw] md:mx-[2vw]">
+        {/* 하단 데이터 섹션 */}
+        <div className="flex-1 flex flex-col">
           <div
-            className="grid grid-cols-2 gap-[1vw]
-            md:grid-cols-[1.5fr_3fr_1.5fr_1fr] md:gap-[1vw] 
+            className="flex-1 grid grid-cols-2 gap-3 sm:gap-4 md:gap-6
+            md:grid-cols-[1fr_2fr_1fr_auto] md:grid-rows-1
             "
           >
-            <div className="order-2 md:order-1">
+            <div className="order-2 md:order-1 h-full">
               <NextRunnerInfo />
             </div>
-            <div className="order-1 col-span-2 md:order-2 md:col-span-1">
+            <div className="order-1 col-span-2 md:order-2 md:col-span-1 h-full">
               <TopRecordView />
             </div>
-            <div className="order-3 md:order-3">
+            <div className="order-3 md:order-3 h-full">
               <CurrentRecordView />
             </div>
-            <div className="order-4 md:order-4 col-span-2 md:col-span-1 flex flex-row md:flex-col items-stretch gap-[1vw] md:h-full">
-              <div className="flex flex-1 w-full md:flex-1">
+            <div className="order-4 md:order-4 col-span-2 md:col-span-1 flex flex-row md:flex-col items-stretch gap-3 sm:gap-4 md:gap-6 h-full w-full md:w-[12vw]">
+              <div className="flex-1 w-full">
                 <SponsorView />
               </div>
-              <div className="flex flex-1 w-full md:flex-[0_0_auto]">
+              <div className="flex-none w-full h-[120px] sm:h-[140px] md:h-[12vw] md:w-[12vw]">
                 <QRViewer url={dashboardUrl} title="대회 대시보드" />
               </div>
             </div>

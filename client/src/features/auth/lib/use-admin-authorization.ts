@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import type { User } from "@/entities/user";
-import { useAuthService } from "@/features/auth";
+import { useAuthService } from "../model/context";
 
 interface AdminAuthorizationResult {
   isAuthenticated: boolean;

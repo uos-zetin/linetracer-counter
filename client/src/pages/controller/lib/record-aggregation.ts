@@ -1,4 +1,5 @@
-import type { ManualRecord, RecordForm } from "@/entities/record";
+import type { ManualRecord } from "@/entities/manual-record";
+import type { RecordForm } from "@/entities/record";
 
 /**
  * 선택된 수동 계수 기록 배열에서 중간값(홀수) 또는 평균값(짝수)을 계산하여 RecordForm으로 반환합니다.
@@ -8,7 +9,7 @@ import type { ManualRecord, RecordForm } from "@/entities/record";
 export function aggregateManualRecords(selectedManualRecords: ManualRecord[]): RecordForm | null {
   if (selectedManualRecords.length === 0) return null;
 
-  const values = selectedManualRecords.map(record => record.value);
+  const values = selectedManualRecords.map((record) => record.value);
   const sortedValues = [...values].sort((a, b) => a - b);
 
   let aggregatedValue: number;
@@ -28,12 +29,12 @@ export function aggregateManualRecords(selectedManualRecords: ManualRecord[]): R
   }
 
   const note = `${selectedManualRecords.length}개 수동 계수 기록 취합 (${calculationType}): ${selectedManualRecords
-    .map(record => record.value.toString())
+    .map((record) => record.value.toString())
     .join(", ")}`;
 
   return {
     value: aggregatedValue,
     source: "manual",
-    note
+    note,
   };
 }

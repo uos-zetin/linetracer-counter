@@ -11,12 +11,12 @@ export function StopwatchView() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="text-[9vw] leading-none font-bold text-gray-800 flex items-baseline">
+      <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none font-bold text-foreground flex items-baseline">
         <span>{timeComponents.minutes}</span>
-        <span className="transform -translate-y-[0.45vw]">:</span>
+        <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mx-1">:</span>
         <span>{timeComponents.seconds}</span>
-        <span>.</span>
-        <span>{timeComponents.milliseconds}</span>
+        <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl">.</span>
+        <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl">{timeComponents.milliseconds}</span>
       </div>
     </div>
   );
