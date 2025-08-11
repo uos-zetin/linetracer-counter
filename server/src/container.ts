@@ -12,7 +12,7 @@ import { ParticipantSQLiteRepository } from "@/infrastructure/repositories/parti
 import { RecordSQLiteRepository } from "@/infrastructure/repositories/record-sqlite";
 import { TimerLogSQLiteRepository } from "@/infrastructure/repositories/timer-log-sqlite";
 
-import { ActorSessionRandomStore } from "@/infrastructure/session/actor-session-random-store";
+import { ActorSessionRandomStore } from "@/infrastructure/stores/actor-session-random-store";
 import { DivisionProgressStateFsStore } from "@/infrastructure/stores/division-progress-state-fs-store";
 
 import { ActorService } from "@/core/services/actor";

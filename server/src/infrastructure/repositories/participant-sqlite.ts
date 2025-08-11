@@ -2,7 +2,7 @@ import { EntityNotFoundError, PersistenceError } from "@/core/errors";
 import { Participant } from "@/core/models";
 import { ParticipantRepository } from "@/core/repositories";
 
-import { SQLiteDatabaseAsyncWrapper } from "@/utils/sqlite";
+import { SQLiteDatabaseAsyncWrapper } from "./utils/sqlite";
 import sqlite3 from "sqlite3";
 
 type ParticipantRecord = {
