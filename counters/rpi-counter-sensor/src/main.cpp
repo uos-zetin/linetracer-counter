@@ -118,7 +118,7 @@ int main(int argc, char* argv[]) {
         Logger::log("Loaded configuration from: ", config_file);
     } catch (const std::exception& e) {
         Logger::error("Error loading config file: ", e.what());
-        exit(1);
+        return 1;
     }
 
     DeviceInfo device_info = {
