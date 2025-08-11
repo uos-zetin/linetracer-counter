@@ -1,0 +1,11 @@
+{
+  "device_id": "",
+  "device_name": "RPI Counter Sensor",
+  "sensor_start_threshold": 100,
+  "sensor_end_threshold": 100,
+  "sensor_end_debouncing_time": 200,
+  "spi_device_path": "/dev/spidev0.0",
+  "api_base_url": "https://counter.zetin.uos.ac.kr/api",
+  "api_username": "gd-hong",
+  "api_password": "super-secret"
+}
