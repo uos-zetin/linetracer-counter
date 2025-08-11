@@ -90,19 +90,19 @@ export class FrontBackIrCounterDevice implements CounterDevice {
     }
     this.lastTimestamp = timestamp;
 
-    const startDetected = startSensor >= this.startThreshold;
-    const endDetected = endSensor >= this.endThreshold;
+    const startDetected = startSensor < this.startThreshold;
+    const endDetected = endSensor < this.endThreshold;
 
     switch (this.state) {
       case "running":
         if (endDetected) {
-          // 도착 센서가 동작하면 도착 시작 시간을 기록하고 다음 상태(end-begin)로 전이한다.
+          // 도착 센서가 동작하면 다음 상태(end-begin)로 전이한다.
           this.endBeginAt = timestamp;
           this.state = "end-begin";
         }
         break;
       case "end-begin":
-        // 도착 센서가 동작하지 않으면(=로봇이 모두 지나간 경우) 다음 상태(end-debouncing)로 전이한다.
+        // 도착 센서가 동작하지 않으면(=로봇이 모두 지나간 경우) 도착 시작 시간을 기록하고 다음 상태(end-debouncing)로 전이한다.
         if (!endDetected) {
           this.state = "end-debouncing";
         }
@@ -110,11 +110,12 @@ export class FrontBackIrCounterDevice implements CounterDevice {
       case "end-debouncing":
         if (endDetected) {
           // 도착 센서가 다시 동작하면 이전 상태(end-begin)로 돌아간다.
+          this.endBeginAt = timestamp;
           this.state = "end-begin";
         } else {
           // 일정 시간동안 도착 센서가 동작하지 않으면 로봇이 모두 지나간 것으로 간주(debouncing)하고 다음 상태(end)로 전이한다.
           const elapsedTime = timestamp - this.endBeginAt;
-          if (elapsedTime > this.endDebouncingTime) {
+          if (elapsedTime >= this.endDebouncingTime) {
             this.emitEndEvent(this.endBeginAt); // 도착 신호 이벤트를 발생시킨다.
             this.state = "end";
           }
