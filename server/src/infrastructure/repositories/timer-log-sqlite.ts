@@ -2,7 +2,7 @@ import { EntityNotFoundError, PersistenceError } from "@/core/errors";
 import { TimerLog } from "@/core/models";
 import { TimerLogRepository } from "@/core/repositories";
 
-import { SQLiteDatabaseAsyncWrapper } from "@/utils/sqlite";
+import { SQLiteDatabaseAsyncWrapper } from "./utils/sqlite";
 import sqlite3 from "sqlite3";
 
 type TimerLogRecord = {

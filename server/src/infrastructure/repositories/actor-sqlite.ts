@@ -2,7 +2,7 @@ import { EntityNotFoundError, PersistenceError } from "@/core/errors";
 import { Actor } from "@/core/models";
 import { ActorRepository } from "@/core/repositories";
 
-import { SQLiteDatabaseAsyncWrapper } from "@/utils/sqlite";
+import { SQLiteDatabaseAsyncWrapper } from "./utils/sqlite";
 import sqlite3 from "sqlite3";
 
 type ActorRecord = {

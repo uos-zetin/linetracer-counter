@@ -2,7 +2,7 @@ import { EntityNotFoundError, PersistenceError } from "@/core/errors";
 import { ManualRecord } from "@/core/models";
 import { ManualRecordRepository } from "@/core/repositories";
 
-import { SQLiteDatabaseAsyncWrapper } from "@/utils/sqlite";
+import { SQLiteDatabaseAsyncWrapper } from "./utils/sqlite";
 import sqlite3 from "sqlite3";
 
 type ManualRecordRecord = {
