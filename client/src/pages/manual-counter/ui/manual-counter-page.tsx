@@ -1,12 +1,24 @@
-import { useState } from "react";
-import { useParams } from "react-router";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 import { formatElapsedMs, useStopwatchTimer } from "@/entities/counter";
+import { useAuthService } from "@/features/auth";
 import { useCounterService } from "@/features/counter";
 import { useManualRecordService } from "@/features/manual-record";
 import { useProgressService } from "@/features/progress";
+import { AppHeader } from "@/widgets/app-header";
 
 export function ManualCounter() {
+  const navigate = useNavigate();
   const { counterId } = useParams();
+
+  // Auth check
+  const authService = useAuthService();
+  const authState = authService.use.auth();
+  const { isAuthenticated, user } = authState;
+
   const manualRecordService = useManualRecordService();
   const progressService = useProgressService();
   const counterService = useCounterService();
@@ -19,8 +31,19 @@ export function ManualCounter() {
   const [recorderName, setRecorderName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Counter state 가져오기 (API로부터 로드하지 않고 현재 store 상태만 참조)
-  const counterState = counterService.use.counterState(counterId || "");
+  // 권한 체크
+  const isAdministrator = user?.roles?.includes("administrator") ?? false;
+  const isManualRecorder = user?.roles?.includes("manualRecorder") ?? false;
+  const isAuthorized = isAuthenticated && (isAdministrator || isManualRecorder);
+
+  // 권한이 없으면 홈으로 리다이렉트
+  useEffect(() => {
+    if (!isAuthenticated || (user && !isAdministrator && !isManualRecorder)) {
+      navigate("/");
+      return;
+    }
+  }, [isAuthenticated, user, isAdministrator, isManualRecorder, navigate]);
+
 
   // 로컬 타이머 사용 (useStopwatchTimer 훅 활용)
   const elapsedTime = useStopwatchTimer(localStartedAt, localStoppedAt);
@@ -75,9 +98,8 @@ export function ManualCounter() {
         recorderName: recorderName.trim(),
       });
 
-      // 6. 성공 시 자동 리셋
+      // 6. 성공 시 자동 리셋 (기록자 이름은 유지)
       handleReset();
-      setRecorderName("");
       alert("기록이 성공적으로 전송되었습니다!");
     } catch (error) {
       console.error("Failed to submit manual record:", error);
@@ -89,102 +111,111 @@ export function ManualCounter() {
 
   const canSubmit = !isRunning && hasRecord && recorderName.trim() && !isSubmitting;
 
-  if (!counterId) {
+  // 권한 체크 또는 counterId가 없으면 로딩 상태 표시
+  if (!isAuthorized || !counterId) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="text-2xl md:text-[2vw] font-bold text-gray-600">로딩 중...</div>
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-muted-foreground">로딩 중...</div>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 px-[1vw] py-[2vw]">
-      <div className="max-w-none mx-auto">
-        <header className="text-center mb-[3vw]">
-          <h1 className="text-3xl md:text-[5vw] font-bold text-gray-800 mb-[1vw]">수동 계수</h1>
-          <p className="text-lg md:text-[2vw] text-gray-600">계수기: {decodeURIComponent(counterId)}</p>
-        </header>
+    <div className="min-h-screen bg-background">
+      <AppHeader title="수동 계수" showBackButton />
+      <main className="px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-12">
+        <div className="max-w-4xl mx-auto">
+          <header className="text-center mb-6 sm:mb-8 md:mb-10">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-foreground mb-3 sm:mb-4">
+              수동 계수
+            </h1>
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-2xl text-muted-foreground">
+              계수기: {decodeURIComponent(counterId)}
+            </p>
+          </header>
 
-        <div className="bg-white rounded-lg shadow-lg px-[3vw] py-[4vw]">
-          {/* Timer Display */}
-          <div className="text-center mb-[4vw]">
-            <div className="text-6xl md:text-[12vw] leading-none font-mono font-bold text-gray-800 mb-[2vw] flex items-baseline justify-center">
-              <span>{timeComponents.minutes}</span>
-              <span className="transform -translate-y-1 md:-translate-y-[0.6vw]">:</span>
-              <span>{timeComponents.seconds}</span>
-              <span>.</span>
-              <span>{timeComponents.milliseconds}</span>
+          <div className="bg-card rounded-lg shadow-lg border border-border px-6 sm:px-8 md:px-12 lg:px-12 py-6 sm:py-8 md:py-10">
+            {/* Timer Display */}
+            <div className="text-center mb-6 sm:mb-8 md:mb-10">
+              <div className="text-6xl sm:text-7xl md:text-8xl lg:text-8xl leading-none font-bold text-foreground mb-4 sm:mb-6 flex items-baseline justify-center">
+                <span>{timeComponents.minutes}</span>
+                <span className="transform -translate-y-1">:</span>
+                <span>{timeComponents.seconds}</span>
+                <span>.</span>
+                <span className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl">{timeComponents.milliseconds}</span>
+              </div>
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-3xl text-muted-foreground">
+                {isRunning ? "⏱️ 측정 중" : hasRecord ? "⏹️ 측정 완료" : "⏸️ 대기 중"}
+              </div>
             </div>
-            <div className="text-xl md:text-[2.5vw] text-gray-600">
-              {isRunning ? "⏱️ 측정 중" : hasRecord ? "⏹️ 측정 완료" : "⏸️ 대기 중"}
+
+            {/* Control Buttons */}
+            <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 md:gap-6 mb-6 sm:mb-8 md:mb-10">
+              <Button
+                onClick={handleStart}
+                disabled={isRunning}
+                size="lg"
+                className="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 bg-green-500 text-white font-bold text-lg sm:text-xl md:text-xl lg:text-xl hover:bg-green-600"
+              >
+                시작
+              </Button>
+              <Button
+                onClick={handleStop}
+                disabled={!isRunning}
+                size="lg"
+                className="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 bg-red-500 text-white font-bold text-lg sm:text-xl md:text-xl lg:text-xl hover:bg-red-600"
+              >
+                정지
+              </Button>
+              <Button
+                onClick={handleReset}
+                disabled={isRunning}
+                size="lg"
+                variant="secondary"
+                className="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 font-bold text-lg sm:text-xl md:text-xl lg:text-xl"
+              >
+                리셋
+              </Button>
             </div>
-          </div>
 
-          {/* Control Buttons */}
-          <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-[2vw] mb-[4vw]">
-            <button
-              onClick={handleStart}
-              disabled={isRunning}
-              className="w-full md:w-auto px-6 py-3 md:px-[3vw] md:py-[2vw] bg-green-500 text-white font-bold text-lg md:text-[2vw] rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            >
-              시작
-            </button>
-            <button
-              onClick={handleStop}
-              disabled={!isRunning}
-              className="w-full md:w-auto px-6 py-3 md:px-[3vw] md:py-[2vw] bg-red-500 text-white font-bold text-lg md:text-[2vw] rounded-lg hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            >
-              정지
-            </button>
-            <button
-              onClick={handleReset}
-              disabled={isRunning}
-              className="w-full md:w-auto px-6 py-3 md:px-[3vw] md:py-[2vw] bg-gray-500 text-white font-bold text-lg md:text-[2vw] rounded-lg hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            >
-              리셋
-            </button>
-          </div>
+            {/* Recorder Name Input */}
+            <div className="mb-6 sm:mb-8 md:mb-10">
+              <Label
+                htmlFor="recorderName"
+                className="text-lg sm:text-xl md:text-xl lg:text-xl font-medium mb-2 sm:mb-3"
+              >
+                기록자 이름
+              </Label>
+              <Input
+                id="recorderName"
+                type="text"
+                value={recorderName}
+                onChange={(e) => setRecorderName(e.target.value)}
+                placeholder="기록자 이름을 입력하세요"
+                className="w-full px-4 py-3 sm:px-4 sm:py-3 md:px-4 md:py-3 text-lg sm:text-xl md:text-xl lg:text-xl"
+              />
+            </div>
 
-          {/* Recorder Name Input */}
-          <div className="mb-[3vw]">
-            <label htmlFor="recorderName" className="block text-lg md:text-[2vw] font-medium text-gray-700 mb-[1vw]">
-              기록자 이름
-            </label>
-            <input
-              id="recorderName"
-              type="text"
-              value={recorderName}
-              onChange={(e) => setRecorderName(e.target.value)}
-              placeholder="기록자 이름을 입력하세요"
-              className="w-full px-4 py-3 md:px-[2vw] md:py-[1.5vw] border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg md:text-[2vw]"
-            />
-          </div>
-
-          {/* Submit Button */}
-          <div className="text-center">
-            <button
-              onClick={handleSubmit}
-              disabled={!canSubmit}
-              className="px-8 py-4 md:px-[4vw] md:py-[2vw] bg-blue-500 text-white font-bold text-xl md:text-[2vw] rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            >
-              {isSubmitting ? "전송 중..." : "기록 전송"}
-            </button>
-            <div className="mt-[1vw] text-sm md:text-[1.5vw] text-gray-500">
-              {!counterState && "계수기 정보를 불러오는 중..."}
-              {counterState && !counterState.divisionId && "계수기가 division에 연결되지 않았습니다"}
-              {counterState && counterState.divisionId && !recorderName.trim() && "기록자 이름을 입력하세요"}
-              {counterState && counterState.divisionId && recorderName.trim() && isRunning && "타이머를 정지하세요"}
-              {counterState &&
-                counterState.divisionId &&
-                recorderName.trim() &&
-                !isRunning &&
-                !hasRecord &&
-                "타이머를 시작하고 정지하세요"}
-              {canSubmit && "전송 준비 완료"}
+            {/* Submit Button */}
+            <div className="text-center">
+              <Button
+                onClick={handleSubmit}
+                disabled={!canSubmit}
+                size="lg"
+                className="px-8 py-4 sm:px-10 sm:py-5 md:px-12 md:py-6 font-bold text-xl sm:text-2xl md:text-2xl lg:text-2xl"
+              >
+                {isSubmitting ? "전송 중..." : "기록 전송"}
+              </Button>
+              <div className="mt-3 sm:mt-4 md:mt-5 text-sm sm:text-base md:text-base lg:text-base text-muted-foreground">
+                {!recorderName.trim() && "기록자 이름을 입력하세요"}
+                {recorderName.trim() && isRunning && "타이머를 정지하세요"}
+                {recorderName.trim() && !isRunning && !hasRecord && "타이머를 시작하고 정지하세요"}
+                {canSubmit && "전송 준비 완료"}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }
