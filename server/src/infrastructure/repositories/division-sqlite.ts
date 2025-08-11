@@ -1,8 +1,9 @@
-import { Database } from "sqlite3";
-
 import { EntityNotFoundError, PersistenceError } from "@/core/errors";
 import { Division } from "@/core/models";
 import { DivisionRepository } from "@/core/repositories";
+
+import { SQLiteDatabaseAsyncWrapper } from "./utils/sqlite";
+import sqlite3 from "sqlite3";
 
 type DivisionRecord = {
   id: string;
@@ -16,16 +17,16 @@ type DivisionRecord = {
 };
 
 export class DivisionSQLiteRepository implements DivisionRepository {
-  private db: Database;
+  private db: SQLiteDatabaseAsyncWrapper;
   private isInitialized = false;
 
-  constructor(db: Database) {
-    this.db = db;
+  constructor(db: sqlite3.Database) {
+    this.db = new SQLiteDatabaseAsyncWrapper(db);
   }
 
   async initialize(): Promise<DivisionRepository> {
-    await new Promise<void>((resolve, reject) => {
-      this.db.run(
+    try {
+      await this.db.run(
         `CREATE TABLE IF NOT EXISTS divisions (
           id TEXT PRIMARY KEY NOT NULL,
           competitionId TEXT NOT NULL,
@@ -35,39 +36,18 @@ export class DivisionSQLiteRepository implements DivisionRepository {
           createdAt TEXT NOT NULL,
           status TEXT NOT NULL,
           isDeleted INTEGER NOT NULL
-        )`,
-        function (err) {
-          if (err) {
-            reject(
-              new PersistenceError(
-                `Failed to create divisions table: ${err.message}`
-              )
-            );
-          } else {
-            resolve();
-          }
-        }
+        )`
       );
-    });
-
-    // WHERE 절로 isDeleted, competitionId 조건을 건 후, createdAt DESC로 정렬하는 쿼리에 대응
-    await new Promise<void>((resolve, reject) => {
-      this.db.run(
+      // index [isDeleted, competitionId, createdAt]
+      await this.db.run(
         `CREATE INDEX IF NOT EXISTS idx_divisions_isDeleted_competitionId_createdAt
-          ON divisions (isDeleted, competitionId, createdAt DESC)`,
-        (err) => {
-          if (err) {
-            reject(
-              new PersistenceError(
-                `Failed to create index on divisions: ${err.message}`
-              )
-            );
-          } else {
-            resolve();
-          }
-        }
+          ON divisions (isDeleted, competitionId, createdAt DESC)`
       );
-    });
+    } catch (err) {
+      throw new PersistenceError(
+        `Failed to initialize Division database: ${err}`
+      );
+    }
 
     this.isInitialized = true;
     return this;
@@ -82,43 +62,37 @@ export class DivisionSQLiteRepository implements DivisionRepository {
   async getById(id: string): Promise<Division> {
     this.checkInitialization();
 
-    return new Promise((resolve, reject) => {
-      this.db.get(
+    const row = await this.db
+      .get<DivisionRecord>(
         `SELECT *
           FROM divisions
           WHERE id = ? AND isDeleted = 0`,
-        [id],
-        (err, row) => {
-          if (err) {
-            reject(
-              new PersistenceError(
-                `Failed to fetch division(${id}): ${err.message}`
-              )
-            );
-          } else if (!row) {
-            reject(new EntityNotFoundError(`Division with ID ${id} not found`));
-          } else {
-            const data = row as DivisionRecord;
-            resolve({
-              id: data.id,
-              competitionId: data.competitionId,
-              name: data.name,
-              timeLimit: data.timeLimit,
-              description: data.description,
-              createdAt: new Date(data.createdAt),
-              status: data.status,
-            });
-          }
-        }
-      );
-    });
+        [id]
+      )
+      .catch((err) => {
+        throw new PersistenceError(`Failed to fetch division(${id}): ${err}`);
+      });
+
+    if (!row) {
+      throw new EntityNotFoundError(`Division with ID ${id} not found`);
+    }
+
+    return {
+      id: row.id,
+      competitionId: row.competitionId,
+      name: row.name,
+      timeLimit: row.timeLimit,
+      description: row.description,
+      createdAt: new Date(row.createdAt),
+      status: row.status,
+    };
   }
 
   async create(division: Division): Promise<Division> {
     this.checkInitialization();
 
-    return new Promise((resolve, reject) => {
-      this.db.run(
+    await this.db
+      .run(
         `INSERT INTO divisions
           (id, competitionId, name, timeLimit, description, createdAt, status, isDeleted)
           VALUES (?, ?, ?, ?, ?, ?, ?, 0)`,
@@ -130,25 +104,20 @@ export class DivisionSQLiteRepository implements DivisionRepository {
           division.description,
           division.createdAt.toISOString(),
           division.status,
-        ],
-        function (err) {
-          if (err) {
-            reject(
-              new PersistenceError(`Failed to create division: ${err.message}`)
-            );
-          } else {
-            resolve(division);
-          }
-        }
-      );
-    });
+        ]
+      )
+      .catch((err) => {
+        throw new PersistenceError(`Failed to create division: ${err}`);
+      });
+
+    return division;
   }
 
   async update(division: Division): Promise<Division> {
     this.checkInitialization();
 
-    return new Promise((resolve, reject) => {
-      this.db.run(
+    const result = await this.db
+      .run(
         `UPDATE divisions
           SET name = ?, timeLimit = ?, description = ?, createdAt = ?, status = ?
           WHERE id = ? AND isDeleted = 0`,
@@ -159,86 +128,66 @@ export class DivisionSQLiteRepository implements DivisionRepository {
           division.createdAt.toISOString(),
           division.status,
           division.id,
-        ],
-        function (err) {
-          if (err) {
-            reject(
-              new PersistenceError(
-                `Failed to update division(${division.id}): ${err.message}`
-              )
-            );
-          } else if (this.changes === 0) {
-            reject(
-              new EntityNotFoundError(
-                `Division with ID ${division.id} not found`
-              )
-            );
-          } else {
-            resolve(division);
-          }
-        }
+        ]
+      )
+      .catch((err) => {
+        throw new PersistenceError(
+          `Failed to update division(${division.id}): ${err}`
+        );
+      });
+
+    if (result.changes === 0) {
+      throw new EntityNotFoundError(
+        `Division with ID ${division.id} not found`
       );
-    });
+    }
+
+    return division;
   }
 
   async delete(id: string): Promise<void> {
     this.checkInitialization();
 
-    return new Promise((resolve, reject) => {
-      this.db.run(
+    const result = await this.db
+      .run(
         // soft delete
         `UPDATE divisions SET isDeleted = 1 WHERE id = ? AND isDeleted = 0`,
-        [id],
-        function (err) {
-          if (err) {
-            reject(
-              new PersistenceError(
-                `Failed to delete division(${id}): ${err.message}`
-              )
-            );
-          } else if (this.changes === 0) {
-            reject(new EntityNotFoundError(`Division with ID ${id} not found`));
-          } else {
-            resolve();
-          }
-        }
-      );
-    });
+        [id]
+      )
+      .catch((err) => {
+        throw new PersistenceError(`Failed to delete division(${id}): ${err}`);
+      });
+
+    if (result.changes === 0) {
+      throw new EntityNotFoundError(`Division with ID ${id} not found`);
+    }
   }
 
   async getByCompetitionId(competitionId: string): Promise<Division[]> {
     this.checkInitialization();
 
-    return new Promise((resolve, reject) => {
-      this.db.all(
+    const rows = await this.db
+      .all<DivisionRecord>(
         `SELECT id, competitionId, name, timeLimit, description, createdAt, status, isDeleted
          FROM divisions
          WHERE competitionId = ? AND isDeleted = 0
          ORDER BY createdAt DESC`,
-        [competitionId],
-        (err, rows) => {
-          if (err) {
-            reject(
-              new PersistenceError(
-                `Failed to fetch divisions for competition(${competitionId}): ${err.message}`
-              )
-            );
-          } else {
-            const data: DivisionRecord[] = rows as DivisionRecord[];
-            resolve(
-              data.map((row) => ({
-                id: row.id,
-                competitionId: row.competitionId,
-                name: row.name,
-                timeLimit: row.timeLimit,
-                description: row.description,
-                createdAt: new Date(row.createdAt),
-                status: row.status,
-              }))
-            );
-          }
-        }
-      );
-    });
+        [competitionId]
+      )
+      .catch((err) => {
+        throw new PersistenceError(
+          `Failed to fetch divisions for competition(${competitionId}): ${err}`
+        );
+      });
+
+    return rows.map((row) => ({
+      id: row.id,
+      competitionId: row.competitionId,
+      name: row.name,
+      timeLimit: row.timeLimit,
+      description: row.description,
+      createdAt: new Date(row.createdAt),
+      status: row.status,
+    }));
   }
 }
