@@ -1,0 +1,19 @@
+[Unit]
+Description=Raspberry Pi Counter Sensor Service
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/local/bin/rpi-counter-sensor -c /etc/rpi-counter-sensor/config.json
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=rpi-counter-sensor
+SupplementaryGroups=spi
+
+[Install]
+WantedBy=multi-user.target
