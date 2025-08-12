@@ -25,11 +25,11 @@ std::string Logger::get_timestamp() {
 }
 
 void Logger::write_log(const std::string& level, const std::string& message) {
-    std::cout << "[" << get_timestamp() << "] [" << level << "] " << message << std::endl;
+    std::cout << "[" << level << "] " << message << std::endl;
 }
 
 void Logger::write_error(const std::string& level, const std::string& message) {
-    std::cerr << "[" << get_timestamp() << "] [" << level << "] " << message << std::endl;
+    std::cerr << "[" << level << "] " << message << std::endl;
 }
 
 void Logger::log(const std::string& message) {
