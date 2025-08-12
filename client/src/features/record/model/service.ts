@@ -33,8 +33,6 @@ export const createRecordService = ({ recordRepository }: RecordServiceProps): R
   const loadTopRecordsByDivision = async (divisionId: string): Promise<Record[]> => {
     try {
       const topRecords = await recordRepository.getTopRecords(divisionId);
-      const store = useZustandRecordStore.getState();
-      store.addMany(topRecords);
       return topRecords;
     } catch (error) {
       console.error(`Failed to load top records for division ${divisionId}:`, error);
@@ -99,27 +97,11 @@ export const createRecordService = ({ recordRepository }: RecordServiceProps): R
   };
 
   const useRecordsByParticipant = (participantId: string): Record[] => {
-    return useZustandRecordStore((state) => 
-      state.records.filter((record) => record.participantId === participantId)
-    );
-  };
-
-  const useTopRecordsByDivision = (divisionId: string): Record[] => {
-    const allRecords = useZustandRecordStore((state) => state.records);
-
-    if (!divisionId) {
-      return [];
-    }
-
-    // TODO: participant 정보를 통해 division 필터링 구현 필요
-    // 현재는 값(value)으로 오름차순 정렬하여 최고 기록들 반환
-    return allRecords.sort((a, b) => a.value - b.value);
+    return useZustandRecordStore((state) => state.records.filter((record) => record.participantId === participantId));
   };
 
   const useRecordById = (recordId: string): Record | null => {
-    return useZustandRecordStore((state) => 
-      state.records.find((record) => record.id === recordId) || null
-    );
+    return useZustandRecordStore((state) => state.records.find((record) => record.id === recordId) || null);
   };
 
   // ===== Public API =====
@@ -148,7 +130,6 @@ export const createRecordService = ({ recordRepository }: RecordServiceProps): R
     use: {
       records: useRecords,
       recordsByParticipant: useRecordsByParticipant,
-      topRecordsByDivision: useTopRecordsByDivision,
       recordById: useRecordById,
     },
   };

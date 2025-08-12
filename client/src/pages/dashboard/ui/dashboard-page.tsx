@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Label } from "@/shared/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import type { Division } from "@/entities/division";
-import type { Record } from "@/entities/record";
 import { useCompetitionService } from "@/features/competition";
 import { useDivisionService } from "@/features/division";
 import { useParticipantService } from "@/features/participant";
-import { useRecordService } from "@/features/record";
+import { RecordTable } from "./record-table";
 
 export const DashboardPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,15 +17,14 @@ export const DashboardPage = () => {
   const competitionService = useCompetitionService();
   const divisionService = useDivisionService();
   const participantService = useParticipantService();
-  const recordService = useRecordService();
 
   const [selectedCompetitionId, setSelectedCompetitionId] = useState<string>(competitionId || "");
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>(divisionId || "");
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
-  const competitions = competitionService.use.competitions();
-  const divisions = divisionService.use.divisionsByCompetition(competitionId || "");
-  const participants = participantService.use.allParticipants();
-  const topRecords = recordService.use.topRecordsByDivision(selectedDivisionId || "");
+  const competitions = competitionService.use.competitions() || [];
+  const divisions = divisionService.use.divisionsByCompetition(selectedCompetitionId || "") || [];
+  const participants = participantService.use.allParticipants() || [];
 
   // 대회 목록 로드
   useEffect(() => {
@@ -69,30 +70,14 @@ export const DashboardPage = () => {
     }
   }, [selectedCompetitionId, divisions.length, participantService]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 부문별 top record 로드 (특정 부문 선택 시 또는 모든 부문)
+  // 매분마다 새로고침 타이머
   useEffect(() => {
-    if (selectedDivisionId) {
-      // 특정 부문의 top record 로드
-      const loadTopRecords = async () => {
-        try {
-          await recordService.load.topByDivision(selectedDivisionId);
-        } catch (error) {
-          console.error("Failed to load top records:", error);
-        }
-      };
-      loadTopRecords();
-    } else if (selectedCompetitionId && divisions.length > 0) {
-      // 모든 부문의 top record 로드
-      const loadAllTopRecords = async () => {
-        try {
-          await Promise.all(divisions.map((division: Division) => recordService.load.topByDivision(division.id)));
-        } catch (error) {
-          console.error("Failed to load all top records:", error);
-        }
-      };
-      loadAllTopRecords();
-    }
-  }, [selectedDivisionId, selectedCompetitionId, divisions.length, recordService]); // eslint-disable-line react-hooks/exhaustive-deps
+    const interval = setInterval(() => {
+      setLastUpdated(new Date());
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // URL에서 competitionId가 변경되면 상태 업데이트
   useEffect(() => {
@@ -118,11 +103,12 @@ export const DashboardPage = () => {
 
   // 부문 선택 핸들러
   const handleDivisionChange = (newDivisionId: string) => {
-    setSelectedDivisionId(newDivisionId);
+    const actualDivisionId = newDivisionId === "all" ? "" : newDivisionId;
+    setSelectedDivisionId(actualDivisionId);
 
     if (selectedCompetitionId) {
-      if (newDivisionId) {
-        setSearchParams({ competitionId: selectedCompetitionId, divisionId: newDivisionId });
+      if (actualDivisionId) {
+        setSearchParams({ competitionId: selectedCompetitionId, divisionId: actualDivisionId });
       } else {
         setSearchParams({ competitionId: selectedCompetitionId });
       }
@@ -137,208 +123,128 @@ export const DashboardPage = () => {
     return participant?.name || `Unknown Participant`;
   };
 
-  // 각 참가자별 최고 기록 계산
-  const getTopRecordsByParticipant = (divisionRecords: typeof topRecords) => {
-    const recordsByParticipant = new Map<string, (typeof topRecords)[0]>();
-
-    divisionRecords.forEach((record: Record) => {
-      const existing = recordsByParticipant.get(record.participantId);
-      if (!existing || record.value < existing.value) {
-        // 더 좋은 기록 (시간이 짧을수록 좋음)
-        recordsByParticipant.set(record.participantId, record);
-      }
-    });
-
-    return Array.from(recordsByParticipant.values()).sort((a, b) => a.value - b.value);
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">대시보드</h1>
+    <div className="min-h-screen bg-background p-3 sm:p-4">
+      <div className="max-w-3xl mx-auto">
+        <div className="mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2">🏆 경기 결과</h1>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">실시간 순위와 최고 기록을 확인하세요</p>
+            <p className="text-xs text-muted-foreground">마지막 업데이트: {lastUpdated.toLocaleTimeString()}</p>
+          </div>
+        </div>
 
         {/* 대회 선택 드롭다운 */}
-        <div className="mb-6">
-          <label htmlFor="competition-select" className="block text-sm font-medium text-gray-700 mb-2">
-            대회 선택
-          </label>
-          <select
-            id="competition-select"
-            value={selectedCompetitionId}
-            onChange={(e) => handleCompetitionChange(e.target.value)}
-            className="block w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="">-- 대회를 선택하세요 --</option>
-            {competitions.map((competition) => (
-              <option key={competition.id} value={competition.id}>
-                {competition.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <Card className="mb-4">
+          <CardContent className="px-6 py-0">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground">대회 선택</Label>
+              <Select value={selectedCompetitionId} onValueChange={handleCompetitionChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="대회를 선택하세요" />
+                </SelectTrigger>
+                <SelectContent>
+                  {competitions.map((competition) => (
+                    <SelectItem key={competition.id} value={competition.id}>
+                      {competition.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* 선택된 대회가 있을 때만 부문 선택 및 기록 표시 */}
         {selectedCompetitionId && selectedCompetition && (
           <>
             {/* 부문 선택 드롭다운 */}
-            <div className="mb-6">
-              <label htmlFor="division-select" className="block text-sm font-medium text-gray-700 mb-2">
-                부문 선택 (선택사항)
-              </label>
-              <select
-                id="division-select"
-                value={selectedDivisionId}
-                onChange={(e) => handleDivisionChange(e.target.value)}
-                className="block w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="">-- 모든 부문 --</option>
-                {divisions.map((division: Division) => (
-                  <option key={division.id} value={division.id}>
-                    {division.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Card className="mb-4">
+              <CardContent className="px-6 py-0">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-foreground">
+                    부문 선택 <span className="text-xs text-muted-foreground">(선택사항)</span>
+                  </Label>
+                  <Select value={selectedDivisionId || "all"} onValueChange={handleDivisionChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="모든 부문 보기" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">모든 부문</SelectItem>
+                      {divisions.map((division: Division) => (
+                        <SelectItem key={division.id} value={division.id}>
+                          {division.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* 대회 정보 */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">{selectedCompetition.name}</h2>
-              <p className="text-gray-600">{selectedCompetition.description}</p>
-              <div className="mt-4 text-sm text-gray-500">
-                <p>생성일: {new Date(selectedCompetition.createdAt).toLocaleDateString()}</p>
-              </div>
-            </div>
+            <Card className="mb-4">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg font-semibold text-foreground">{selectedCompetition.name}</CardTitle>
+              </CardHeader>
+              <CardContent className="px-6 py-0">
+                <p className="text-muted-foreground mb-3">{selectedCompetition.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  생성일: {new Date(selectedCompetition.createdAt).toLocaleDateString()}
+                </p>
+              </CardContent>
+            </Card>
 
             {/* Top Records 표시 영역 */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                {selectedDivisionId ? "부문별 최고 기록" : "전체 부문 최고 기록"}
-              </h3>
-
-              {selectedDivisionId ? (
-                // 특정 부문이 선택된 경우
-                (() => {
-                  const divisionTopRecords = getTopRecordsByParticipant(topRecords);
-                  return divisionTopRecords.length > 0 ? (
-                    <div className="space-y-3">
-                      {divisionTopRecords.map((record, index) => (
-                        <div key={record.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
-                          <div className="flex items-center space-x-3">
-                            <span
-                              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white ${
-                                index === 0
-                                  ? "bg-yellow-500"
-                                  : index === 1
-                                    ? "bg-gray-400"
-                                    : index === 2
-                                      ? "bg-amber-600"
-                                      : "bg-gray-300"
-                              }`}
-                            >
-                              {index + 1}
-                            </span>
-                            <div>
-                              <p className="font-medium text-gray-900">{getParticipantName(record.participantId)}</p>
-                              <p className="text-sm text-gray-500">
-                                {record.source} • {new Date(record.createdAt).toLocaleDateString()}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-lg font-bold text-gray-900">{record.value}ms</p>
-                            <p
-                              className={`text-sm ${
-                                record.status === "approved"
-                                  ? "text-green-600"
-                                  : record.status === "rejected"
-                                    ? "text-red-600"
-                                    : "text-yellow-600"
-                              }`}
-                            >
-                              {record.status === "approved"
-                                ? "승인됨"
-                                : record.status === "rejected"
-                                  ? "거부됨"
-                                  : "대기중"}
-                            </p>
-                          </div>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg font-semibold text-foreground">
+                  {selectedDivisionId ? "부문별 최고 기록" : "전체 부문 최고 기록"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-6 py-0">
+                {selectedDivisionId ? (
+                  <RecordTable
+                    divisionId={selectedDivisionId}
+                    participants={participants}
+                    getParticipantName={getParticipantName}
+                    refreshTrigger={lastUpdated}
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    {divisions
+                      .sort((a: Division, b: Division) => a.name.localeCompare(b.name))
+                      .map((division: Division) => (
+                        <div key={division.id}>
+                          <h4 className="text-base font-semibold text-foreground mb-2 border-l-4 border-primary pl-2">
+                            {division.name}
+                          </h4>
+                          <RecordTable
+                            divisionId={division.id}
+                            participants={participants}
+                            getParticipantName={getParticipantName}
+                            refreshTrigger={lastUpdated}
+                          />
                         </div>
                       ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      <p>해당 부문에 기록이 없습니다.</p>
-                      <p className="text-sm mt-2">
-                        선택된 부문: {divisions.find((d) => d.id === selectedDivisionId)?.name}
-                      </p>
-                    </div>
-                  );
-                })()
-              ) : (
-                // 모든 부문별 top record 표시
-                <div className="space-y-8">
-                  {divisions
-                    .sort((a: Division, b: Division) => a.name.localeCompare(b.name))
-                    .map((division: Division) => {
-                      const divisionRecords = topRecords.filter(
-                        (record: Record) => participants.find((p) => p.id === record.participantId)?.divisionId === division.id
-                      );
-                      const divisionTopRecords = getTopRecordsByParticipant(divisionRecords);
-
-                      return (
-                        <div key={division.id} className="border-l-4 border-blue-500 pl-4">
-                          <h4 className="text-lg font-semibold text-gray-900 mb-3">{division.name}</h4>
-                          {divisionTopRecords.length > 0 ? (
-                            <div className="space-y-2">
-                              {divisionTopRecords.map((record, index) => (
-                                <div
-                                  key={record.id}
-                                  className="flex items-center justify-between p-2 bg-gray-50 rounded-md"
-                                >
-                                  <div className="flex items-center space-x-3">
-                                    <span
-                                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
-                                        index === 0
-                                          ? "bg-yellow-500"
-                                          : index === 1
-                                            ? "bg-gray-400"
-                                            : index === 2
-                                              ? "bg-amber-600"
-                                              : "bg-gray-300"
-                                      }`}
-                                    >
-                                      {index + 1}
-                                    </span>
-                                    <div>
-                                      <p className="font-medium text-gray-900">
-                                        {getParticipantName(record.participantId)}
-                                      </p>
-                                      <p className="text-xs text-gray-500">{record.source}</p>
-                                    </div>
-                                  </div>
-                                  <div className="text-right">
-                                    <p className="font-bold text-gray-900">{record.value}ms</p>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="text-sm text-gray-500">기록이 없습니다.</p>
-                          )}
-                        </div>
-                      );
-                    })}
-                </div>
-              )}
-            </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </>
         )}
 
         {/* 대회가 선택되지 않았을 때 */}
         {!selectedCompetitionId && (
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <p className="text-gray-500">대회를 선택하여 기록을 확인하세요.</p>
-          </div>
+          <Card className="text-center border-2 border-dashed border-border/50">
+            <CardContent className="px-6 py-12">
+              <div className="text-4xl mb-3">🏁</div>
+              <h2 className="text-lg font-semibold text-foreground mb-2">경기를 선택해주세요</h2>
+              <p className="text-sm text-muted-foreground">
+                위에서 대회를 선택하시면 실시간 순위와 기록을 확인할 수 있습니다
+              </p>
+            </CardContent>
+          </Card>
         )}
       </div>
     </div>

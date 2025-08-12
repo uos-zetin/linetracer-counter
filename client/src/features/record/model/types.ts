@@ -25,7 +25,6 @@ export interface RecordService {
   use: {
     records: () => Record[];
     recordsByParticipant: (participantId: string) => Record[];
-    topRecordsByDivision: (divisionId: string) => Record[];
     recordById: (recordId: string) => Record | null;
   };
 }
