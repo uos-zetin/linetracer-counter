@@ -19,6 +19,7 @@ import { useAuthService } from "@/features/auth";
 import { useCounterService } from "@/features/counter";
 import { useErrorHandlingService } from "@/features/error-handling";
 import { AppHeader } from "@/widgets/app-header";
+import { PageContainer } from "@/widgets/page-container";
 
 export function CounterSelectorPage() {
   const navigate = useNavigate();
@@ -86,8 +87,8 @@ export function CounterSelectorPage() {
       <AppHeader title="계수기 선택" showBackButton={true} backPath="/" showLogout={true} />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
+      <main className="py-8">
+        <PageContainer maxWidth="md" padding="md">
           <Card>
             <CardHeader>
               <div className="text-center">
@@ -234,7 +235,7 @@ export function CounterSelectorPage() {
               </Card>
             </CardContent>
           </Card>
-        </div>
+        </PageContainer>
       </main>
     </div>
   );

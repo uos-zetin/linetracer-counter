@@ -8,7 +8,6 @@ import {
   RecordManagement,
   UserManagement,
 } from "@/pages/admin";
-import { ComponentShowcasePage } from "@/pages/component-showcase";
 import { ControllerPage } from "@/pages/controller";
 import { CounterSelectorPage } from "@/pages/counter-selector";
 import { DashboardPage } from "@/pages/dashboard";
@@ -24,10 +23,6 @@ const routes: RouteObject[] = [
   {
     path: "/dashboard",
     element: <DashboardPage />,
-  },
-  {
-    path: "/showcase",
-    element: <ComponentShowcasePage />,
   },
   {
     path: "/counter",

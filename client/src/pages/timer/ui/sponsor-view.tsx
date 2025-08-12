@@ -1,3 +1,4 @@
+import { ImagePlus } from "lucide-react";
 import { useImageSlider } from "../lib/use-image-upload";
 
 const INTERVAL = 8_000;
@@ -22,7 +23,7 @@ export function SponsorView() {
       aria-label="이미지 업로드"
     >
       <div className="bg-muted py-1 sm:py-1.5 md:py-2">
-        <h2 className="text-center text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-foreground">스폰서</h2>
+        <h2 className="text-center text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-4xl font-semibold text-foreground">스폰서</h2>
       </div>
       <div className="relative flex-1 cursor-pointer group flex items-center justify-center overflow-hidden">
         {images.length > 0 && (
@@ -54,7 +55,7 @@ export function SponsorView() {
           </>
         )}
         {images.length === 0 && (
-          <div className="text-muted-foreground italic text-center text-[10px] sm:text-xs pointer-events-none">
+          <div className="text-muted-foreground italic text-center text-[10px] sm:text-xs pointer-events-none px-2 break-keep">
             스폰서 이미지를 업로드하세요
           </div>
         )}
@@ -64,21 +65,8 @@ export function SponsorView() {
                      opacity-0 group-hover:opacity-100 transition-opacity duration-200
                      flex flex-col items-center justify-center gap-2 sm:gap-3 md:gap-4 pointer-events-none"
         >
-          <svg
-            data-slot="icon"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-            className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 text-white"
-          >
-            <path
-              clipRule="evenodd"
-              fillRule="evenodd"
-              d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-            />
-          </svg>
-          <span className="text-white text-xs sm:text-sm md:text-base">이미지 업로드</span>
+          <ImagePlus className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 2xl:w-16 2xl:h-16 text-white" />
+          <span className="text-white text-xs sm:text-sm md:text-base 2xl:text-2xl">이미지 업로드</span>
         </div>
         <input
           ref={inputRef}

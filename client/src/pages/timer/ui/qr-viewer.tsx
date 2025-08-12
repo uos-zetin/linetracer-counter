@@ -14,7 +14,7 @@ export function QRViewer({ url, title = "대회 전체 기록" }: QRViewerProps)
     if (!containerRef.current) return;
     const resize = () => {
       const rect = containerRef.current!.getBoundingClientRect();
-      // 세로와 가로 중 작은 값으로 정사각형 크기 결정
+      // 컨테이너 크기의 90%를 사용
       setQrSize(Math.min(rect.width, rect.height) * 0.9);
     };
     resize();
@@ -26,7 +26,7 @@ export function QRViewer({ url, title = "대회 전체 기록" }: QRViewerProps)
     <div className="w-full h-full flex flex-col bg-card border border-border rounded-lg shadow-sm overflow-hidden">
       {/* 타이틀 */}
       <div className="bg-muted py-1 sm:py-1.5 md:py-2 shrink-0">
-        <h2 className="text-center text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-foreground">
+        <h2 className="text-center text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-4xl font-semibold text-foreground">
           {title}
         </h2>
       </div>

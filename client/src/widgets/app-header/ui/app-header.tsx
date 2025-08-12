@@ -24,7 +24,7 @@ export function AppHeader({ title, showBackButton = false, backPath = "/", showL
 
   return (
     <header className="bg-white shadow">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl xl:max-w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center min-w-0 flex-1">
             {showBackButton && (

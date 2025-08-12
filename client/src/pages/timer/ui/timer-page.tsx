@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import { useAdminAuthorization } from "@/features/auth";
 import { useCounterService } from "@/features/counter";
 import { useProgressService } from "@/features/progress";
+import { PageContainer } from "@/widgets/page-container";
 import { CurrentRecordView } from "./current-record-view";
 import { DivisionInfo } from "./division-info";
 import { NextRunnerInfo } from "./next-runner-info";
@@ -86,51 +87,53 @@ export function TimerPage() {
       <TimerPageHeader />
       <section
         id="timer-content"
-        className="flex-1 flex flex-col px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 gap-4 sm:gap-6 md:gap-8"
+        className="flex-1 flex flex-col h-full py-8 sm:py-10 md:py-12 xl:py-16 2xl:py-20 gap-4 sm:gap-6 md:gap-8"
       >
-        {/* 상단 4개 컴포넌트를 하나의 Card로 감싸기 */}
-        <div className="border border-border rounded-lg bg-muted/30 shadow-sm p-4 sm:p-6 md:p-8">
-          <div className="grid gap-x-4 gap-y-3 sm:gap-x-6 sm:gap-y-4 md:gap-x-8 md:gap-y-6 grid-cols-1 md:grid-cols-2">
-            <div className="order-1 md:row-start-1 md:col-start-1">
-              <DivisionInfo counterId={counterId} />
+        <PageContainer maxWidth="full" padding="md" className="h-full">
+          <div className="min-h-0 h-full flex flex-col gap-8 sm:gap-10 md:gap-12">
+            {/* 상단 4개 컴포넌트를 하나의 Card로 감싸기 */}
+            <div className="grid gap-x-4 gap-y-3 sm:gap-x-6 sm:gap-y-4 md:gap-x-8 md:gap-y-6 grid-cols-1 md:grid-cols-2">
+              <div className="order-1 md:row-start-1 md:col-start-1">
+                <DivisionInfo counterId={counterId} />
+              </div>
+              <div className="order-2 md:row-start-1 md:col-start-2">
+                <RunnerInfo />
+              </div>
+              <div className="order-3 md:row-start-2 md:col-start-1">
+                <TimerView />
+              </div>
+              <div className="order-4 md:row-start-2 md:col-start-2">
+                <StopwatchView />
+              </div>
             </div>
-            <div className="order-2 md:row-start-1 md:col-start-2">
-              <RunnerInfo />
-            </div>
-            <div className="order-3 md:row-start-2 md:col-start-1">
-              <TimerView />
-            </div>
-            <div className="order-4 md:row-start-2 md:col-start-2">
-              <StopwatchView />
-            </div>
-          </div>
-        </div>
-        {/* 하단 데이터 섹션 */}
-        <div className="flex-1 flex flex-col">
-          <div
-            className="flex-1 grid grid-cols-2 gap-3 sm:gap-4 md:gap-6
-            md:grid-cols-[1fr_2fr_1fr_auto] md:grid-rows-1
+            {/* 하단 데이터 섹션 */}
+            <div className="flex-1 flex flex-col min-h-0">
+              <div
+                className="flex-1 grid grid-cols-2 gap-3 sm:gap-4 md:gap-6
+            md:grid-cols-[1fr_2fr_1fr_10vw] md:grid-rows-1
             "
-          >
-            <div className="order-2 md:order-1 h-full">
-              <NextRunnerInfo />
-            </div>
-            <div className="order-1 col-span-2 md:order-2 md:col-span-1 h-full">
-              <TopRecordView />
-            </div>
-            <div className="order-3 md:order-3 h-full">
-              <CurrentRecordView />
-            </div>
-            <div className="order-4 md:order-4 col-span-2 md:col-span-1 flex flex-row md:flex-col items-stretch gap-3 sm:gap-4 md:gap-6 h-full w-full md:w-[12vw]">
-              <div className="flex-1 w-full">
-                <SponsorView />
-              </div>
-              <div className="flex-none w-full h-[120px] sm:h-[140px] md:h-[12vw] md:w-[12vw]">
-                <QRViewer url={dashboardUrl} title="대회 대시보드" />
+              >
+                <div className="order-2 md:order-1 h-full">
+                  <NextRunnerInfo />
+                </div>
+                <div className="order-1 col-span-2 md:order-2 md:col-span-1 h-full">
+                  <TopRecordView />
+                </div>
+                <div className="order-3 md:order-3 h-full">
+                  <CurrentRecordView />
+                </div>
+                <div className="order-4 md:order-4 col-span-2 md:col-span-1 flex flex-row md:flex-col items-stretch gap-3 sm:gap-4 md:gap-6 h-full w-full">
+                  <div className="flex-1 w-full md:flex-1">
+                    <SponsorView />
+                  </div>
+                  <div className="flex-1 w-full aspect-square md:flex-none md:w-full md:aspect-square">
+                    <QRViewer url={dashboardUrl} title="대회 대시보드" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </PageContainer>
       </section>
     </main>
   );

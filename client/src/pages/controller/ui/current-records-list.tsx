@@ -29,8 +29,8 @@ export const CurrentRecordsList = React.memo(({ records, onUpdateStatus }: Curre
         </h3>
         <div className="space-y-2 max-h-48 overflow-y-auto">
           {records.map((record) => (
-            <Card key={record.id}>
-              <CardContent className="p-3">
+            <Card key={record.id} className="py-4">
+              <CardContent className="px-6">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-lg font-mono font-bold text-foreground">{formatValue(record.value)}</span>
                   <div className="flex items-center space-x-2">

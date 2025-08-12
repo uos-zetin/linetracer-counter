@@ -9,6 +9,7 @@ import { useCounterService } from "@/features/counter";
 import { useManualRecordService } from "@/features/manual-record";
 import { useProgressService } from "@/features/progress";
 import { AppHeader } from "@/widgets/app-header";
+import { PageContainer } from "@/widgets/page-container";
 
 export function ManualCounter() {
   const navigate = useNavigate();
@@ -122,14 +123,14 @@ export function ManualCounter() {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader title="수동 계수" showBackButton />
-      <main className="px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-12">
-        <div className="max-w-4xl mx-auto">
+      <AppHeader title="수동 계수" showBackButton backPath="/counter" />
+      <main className="py-6 sm:py-8 md:py-12">
+        <PageContainer maxWidth="md" padding="md">
           <header className="text-center mb-6 sm:mb-8 md:mb-10">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-foreground mb-3 sm:mb-4">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4">
               수동 계수
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl lg:text-2xl text-muted-foreground">
+            <p className="text-base sm:text-lg md:text-xl lg:text-xl text-muted-foreground">
               계수기: {decodeURIComponent(counterId)}
             </p>
           </header>
@@ -137,14 +138,14 @@ export function ManualCounter() {
           <div className="bg-card rounded-lg shadow-lg border border-border px-6 sm:px-8 md:px-12 lg:px-12 py-6 sm:py-8 md:py-10">
             {/* Timer Display */}
             <div className="text-center mb-6 sm:mb-8 md:mb-10">
-              <div className="text-6xl sm:text-7xl md:text-8xl lg:text-8xl leading-none font-bold text-foreground mb-4 sm:mb-6 flex items-baseline justify-center">
+              <div className="text-5xl sm:text-6xl md:text-7xl lg:text-7xl leading-none font-bold text-foreground mb-4 sm:mb-6 flex items-baseline justify-center">
                 <span>{timeComponents.minutes}</span>
                 <span className="transform -translate-y-1">:</span>
                 <span>{timeComponents.seconds}</span>
                 <span>.</span>
-                <span className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl">{timeComponents.milliseconds}</span>
+                <span className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl">{timeComponents.milliseconds}</span>
               </div>
-              <div className="text-xl sm:text-2xl md:text-3xl lg:text-3xl text-muted-foreground">
+              <div className="text-lg sm:text-xl md:text-2xl lg:text-2xl text-muted-foreground">
                 {isRunning ? "⏱️ 측정 중" : hasRecord ? "⏹️ 측정 완료" : "⏸️ 대기 중"}
               </div>
             </div>
@@ -155,7 +156,7 @@ export function ManualCounter() {
                 onClick={handleStart}
                 disabled={isRunning}
                 size="lg"
-                className="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 bg-green-500 text-white font-bold text-lg sm:text-xl md:text-xl lg:text-xl hover:bg-green-600"
+                className="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 bg-green-500 text-white font-bold text-base sm:text-lg md:text-lg lg:text-lg hover:bg-green-600"
               >
                 시작
               </Button>
@@ -163,7 +164,7 @@ export function ManualCounter() {
                 onClick={handleStop}
                 disabled={!isRunning}
                 size="lg"
-                className="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 bg-red-500 text-white font-bold text-lg sm:text-xl md:text-xl lg:text-xl hover:bg-red-600"
+                className="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 bg-red-500 text-white font-bold text-base sm:text-lg md:text-lg lg:text-lg hover:bg-red-600"
               >
                 정지
               </Button>
@@ -172,7 +173,7 @@ export function ManualCounter() {
                 disabled={isRunning}
                 size="lg"
                 variant="secondary"
-                className="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 font-bold text-lg sm:text-xl md:text-xl lg:text-xl"
+                className="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 font-bold text-base sm:text-lg md:text-lg lg:text-lg"
               >
                 리셋
               </Button>
@@ -182,7 +183,7 @@ export function ManualCounter() {
             <div className="mb-6 sm:mb-8 md:mb-10">
               <Label
                 htmlFor="recorderName"
-                className="text-lg sm:text-xl md:text-xl lg:text-xl font-medium mb-2 sm:mb-3"
+                className="text-base sm:text-lg md:text-lg lg:text-lg font-medium mb-2 sm:mb-3"
               >
                 기록자 이름
               </Label>
@@ -192,7 +193,7 @@ export function ManualCounter() {
                 value={recorderName}
                 onChange={(e) => setRecorderName(e.target.value)}
                 placeholder="기록자 이름을 입력하세요"
-                className="w-full px-4 py-3 sm:px-4 sm:py-3 md:px-4 md:py-3 text-lg sm:text-xl md:text-xl lg:text-xl"
+                className="w-full px-4 py-3 sm:px-4 sm:py-3 md:px-4 md:py-3 text-base sm:text-lg md:text-lg lg:text-lg"
               />
             </div>
 
@@ -202,7 +203,7 @@ export function ManualCounter() {
                 onClick={handleSubmit}
                 disabled={!canSubmit}
                 size="lg"
-                className="px-8 py-4 sm:px-10 sm:py-5 md:px-12 md:py-6 font-bold text-xl sm:text-2xl md:text-2xl lg:text-2xl"
+                className="px-8 py-4 sm:px-10 sm:py-5 md:px-12 md:py-6 font-bold text-lg sm:text-xl md:text-xl lg:text-xl"
               >
                 {isSubmitting ? "전송 중..." : "기록 전송"}
               </Button>
@@ -214,7 +215,7 @@ export function ManualCounter() {
               </div>
             </div>
           </div>
-        </div>
+        </PageContainer>
       </main>
     </div>
   );

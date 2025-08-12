@@ -30,13 +30,13 @@ export const ControllerPage = () => {
 
   if (!counterId) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <div className="text-center">
-              <AlertCircle className="mx-auto h-12 w-12 text-destructive mb-4" />
-              <h1 className="text-xl font-bold text-foreground mb-2">오류</h1>
-              <p className="text-muted-foreground">계수기 ID가 제공되지 않았습니다.</p>
+              <AlertCircle className="mx-auto h-12 w-12 sm:h-16 sm:w-16 text-destructive mb-4" />
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2">오류</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">계수기 ID가 제공되지 않았습니다.</p>
             </div>
           </CardContent>
         </Card>

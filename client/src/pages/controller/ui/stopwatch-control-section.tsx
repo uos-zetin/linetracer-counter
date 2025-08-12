@@ -57,15 +57,15 @@ export const StopwatchControlSection = ({ counterId }: StopwatchControlSectionPr
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Clock className="h-5 w-5" />
+          <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
+            <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
             <span>계수기 모니터</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center space-x-2 text-destructive">
             <AlertCircle className="h-4 w-4" />
-            <p>계수기 서비스를 사용할 수 없습니다.</p>
+            <p className="text-sm sm:text-base">계수기 서비스를 사용할 수 없습니다.</p>
           </div>
         </CardContent>
       </Card>
@@ -75,21 +75,21 @@ export const StopwatchControlSection = ({ counterId }: StopwatchControlSectionPr
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <Clock className="h-5 w-5" />
+        <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
+          <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
           <span>계수기 모니터</span>
         </CardTitle>
-        <p className="text-sm text-muted-foreground mt-2">센서에 의해 자동으로 측정됩니다</p>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-2">센서에 의해 자동으로 측정됩니다</p>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* 시간 표시 */}
         <div className="text-center">
-          <div className="text-6xl font-mono font-bold text-foreground mb-4">{formatTime(elapsedTime)}</div>
+          <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-4">{formatTime(elapsedTime)}</div>
           <div className="flex items-center justify-center space-x-2 mb-4">
             {isRunning && <Play className="h-5 w-5 text-green-600" />}
             {isStopped && <Square className="h-5 w-5 text-yellow-600" />}
             {isIdle && <Clock className="h-5 w-5 text-muted-foreground" />}
-            <Badge variant={isRunning ? "default" : isStopped ? "secondary" : "outline"} className="text-lg px-4 py-2">
+            <Badge variant={isRunning ? "default" : isStopped ? "secondary" : "outline"} className="text-sm sm:text-base px-3 py-1 sm:px-4 sm:py-2">
               {isRunning ? "측정 중" : isStopped ? "측정 완료" : "대기 중"}
             </Badge>
           </div>
@@ -98,16 +98,16 @@ export const StopwatchControlSection = ({ counterId }: StopwatchControlSectionPr
           <div className="grid grid-cols-2 gap-4 text-sm">
             <Card>
               <CardContent className="p-3">
-                <div className="font-medium text-foreground mb-1">시작 시간</div>
-                <div className="font-mono text-muted-foreground">
+                <div className="text-xs sm:text-sm font-medium text-foreground mb-1">시작 시간</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">
                   {stopwatch?.startedAt ? new Date(stopwatch.startedAt).toLocaleTimeString() : "---"}
                 </div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-3">
-                <div className="font-medium text-foreground mb-1">종료 시간</div>
-                <div className="font-mono text-muted-foreground">
+                <div className="text-xs sm:text-sm font-medium text-foreground mb-1">종료 시간</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">
                   {stopwatch?.stoppedAt ? new Date(stopwatch.stoppedAt).toLocaleTimeString() : "---"}
                 </div>
               </CardContent>

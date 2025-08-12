@@ -7,6 +7,7 @@ import type { Division } from "@/entities/division";
 import { useCompetitionService } from "@/features/competition";
 import { useDivisionService } from "@/features/division";
 import { useParticipantService } from "@/features/participant";
+import { PageContainer } from "@/widgets/page-container";
 import { RecordTable } from "./record-table";
 
 export const DashboardPage = () => {
@@ -124,8 +125,8 @@ export const DashboardPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-3 sm:p-4">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-background">
+      <PageContainer maxWidth="lg" padding="md">
         <div className="mb-6">
           <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2">🏆 경기 결과</h1>
           <div className="flex items-center justify-between">
@@ -246,7 +247,7 @@ export const DashboardPage = () => {
             </CardContent>
           </Card>
         )}
-      </div>
+      </PageContainer>
     </div>
   );
 };

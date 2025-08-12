@@ -205,15 +205,15 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Settings className="h-5 w-5" />
+          <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
+            <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
             <span>계수기 제어</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center space-x-2 text-destructive">
             <AlertCircle className="h-4 w-4" />
-            <p>계수기 서비스를 사용할 수 없습니다.</p>
+            <p className="text-sm sm:text-base">계수기 서비스를 사용할 수 없습니다.</p>
           </div>
         </CardContent>
       </Card>
@@ -224,15 +224,15 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
     <>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Settings className="h-5 w-5" />
+          <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
+            <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
             <span>계수기 제어</span>
           </CardTitle>
         </CardHeader>
       <CardContent className="space-y-4">
         {/* 연결 상태 */}
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-foreground flex items-center space-x-2">
+          <span className="text-xs sm:text-sm font-medium text-foreground flex items-center space-x-2">
             <Wifi className="h-4 w-4" />
             <span>연결 상태</span>
           </span>
@@ -254,16 +254,16 @@ export const CounterControlSection = ({ counterId }: CounterControlSectionProps)
         {/* 계수기 정보 */}
         {counter && (
           <div className="border-t pt-4">
-            <h3 className="text-sm font-medium text-foreground mb-2 flex items-center space-x-2">
+            <h3 className="text-xs sm:text-sm font-medium text-foreground mb-2 flex items-center space-x-2">
               <Info className="h-4 w-4" />
               <span>계수기 정보</span>
             </h3>
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">ID: <span className="text-foreground">{counter.id}</span></p>
-              <p className="text-sm text-muted-foreground">이름: <span className="text-foreground">{counter.name || "이름 없음"}</span></p>
+              <p className="text-xs sm:text-sm text-muted-foreground">ID: <span className="text-foreground">{counter.id}</span></p>
+              <p className="text-xs sm:text-sm text-muted-foreground">이름: <span className="text-foreground">{counter.name || "이름 없음"}</span></p>
               {counter.divisionId && (
                 <>
-                  <p className="text-sm text-muted-foreground">부문 ID: <span className="text-foreground">{counter.divisionId}</span></p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">부문 ID: <span className="text-foreground">{counter.divisionId}</span></p>
                   {division && (
                     <p className="text-sm text-muted-foreground">부문명: <span className="text-foreground">{division.name}</span></p>
                   )}

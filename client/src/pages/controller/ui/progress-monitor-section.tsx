@@ -86,15 +86,15 @@ export const ProgressMonitorSection = ({ counterId }: ProgressMonitorSectionProp
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Activity className="h-5 w-5" />
+          <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
+            <Activity className="h-4 w-4 sm:h-5 sm:w-5" />
             <span>진행 상황 모니터</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center space-x-2 text-destructive">
             <AlertCircle className="h-4 w-4" />
-            <p>서비스를 사용할 수 없습니다.</p>
+            <p className="text-sm sm:text-base">서비스를 사용할 수 없습니다.</p>
           </div>
         </CardContent>
       </Card>
@@ -104,8 +104,8 @@ export const ProgressMonitorSection = ({ counterId }: ProgressMonitorSectionProp
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <Activity className="h-5 w-5" />
+        <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
+          <Activity className="h-4 w-4 sm:h-5 sm:w-5" />
           <span>진행 상황 모니터</span>
         </CardTitle>
       </CardHeader>
