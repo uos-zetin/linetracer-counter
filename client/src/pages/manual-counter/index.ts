@@ -1,1 +1,1 @@
-export { ManualCounter } from "./ui";
+export { ManualCounter } from "./ui/manual-counter-page";

@@ -1,5 +1,20 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import { Plus, List, Edit, Trash2, Clock } from "lucide-react";
+import { formatDate } from "@/shared/lib";
+import {
+  Button,
+  Card,
+  CardContent,
+  Badge,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui";
 import type { Competition } from "@/entities/competition";
 import type { Division, DivisionForm } from "@/entities/division";
 import { useCompetitionService } from "@/features/competition";
@@ -9,12 +24,14 @@ import {
   AdminDivisionEditModal,
   AdminDivisionDeleteModal,
 } from "@/features/division";
+import { useErrorHandlingService } from "@/features/error-handling";
 
 export function DivisionManagement() {
   const [searchParams, setSearchParams] = useSearchParams();
   const divisionService = useDivisionService();
   const competitionService = useCompetitionService();
   const competitions = competitionService.use.competitions();
+  const errorHandler = useErrorHandlingService();
 
   const selectedCompetitionId = searchParams.get("competitionId") || "";
   const divisions = divisionService.use.divisionsByCompetition(selectedCompetitionId);
@@ -27,18 +44,18 @@ export function DivisionManagement() {
   // 초기 데이터 로드
   useEffect(() => {
     competitionService.load.all().catch((error: unknown) => {
-      console.error("Failed to load competitions:", error);
+      errorHandler.handle(error as Error, "대회 목록 로드 중 오류가 발생했습니다");
     });
-  }, [divisionService, competitionService]);
+  }, [divisionService, competitionService, errorHandler]);
 
   // 선택된 대회의 부문들 로드
   useEffect(() => {
     if (selectedCompetitionId) {
       divisionService.load.byCompetition(selectedCompetitionId).catch((error: unknown) => {
-        console.error("Failed to load divisions:", error);
+        errorHandler.handle(error as Error, "부문 목록 로드 중 오류가 발생했습니다");
       });
     }
-  }, [divisionService, selectedCompetitionId]);
+  }, [divisionService, selectedCompetitionId, errorHandler]);
 
   // 대회 이름 찾기 헬퍼 함수
   const getCompetitionName = (competitionId: string): string => {
@@ -46,17 +63,17 @@ export function DivisionManagement() {
     return competition?.name || "알 수 없는 대회";
   };
 
-  // 상태별 스타일 및 텍스트
-  const getStatusInfo = (status: Division["status"]) => {
+  // 상태별 배지 variants
+  const getStatusVariant = (status: Division["status"]) => {
     switch (status) {
       case "ready":
-        return { text: "준비", className: "bg-gray-100 text-gray-800" };
+        return { text: "준비", variant: "secondary" as const };
       case "ongoing":
-        return { text: "진행중", className: "bg-green-100 text-green-800" };
+        return { text: "진행중", variant: "default" as const };
       case "closed":
-        return { text: "종료", className: "bg-red-100 text-red-800" };
+        return { text: "종료", variant: "destructive" as const };
       default:
-        return { text: "알 수 없음", className: "bg-gray-100 text-gray-800" };
+        return { text: "알 수 없음", variant: "outline" as const };
     }
   };
 
@@ -88,8 +105,7 @@ export function DivisionManagement() {
       await divisionService.admin.create(data);
       setIsCreateModalOpen(false);
     } catch (error) {
-      console.error("Failed to create division:", error);
-      // TODO: 에러 처리 UI
+      errorHandler.handle(error as Error, "부문 생성 중 오류가 발생했습니다");
     }
   };
 
@@ -101,8 +117,7 @@ export function DivisionManagement() {
       setIsEditModalOpen(false);
       setSelectedDivision(null);
     } catch (error) {
-      console.error("Failed to update division:", error);
-      // TODO: 에러 처리 UI
+      errorHandler.handle(error as Error, "부문 수정 중 오류가 발생했습니다");
     }
   };
 
@@ -114,8 +129,7 @@ export function DivisionManagement() {
       setIsDeleteModalOpen(false);
       setSelectedDivision(null);
     } catch (error) {
-      console.error("Failed to delete division:", error);
-      // TODO: 에러 처리 UI
+      errorHandler.handle(error as Error, "부문 삭제 중 오류가 발생했습니다");
     }
   };
 
@@ -123,132 +137,114 @@ export function DivisionManagement() {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">부문 관리</h1>
-            <p className="mt-2 text-gray-600">부문을 생성, 수정, 삭제할 수 있습니다</p>
+            <h1 className="text-2xl font-bold text-foreground">부문 관리</h1>
+            <p className="mt-2 text-muted-foreground">부문을 생성, 수정, 삭제할 수 있습니다</p>
           </div>
-          <button
-            onClick={handleCreate}
-            disabled={!selectedCompetitionId}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+          <Button onClick={handleCreate} disabled={!selectedCompetitionId} className="self-start sm:self-auto">
+            <Plus className="w-4 h-4" />
             부문 생성
-          </button>
+          </Button>
         </div>
 
         {/* 대회 선택 드롭다운 */}
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <label htmlFor="competition-select" className="block text-sm font-medium text-gray-700 mb-2">
-            대회 선택
-          </label>
-          <select
-            id="competition-select"
-            value={selectedCompetitionId}
-            onChange={(e) => handleCompetitionSelect(e.target.value)}
-            className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">대회를 선택하세요</option>
-            {competitions.map((competition: Competition) => (
-              <option key={competition.id} value={competition.id}>
-                {competition.name}
-              </option>
-            ))}
-          </select>
-          {selectedCompetitionId && (
-            <p className="mt-2 text-sm text-blue-600">선택된 대회: {getCompetitionName(selectedCompetitionId)}</p>
-          )}
-        </div>
+        <Card>
+          <CardContent className="px-6">
+            <div className="space-y-2">
+              <span className="block text-sm font-medium text-foreground">대회 선택</span>
+              <Select value={selectedCompetitionId} onValueChange={handleCompetitionSelect}>
+                <SelectTrigger className="w-full max-w-md">
+                  <SelectValue placeholder="대회를 선택하세요" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>대회 목록</SelectLabel>
+                    {competitions.map((competition: Competition) => (
+                      <SelectItem key={competition.id} value={competition.id}>
+                        {competition.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            {selectedCompetitionId && (
+              <p className="mt-2 text-sm text-primary">선택된 대회: {getCompetitionName(selectedCompetitionId)}</p>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Division Cards */}
       <div className="space-y-4">
         {!selectedCompetitionId ? (
-          <div className="text-center py-12">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">대회를 선택해주세요</h3>
-            <p className="mt-1 text-sm text-gray-500">먼저 대회를 선택한 후 부문을 관리할 수 있습니다.</p>
-          </div>
+          <Card>
+            <CardContent className="text-center py-8">
+              <List className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">대회를 선택해주세요</h3>
+              <p className="text-muted-foreground">먼저 대회를 선택한 후 부문을 관리할 수 있습니다.</p>
+            </CardContent>
+          </Card>
         ) : divisions.length === 0 ? (
-          <div className="text-center py-12">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14-7H5m14 12H5" />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">부문이 없습니다</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              선택된 대회에 아직 부문이 없습니다. 새로운 부문을 생성해보세요.
-            </p>
-          </div>
+          <Card>
+            <CardContent className="text-center py-8">
+              <List className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">부문이 없습니다</h3>
+              <p className="text-muted-foreground mb-4">
+                선택된 대회에 아직 부문이 없습니다. 새로운 부문을 생성해보세요.
+              </p>
+              <Button onClick={handleCreate} variant="outline">
+                <Plus className="w-4 h-4 mr-2" />첫 번째 부문 생성하기
+              </Button>
+            </CardContent>
+          </Card>
         ) : (
           divisions.map((division: Division) => {
-            const statusInfo = getStatusInfo(division.status);
+            const statusInfo = getStatusVariant(division.status);
             return (
-              <div
-                key={division.id}
-                className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
-              >
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">{division.name}</h3>
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusInfo.className}`}
+              <Card key={division.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="px-6">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="text-lg font-semibold text-foreground">{division.name}</h3>
+                        <Badge variant={statusInfo.variant} className="text-xs">
+                          {statusInfo.text}
+                        </Badge>
+                      </div>
+                      <p className="text-muted-foreground mb-2">{division.description}</p>
+                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                        <div className="flex items-center">
+                          <Clock className="w-4 h-4 mr-1" />
+                          <span>{division.timeLimit}분</span>
+                        </div>
+                        <span>생성일: {formatDate(division.createdAt)}</span>
+                      </div>
+                    </div>
+                    <div className="flex space-x-2 ml-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(division)}
+                        className="h-9 w-9 p-0"
+                        title="수정"
                       >
-                        {statusInfo.text}
-                      </span>
-                    </div>
-                    <p className="text-gray-600 mb-2">{division.description}</p>
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>
-                        <strong>제한 시간:</strong> {division.timeLimit}분
-                      </span>
-                      <span>
-                        <strong>생성일:</strong> {new Date(division.createdAt).toLocaleDateString("ko-KR")}
-                      </span>
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(division)}
+                        className="h-9 w-9 p-0 text-destructive hover:text-destructive"
+                        title="삭제"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex space-x-2 ml-4">
-                    <button
-                      onClick={() => handleEdit(division)}
-                      className="text-blue-600 hover:text-blue-800 p-2 rounded-md hover:bg-blue-50"
-                      title="수정"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => handleDelete(division)}
-                      className="text-red-600 hover:text-red-800 p-2 rounded-md hover:bg-red-50"
-                      title="삭제"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             );
           })
         )}

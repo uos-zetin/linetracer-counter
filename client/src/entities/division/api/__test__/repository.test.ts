@@ -199,7 +199,7 @@ describe("DivisionFetcherRepository", () => {
         body: {
           name: newDivision.name,
           description: newDivision.description,
-          timeLimit: newDivision.timeLimit,
+          timeLimit: newDivision.timeLimit * 60 * 1000, // 분을 밀리초로 변환
         },
       });
       expect(result).toEqual({
@@ -251,7 +251,7 @@ describe("DivisionFetcherRepository", () => {
         body: {
           name: updatedDivision.name,
           description: updatedDivision.description,
-          timeLimit: updatedDivision.timeLimit,
+          timeLimit: updatedDivision.timeLimit * 60 * 1000, // 분을 밀리초로 변환
         },
       });
       expect(result).toEqual(updatedDivision);
@@ -284,7 +284,7 @@ describe("DivisionFetcherRepository", () => {
         body: {
           name: updatedDivision.name,
           description: updatedDivision.description,
-          timeLimit: updatedDivision.timeLimit,
+          timeLimit: updatedDivision.timeLimit * 60 * 1000, // 분을 밀리초로 변환
         },
       });
       expect(result).toBeNull();

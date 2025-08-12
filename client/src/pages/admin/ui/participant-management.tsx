@@ -1,9 +1,25 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import { Users, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight } from "lucide-react";
+import { formatDate } from "@/shared/lib";
+import {
+  Button,
+  Card,
+  CardContent,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectLabel,
+  SelectGroup,
+  Badge,
+} from "@/shared/ui";
 import type { Competition } from "@/entities/competition";
 import type { Participant, ParticipantForm } from "@/entities/participant";
 import { useCompetitionService } from "@/features/competition";
 import { useDivisionService } from "@/features/division";
+import { useErrorHandlingService } from "@/features/error-handling";
 import {
   useParticipantService,
   AdminParticipantCreateModal,
@@ -24,6 +40,7 @@ export function ParticipantManagement() {
   const selectedCompetitionId = searchParams.get("competitionId") || "";
   const divisions = divisionService.use.divisionsByCompetition(selectedCompetitionId);
   const allParticipants = participantService.use.allParticipants();
+  const errorHandler = useErrorHandlingService();
 
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState<Record<string, number>>({});
@@ -37,28 +54,28 @@ export function ParticipantManagement() {
   // 초기 데이터 로드
   useEffect(() => {
     competitionService.load.all().catch((error: unknown) => {
-      console.error("Failed to load competitions:", error);
+      errorHandler.handle(error as Error, "대회 목록 로드 중 오류가 발생했습니다");
     });
-  }, [competitionService]);
+  }, [competitionService, errorHandler]);
 
   // 선택된 대회의 부문들 로드
   useEffect(() => {
     if (selectedCompetitionId) {
       divisionService.load.byCompetition(selectedCompetitionId).catch((error: unknown) => {
-        console.error("Failed to load divisions:", error);
+        errorHandler.handle(error as Error, "부문 목록 로드 중 오류가 발생했습니다");
       });
     }
-  }, [divisionService, selectedCompetitionId]);
+  }, [divisionService, selectedCompetitionId, errorHandler]);
 
   // 모든 부문의 참가자들을 한 번에 로드 - divisions가 로드된 후 실행
   useEffect(() => {
     if (divisions.length > 0) {
       const divisionIds = divisions.map((division) => division.id);
       participantService.load.byDivisions(divisionIds).catch((error: unknown) => {
-        console.error("Failed to load participants:", error);
+        errorHandler.handle(error as Error, "참가자 목록 로드 중 오류가 발생했습니다");
       });
     }
-  }, [participantService, divisions.length]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [participantService, divisions.length, errorHandler]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 대회 이름 찾기 헬퍼 함수
   const getCompetitionName = (competitionId: string): string => {
@@ -68,7 +85,9 @@ export function ParticipantManagement() {
 
   // 부문별 참가자 그룹화
   const getParticipantsByDivision = (divisionId: string): Participant[] => {
-    return allParticipants.filter((p: Participant) => p.divisionId === divisionId).sort((a: Participant, b: Participant) => a.orderRaw - b.orderRaw);
+    return allParticipants
+      .filter((p: Participant) => p.divisionId === divisionId)
+      .sort((a: Participant, b: Participant) => a.orderRaw - b.orderRaw);
   };
 
   // 페이지네이션 헬퍼 함수
@@ -122,8 +141,7 @@ export function ParticipantManagement() {
       await participantService.admin.create(data.divisionId, data);
       setIsCreateModalOpen(false);
     } catch (error) {
-      console.error("Failed to create participant:", error);
-      // TODO: 에러 처리 UI
+      errorHandler.handle(error as Error, "참가자 생성 중 오류가 발생했습니다");
     }
   };
 
@@ -135,8 +153,7 @@ export function ParticipantManagement() {
       setIsEditModalOpen(false);
       setSelectedParticipant(null);
     } catch (error) {
-      console.error("Failed to update participant:", error);
-      // TODO: 에러 처리 UI
+      errorHandler.handle(error as Error, "참가자 수정 중 오류가 발생했습니다");
     }
   };
 
@@ -149,8 +166,7 @@ export function ParticipantManagement() {
       setIsDeleteModalOpen(false);
       setSelectedParticipant(null);
     } catch (error) {
-      console.error("Failed to delete participant:", error);
-      // TODO: 에러 처리 UI
+      errorHandler.handle(error as Error, "참가자 삭제 중 오류가 발생했습니다");
     }
   };
 
@@ -158,70 +174,63 @@ export function ParticipantManagement() {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">참가자 관리</h1>
-            <p className="mt-2 text-gray-600">참가자를 생성, 수정, 삭제할 수 있습니다</p>
+            <h1 className="text-2xl font-bold text-foreground">참가자 관리</h1>
+            <p className="mt-2 text-muted-foreground">참가자를 생성, 수정, 삭제할 수 있습니다</p>
           </div>
-          <button
-            onClick={handleCreate}
-            disabled={!selectedCompetitionId}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+          <Button onClick={handleCreate} disabled={!selectedCompetitionId} className="self-start sm:self-auto">
+            <UserPlus className="w-4 h-4" />
             참가자 추가
-          </button>
+          </Button>
         </div>
 
         {/* 대회 선택 드롭다운 */}
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <label htmlFor="competition-select" className="block text-sm font-medium text-gray-700 mb-2">
-            대회 선택
-          </label>
-          <select
-            id="competition-select"
-            value={selectedCompetitionId}
-            onChange={(e) => handleCompetitionSelect(e.target.value)}
-            className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">대회를 선택하세요</option>
-            {competitions.map((competition: Competition) => (
-              <option key={competition.id} value={competition.id}>
-                {competition.name}
-              </option>
-            ))}
-          </select>
-          {selectedCompetitionId && (
-            <p className="mt-2 text-sm text-blue-600">선택된 대회: {getCompetitionName(selectedCompetitionId)}</p>
-          )}
-        </div>
+        <Card>
+          <CardContent className="px-6">
+            <div className="space-y-2">
+              <span className="block text-sm font-medium text-foreground">대회 선택</span>
+              <Select value={selectedCompetitionId} onValueChange={handleCompetitionSelect}>
+                <SelectTrigger className="w-full max-w-md">
+                  <SelectValue placeholder="대회를 선택하세요" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>대회 목록</SelectLabel>
+                    {competitions.map((competition: Competition) => (
+                      <SelectItem key={competition.id} value={competition.id}>
+                        {competition.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            {selectedCompetitionId && (
+              <p className="mt-2 text-sm text-primary">선택된 대회: {getCompetitionName(selectedCompetitionId)}</p>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* 참가자 목록 (부문별) */}
       <div className="space-y-6">
         {!selectedCompetitionId ? (
-          <div className="text-center py-12">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-              />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">대회를 선택해주세요</h3>
-            <p className="mt-1 text-sm text-gray-500">먼저 대회를 선택한 후 참가자를 관리할 수 있습니다.</p>
-          </div>
+          <Card>
+            <CardContent className="text-center py-8">
+              <Users className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">대회를 선택해주세요</h3>
+              <p className="text-muted-foreground">먼저 대회를 선택한 후 참가자를 관리할 수 있습니다.</p>
+            </CardContent>
+          </Card>
         ) : divisions.length === 0 ? (
-          <div className="text-center py-12">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14-7H5m14 12H5" />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">부문이 없습니다</h3>
-            <p className="mt-1 text-sm text-gray-500">선택된 대회에 아직 부문이 없습니다. 먼저 부문을 생성해주세요.</p>
-          </div>
+          <Card>
+            <CardContent className="text-center py-8">
+              <Users className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">부문이 없습니다</h3>
+              <p className="text-muted-foreground">선택된 대회에 아직 부문이 없습니다. 먼저 부문을 생성해주세요.</p>
+            </CardContent>
+          </Card>
         ) : (
           divisions.map((division) => {
             const divisionParticipants = getParticipantsByDivision(division.id);
@@ -230,130 +239,119 @@ export function ParticipantManagement() {
             const currentPageNum = getCurrentPage(division.id);
 
             return (
-              <div key={division.id} className="bg-white border border-gray-200 rounded-lg">
+              <Card key={division.id}>
                 {/* 부문 헤더 */}
-                <div className="px-6 py-4 border-b border-gray-200">
-                  <div className="flex justify-between items-center">
+                <div className="px-6 border-b border-border">
+                  <div className="flex pb-4 justify-between items-center">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{division.name}</h3>
-                      <p className="text-sm text-gray-600">{division.description}</p>
+                      <h3 className="text-lg font-semibold text-foreground">{division.name}</h3>
+                      <p className="text-sm text-muted-foreground">{division.description}</p>
                     </div>
-                    <div className="text-sm text-gray-500">총 {divisionParticipants.length}명</div>
+                    <Badge variant="secondary" className="text-xs">
+                      총 {divisionParticipants.length}명
+                    </Badge>
                   </div>
                 </div>
 
                 {/* 참가자 목록 */}
-                <div className="px-6 py-4">
+                <div className="px-6">
                   {divisionParticipants.length === 0 ? (
                     <div className="text-center py-8">
-                      <svg
-                        className="mx-auto h-8 w-8 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                      </svg>
-                      <p className="mt-2 text-sm text-gray-500">이 부문에 참가자가 없습니다.</p>
+                      <Users className="mx-auto h-8 w-8 text-muted-foreground/50 mb-2" />
+                      <p className="text-sm text-muted-foreground">이 부문에 참가자가 없습니다.</p>
                     </div>
                   ) : (
                     <>
                       {/* 참가자 카드들 */}
                       <div className="space-y-3">
                         {paginatedParticipants.map((participant) => (
-                          <div
-                            key={participant.id}
-                            className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                          >
-                            <div className="flex justify-between items-start">
-                              <div className="flex-1">
-                                <div className="flex items-center space-x-3 mb-2">
-                                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-800 text-sm font-medium">
-                                    {participant.orderRaw}
-                                  </span>
-                                  <h4 className="text-lg font-semibold text-gray-900">{participant.name}</h4>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                                  <div>
-                                    <span className="font-medium">팀명:</span> {participant.teamName}
+                          <Card key={participant.id} className="hover:shadow-md transition-shadow">
+                            <CardContent className="px-6">
+                              <div className="flex justify-between items-start">
+                                <div className="flex-1">
+                                  <div className="flex items-center space-x-3 mb-2">
+                                    <Badge
+                                      variant="default"
+                                      className="w-8 h-8 rounded-full flex items-center justify-center p-0 text-sm font-medium"
+                                    >
+                                      {participant.orderRaw}
+                                    </Badge>
+                                    <h4 className="text-lg font-semibold text-foreground">{participant.name}</h4>
                                   </div>
-                                  <div>
-                                    <span className="font-medium">로봇명:</span> {participant.robotName}
+                                  <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+                                    <div>
+                                      <span className="font-medium text-foreground">팀명:</span> {participant.teamName}
+                                    </div>
+                                    <div>
+                                      <span className="font-medium text-foreground">로봇명:</span>{" "}
+                                      {participant.robotName}
+                                    </div>
                                   </div>
+                                  {participant.comment && (
+                                    <p className="mt-2 text-sm text-muted-foreground">{participant.comment}</p>
+                                  )}
+                                  <p className="mt-1 text-xs text-muted-foreground">
+                                    등록일: {formatDate(participant.createdAt)}
+                                  </p>
                                 </div>
-                                {participant.comment && (
-                                  <p className="mt-2 text-sm text-gray-500">{participant.comment}</p>
-                                )}
-                                <p className="mt-1 text-xs text-gray-400">
-                                  등록일: {new Date(participant.createdAt).toLocaleDateString("ko-KR")}
-                                </p>
+                                <div className="flex space-x-2 ml-4">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleEdit(participant)}
+                                    className="h-9 w-9 p-0"
+                                    title="수정"
+                                  >
+                                    <Edit className="w-4 h-4" />
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleDelete(participant)}
+                                    className="h-9 w-9 p-0 text-destructive hover:text-destructive"
+                                    title="삭제"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
                               </div>
-                              <div className="flex space-x-2 ml-4">
-                                <button
-                                  onClick={() => handleEdit(participant)}
-                                  className="text-blue-600 hover:text-blue-800 p-2 rounded-md hover:bg-blue-50"
-                                  title="수정"
-                                >
-                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                    />
-                                  </svg>
-                                </button>
-                                <button
-                                  onClick={() => handleDelete(participant)}
-                                  className="text-red-600 hover:text-red-800 p-2 rounded-md hover:bg-red-50"
-                                  title="삭제"
-                                >
-                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                    />
-                                  </svg>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
+                            </CardContent>
+                          </Card>
                         ))}
                       </div>
 
                       {/* 페이지네이션 */}
                       {totalPages > 1 && (
                         <div className="flex justify-center items-center space-x-4 mt-6">
-                          <button
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => setDivisionPage(division.id, Math.max(1, currentPageNum - 1))}
                             disabled={currentPageNum === 1}
-                            className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center"
                           >
+                            <ChevronLeft className="w-4 h-4 mr-1" />
                             이전
-                          </button>
-                          <span className="text-sm text-gray-700">
+                          </Button>
+                          <span className="text-sm text-foreground">
                             {currentPageNum} / {totalPages} 페이지
                           </span>
-                          <button
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => setDivisionPage(division.id, Math.min(totalPages, currentPageNum + 1))}
                             disabled={currentPageNum === totalPages}
-                            className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center"
                           >
                             다음
-                          </button>
+                            <ChevronRight className="w-4 h-4 ml-1" />
+                          </Button>
                         </div>
                       )}
                     </>
                   )}
                 </div>
-              </div>
+              </Card>
             );
           })
         )}

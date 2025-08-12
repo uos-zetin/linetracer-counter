@@ -1,10 +1,12 @@
 import type { User, UserRepository } from "@/entities/user";
-import { parseSessionCredential, validateLoginInput, validateRegisterInput } from "../lib/validation";
+import type { AuthRepository } from "../api/types";
 import { useAuthStore } from "./store.zustand";
-import type { AuthState, AuthService } from "./types";
+import type { AuthService, AuthState, LoginForm } from "./types";
+import { parseSessionCredential } from "./validation";
 
 interface AuthServiceProps {
   userRepository: UserRepository;
+  authRepository: AuthRepository;
 }
 
 /**
@@ -15,7 +17,7 @@ interface SessionCredential {
   expiresAt?: number;
 }
 
-export const createAuthService = ({ userRepository }: AuthServiceProps): AuthService => {
+export const createAuthService = ({ userRepository, authRepository }: AuthServiceProps): AuthService => {
   const storageKey = "user_session";
   const SESSION_EXPIRY = 24 * 60 * 60 * 1000; // 24시간 후 만료
 
@@ -72,18 +74,15 @@ export const createAuthService = ({ userRepository }: AuthServiceProps): AuthSer
   };
 
   // Service 메서드들
-  const login = async (userName: string, password: string): Promise<User> => {
+  const login = async (credentials: LoginForm): Promise<User> => {
     try {
-      // 입력 데이터 검증
-      const validatedInput = validateLoginInput({ userName, password });
+      const sessionKey = await authRepository.login(credentials);
 
-      const loginResult = await userRepository.loginUser(validatedInput);
-
-      if (!loginResult) {
+      if (!sessionKey) {
         throw new Error("로그인에 실패했습니다.");
       }
 
-      saveSession(loginResult);
+      saveSession(sessionKey);
 
       // 로그인 성공 시 사용자 정보 조회
       const user = await userRepository.getCurrentUser();
@@ -93,8 +92,6 @@ export const createAuthService = ({ userRepository }: AuthServiceProps): AuthSer
 
       // 상태 업데이트
       useAuthStore.getState().setAuth(user, true);
-
-      // 세션 저장
 
       return user;
     } catch (error) {
@@ -106,28 +103,12 @@ export const createAuthService = ({ userRepository }: AuthServiceProps): AuthSer
 
   const logout = async (): Promise<void> => {
     try {
-      await userRepository.logoutUser();
+      await authRepository.logout();
     } catch (error) {
       console.warn("로그아웃 API 호출 실패:", error);
     } finally {
       useAuthStore.getState().clearAuth();
       clearSession();
-    }
-  };
-
-  const register = async (name: string, userName: string, password: string): Promise<User> => {
-    try {
-      // 입력 데이터 검증
-      const validatedInput = validateRegisterInput({ name, userName, password });
-
-      await userRepository.registerUser(validatedInput);
-
-      // 등록 후 자동 로그인
-      return await login(validatedInput.userName, validatedInput.password);
-    } catch (error) {
-      clearSession();
-      useAuthStore.getState().clearAuth();
-      throw error;
     }
   };
 
@@ -173,19 +154,26 @@ export const createAuthService = ({ userRepository }: AuthServiceProps): AuthSer
   };
 
   const useAuth = (): AuthState => {
-    const user = useAuthStore((state) => state.user);
-    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-
-    return { user, isAuthenticated };
+    return useAuthStore((state) => state.authState);
   };
 
   return {
-    login,
-    logout,
-    register,
-    restoreSession,
-    useAuth,
-    getSessionKey,
-    updateUser,
+    // Authentication functions (인증 관리)
+    auth: {
+      login,
+      logout,
+      restoreSession,
+    },
+
+    // Session functions (세션 관리)
+    session: {
+      getSessionKey,
+      updateUser,
+    },
+
+    // Subscription hooks (상태 구독)
+    use: {
+      auth: useAuth,
+    },
   };
 };

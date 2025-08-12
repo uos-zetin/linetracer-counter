@@ -1,4 +1,10 @@
-import { useZustandUserStore, type UserRegisterForm, type UserRepository, type UserRole, type User } from "@/entities/user";
+import {
+  useZustandUserStore,
+  type UserRepository,
+  type UserRole,
+  type User,
+  type UserRegisterForm,
+} from "@/entities/user";
 import type { UserService } from "./types";
 
 interface UserServiceProps {
@@ -19,7 +25,7 @@ export const createUserService = ({ userRepository }: UserServiceProps): UserSer
 
   const createUser = async (data: UserRegisterForm): Promise<User> => {
     try {
-      const newUser = await userRepository.registerUser(data);
+      const newUser = await userRepository.createUser(data);
       const store = useZustandUserStore.getState();
       store.add(newUser);
       return newUser;

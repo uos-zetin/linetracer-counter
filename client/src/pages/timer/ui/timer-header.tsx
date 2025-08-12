@@ -1,3 +1,4 @@
+import { ImagePlus } from "lucide-react";
 import { useProgressService } from "@/features/progress";
 import { useSingleImageUpload } from "../lib/use-image-upload";
 
@@ -11,11 +12,20 @@ export function TimerPageHeader() {
       className="
         sticky top-0 z-20 w-full
         flex items-center justify-center text-center
-        bg-gray-200
+        bg-muted
+        shadow-lg
         group
         cursor-pointer
         "
       onClick={() => inputRef.current?.click()}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          inputRef.current?.click();
+        }
+      }}
+      tabIndex={0}
+      role="button"
     >
       {/* 기본 텍스트 또는 이미지 */}
       {image ? (
@@ -34,10 +44,10 @@ export function TimerPageHeader() {
         <h1
           className="
             w-full
-            bg-uos-primary-blue text-white
-            text-[5vw] py-[1vw]
+            bg-primary text-primary-foreground
+            text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-9xl py-4 sm:py-6 md:py-8 2xl:py-16
             font-bold text-center tracking-tight
-            aspect-banner
+            aspect-banner flex items-center justify-center
           "
         >
           {(competition?.name || "No Competition").toUpperCase()}
@@ -49,25 +59,12 @@ export function TimerPageHeader() {
         className="
           absolute inset-0 bg-black/40 backdrop-blur-sm
           opacity-0 group-hover:opacity-100 transition-opacity duration-200
-          flex flex-col items-center justify-center gap-[0.5vw]
+          flex flex-col items-center justify-center gap-2 sm:gap-3 md:gap-4
           pointer-events-none
         "
       >
-        <svg
-          data-slot="icon"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-          className="w-[3vw] h-[3vw] text-white"
-        >
-          <path
-            clipRule="evenodd"
-            fillRule="evenodd"
-            d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-          />
-        </svg>
-        <span className="text-white text-[1.2vw] font-medium">{image ? "헤더 이미지 변경" : "헤더 이미지 추가"}</span>
+        <ImagePlus className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 2xl:w-20 2xl:h-20 text-white" />
+        <span className="text-white text-sm sm:text-base md:text-lg lg:text-xl 2xl:text-3xl font-medium">{image ? "헤더 이미지 변경" : "헤더 이미지 추가"}</span>
       </div>
 
       {/* 숨겨진 파일 입력 */}

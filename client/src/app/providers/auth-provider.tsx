@@ -1,14 +1,13 @@
 import { useEffect, useMemo } from "react";
 import { FetchApiFetcher, AuthenticatedFetcher } from "@/shared/api";
 import { UserFetcherRepository } from "@/entities/user";
-import { createAuthService, authServiceContext, AuthServiceSessionProvider, type AuthService } from "@/features/auth";
-// import { UserFetcherRepository } from "@/entities/user";
+import { createAuthService, authServiceContext, AuthServiceSessionProvider, AuthFetcherRepository, type AuthService } from "@/features/auth";
 import { FetcherProvider } from "./fetcher-provider";
 
 const AuthProviderInner = ({ authService, children }: { authService: AuthService; children: React.ReactNode }) => {
   // 세션 복원
   useEffect(() => {
-    authService.restoreSession().catch((error) => {
+    authService.auth.restoreSession().catch((error) => {
       console.warn("세션 복원 실패:", error);
     });
   }, [authService]);
@@ -23,12 +22,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { publicFetcher, authenticatedFetcher, authService } = useMemo(() => {
     const publicFetcher = new FetchApiFetcher(fetcherBaseUrl);
 
-    // 2. UserRepository 생성
+    // 2. Repositories 생성
     const authenticatedFetcher = new AuthenticatedFetcher(publicFetcher);
-    const userRepository = new UserFetcherRepository(publicFetcher, authenticatedFetcher);
+    const userRepository = new UserFetcherRepository(authenticatedFetcher);
+    const authRepository = new AuthFetcherRepository(publicFetcher, authenticatedFetcher);
 
     // 3. AuthService 생성
-    const authService: AuthService = createAuthService({ userRepository });
+    const authService: AuthService = createAuthService({ userRepository, authRepository });
 
     // 4. SessionProvider 어댑터 생성 및 주입
     const sessionProvider = new AuthServiceSessionProvider(authService);

@@ -1,1 +1,1 @@
-export { ControllerPage } from "./ui";
+export { ControllerPage } from "./ui/controller-page";

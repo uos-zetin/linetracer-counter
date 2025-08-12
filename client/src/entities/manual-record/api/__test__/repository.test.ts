@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Fetcher } from "@/shared/api";
-import { parseManualRecordDto } from "../../lib/parse-dto";
+import { parseManualRecordDto, parseManualRecordForm } from "../../lib/parse-dto";
 import type { ManualRecord } from "../../model/types";
 import { ManualRecordFetcherRepository } from "../repository";
 import type { ManualRecordDto } from "../types";
@@ -8,6 +8,7 @@ import type { ManualRecordDto } from "../types";
 // parseManualRecordDto 함수 모킹
 vi.mock("../../lib/parse-dto", () => ({
   parseManualRecordDto: vi.fn(),
+  parseManualRecordForm: vi.fn(),
 }));
 
 describe("ManualRecordFetcherRepository", () => {
@@ -58,6 +59,12 @@ describe("ManualRecordFetcherRepository", () => {
 
     // parseManualRecordDto 모킹 설정
     vi.mocked(parseManualRecordDto).mockReturnValue(mockManualRecord);
+    
+    // parseManualRecordForm 모킹 설정
+    vi.mocked(parseManualRecordForm).mockImplementation((form) => ({
+      value: form.value,
+      recorderName: form.recorderName,
+    }));
   });
 
   describe("getAllManualRecords", () => {

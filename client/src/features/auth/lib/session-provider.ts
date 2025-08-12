@@ -12,6 +12,6 @@ export class AuthServiceSessionProvider implements SessionProvider {
   }
 
   getSessionKey(): string | null {
-    return this.authService.getSessionKey();
+    return this.authService.session.getSessionKey();
   }
 }

@@ -1,32 +1,20 @@
 // UI exports
-export { LoginForm } from "./ui/login-form";
 export { AuthDebugWrapper } from "./ui/auth-debug";
 
-// 검증 관련 exports (UI 폼 + API 모델 통합)
-export {
-  validateLoginForm,
-  validateRegisterForm,
-  validateUserName,
-  validatePassword,
-  validateName,
-  validateConfirmPassword,
-  parseLoginForm,
-  parseRegisterForm,
-  loginFormSchema,
-  registerFormSchema,
-  userNameSchema,
-  passwordSchema,
-  nameSchema,
-  SessionCredentialSchema,
-  LoginInputSchema,
-  RegisterInputSchema,
-  parseSessionCredential,
-  validateLoginInput,
-  validateRegisterInput,
-} from "./lib/validation";
+// Model exports
+export type { LoginForm, AuthService, AuthState } from "./model/types";
+export { LoginFormSchema } from "./model/validation";
+
+// API exports
+export { AuthFetcherRepository } from "./api/repository";
+export type { AuthRepository } from "./api/types";
+
+// Library exports
+export { parseLoginForm } from "./lib/parse-dto";
+export { parseSessionCredential } from "./model/validation";
+export { useAdminAuthorization } from "./lib/use-admin-authorization";
 
 // Auth Service exports
 export { createAuthService } from "./model/service";
 export { useAuthService, authServiceContext } from "./model/context";
 export { AuthServiceSessionProvider } from "./lib/session-provider";
-export type { AuthService, AuthState } from "./model/types";

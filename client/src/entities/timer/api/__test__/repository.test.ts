@@ -90,7 +90,7 @@ describe("TimerFetcherRepository", () => {
       const result = await timerRepository.getTimerLogs(participantId);
 
       // Assert
-      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${participantId}/timers`);
+      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${participantId}/timer/logs`);
       expect(parseTimerLogDto).toHaveBeenCalledTimes(3);
       expect(parseTimerLogDto).toHaveBeenCalledWith(timerLogs[0]);
       expect(parseTimerLogDto).toHaveBeenCalledWith(timerLogs[1]);
@@ -109,7 +109,7 @@ describe("TimerFetcherRepository", () => {
       const result = await timerRepository.getTimerLogs(participantId);
 
       // Assert
-      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${participantId}/timers`);
+      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${participantId}/timer/logs`);
       expect(parseTimerLogDto).not.toHaveBeenCalled();
       expect(result).toEqual([]);
     });
@@ -125,7 +125,7 @@ describe("TimerFetcherRepository", () => {
       const result = await timerRepository.getTimerLogs(participantId);
 
       // Assert
-      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${participantId}/timers`);
+      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${participantId}/timer/logs`);
       expect(parseTimerLogDto).not.toHaveBeenCalled();
       expect(result).toEqual([]);
     });
@@ -138,7 +138,7 @@ describe("TimerFetcherRepository", () => {
 
       // Act & Assert
       await expect(timerRepository.getTimerLogs(participantId)).rejects.toThrow("네트워크 연결 실패");
-      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${participantId}/timers`);
+      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${participantId}/timer/logs`);
     });
 
     it("존재하지 않는 참가자에 대한 요청 시 에러를 처리해야 한다", async () => {
@@ -182,7 +182,7 @@ describe("TimerFetcherRepository", () => {
       const result = await timerRepository.startTimer(participantId);
 
       // Assert
-      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/start`);
+      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timer/start`);
       expect(parseTimerLogDto).toHaveBeenCalledWith(startTimerDto);
       expect(result).toEqual(startTimerLog);
     });
@@ -248,7 +248,7 @@ describe("TimerFetcherRepository", () => {
       const result = await timerRepository.stopTimer(participantId);
 
       // Assert
-      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/stop`);
+      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timer/stop`);
       expect(parseTimerLogDto).toHaveBeenCalledWith(stopTimerDto);
       expect(result).toEqual(stopTimerLog);
     });
@@ -315,7 +315,7 @@ describe("TimerFetcherRepository", () => {
       const result = await timerRepository.adjustTimer(participantId, adjustTimerLog.type, adjustValue);
 
       // Assert
-      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {
+      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timer/adjust`, {
         body: { adjustmentMs: adjustValue },
       });
       expect(parseTimerLogDto).toHaveBeenCalledWith(adjustTimerDto);
@@ -352,7 +352,7 @@ describe("TimerFetcherRepository", () => {
       const result = await timerRepository.adjustTimer(participantId, adjustTimerLog.type, 500);
 
       // Assert
-      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {
+      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timer/adjust`, {
         body: { adjustmentMs: adjustValue },
       });
       expect(parseTimerLogDto).toHaveBeenCalledWith(adjustTimerDto);
@@ -388,7 +388,7 @@ describe("TimerFetcherRepository", () => {
       const result = await timerRepository.adjustTimer(participantId, adjustTimerLog.type, 0);
 
       // Assert
-      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {
+      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timer/adjust`, {
         body: { adjustmentMs: -0 },
       });
       expect(result).toEqual(adjustTimerLog);
@@ -468,7 +468,7 @@ describe("TimerFetcherRepository", () => {
       const result = await timerRepository.adjustTimer(participantId, "add", largeValue);
 
       // Assert
-      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {
+      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timer/adjust`, {
         body: { adjustmentMs: largeValue },
       });
       expect(result).toEqual(mockTimerLog);
@@ -490,7 +490,7 @@ describe("TimerFetcherRepository", () => {
       const result = await timerRepository.adjustTimer(participantId, "sub", Math.abs(smallNegativeValue));
 
       // Assert
-      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timers/adjust`, {
+      expect(mockAuthFetcher.post).toHaveBeenCalledWith(`/participants/${participantId}/timer/adjust`, {
         body: { adjustmentMs: smallNegativeValue },
       });
       expect(result).toEqual(mockTimerLog);
@@ -508,7 +508,7 @@ describe("TimerFetcherRepository", () => {
       const result = await timerRepository.getTimerLogs(specialParticipantId);
 
       // Assert
-      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${specialParticipantId}/timers`);
+      expect(mockFetcher.get).toHaveBeenCalledWith(`/participants/${specialParticipantId}/timer/logs`);
       expect(result).toEqual([mockTimerLog]);
     });
   });

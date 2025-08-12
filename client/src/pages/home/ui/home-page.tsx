@@ -1,9 +1,10 @@
-import { useAuthService, LoginForm, AuthDebugWrapper } from "@/features/auth";
-import { RootDashboard } from "./ui/root-dashboard";
+import { useAuthService, AuthDebugWrapper } from "@/features/auth";
+import { LoginForm } from "./login-form";
+import { RootDashboard } from "./root-dashboard";
 
 export function HomePage() {
   const authService = useAuthService();
-  const { isAuthenticated } = authService.useAuth();
+  const { isAuthenticated } = authService.use.auth();
 
   return (
     <AuthDebugWrapper>

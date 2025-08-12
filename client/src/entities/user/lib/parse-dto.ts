@@ -1,5 +1,5 @@
-import type { UserDto, UserLoginDto, UserRegisterDto, UserRoleDto } from "../api/types";
-import type { User, UserLoginForm, UserRegisterForm, UserRole } from "../model/types";
+import type { RegisterDto, UserDto, UserRoleDto } from "../api/types";
+import type { UserRegisterForm, User, UserRole } from "../model/types";
 
 export function parseUserRoles(roles: UserRoleDto[]): UserRole[] {
   return roles.map((role) => {
@@ -23,16 +23,9 @@ export function parseUserDto(dto: UserDto): User {
   };
 }
 
-export function parseUserRegisterForm(form: UserRegisterForm): UserRegisterDto {
+export function parseUserRegisterForm(form: UserRegisterForm): RegisterDto {
   return {
     name: form.name,
-    username: form.userName, // 서버는 username을 사용
-    password: form.password,
-  };
-}
-
-export function parseUserLoginForm(form: UserLoginForm): UserLoginDto {
-  return {
     username: form.userName,
     password: form.password,
   };

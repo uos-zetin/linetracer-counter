@@ -9,10 +9,10 @@ export function RunnerInfo() {
   const runnerRobotName = runner?.participant.robotName || "No Robot";
   return (
     <div className="flex flex-col items-center justify-center w-full">
-      <span className="text-[4vw] font-bold text-gray-800 overflow-hidden overflow-ellipsis" title="Runner Name">
+      <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-7xl font-bold text-foreground overflow-hidden text-ellipsis whitespace-nowrap text-center mb-2 sm:mb-3" title="Runner Name">
         {runnerName} · {runnerRobotName}
       </span>
-      <span className="text-[3vw] font-semibold text-gray-600 leading-none" title="Runner Robot Name">
+      <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-5xl font-semibold text-muted-foreground leading-none text-center" title="Runner Team Name">
         {runnerTeam}
       </span>
     </div>

@@ -2,7 +2,7 @@ import { useAuthService } from "../model/context";
 
 export function AuthDebugInfo() {
   const authService = useAuthService();
-  const { user, isAuthenticated } = authService.useAuth();
+  const { user, isAuthenticated } = authService.use.auth();
 
   return (
     <div className="fixed top-16 right-4 bg-black bg-opacity-75 text-white rounded-lg z-40 transition-all duration-300 ease-in-out hover:scale-100 scale-75 origin-top-right group">

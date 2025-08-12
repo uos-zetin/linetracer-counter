@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { Plus, Trophy, Edit, Trash2 } from "lucide-react";
+import { formatDate } from "@/shared/lib";
+import { Button, Card, CardContent } from "@/shared/ui";
 import type { Competition, CompetitionForm } from "@/entities/competition";
 import {
   useCompetitionService,
@@ -6,10 +9,12 @@ import {
   AdminCompetitionEditModal,
   AdminCompetitionDeleteModal,
 } from "@/features/competition";
+import { useErrorHandlingService } from "@/features/error-handling";
 
 export function CompetitionManagement() {
   const competitionService = useCompetitionService();
   const competitions = competitionService.use.competitions();
+  const errorHandler = useErrorHandlingService();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -19,9 +24,9 @@ export function CompetitionManagement() {
   // 초기 데이터 로드
   useEffect(() => {
     competitionService.load.all().catch((error) => {
-      console.error("Failed to load competitions:", error);
+      errorHandler.handle(error, "대회 목록 로드 중 오류가 발생했습니다");
     });
-  }, [competitionService]);
+  }, [competitionService, errorHandler]);
 
   const handleCreate = () => {
     setIsCreateModalOpen(true);
@@ -42,8 +47,7 @@ export function CompetitionManagement() {
       await competitionService.admin.create(data);
       setIsCreateModalOpen(false);
     } catch (error) {
-      console.error("Failed to create competition:", error);
-      // TODO: 에러 처리 UI
+      errorHandler.handle(error as Error, "대회 생성 중 오류가 발생했습니다");
     }
   };
 
@@ -55,8 +59,7 @@ export function CompetitionManagement() {
       setIsEditModalOpen(false);
       setSelectedCompetition(null);
     } catch (error) {
-      console.error("Failed to update competition:", error);
-      // TODO: 에러 처리 UI
+      errorHandler.handle(error as Error, "대회 수정 중 오류가 발생했습니다");
     }
   };
 
@@ -68,91 +71,63 @@ export function CompetitionManagement() {
       setIsDeleteModalOpen(false);
       setSelectedCompetition(null);
     } catch (error) {
-      console.error("Failed to delete competition:", error);
-      // TODO: 에러 처리 UI
+      errorHandler.handle(error as Error, "대회 삭제 중 오류가 발생했습니다");
     }
   };
 
   return (
     <div>
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">대회 관리</h1>
-          <p className="mt-2 text-gray-600">대회를 생성, 수정, 삭제할 수 있습니다</p>
+          <h1 className="text-2xl font-bold text-foreground">대회 관리</h1>
+          <p className="mt-2 text-muted-foreground">대회를 생성, 수정, 삭제할 수 있습니다</p>
         </div>
-        <button
-          onClick={handleCreate}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium flex items-center"
-        >
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
+        <Button onClick={handleCreate} className="self-start sm:self-auto">
+          <Plus className="w-4 h-4" />
           대회 생성
-        </button>
+        </Button>
       </div>
 
       {/* Competition Cards */}
       <div className="space-y-4">
         {competitions.length === 0 ? (
-          <div className="text-center py-12">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-              />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">대회가 없습니다</h3>
-            <p className="mt-1 text-sm text-gray-500">새로운 대회를 생성해보세요.</p>
-          </div>
+          <Card>
+            <CardContent className="text-center py-4">
+              <Trophy className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">대회가 없습니다</h3>
+              <p className="text-muted-foreground mb-4">새로운 대회를 생성해보세요.</p>
+              <Button onClick={handleCreate} variant="outline">
+                <Plus className="w-4 h-4 mr-2" />첫 번째 대회 생성하기
+              </Button>
+            </CardContent>
+          </Card>
         ) : (
           competitions.map((competition) => (
-            <div
-              key={competition.id}
-              className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
-            >
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">{competition.name}</h3>
-                  <p className="mt-2 text-gray-600">{competition.description}</p>
-                  <p className="mt-2 text-sm text-gray-500">
-                    생성일: {new Date(competition.createdAt).toLocaleDateString("ko-KR")}
-                  </p>
+            <Card key={competition.id} className="hover:shadow-md transition-shadow">
+              <CardContent className="px-6">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-foreground">{competition.name}</h3>
+                    <p className="mt-2 text-muted-foreground">{competition.description}</p>
+                    <p className="mt-2 text-sm text-muted-foreground">생성일: {formatDate(competition.createdAt)}</p>
+                  </div>
+                  <div className="flex space-x-2 ml-4">
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(competition)} className="h-9 w-9 p-0">
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDelete(competition)}
+                      className="h-9 w-9 p-0 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex space-x-2 ml-4">
-                  <button
-                    onClick={() => handleEdit(competition)}
-                    className="text-blue-600 hover:text-blue-800 p-2 rounded-md hover:bg-blue-50"
-                    title="수정"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(competition)}
-                    className="text-red-600 hover:text-red-800 p-2 rounded-md hover:bg-red-50"
-                    title="삭제"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           ))
         )}
       </div>

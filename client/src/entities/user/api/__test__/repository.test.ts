@@ -3,9 +3,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Fetcher } from "@/shared/api";
 import type { User, UserRole } from "../../model/types";
 import { UserFetcherRepository } from "../repository";
+import { parseUserDto, parseUserRegisterForm } from "../../lib/parse-dto";
+
+// parseUserDto와 parseUserRegisterForm 함수 모킹
+vi.mock("../../lib/parse-dto", () => ({
+  parseUserDto: vi.fn(),
+  parseUserRegisterForm: vi.fn(),
+  parseUserRoles: vi.fn(),
+}));
 
 describe("UserFetcherRepository", () => {
-  let mockPublicFetcher: Fetcher;
   let mockAuthenticatedFetcher: Fetcher;
   let userRepository: UserFetcherRepository;
 
@@ -17,14 +24,7 @@ describe("UserFetcherRepository", () => {
   };
 
   beforeEach(() => {
-    mockPublicFetcher = {
-      get: vi.fn(),
-      post: vi.fn(),
-      put: vi.fn(),
-      patch: vi.fn(),
-      delete: vi.fn(),
-      request: vi.fn(),
-    };
+    vi.clearAllMocks();
 
     mockAuthenticatedFetcher = {
       get: vi.fn(),
@@ -35,7 +35,22 @@ describe("UserFetcherRepository", () => {
       request: vi.fn(),
     };
 
-    userRepository = new UserFetcherRepository(mockPublicFetcher, mockAuthenticatedFetcher);
+    userRepository = new UserFetcherRepository(mockAuthenticatedFetcher);
+
+    // parseUserDto mock 설정
+    vi.mocked(parseUserDto).mockImplementation((dto) => ({
+      id: dto.id,
+      name: dto.name,
+      roles: dto.roles as UserRole[],
+      createdAt: new Date(dto.createdAt),
+    }));
+
+    // parseUserRegisterForm mock 설정
+    vi.mocked(parseUserRegisterForm).mockImplementation((form) => ({
+      name: form.name,
+      username: form.userName,
+      password: form.password,
+    }));
   });
 
   // ───────────────────────────── getAllUsers
@@ -83,15 +98,15 @@ describe("UserFetcherRepository", () => {
     });
   });
 
-  // ───────────────────────────── registerUser
-  describe("registerUser", () => {
+  // ───────────────────────────── createUser
+  describe("createUser", () => {
     it("새 사용자를 등록하고 반환해야 한다", async () => {
       const dto = { name: "New", userName: "new", password: "pw" };
-      mockPublicFetcher.post = vi.fn().mockResolvedValue({ data: mockUser });
+      mockAuthenticatedFetcher.post = vi.fn().mockResolvedValue({ data: mockUser });
 
-      const result = await userRepository.registerUser(dto);
+      const result = await userRepository.createUser(dto);
 
-      expect(mockPublicFetcher.post).toHaveBeenCalledWith("/actors/register", {
+      expect(mockAuthenticatedFetcher.post).toHaveBeenCalledWith("/actors", {
         body: { name: dto.name, username: dto.userName, password: dto.password },
       });
       expect(result).toEqual(mockUser);
@@ -99,58 +114,9 @@ describe("UserFetcherRepository", () => {
 
     it("중복 사용자 등록 시 예외를 던져야 한다", async () => {
       const dto = { name: "Dup", userName: "dup", password: "pw" };
-      mockPublicFetcher.post = vi.fn().mockRejectedValue(new Error("exists"));
+      mockAuthenticatedFetcher.post = vi.fn().mockRejectedValue(new Error("exists"));
 
-      await expect(userRepository.registerUser(dto)).rejects.toThrow("exists");
-    });
-  });
-
-  // ───────────────────────────── loginUser
-  describe("loginUser", () => {
-    it("로그인 성공 시 sessionKey를 반환해야 한다", async () => {
-      const dto = { userName: "u", password: "p" };
-      const sessionKey = "sess-123";
-
-      mockPublicFetcher.post = vi.fn().mockResolvedValue({ data: sessionKey });
-
-      const result = await userRepository.loginUser(dto);
-
-      expect(mockPublicFetcher.post).toHaveBeenCalledWith("/actors/login", {
-        body: { username: dto.userName, password: dto.password },
-      });
-      expect(result).toEqual(sessionKey);
-    });
-
-    it("잘못된 인증 정보 시 예외를 던져야 한다", async () => {
-      const loginError = new Error("인증 실패");
-      mockPublicFetcher.post = vi.fn().mockRejectedValue(loginError);
-
-      await expect(userRepository.loginUser({ userName: "x", password: "y" })).rejects.toThrow("인증 실패");
-    });
-
-    it("네트워크 에러 시 예외를 던져야 한다", async () => {
-      const networkError = new Error("네트워크 연결 실패");
-      mockPublicFetcher.post = vi.fn().mockRejectedValue(networkError);
-
-      await expect(userRepository.loginUser({ userName: "u", password: "p" })).rejects.toThrow("네트워크 연결 실패");
-    });
-  });
-
-  // ───────────────────────────── logoutUser
-  describe("logoutUser", () => {
-    it("정상 로그아웃", async () => {
-      mockAuthenticatedFetcher.post = vi.fn().mockResolvedValue({ data: undefined });
-
-      await userRepository.logoutUser();
-
-      expect(mockAuthenticatedFetcher.post).toHaveBeenCalledWith("/actors/logout");
-    });
-
-    it("로그아웃 실패 시 예외", async () => {
-      const err = new Error("logout fail");
-      mockAuthenticatedFetcher.post = vi.fn().mockRejectedValue(err);
-
-      await expect(userRepository.logoutUser()).rejects.toThrow("logout fail");
+      await expect(userRepository.createUser(dto)).rejects.toThrow("exists");
     });
   });
 
@@ -196,21 +162,6 @@ describe("UserFetcherRepository", () => {
 
   // ───────────────────────────── fetcher 구분
   describe("Fetcher 사용 구분", () => {
-    it("publicFetcher 만 사용하는 메서드", async () => {
-      // registerUser 호출
-      mockPublicFetcher.post = vi.fn().mockResolvedValue({ data: mockUser });
-      await userRepository.registerUser({ name: "a", userName: "a", password: "1" });
-
-      // loginUser 호출 (별도의 mock 함수 생성)
-      const loginMock = vi.fn().mockResolvedValue({ data: "sess" });
-      mockPublicFetcher.post = loginMock;
-      await userRepository.loginUser({ userName: "a", password: "1" });
-
-      // loginUser만 1번 호출되었는지 확인
-      expect(loginMock).toHaveBeenCalledTimes(1);
-      expect(mockAuthenticatedFetcher.post).not.toHaveBeenCalled();
-    });
-
     it("authenticatedFetcher 를 사용하는 메서드", async () => {
       mockAuthenticatedFetcher.get = vi.fn().mockResolvedValue({ data: [mockUser] });
       await userRepository.getAllUsers();
@@ -218,8 +169,8 @@ describe("UserFetcherRepository", () => {
       mockAuthenticatedFetcher.get = vi.fn().mockResolvedValue({ data: mockUser });
       await userRepository.getCurrentUser();
 
-      mockAuthenticatedFetcher.post = vi.fn().mockResolvedValue({ data: undefined });
-      await userRepository.logoutUser();
+      mockAuthenticatedFetcher.post = vi.fn().mockResolvedValue({ data: mockUser });
+      await userRepository.createUser({ name: "a", userName: "a", password: "1" });
 
       mockAuthenticatedFetcher.patch = vi.fn().mockResolvedValue({ data: mockUser });
       await userRepository.updateUserRoles(mockUser.id, ["administrator"]);

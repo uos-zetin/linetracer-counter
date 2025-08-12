@@ -1,7 +1,28 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Textarea,
+} from "@/shared/ui";
 import type { Competition } from "@/entities/competition";
 import type { DivisionForm } from "@/entities/division";
 import { DivisionFormSchema } from "@/entities/division";
@@ -21,14 +42,7 @@ export function AdminDivisionCreateModal({
   competitions,
   preSelectedCompetitionId,
 }: DivisionCreateModalProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
-    watch,
-    setValue,
-  } = useForm<DivisionForm>({
+  const form = useForm<DivisionForm>({
     resolver: zodResolver(DivisionFormSchema),
     defaultValues: {
       competitionId: preSelectedCompetitionId || "",
@@ -38,20 +52,19 @@ export function AdminDivisionCreateModal({
     },
   });
 
-  const descriptionValue = watch("description", "");
-  const competitionId = watch("competitionId");
+  const descriptionValue = form.watch("description", "");
 
   // preSelectedCompetitionId 변경 시 반영
   useEffect(() => {
     if (preSelectedCompetitionId) {
-      setValue("competitionId", preSelectedCompetitionId);
+      form.setValue("competitionId", preSelectedCompetitionId);
     }
-  }, [preSelectedCompetitionId, setValue]);
+  }, [preSelectedCompetitionId, form]);
 
   const onSubmitHandler = async (data: DivisionForm) => {
     try {
       await onSubmit(data);
-      reset();
+      form.reset();
       onClose();
     } catch (err) {
       console.error("Failed to create division:", err);
@@ -59,8 +72,8 @@ export function AdminDivisionCreateModal({
   };
 
   const handleClose = () => {
-    if (isSubmitting) return;
-    reset();
+    if (form.formState.isSubmitting) return;
+    form.reset();
     onClose();
   };
 
@@ -69,105 +82,122 @@ export function AdminDivisionCreateModal({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>새 부문 생성</DialogTitle>
-          <DialogDescription>
-            새로운 부문을 만들어주세요.
-          </DialogDescription>
+          <DialogDescription>새로운 부문을 만들어주세요.</DialogDescription>
         </DialogHeader>
 
-        <form id="division-create-form" onSubmit={handleSubmit(onSubmitHandler)} className="space-y-4">
-          {/* 대회 선택 */}
-          <div>
-            <label htmlFor="competitionId" className="block text-sm font-medium text-gray-700 mb-1">
-              대회 <span className="text-red-500">*</span>
-            </label>
-            <Select 
-              value={competitionId} 
-              onValueChange={(value) => setValue("competitionId", value)}
-              disabled={!!preSelectedCompetitionId || isSubmitting}
-            >
-              <SelectTrigger className={errors.competitionId ? "border-red-300" : ""}>
-                <SelectValue placeholder="대회를 선택하세요" />
-              </SelectTrigger>
-              <SelectContent>
-                {competitions.map((competition) => (
-                  <SelectItem key={competition.id} value={competition.id}>
-                    {competition.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.competitionId && <p className="mt-1 text-sm text-red-600">{errors.competitionId.message}</p>}
-          </div>
-
-          {/* 부문명 */}
-          <div>
-            <label htmlFor="division-name" className="block text-sm font-medium text-gray-700 mb-1">
-              부문명 <span className="text-red-500">*</span>
-            </label>
-            <Input
-              id="division-name"
-              type="text"
-              {...register("name")}
-              className={errors.name ? "border-red-300" : ""}
-              placeholder="부문명을 입력하세요"
-              maxLength={100}
-              disabled={isSubmitting}
+        <Form {...form}>
+          <form id="division-create-form" onSubmit={form.handleSubmit(onSubmitHandler)} className="space-y-4">
+            {/* 대회 선택 */}
+            <FormField
+              control={form.control}
+              name="competitionId"
+              render={({ field }) => (
+                <FormItem>
+                  <label htmlFor="competitionId-select" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    대회 <span className="text-red-500">*</span>
+                  </label>
+                  <FormControl>
+                    <Select
+                      name="competitionId"
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={!!preSelectedCompetitionId || form.formState.isSubmitting}
+                    >
+                      <SelectTrigger id="competitionId-select">
+                        <SelectValue placeholder="대회를 선택하세요" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {competitions.map((competition) => (
+                          <SelectItem key={competition.id} value={competition.id}>
+                            {competition.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
-          </div>
 
-          {/* 설명 */}
-          <div>
-            <label htmlFor="division-description" className="block text-sm font-medium text-gray-700 mb-1">
-              설명
-            </label>
-            <Textarea
-              id="division-description"
-              {...register("description")}
-              rows={3}
-              className={errors.description ? "border-red-300" : ""}
-              placeholder="부문 설명을 입력하세요 (선택사항)"
-              maxLength={1000}
-              disabled={isSubmitting}
+            {/* 부문명 */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    부문명 <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="부문명을 입력하세요"
+                      maxLength={100}
+                      disabled={form.formState.isSubmitting}
+                      autoComplete="organization-title"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>}
-            <p className="mt-1 text-sm text-gray-500">{descriptionValue.length}/1000자</p>
-          </div>
 
-          {/* 제한 시간 */}
-          <div>
-            <label htmlFor="division-timeLimit" className="block text-sm font-medium text-gray-700 mb-1">
-              제한 시간 (분) <span className="text-red-500">*</span>
-            </label>
-            <Input
-              id="division-timeLimit"
-              type="number"
-              {...register("timeLimit", { valueAsNumber: true })}
-              className={errors.timeLimit ? "border-red-300" : ""}
-              placeholder="제한 시간을 분 단위로 입력하세요"
-              min={1}
-              max={1440}
-              disabled={isSubmitting}
+            {/* 설명 */}
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>설명 (선택사항)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      rows={3}
+                      placeholder="부문 설명을 입력하세요 (선택사항)"
+                      maxLength={1000}
+                      disabled={form.formState.isSubmitting}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  <p className="mt-1 text-sm text-gray-500">{descriptionValue.length}/1000자</p>
+                </FormItem>
+              )}
             />
-            {errors.timeLimit && <p className="mt-1 text-sm text-red-600">{errors.timeLimit.message}</p>}
-          </div>
-        </form>
+
+            {/* 제한 시간 */}
+            <FormField
+              control={form.control}
+              name="timeLimit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    제한 시간 (분) <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="제한 시간을 분 단위로 입력하세요"
+                      min={1}
+                      max={1440}
+                      disabled={form.formState.isSubmitting}
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleClose}
-            disabled={isSubmitting}
-          >
+          <Button type="button" variant="outline" onClick={handleClose} disabled={form.formState.isSubmitting}>
             취소
           </Button>
-          <Button
-            type="submit"
-            form="division-create-form"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "생성 중..." : "생성"}
+          <Button type="submit" form="division-create-form" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? "생성 중..." : "생성"}
           </Button>
         </DialogFooter>
       </DialogContent>
