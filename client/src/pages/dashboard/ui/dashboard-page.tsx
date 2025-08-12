@@ -127,7 +127,7 @@ export const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <PageContainer maxWidth="lg" padding="md">
-        <div className="mb-6">
+        <div className="my-6">
           <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2">🏆 경기 결과</h1>
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">실시간 순위와 최고 기록을 확인하세요</p>
