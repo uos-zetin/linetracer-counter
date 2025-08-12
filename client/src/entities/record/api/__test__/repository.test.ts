@@ -1,13 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Fetcher } from "@/shared/api";
-import { parseRecordDto } from "../../lib/parse-dto";
+import { parseRecordDto, parseRecordForm } from "../../lib/parse-dto";
 import type { Record, RecordSource, RecordStatus } from "../../model/types";
 import { RecordFetcherRepository } from "../repository";
 import type { RecordDto } from "../types";
 
-// parseRecordDto 함수 모킹
+// parseRecordDto와 parseRecordForm 함수 모킹
 vi.mock("../../lib/parse-dto", () => ({
   parseRecordDto: vi.fn(),
+  parseRecordForm: vi.fn(),
+  parseRecordSourceDto: vi.fn(),
+  parseRecordSource: vi.fn(),
+  parseRecordStatusDto: vi.fn(),
 }));
 
 describe("RecordFetcherRepository", () => {
@@ -62,6 +66,13 @@ describe("RecordFetcherRepository", () => {
 
     // parseRecordDto 모킹 설정
     vi.mocked(parseRecordDto).mockReturnValue(mockRecord);
+
+    // parseRecordForm 모킹 설정
+    vi.mocked(parseRecordForm).mockImplementation((form) => ({
+      value: form.value,
+      source: form.source,
+      note: form.note,
+    }));
   });
 
   describe("getAllRecords", () => {

@@ -3,9 +3,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Fetcher } from "@/shared/api";
 import type { User, UserRole } from "../../model/types";
 import { UserFetcherRepository } from "../repository";
+import { parseUserDto, parseUserRegisterForm } from "../../lib/parse-dto";
+
+// parseUserDto와 parseUserRegisterForm 함수 모킹
+vi.mock("../../lib/parse-dto", () => ({
+  parseUserDto: vi.fn(),
+  parseUserRegisterForm: vi.fn(),
+  parseUserRoles: vi.fn(),
+}));
 
 describe("UserFetcherRepository", () => {
-  let mockPublicFetcher: Fetcher;
   let mockAuthenticatedFetcher: Fetcher;
   let userRepository: UserFetcherRepository;
 
@@ -17,14 +24,7 @@ describe("UserFetcherRepository", () => {
   };
 
   beforeEach(() => {
-    mockPublicFetcher = {
-      get: vi.fn(),
-      post: vi.fn(),
-      put: vi.fn(),
-      patch: vi.fn(),
-      delete: vi.fn(),
-      request: vi.fn(),
-    };
+    vi.clearAllMocks();
 
     mockAuthenticatedFetcher = {
       get: vi.fn(),
@@ -36,6 +36,21 @@ describe("UserFetcherRepository", () => {
     };
 
     userRepository = new UserFetcherRepository(mockAuthenticatedFetcher);
+
+    // parseUserDto mock 설정
+    vi.mocked(parseUserDto).mockImplementation((dto) => ({
+      id: dto.id,
+      name: dto.name,
+      roles: dto.roles as UserRole[],
+      createdAt: new Date(dto.createdAt),
+    }));
+
+    // parseUserRegisterForm mock 설정
+    vi.mocked(parseUserRegisterForm).mockImplementation((form) => ({
+      name: form.name,
+      username: form.userName,
+      password: form.password,
+    }));
   });
 
   // ───────────────────────────── getAllUsers
@@ -87,11 +102,11 @@ describe("UserFetcherRepository", () => {
   describe("createUser", () => {
     it("새 사용자를 등록하고 반환해야 한다", async () => {
       const dto = { name: "New", userName: "new", password: "pw" };
-      mockPublicFetcher.post = vi.fn().mockResolvedValue({ data: mockUser });
+      mockAuthenticatedFetcher.post = vi.fn().mockResolvedValue({ data: mockUser });
 
       const result = await userRepository.createUser(dto);
 
-      expect(mockPublicFetcher.post).toHaveBeenCalledWith("/actors/register", {
+      expect(mockAuthenticatedFetcher.post).toHaveBeenCalledWith("/actors", {
         body: { name: dto.name, username: dto.userName, password: dto.password },
       });
       expect(result).toEqual(mockUser);
@@ -99,7 +114,7 @@ describe("UserFetcherRepository", () => {
 
     it("중복 사용자 등록 시 예외를 던져야 한다", async () => {
       const dto = { name: "Dup", userName: "dup", password: "pw" };
-      mockPublicFetcher.post = vi.fn().mockRejectedValue(new Error("exists"));
+      mockAuthenticatedFetcher.post = vi.fn().mockRejectedValue(new Error("exists"));
 
       await expect(userRepository.createUser(dto)).rejects.toThrow("exists");
     });

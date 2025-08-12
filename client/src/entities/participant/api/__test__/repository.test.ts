@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Fetcher } from "@/shared/api";
-import { parseParticipantDto } from "../../lib/parse-dto";
+import { parseParticipantDto, parseParticipantForm } from "../../lib/parse-dto";
 import type { Participant } from "../../model/types";
 import { ParticipantFetcherRepository } from "../repository";
 import type { ParticipantDto } from "../types";
@@ -8,6 +8,7 @@ import type { ParticipantDto } from "../types";
 // parseParticipantDto 함수 모킹
 vi.mock("../../lib/parse-dto", () => ({
   parseParticipantDto: vi.fn(),
+  parseParticipantForm: vi.fn(),
 }));
 
 describe("ParticipantFetcherRepository", () => {
@@ -64,6 +65,15 @@ describe("ParticipantFetcherRepository", () => {
 
     // parseParticipantDto 모킹 설정
     vi.mocked(parseParticipantDto).mockReturnValue(mockParticipant);
+    
+    // parseParticipantForm 모킹 설정
+    vi.mocked(parseParticipantForm).mockImplementation((form) => ({
+      name: form.name,
+      teamName: form.teamName,
+      robotName: form.robotName,
+      comment: form.comment,
+      orderRaw: form.orderRaw,
+    }));
   });
 
   describe("getAllParticipants", () => {
