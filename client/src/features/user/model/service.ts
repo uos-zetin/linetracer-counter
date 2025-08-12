@@ -1,3 +1,4 @@
+import { useShallow } from "zustand/shallow";
 import {
   useZustandUserStore,
   type UserRepository,
@@ -60,7 +61,7 @@ export const createUserService = ({ userRepository }: UserServiceProps): UserSer
 
   // Store 구독 메서드들
   const useUsers = () => {
-    return useZustandUserStore((state) => state.users);
+    return useZustandUserStore(useShallow((state) => state.users));
   };
 
   const useUserById = (id: string) => {

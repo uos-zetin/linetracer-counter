@@ -45,7 +45,6 @@ export function ManualCounter() {
     }
   }, [isAuthenticated, user, isAdministrator, isManualRecorder, navigate]);
 
-
   // 로컬 타이머 사용 (useStopwatchTimer 훅 활용)
   const elapsedTime = useStopwatchTimer(localStartedAt, localStoppedAt);
   const timeComponents = formatElapsedMs(elapsedTime);
@@ -77,7 +76,6 @@ export function ManualCounter() {
 
     setIsSubmitting(true);
     try {
-      // 1. API를 통해 최신 counter 정보 로드
       const updatedCounter = await counterService.load.byId(counterId);
 
       // 2. 업데이트된 counter 정보 확인

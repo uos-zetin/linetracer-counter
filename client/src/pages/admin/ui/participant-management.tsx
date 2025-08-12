@@ -75,7 +75,7 @@ export function ParticipantManagement() {
         errorHandler.handle(error as Error, "참가자 목록 로드 중 오류가 발생했습니다");
       });
     }
-  }, [participantService, divisions.length, errorHandler]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [participantService, divisions, errorHandler]);
 
   // 대회 이름 찾기 헬퍼 함수
   const getCompetitionName = (competitionId: string): string => {

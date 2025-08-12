@@ -14,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui";
-import type { CounterState } from "@/entities/counter";
 import { useAuthService } from "@/features/auth";
 import { useCounterService } from "@/features/counter";
 import { useErrorHandlingService } from "@/features/error-handling";
@@ -27,7 +26,7 @@ export function CounterSelectorPage() {
   const authService = useAuthService();
   const errorHandler = useErrorHandlingService();
 
-  const [counters, setCounters] = useState<CounterState[]>([]);
+  const counters = counterService.use.counters();
   const [selectedCounterId, setSelectedCounterId] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -55,8 +54,7 @@ export function CounterSelectorPage() {
 
       try {
         setIsLoading(true);
-        const counterList = await counterService.load.all();
-        setCounters(counterList);
+        await counterService.load.all();
       } catch (error) {
         errorHandler.handle(error as Error, "계수기 목록을 불러오는데 실패했습니다");
       } finally {

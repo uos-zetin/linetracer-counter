@@ -1,9 +1,13 @@
+import { useMemo } from "react";
+import { useShallow } from "zustand/shallow";
 import { useZustandRecordStore, type Record, type RecordRepository, type RecordStatus } from "@/entities/record";
 import type { RecordService } from "./types";
 
 interface RecordServiceProps {
   recordRepository: RecordRepository;
 }
+
+const EMPTY_RECORDS: readonly Record[] = Object.freeze([]);
 
 export const createRecordService = ({ recordRepository }: RecordServiceProps): RecordService => {
   // ===== Load Functions (Public) =====
@@ -97,7 +101,15 @@ export const createRecordService = ({ recordRepository }: RecordServiceProps): R
   };
 
   const useRecordsByParticipant = (participantId: string): Record[] => {
-    return useZustandRecordStore((state) => state.records.filter((record) => record.participantId === participantId));
+    const selector = useMemo(
+      () => (state: { records: Record[] }) => {
+        if (!participantId) return EMPTY_RECORDS as Record[];
+        return state.records.filter((r) => r.participantId === participantId);
+      },
+      [participantId]
+    );
+
+    return useZustandRecordStore(useShallow(selector));
   };
 
   const useRecordById = (recordId: string): Record | null => {

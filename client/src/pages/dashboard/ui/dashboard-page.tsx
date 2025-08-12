@@ -23,9 +23,9 @@ export const DashboardPage = () => {
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>(divisionId || "");
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
-  const competitions = competitionService.use.competitions() || [];
-  const divisions = divisionService.use.divisionsByCompetition(selectedCompetitionId || "") || [];
-  const participants = participantService.use.allParticipants() || [];
+  const competitions = competitionService.use.competitions();
+  const divisions = divisionService.use.divisionsByCompetition(selectedCompetitionId || "");
+  const participants = participantService.use.allParticipants();
 
   // 대회 목록 로드
   useEffect(() => {
@@ -69,7 +69,7 @@ export const DashboardPage = () => {
 
       loadParticipants();
     }
-  }, [selectedCompetitionId, divisions.length, participantService]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedCompetitionId, divisions, participantService]);
 
   // 매분마다 새로고침 타이머
   useEffect(() => {

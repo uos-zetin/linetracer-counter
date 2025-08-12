@@ -92,7 +92,10 @@ export function AdminDivisionEditModal({ isOpen, onClose, onSubmit, division, co
               name="competitionId"
               render={({ field }) => (
                 <FormItem>
-                  <label htmlFor="competitionId-select-edit" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  <label
+                    htmlFor="competitionId-select-edit"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
                     대회 <span className="text-red-500">*</span>
                   </label>
                   <FormControl>

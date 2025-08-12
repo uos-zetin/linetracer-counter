@@ -7,7 +7,6 @@ import { useErrorHandlingService } from "@/features/error-handling";
 import { useUserService, AdminUserCreateModal, AdminUserEditRolesModal, AdminUserDeleteModal } from "@/features/user";
 
 export function UserManagement() {
-  /* ───────────────────────── 서비스 & 상태 ───────────────────────── */
   const userService = useUserService();
   const users = userService.use.users();
   const errorHandler = useErrorHandlingService();
@@ -17,14 +16,12 @@ export function UserManagement() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  /* ───────────────────────── 초기 로딩 ───────────────────────── */
   useEffect(() => {
     userService.load.all().catch((e) => {
       errorHandler.handle(e as Error, "사용자 목록 로드 중 오류가 발생했습니다");
     });
   }, [userService, errorHandler]);
 
-  /* ───────────────────────── 핸들러 ───────────────────────── */
   const openCreate = () => setIsCreateModalOpen(true);
 
   const openEditRoles = (user: User) => {

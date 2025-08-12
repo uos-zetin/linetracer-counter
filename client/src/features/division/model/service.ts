@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import { useShallow } from "zustand/shallow";
 import type { Division, DivisionForm, DivisionRepository } from "@/entities/division";
 import { DivisionFormSchema, useZustandDivisionStore } from "@/entities/division";
 import type { DivisionService } from "./types";
@@ -5,6 +7,8 @@ import type { DivisionService } from "./types";
 interface DivisionServiceProps {
   divisionRepository: DivisionRepository;
 }
+
+const EMPTY_DIVISIONS: readonly Division[] = Object.freeze([]);
 
 export const createDivisionService = ({ divisionRepository }: DivisionServiceProps): DivisionService => {
   // 조회 기능 (공용)
@@ -112,18 +116,23 @@ export const createDivisionService = ({ divisionRepository }: DivisionServicePro
 
   // Store 구독 메서드들 (공용)
   const useDivisions = (): Division[] => {
-    return useZustandDivisionStore((state) => state.divisions);
+    return useZustandDivisionStore(useShallow((state) => state.divisions));
   };
 
   const useDivisionsByCompetition = (competitionId: string): Division[] => {
-    const allDivisions = useZustandDivisionStore((state) => state.divisions);
+    const selector = useMemo(
+      () => (s: { divisions: Division[] }) => {
+        if (!competitionId) return EMPTY_DIVISIONS as Division[];
+        // filter가 새 배열을 만들므로 원본은 불변. 그 배열에 한해서 sort mutate OK
+        const list = s.divisions.filter((d) => d.competitionId === competitionId);
+        list.sort((a, b) => a.name.localeCompare(b.name));
+        return list;
+      },
+      [competitionId]
+    );
 
-    if (!competitionId) {
-      return [];
-    }
-
-    // 컴포넌트에서 필터링 및 정렬 (부문 이름으로 정렬)
-    return allDivisions.filter((d) => d.competitionId === competitionId).sort((a, b) => a.name.localeCompare(b.name));
+    // shallow 비교: 길이/순서/각 요소 참조가 같으면 리렌더 X
+    return useZustandDivisionStore(useShallow(selector));
   };
 
   const useDivisionById = (id: string): Division | null => {

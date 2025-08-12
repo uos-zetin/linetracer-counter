@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import { useShallow } from "zustand/shallow";
 import type { Participant, ParticipantRepository, ParticipantForm } from "@/entities/participant";
 import { useZustandParticipantStore } from "@/entities/participant";
 import type { ParticipantService } from "./types";
@@ -5,6 +7,8 @@ import type { ParticipantService } from "./types";
 interface ParticipantServiceProps {
   participantRepository: ParticipantRepository;
 }
+
+const EMPTY_PARTICIPANTS: readonly Participant[] = Object.freeze([]);
 
 export const createParticipantService = ({ participantRepository }: ParticipantServiceProps): ParticipantService => {
   // 조회 기능 (공용)
@@ -97,15 +101,17 @@ export const createParticipantService = ({ participantRepository }: ParticipantS
   };
 
   const useParticipantsByDivision = (divisionId: string): Participant[] => {
-    const allParticipants = useZustandParticipantStore((state) => state.participants);
-
-    // 빈 divisionId면 빈 배열 반환
-    if (!divisionId) {
-      return [];
-    }
+    const selector = useMemo(
+      () => (state: { participants: Participant[] }) => {
+        if (!divisionId) return EMPTY_PARTICIPANTS as Participant[];
+        const list = state.participants.filter((p) => p.divisionId === divisionId);
+        return list.sort((a, b) => a.orderRaw - b.orderRaw);
+      },
+      [divisionId]
+    );
 
     // Service에서 필터링 및 정렬
-    return allParticipants.filter((p) => p.divisionId === divisionId).sort((a, b) => a.orderRaw - b.orderRaw);
+    return useZustandParticipantStore(useShallow(selector));
   };
 
   const useParticipantById = (id: string): Participant | null => {

@@ -78,9 +78,7 @@ export function RecordManagement() {
       if (allParticipants.length > 0) {
         try {
           // 모든 참가자의 기록을 로드
-          for (const participant of allParticipants) {
-            await recordService.load.byParticipant(participant.id);
-          }
+          await Promise.all(allParticipants.map((participant) => recordService.load.byParticipant(participant.id)));
         } catch (error) {
           errorHandler.handle(error as Error, "기록 로드 중 오류가 발생했습니다");
         }
@@ -224,7 +222,11 @@ export function RecordManagement() {
             <CardContent className="px-6 py-3">
               <div className="space-y-2">
                 <span className="block text-sm font-medium text-foreground">부문 선택</span>
-                <Select value={selectedDivisionId} onValueChange={handleDivisionSelect} disabled={!selectedCompetitionId}>
+                <Select
+                  value={selectedDivisionId}
+                  onValueChange={handleDivisionSelect}
+                  disabled={!selectedCompetitionId}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder={selectedCompetitionId ? "부문을 선택하세요" : "먼저 대회를 선택하세요"} />
                   </SelectTrigger>
