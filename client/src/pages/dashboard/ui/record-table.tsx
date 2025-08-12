@@ -36,7 +36,7 @@ export function RecordTable({ divisionId, participants, getParticipantName, refr
     };
 
     loadRecords();
-  }, [divisionId, refreshTrigger]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [divisionId, refreshTrigger, recordService]);
 
   if (loading) {
     return (
@@ -73,19 +73,12 @@ export function RecordTable({ divisionId, participants, getParticipantName, refr
             const participant = participants.find((p) => p.id === record.participantId);
 
             return (
-              <tr
-                key={record.id}
-                className="border-b border-border/30 hover:bg-muted/20 transition-colors"
-              >
-                <td className="p-3 text-foreground">
-                  {index + 1}
-                </td>
+              <tr key={record.id} className="border-b border-border/30 hover:bg-muted/20 transition-colors">
+                <td className="p-3 text-foreground">{index + 1}</td>
                 <td className="p-3 font-medium text-foreground">{getParticipantName(record.participantId)}</td>
                 <td className="p-3 text-muted-foreground">{participant?.teamName || "-"}</td>
                 <td className="p-3 text-muted-foreground">{participant?.robotName || "-"}</td>
-                <td className="p-3 text-right text-foreground">
-                  {formatElapsedMs(record.value).toString()}
-                </td>
+                <td className="p-3 text-right text-foreground">{formatElapsedMs(record.value).toString()}</td>
               </tr>
             );
           })}

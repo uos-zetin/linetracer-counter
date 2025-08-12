@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { formatElapsedMs } from "@/entities/counter";
 import { useProgressService } from "@/features/progress";
 
@@ -6,8 +7,10 @@ const ROW_COUNT = 5;
 export function CurrentRecordView() {
   const progressService = useProgressService();
   const runner = progressService.use.runner();
-  const currentRecords = runner?.records || [];
-  const filteredRecords = currentRecords.filter((record) => record.status === "approved");
+  const filteredRecords = useMemo(
+    () => (runner?.records || []).filter((record) => record.status === "approved"),
+    [runner?.records]
+  );
   const rows = Array.from({ length: ROW_COUNT }, (_, i) => i);
 
   return (
