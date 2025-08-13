@@ -19,11 +19,11 @@ export const ProgressMonitorSection = ({ counterId }: ProgressMonitorSectionProp
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [isSettingRunner, setIsSettingRunner] = useState(false);
 
-  const counter = counterService?.use.counterState(counterId) || null;
-  const division = divisionService?.use.divisionById(counter?.divisionId || "") || null;
-  const progress = progressService?.use.progress() || null;
-  const runner = progressService?.use.runner() || null;
-  const nextRunners = progressService?.use.nextRunners() || [];
+  const counter = counterService?.use.counterState(counterId);
+  const division = divisionService?.use.divisionById(counter?.divisionId || "");
+  const progress = progressService?.use.progress();
+  const runner = progressService?.use.runner();
+  const nextRunners = progressService?.use.nextRunners();
 
   // 다음 참가자를 현재 참가자로 설정
   const handleSetCurrentRunner = async () => {

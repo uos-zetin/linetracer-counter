@@ -1,3 +1,4 @@
+import { useShallow } from "zustand/shallow";
 import type { Competition, CompetitionForm, CompetitionRepository } from "@/entities/competition";
 import { CompetitionFormSchema, useZustandCompetitionStore } from "@/entities/competition";
 import type { CompetitionService } from "./types";
@@ -83,7 +84,7 @@ export const createCompetitionService = ({ competitionRepository }: CompetitionS
 
   // ===== Subscription Hooks =====
   const useCompetitions = (): Competition[] => {
-    return useZustandCompetitionStore((state) => state.competitions);
+    return useZustandCompetitionStore(useShallow((state) => state.competitions));
   };
 
   const useCompetitionById = (id: string): Competition | null => {

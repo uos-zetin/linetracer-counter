@@ -23,9 +23,9 @@ export const DashboardPage = () => {
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>(divisionId || "");
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
-  const competitions = competitionService.use.competitions() || [];
-  const divisions = divisionService.use.divisionsByCompetition(selectedCompetitionId || "") || [];
-  const participants = participantService.use.allParticipants() || [];
+  const competitions = competitionService.use.competitions();
+  const divisions = divisionService.use.divisionsByCompetition(selectedCompetitionId || "");
+  const participants = participantService.use.allParticipants();
 
   // 대회 목록 로드
   useEffect(() => {
@@ -69,7 +69,7 @@ export const DashboardPage = () => {
 
       loadParticipants();
     }
-  }, [selectedCompetitionId, divisions.length, participantService]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedCompetitionId, divisions, participantService]);
 
   // 매분마다 새로고침 타이머
   useEffect(() => {
@@ -127,7 +127,7 @@ export const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <PageContainer maxWidth="lg" padding="md">
-        <div className="mb-6">
+        <div className="my-6">
           <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2">🏆 경기 결과</h1>
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">실시간 순위와 최고 기록을 확인하세요</p>

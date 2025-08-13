@@ -3,7 +3,7 @@ import type { CounterState } from "@/entities/counter";
 export interface CounterService {
   // Load functions (데이터 조회)
   load: {
-    all: () => Promise<CounterState[]>;
+    all: () => Promise<void>;
     byId: (counterId: string) => Promise<CounterState | null>;
   };
 
@@ -28,6 +28,7 @@ export interface CounterService {
 
   // Subscription hooks (구독)
   use: {
+    counters: () => CounterState[];
     stopwatch: (counterId: string) => {
       startedAt: number | null;
       stoppedAt: number | null;
