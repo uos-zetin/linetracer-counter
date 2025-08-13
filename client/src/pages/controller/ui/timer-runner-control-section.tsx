@@ -180,7 +180,7 @@ export const TimerRunnerControlSection = () => {
 
             {/* 실시간 남은 시간 표시 */}
             <div className="text-center mb-4">
-              <div className="text-4xl font-mono font-bold text-foreground mb-2">
+              <div className="text-4xl font-bold text-foreground mb-2">
                 {liveRemainingTimeMs !== null ? formatElapsedMs(liveRemainingTimeMs).toString() : "00:00.000"}
               </div>
               <div className="flex items-center justify-center space-x-2">
@@ -197,19 +197,17 @@ export const TimerRunnerControlSection = () => {
               <div className="space-y-1">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">제한 시간:</span>
-                  <span className="font-mono text-foreground">{formatElapsedMs(division.timeLimit).toString()}</span>
+                  <span className="text-foreground">{formatElapsedMs(division.timeLimit).toString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">누적 시간:</span>
-                  <span className="font-mono text-foreground">
-                    {formatElapsedMs(timerState.accumulatedMs).toString()}
-                  </span>
+                  <span className="text-foreground">{formatElapsedMs(timerState.accumulatedMs).toString()}</span>
                 </div>
               </div>
               <div className="space-y-1">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">시간 조정:</span>
-                  <span className="font-mono text-foreground">
+                  <span className="text-foreground">
                     {timerState.offsetMs >= 0 ? "+" : "-"}
                     {formatElapsedMs(Math.abs(timerState.offsetMs)).toString()}
                   </span>
@@ -375,7 +373,7 @@ export const TimerRunnerControlSection = () => {
                 <h4 className="text-xs font-medium text-muted-foreground mb-2">타이머 로그</h4>
                 <div className="space-y-1 max-h-24 overflow-y-auto">
                   {runner.timerLogs.map((log) => (
-                    <div key={log.id} className="text-xs text-muted-foreground font-mono">
+                    <div key={log.id} className="text-xs text-muted-foreground">
                       {new Date(log.createdAt).toLocaleTimeString()} - {log.type}:{" "}
                       {formatElapsedMs(log.value).toString()}
                     </div>

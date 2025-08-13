@@ -32,7 +32,7 @@ export const CurrentRecordsList = React.memo(({ records, onUpdateStatus }: Curre
             <Card key={record.id} className="py-4">
               <CardContent className="px-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-lg font-mono font-bold text-foreground">{formatValue(record.value)}</span>
+                  <span className="text-lg font-bold text-foreground">{formatValue(record.value)}</span>
                   <div className="flex items-center space-x-2">
                     <Badge
                       variant={
