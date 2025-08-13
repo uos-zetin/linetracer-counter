@@ -47,7 +47,7 @@ export const createTimerControlService = ({ timerRepository }: TimerControlServi
     load: {
       logs: loadTimerLogs,
     },
-    
+
     // Admin functions (타이머 제어)
     admin: {
       start: startTimer,

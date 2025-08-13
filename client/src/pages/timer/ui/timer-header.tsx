@@ -64,7 +64,9 @@ export function TimerPageHeader() {
         "
       >
         <ImagePlus className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 2xl:w-20 2xl:h-20 text-white" />
-        <span className="text-white text-sm sm:text-base md:text-lg lg:text-xl 2xl:text-3xl font-medium">{image ? "헤더 이미지 변경" : "헤더 이미지 추가"}</span>
+        <span className="text-white text-sm sm:text-base md:text-lg lg:text-xl 2xl:text-3xl font-medium">
+          {image ? "헤더 이미지 변경" : "헤더 이미지 추가"}
+        </span>
       </div>
 
       {/* 숨겨진 파일 입력 */}

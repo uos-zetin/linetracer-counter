@@ -1,13 +1,6 @@
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/shared/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/shared/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/ui/dialog";
 import type { ErrorHandlingConfig } from "../model/types";
 
 interface ErrorModalProps {
@@ -62,9 +55,7 @@ export function ErrorModal({ isOpen, config, onAction, onClose }: ErrorModalProp
         <DialogHeader className="space-y-3">
           <div className="flex items-center space-x-2">
             <AlertTriangle className="h-5 w-5 text-destructive" />
-            <DialogTitle className="text-lg">
-              {config.title}
-            </DialogTitle>
+            <DialogTitle className="text-lg">{config.title}</DialogTitle>
           </div>
           <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
             {config.message}

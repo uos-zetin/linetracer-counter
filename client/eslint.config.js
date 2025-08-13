@@ -78,12 +78,12 @@ export default tseslint.config(
         "error",
         {
           groups: [
-            "builtin",           // Node.js built-ins
-            "external",          // External libraries
-            "internal",          // Internal @/* imports (will be further refined by pathGroups)
-            "parent",            // ../
-            "sibling",           // ./
-            "index"              // ./index
+            "builtin", // Node.js built-ins
+            "external", // External libraries
+            "internal", // Internal @/* imports (will be further refined by pathGroups)
+            "parent", // ../
+            "sibling", // ./
+            "index", // ./index
           ],
           "newlines-between": "never",
           pathGroups: [
@@ -91,44 +91,44 @@ export default tseslint.config(
             {
               pattern: "react",
               group: "external",
-              position: "before"
+              position: "before",
             },
             {
               pattern: "react-*",
-              group: "external", 
-              position: "before"
+              group: "external",
+              position: "before",
             },
             // FSD Layers in bottom-up order
             {
               pattern: "@/shared/**",
               group: "internal",
-              position: "before"
+              position: "before",
             },
             {
-              pattern: "@/entities/**", 
+              pattern: "@/entities/**",
               group: "internal",
-              position: "before"
+              position: "before",
             },
             {
               pattern: "@/features/**",
-              group: "internal", 
-              position: "before"
+              group: "internal",
+              position: "before",
             },
             {
               pattern: "@/widgets/**",
               group: "internal",
-              position: "before" 
+              position: "before",
             },
             {
               pattern: "@/pages/**",
               group: "internal",
-              position: "before"
+              position: "before",
             },
             {
               pattern: "@/app/**",
               group: "internal",
-              position: "before"
-            }
+              position: "before",
+            },
           ],
           pathGroupsExcludedImportTypes: ["react"],
           alphabetize: {

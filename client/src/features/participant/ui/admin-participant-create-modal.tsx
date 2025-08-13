@@ -95,7 +95,10 @@ export function AdminParticipantCreateModal({
               name="divisionId"
               render={({ field }) => (
                 <FormItem>
-                  <label htmlFor="divisionId-select" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  <label
+                    htmlFor="divisionId-select"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
                     부문 <span className="text-red-500">*</span>
                   </label>
                   <FormControl>

@@ -56,9 +56,7 @@ export const RecordStatusSelector = ({
         <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/50">
           <div className="flex items-center space-x-2">
             <span className="text-sm font-medium">Current:</span>
-            <Badge variant={currentStatusInfo.variant}>
-              {currentStatusInfo.label}
-            </Badge>
+            <Badge variant={currentStatusInfo.variant}>{currentStatusInfo.label}</Badge>
           </div>
           {isLoading && <div className="text-xs text-muted-foreground">Updating...</div>}
         </div>

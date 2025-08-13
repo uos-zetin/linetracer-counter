@@ -26,7 +26,10 @@ export function DivisionInfo({ counterId }: DivisionInfoProps) {
       >
         {divisionName}
       </span>
-      <span className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-3xl font-medium text-muted-foreground" title="Stopwatch Name">
+      <span
+        className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-3xl font-medium text-muted-foreground"
+        title="Stopwatch Name"
+      >
         계수기: {stopwatchName}
       </span>
     </div>

@@ -8,14 +8,10 @@ interface UserProviderProps {
 
 export function UserProvider({ children }: UserProviderProps) {
   const { userRepository } = useRepository();
-  
+
   const userService = useMemo(() => {
     return createUserService({ userRepository });
   }, [userRepository]);
 
-  return (
-    <UserContext.Provider value={userService}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={userService}>{children}</UserContext.Provider>;
 }

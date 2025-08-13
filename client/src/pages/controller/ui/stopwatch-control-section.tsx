@@ -84,12 +84,17 @@ export const StopwatchControlSection = ({ counterId }: StopwatchControlSectionPr
       <CardContent className="space-y-6">
         {/* 시간 표시 */}
         <div className="text-center">
-          <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-4">{formatTime(elapsedTime)}</div>
+          <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-4">
+            {formatTime(elapsedTime)}
+          </div>
           <div className="flex items-center justify-center space-x-2 mb-4">
             {isRunning && <Play className="h-5 w-5 text-green-600" />}
             {isStopped && <Square className="h-5 w-5 text-yellow-600" />}
             {isIdle && <Clock className="h-5 w-5 text-muted-foreground" />}
-            <Badge variant={isRunning ? "default" : isStopped ? "secondary" : "outline"} className="text-sm sm:text-base px-3 py-1 sm:px-4 sm:py-2">
+            <Badge
+              variant={isRunning ? "default" : isStopped ? "secondary" : "outline"}
+              className="text-sm sm:text-base px-3 py-1 sm:px-4 sm:py-2"
+            >
               {isRunning ? "측정 중" : isStopped ? "측정 완료" : "대기 중"}
             </Badge>
           </div>
@@ -140,7 +145,6 @@ export const StopwatchControlSection = ({ counterId }: StopwatchControlSectionPr
             </AlertDialog>
           </div>
         )}
-
       </CardContent>
     </Card>
   );

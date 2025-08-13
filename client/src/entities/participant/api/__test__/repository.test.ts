@@ -65,7 +65,7 @@ describe("ParticipantFetcherRepository", () => {
 
     // parseParticipantDto 모킹 설정
     vi.mocked(parseParticipantDto).mockReturnValue(mockParticipant);
-    
+
     // parseParticipantForm 모킹 설정
     vi.mocked(parseParticipantForm).mockImplementation((form) => ({
       name: form.name,

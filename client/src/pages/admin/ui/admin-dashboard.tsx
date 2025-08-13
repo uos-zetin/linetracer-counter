@@ -11,7 +11,7 @@ const adminCards = [
     gradient: "from-blue-500 to-blue-600",
   },
   {
-    title: "부문 관리", 
+    title: "부문 관리",
     description: "경연 부문 설정",
     path: "/admin/divisions",
     icon: List,
@@ -19,7 +19,7 @@ const adminCards = [
   },
   {
     title: "참가자 관리",
-    description: "참가자 등록 및 관리", 
+    description: "참가자 등록 및 관리",
     path: "/admin/participants",
     icon: Users,
     gradient: "from-purple-500 to-purple-600",
@@ -27,7 +27,7 @@ const adminCards = [
   {
     title: "기록 관리",
     description: "기록 보기 및 분석",
-    path: "/admin/records", 
+    path: "/admin/records",
     icon: BarChart3,
     gradient: "from-orange-500 to-orange-600",
   },
@@ -53,7 +53,9 @@ export function AdminDashboard() {
           const IconComponent = card.icon;
           return (
             <Link key={card.path} to={card.path}>
-              <Card className={`bg-gradient-to-r ${card.gradient} text-white hover:shadow-lg transition-all duration-200 border-0 cursor-pointer transform hover:scale-105`}>
+              <Card
+                className={`bg-gradient-to-r ${card.gradient} text-white hover:shadow-lg transition-all duration-200 border-0 cursor-pointer transform hover:scale-105`}
+              >
                 <CardContent className="p-6">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
@@ -74,7 +76,8 @@ export function AdminDashboard() {
       <Alert className="mt-8">
         <Info className="h-4 w-4" />
         <AlertDescription>
-          <strong>관리 기능 사용법:</strong> 위의 카드를 클릭하거나 왼쪽 사이드바에서 원하는 관리 기능을 선택하여 사용하세요.
+          <strong>관리 기능 사용법:</strong> 위의 카드를 클릭하거나 왼쪽 사이드바에서 원하는 관리 기능을 선택하여
+          사용하세요.
         </AlertDescription>
       </Alert>
     </div>

@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import type { Fetcher, ApiResponse } from "@/shared/api";
+import { parseCompetitionDto, parseCompetitionForm } from "../../lib/parse-dto";
 import type { Competition } from "../../model/types";
 import { CompetitionFetcherRepository } from "../repository";
 import type { CompetitionDto } from "../types";
-import { parseCompetitionDto, parseCompetitionForm } from "../../lib/parse-dto";
 
 // parseCompetitionDto와 parseCompetitionForm 함수 모킹
 vi.mock("../../lib/parse-dto", () => ({

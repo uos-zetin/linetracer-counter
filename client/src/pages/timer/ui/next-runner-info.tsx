@@ -10,7 +10,9 @@ export function NextRunnerInfo() {
   return (
     <div className="w-full h-full border border-border rounded-lg overflow-hidden shadow-sm bg-card flex flex-col">
       <div className="bg-muted py-1 sm:py-1.5 md:py-2">
-        <h2 className="text-center text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-4xl font-semibold text-foreground">다음 경연자</h2>
+        <h2 className="text-center text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-4xl font-semibold text-foreground">
+          다음 경연자
+        </h2>
       </div>
 
       <ul className="flex-1 flex flex-col">

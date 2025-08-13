@@ -35,7 +35,13 @@ interface ParticipantEditModalProps {
   divisions: Division[];
 }
 
-export function AdminParticipantEditModal({ isOpen, onClose, onSubmit, participant, divisions }: ParticipantEditModalProps) {
+export function AdminParticipantEditModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  participant,
+  divisions,
+}: ParticipantEditModalProps) {
   const form = useForm<ParticipantForm>({
     resolver: zodResolver(ParticipantFormSchema),
     defaultValues: {
@@ -96,7 +102,10 @@ export function AdminParticipantEditModal({ isOpen, onClose, onSubmit, participa
               name="divisionId"
               render={({ field }) => (
                 <FormItem>
-                  <label htmlFor="divisionId-select-edit" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  <label
+                    htmlFor="divisionId-select-edit"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
                     부문 <span className="text-red-500">*</span>
                   </label>
                   <FormControl>

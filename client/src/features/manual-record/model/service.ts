@@ -31,7 +31,7 @@ export const createManualRecordService = ({
     load: {
       byParticipant: loadManualRecordsByParticipant,
     },
-    
+
     // Admin functions (수동 기록 관리)
     admin: {
       create: createManualRecord,

@@ -1,9 +1,9 @@
 // entities/user/api/__test__/repository.test.ts
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Fetcher } from "@/shared/api";
+import { parseUserDto, parseUserRegisterForm } from "../../lib/parse-dto";
 import type { User, UserRole } from "../../model/types";
 import { UserFetcherRepository } from "../repository";
-import { parseUserDto, parseUserRegisterForm } from "../../lib/parse-dto";
 
 // parseUserDto와 parseUserRegisterForm 함수 모킹
 vi.mock("../../lib/parse-dto", () => ({

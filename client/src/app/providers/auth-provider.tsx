@@ -1,7 +1,13 @@
 import { useEffect, useMemo } from "react";
 import { FetchApiFetcher, AuthenticatedFetcher } from "@/shared/api";
 import { UserFetcherRepository } from "@/entities/user";
-import { createAuthService, authServiceContext, AuthServiceSessionProvider, AuthFetcherRepository, type AuthService } from "@/features/auth";
+import {
+  createAuthService,
+  authServiceContext,
+  AuthServiceSessionProvider,
+  AuthFetcherRepository,
+  type AuthService,
+} from "@/features/auth";
 import { FetcherProvider } from "./fetcher-provider";
 
 const AuthProviderInner = ({ authService, children }: { authService: AuthService; children: React.ReactNode }) => {

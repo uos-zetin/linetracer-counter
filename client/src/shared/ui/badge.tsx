@@ -4,7 +4,6 @@ import { type VariantProps } from "class-variance-authority";
 import { cn } from "../lib";
 import { badgeVariants } from "./variants";
 
-
 function Badge({
   className,
   variant,
