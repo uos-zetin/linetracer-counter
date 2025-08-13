@@ -76,7 +76,7 @@ export function TimerPage() {
   // 권한 체크 또는 counterId가 없으면 로딩 상태 표시
   if (!isAuthorized || !counterId) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className="flex items-center justify-center min-h-dvh bg-background">
         <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-muted-foreground">로딩 중...</div>
       </div>
     );
@@ -87,10 +87,10 @@ export function TimerPage() {
       <TimerPageHeader />
       <section
         id="timer-content"
-        className="flex-1 flex flex-col h-full py-8 sm:py-10 md:py-12 xl:py-16 2xl:py-20 gap-4 sm:gap-6 md:gap-8"
+        className="flex-1 flex flex-col h-full py-4 sm:py-6 md:py-8 xl:py-10 2xl:py-12 gap-2 sm:gap-4 md:gap-6"
       >
         <PageContainer maxWidth="full" padding="md" className="h-full">
-          <div className="min-h-0 h-full flex flex-col gap-8 sm:gap-10 md:gap-12">
+          <div className="min-h-0 h-full flex flex-col gap-4 sm:gap-6 md:gap-8">
             {/* 상단 4개 컴포넌트를 하나의 Card로 감싸기 */}
             <div className="grid gap-x-4 gap-y-3 sm:gap-x-6 sm:gap-y-4 md:gap-x-8 md:gap-y-6 grid-cols-1 md:grid-cols-2">
               <div className="order-1 md:row-start-1 md:col-start-1">
