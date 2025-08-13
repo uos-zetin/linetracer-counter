@@ -97,7 +97,7 @@ export const RecordListDisplay = ({
             <div className="space-y-3">
               {/* Top row: Time and Status */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                <div className="text-xl sm:text-2xl md:text-3xl font-mono font-bold text-gray-900 break-all">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 break-all">
                   {formatElapsedMs(record.value).toString()}
                 </div>
                 <div
@@ -118,7 +118,7 @@ export const RecordListDisplay = ({
                 <div className="text-xs sm:text-sm text-gray-600 break-words">
                   <span className="hidden sm:inline">Participant ID: </span>
                   <span className="sm:hidden">ID: </span>
-                  <span className="font-mono">{record.participantId}</span>
+                  <span>{record.participantId}</span>
                 </div>
               )}
 

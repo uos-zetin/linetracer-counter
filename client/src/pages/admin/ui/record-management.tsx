@@ -388,7 +388,7 @@ export function RecordManagement() {
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
                                 <div className="flex items-center space-x-3 mb-2">
-                                  <div className="text-xl font-mono font-bold text-foreground">
+                                  <div className="text-xl font-bold text-foreground">
                                     {formatElapsedMs(record.value).toString()}
                                   </div>
                                   <Badge
