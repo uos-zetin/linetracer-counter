@@ -29,6 +29,7 @@ import {
 } from "../dtos/division.dto";
 import {
   CreateParticipantDto,
+  CreateParticipantsDto,
   ParticipantResponseDto,
 } from "../dtos/participant.dto";
 import { RecordResponseDto } from "../dtos/record.dto";
@@ -131,6 +132,37 @@ export class DivisionController {
       comment,
       orderRaw
     );
+  }
+
+  @Post("/:divisionId/participants/bulk")
+  @HttpCode(201)
+  @ApiActorSecurity()
+  @ApiResponse({
+    status: 201,
+    description: "참가자 생성 성공 및 생성된 참가자 정보 반환",
+    type: [ParticipantResponseDto],
+  })
+  async createParticipants(
+    @CurrentActor() actor: Actor,
+    @Param("divisionId") divisionId: string,
+    @Body() body: CreateParticipantsDto
+  ): Promise<ParticipantResponseDto[]> {
+    const participants = await Promise.all(
+      body.participants.map(
+        ({ name, teamName, robotName, comment, orderRaw }) => {
+          return this.participantService.addParticipant(
+            actor,
+            divisionId,
+            name,
+            teamName,
+            robotName,
+            comment,
+            orderRaw
+          );
+        }
+      )
+    );
+    return participants;
   }
 
   @Get("/:divisionId/records/top")
