@@ -32,7 +32,7 @@ function dummyDivision(): Division {
     description: "테스트용 부문",
     createdAt: NOW,
     status: "ready" as DivisionStatus,
-    timeLimit: 10 * 60 * 1_000, // 10분
+    timeLimit: 10 * 60, // 10분
   };
 }
 

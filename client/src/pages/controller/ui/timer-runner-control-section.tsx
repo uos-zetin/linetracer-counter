@@ -44,7 +44,7 @@ export const TimerRunnerControlSection = () => {
     if (!runner?.timerLogs || !division?.timeLimit) {
       return { initialMs: 0, offsetMs: 0, accumulatedMs: 0, startedAt: null };
     }
-    return integrateLogs(division.timeLimit, runner.timerLogs);
+    return integrateLogs(division.timeLimit * 1000, runner.timerLogs);
   }, [runner?.timerLogs, division?.timeLimit]);
 
   const countdownResult = useCountdownTimer(timerState);

@@ -1,9 +1,6 @@
 import type { DivisionCreateDto, DivisionDto, DivisionStatusDto } from "../api/types";
 import type { Division, DivisionForm, DivisionStatus } from "../model/types";
 
-const SECONDS_IN_MINUTE = 60;
-const MILLISECONDS_IN_SECOND = 1000;
-
 export function parseDivisionStatusDto(status: DivisionStatusDto): DivisionStatus {
   switch (status) {
     case "ready":
@@ -46,6 +43,6 @@ export function parseDivisionForm(form: DivisionForm): DivisionCreateDto {
   return {
     name: form.name,
     description: form.description,
-    timeLimit: form.timeLimit * SECONDS_IN_MINUTE * MILLISECONDS_IN_SECOND, // 분 단위를 밀리초로 변환
+    timeLimit: form.timeLimit,
   };
 }

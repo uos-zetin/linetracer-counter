@@ -7,6 +7,6 @@ export const DivisionFormSchema = z.object({
   description: z.string().max(1000, "설명은 1000자를 초과할 수 없습니다").trim(),
   timeLimit: z
     .number()
-    .min(1, "제한 시간은 1분 이상이어야 합니다")
-    .max(1440, "제한 시간은 1440분(24시간)을 초과할 수 없습니다"),
+    .min(1, "제한 시간은 1초 이상이어야 합니다")
+    .max(5999, "제한 시간은 5999초(99분 59초)를 초과할 수 없습니다"),
 }) satisfies z.ZodType<DivisionForm>;

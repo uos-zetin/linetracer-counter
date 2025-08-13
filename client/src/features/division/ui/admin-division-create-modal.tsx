@@ -175,14 +175,14 @@ export function AdminDivisionCreateModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    제한 시간 (분) <span className="text-red-500">*</span>
+                    제한 시간 (초) <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      placeholder="제한 시간을 분 단위로 입력하세요"
+                      placeholder="제한 시간을 초 단위로 입력하세요"
                       min={1}
-                      max={1440}
+                      max={5999}
                       disabled={form.formState.isSubmitting}
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}
