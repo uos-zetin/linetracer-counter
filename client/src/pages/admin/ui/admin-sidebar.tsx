@@ -63,8 +63,8 @@ export function AdminSidebar() {
                 <Link
                   to={item.path}
                   className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors min-h-[44px] ${
-                    isActive 
-                      ? "bg-primary text-primary-foreground" 
+                    isActive
+                      ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   }`}
                 >

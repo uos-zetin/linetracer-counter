@@ -59,7 +59,7 @@ describe("ManualRecordFetcherRepository", () => {
 
     // parseManualRecordDto 모킹 설정
     vi.mocked(parseManualRecordDto).mockReturnValue(mockManualRecord);
-    
+
     // parseManualRecordForm 모킹 설정
     vi.mocked(parseManualRecordForm).mockImplementation((form) => ({
       value: form.value,

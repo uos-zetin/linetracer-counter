@@ -12,10 +12,10 @@ import { TimerRunnerControlSection } from "./timer-runner-control-section";
 
 export const ControllerPage = () => {
   const { counterId } = useParams<{ counterId: string }>();
-  
+
   // 권한 체크 및 자동 리다이렉트
   const { isAuthorized, sessionKey } = useAdminAuthorization();
-  
+
   // 계수기 연결 관리
   useCounterConnection({
     counterId: counterId || "",

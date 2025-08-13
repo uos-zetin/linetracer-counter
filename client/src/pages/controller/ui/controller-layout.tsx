@@ -18,7 +18,9 @@ export const ControllerLayout = ({ children, counterId }: ControllerLayoutProps)
             <p className="text-sm sm:text-base text-muted-foreground">실시간 계수기 제어 및 모니터링</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4 sm:gap-6">{children}</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4 sm:gap-6">
+            {children}
+          </div>
         </PageContainer>
       </main>
     </div>

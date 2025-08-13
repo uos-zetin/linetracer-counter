@@ -23,7 +23,9 @@ export function SponsorView() {
       aria-label="이미지 업로드"
     >
       <div className="bg-muted py-1 sm:py-1.5 md:py-2">
-        <h2 className="text-center text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-4xl font-semibold text-foreground">스폰서</h2>
+        <h2 className="text-center text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-4xl font-semibold text-foreground">
+          스폰서
+        </h2>
       </div>
       <div className="relative flex-1 cursor-pointer group flex items-center justify-center overflow-hidden">
         {images.length > 0 && (

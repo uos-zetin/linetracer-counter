@@ -18,7 +18,9 @@ export function StopwatchView() {
           <span>{timeComponents.seconds}</span>
         </div>
         <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-[8rem]">.</span>
-        <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-[6rem]">{timeComponents.milliseconds}</span>
+        <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-[6rem]">
+          {timeComponents.milliseconds}
+        </span>
       </div>
     </div>
   );

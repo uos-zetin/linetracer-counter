@@ -100,11 +100,13 @@ export const RecordListDisplay = ({
                 <div className="text-xl sm:text-2xl md:text-3xl font-mono font-bold text-gray-900 break-all">
                   {formatElapsedMs(record.value).toString()}
                 </div>
-                <div className={`px-2 py-1 rounded text-xs sm:text-sm font-medium whitespace-nowrap w-fit ${getStatusColor(record.status)}`}>
+                <div
+                  className={`px-2 py-1 rounded text-xs sm:text-sm font-medium whitespace-nowrap w-fit ${getStatusColor(record.status)}`}
+                >
                   {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
                 </div>
               </div>
-              
+
               {/* Source info */}
               <div className="flex items-center space-x-2">
                 <span className="text-base sm:text-lg">{getSourceIcon(record.source)}</span>

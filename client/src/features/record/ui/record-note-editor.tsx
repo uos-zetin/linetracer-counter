@@ -83,19 +83,10 @@ export const RecordNoteEditor = ({
           <div className="flex items-center justify-between text-sm">
             <div className="text-muted-foreground">Press Ctrl+Enter to save, Esc to cancel</div>
             <div className="flex space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleCancel}
-                disabled={disabled || isLoading}
-              >
+              <Button variant="outline" size="sm" onClick={handleCancel} disabled={disabled || isLoading}>
                 Cancel
               </Button>
-              <Button
-                size="sm"
-                onClick={handleSave}
-                disabled={disabled || isLoading}
-              >
+              <Button size="sm" onClick={handleSave} disabled={disabled || isLoading}>
                 {isLoading ? "Saving..." : "Save"}
               </Button>
             </div>

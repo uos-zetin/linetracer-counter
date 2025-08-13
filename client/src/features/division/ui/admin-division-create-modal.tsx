@@ -93,7 +93,10 @@ export function AdminDivisionCreateModal({
               name="competitionId"
               render={({ field }) => (
                 <FormItem>
-                  <label htmlFor="competitionId-select" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  <label
+                    htmlFor="competitionId-select"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
                     대회 <span className="text-red-500">*</span>
                   </label>
                   <FormControl>

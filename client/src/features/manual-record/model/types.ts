@@ -5,7 +5,7 @@ export interface ManualRecordService {
   load: {
     byParticipant: (participantId: string) => Promise<ManualRecord[]>;
   };
-  
+
   // Admin functions (수동 기록 관리)
   admin: {
     create: (participantId: string, form: ManualRecordForm) => Promise<ManualRecord>;

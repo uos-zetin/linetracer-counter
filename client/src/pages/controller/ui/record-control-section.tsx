@@ -100,7 +100,6 @@ export const RecordControlSection = () => {
     }
   };
 
-
   if (!progressService || !recordService) {
     return (
       <Card>

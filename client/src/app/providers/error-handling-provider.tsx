@@ -1,10 +1,6 @@
 import { useMemo, useState } from "react";
 import { Toaster } from "@/shared/ui/sonner";
-import { 
-  ErrorHandlingContext, 
-  createErrorHandlingService, 
-  ErrorModal
-} from "@/features/error-handling";
+import { ErrorHandlingContext, createErrorHandlingService, ErrorModal } from "@/features/error-handling";
 import type { ErrorHandlingConfig } from "@/features/error-handling";
 
 interface ErrorHandlingProviderProps {
@@ -57,15 +53,15 @@ export function ErrorHandlingProvider({ children }: ErrorHandlingProviderProps) 
   return (
     <ErrorHandlingContext.Provider value={errorHandlingService}>
       {children}
-      
+
       {/* 에러 UI 컴포넌트들 */}
-      <ErrorModal 
+      <ErrorModal
         isOpen={modalState.isOpen}
         config={modalState.config}
         onAction={modalState.onAction}
         onClose={hideModal}
       />
-      
+
       {/* sonner 토스트 컨테이너 */}
       <Toaster
         position="top-right"

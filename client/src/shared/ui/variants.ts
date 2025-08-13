@@ -25,7 +25,7 @@ export const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  },
+  }
 );
 
 export const badgeVariants = cva(
@@ -43,7 +43,7 @@ export const badgeVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  },
+  }
 );
 
 export const alertVariants = cva(
@@ -59,5 +59,5 @@ export const alertVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  },
+  }
 );

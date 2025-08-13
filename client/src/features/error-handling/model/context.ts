@@ -11,12 +11,10 @@ export const ErrorHandlingContext = createContext<ErrorHandlingService | null>(n
  */
 export function useErrorHandlingService(): ErrorHandlingService {
   const service = useContext(ErrorHandlingContext);
-  
+
   if (!service) {
-    throw new Error(
-      "useErrorHandlingService must be used within an ErrorHandlingProvider"
-    );
+    throw new Error("useErrorHandlingService must be used within an ErrorHandlingProvider");
   }
-  
+
   return service;
 }

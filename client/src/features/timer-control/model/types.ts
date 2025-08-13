@@ -5,7 +5,7 @@ export interface TimerControlService {
   load: {
     logs: (participantId: string) => Promise<TimerLog[]>;
   };
-  
+
   // Admin functions (타이머 제어)
   admin: {
     start: (participantId: string) => Promise<TimerLog>;

@@ -20,7 +20,12 @@ export abstract class ApiError extends Error {
  * 서버 에러 (5xx)
  */
 export class ServerError extends ApiError {
-  constructor(message: string, statusCode: number = 500, type: string = "SERVER_ERROR", originalResponse?: ApiErrorResponse) {
+  constructor(
+    message: string,
+    statusCode: number = 500,
+    type: string = "SERVER_ERROR",
+    originalResponse?: ApiErrorResponse
+  ) {
     super(message, statusCode, type, originalResponse);
     this.name = "ServerError";
   }
@@ -30,7 +35,12 @@ export class ServerError extends ApiError {
  * 클라이언트 에러 (4xx)
  */
 export class ClientError extends ApiError {
-  constructor(message: string, statusCode: number = 400, type: string = "CLIENT_ERROR", originalResponse?: ApiErrorResponse) {
+  constructor(
+    message: string,
+    statusCode: number = 400,
+    type: string = "CLIENT_ERROR",
+    originalResponse?: ApiErrorResponse
+  ) {
     super(message, statusCode, type, originalResponse);
     this.name = "ClientError";
   }
@@ -191,11 +201,7 @@ export class CounterNotRegisteredError extends ClientError {
 /**
  * HTTP 상태 코드와 에러 응답을 기반으로 적절한 에러 객체 생성
  */
-export function createApiError(
-  status: number,
-  errorResponse?: ApiErrorResponse,
-  fallbackMessage?: string
-): ApiError {
+export function createApiError(status: number, errorResponse?: ApiErrorResponse, fallbackMessage?: string): ApiError {
   const errorMessage = errorResponse?.message || fallbackMessage || `HTTP ${status}`;
   const errorType = errorResponse?.type || "UNKNOWN_ERROR";
 
@@ -207,13 +213,13 @@ export function createApiError(
         return new AuthenticationError(errorMessage, errorResponse);
       case "AuthorizationError":
         return new AuthorizationError(errorMessage, errorResponse);
-      
+
       // 엔티티/파라미터 관련
       case "EntityNotFoundError":
         return new EntityNotFoundError(errorMessage, errorResponse);
       case "ParameterInvalidError":
         return new ParameterInvalidError(errorMessage, errorResponse);
-      
+
       // 비즈니스 로직 관련
       case "UsernameAlreadyExistsError":
         return new UsernameAlreadyExistsError(errorMessage, errorResponse);
@@ -229,7 +235,7 @@ export function createApiError(
         return new RunnerNotSetError(errorMessage, errorResponse);
       case "CounterNotRegisteredError":
         return new CounterNotRegisteredError(errorMessage, errorResponse);
-      
+
       // 서버 내부 에러
       case "PersistenceError":
         return new PersistenceError(errorMessage, errorResponse);

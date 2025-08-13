@@ -5,16 +5,16 @@
 export interface BaseEntityActions<T, TId = string> {
   /** 엔티티 목록 초기화 */
   init: (entities: T[]) => void;
-  
+
   /** 새 엔티티 추가 */
   add: (entity: T) => void;
-  
+
   /** 기존 엔티티 업데이트 */
   update: (entity: T) => void;
-  
+
   /** 엔티티 제거 */
   remove: (entityId: TId) => void;
-  
+
   /** 모든 엔티티 초기화 (선택적, 주로 테스트용) */
   clearAll?: () => void;
 }
