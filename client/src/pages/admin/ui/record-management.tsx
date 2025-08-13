@@ -36,7 +36,7 @@ export function RecordManagement() {
 
   const competitions = competitionService.use.competitions();
   const selectedCompetitionId = searchParams.get("competitionId") || "";
-  const selectedDivisionId = searchParams.get("divisionId") || "all";
+  const selectedDivisionId = searchParams.get("divisionId") || "";
   const selectedStatus = (searchParams.get("status") as RecordStatus) || "";
 
   const divisions = divisionService.use.divisionsByCompetition(selectedCompetitionId);
@@ -55,38 +55,37 @@ export function RecordManagement() {
 
   // 선택된 대회의 부문들 로드
   useEffect(() => {
-    if (selectedCompetitionId) {
-      divisionService.load.byCompetition(selectedCompetitionId).catch((error: unknown) => {
-        errorHandler.handle(error as Error, "부문 목록 로드 중 오류가 발생했습니다");
-      });
-    }
+    if (!selectedCompetitionId) return;
+    divisionService.load.byCompetition(selectedCompetitionId).catch((error: unknown) => {
+      errorHandler.handle(error as Error, "부문 목록 로드 중 오류가 발생했습니다");
+    });
   }, [divisionService, selectedCompetitionId, errorHandler]);
 
   // 선택된 부문의 참가자들 로드
   useEffect(() => {
-    if (divisions.length > 0) {
-      const divisionIds = selectedDivisionId ? [selectedDivisionId] : divisions.map((d) => d.id);
-      participantService.load.byDivisions(divisionIds).catch((error: unknown) => {
-        errorHandler.handle(error as Error, "참가자 목록 로드 중 오류가 발생했습니다");
-      });
-    }
+    if (!selectedDivisionId) return;
+    participantService.load.byDivisions([selectedDivisionId]).catch((error: unknown) => {
+      errorHandler.handle(error as Error, "참가자 목록 로드 중 오류가 발생했습니다");
+    });
   }, [participantService, divisions, selectedDivisionId, errorHandler]);
 
   // 선택된 참가자들의 기록들 로드
   useEffect(() => {
     const loadRecords = async () => {
-      if (allParticipants.length > 0) {
-        try {
-          // 모든 참가자의 기록을 로드
-          await Promise.all(allParticipants.map((participant) => recordService.load.byParticipant(participant.id)));
-        } catch (error) {
-          errorHandler.handle(error as Error, "기록 로드 중 오류가 발생했습니다");
-        }
+      try {
+        // 모든 참가자의 기록을 로드
+        await Promise.all(allParticipants.map((participant) => recordService.load.byParticipant(participant.id)));
+      } catch (error) {
+        errorHandler.handle(error as Error, "기록 로드 중 오류가 발생했습니다");
       }
     };
 
+    if (!selectedDivisionId) {
+      recordService.load.allRecords();
+      return;
+    }
     loadRecords();
-  }, [recordService, allParticipants, errorHandler]);
+  }, [recordService, allParticipants, errorHandler, selectedDivisionId]);
 
   // 부문 이름 찾기 헬퍼 함수
   const getDivisionName = (divisionId: string): string => {
@@ -94,38 +93,57 @@ export function RecordManagement() {
     return division?.name || "알 수 없는 부문";
   };
 
-  // 참가자 이름 찾기 헬퍼 함수
-  const getParticipantName = (participantId: string): string => {
-    const participant = allParticipants.find((p: Participant) => p.id === participantId);
-    return participant?.name || "알 수 없는 참가자";
-  };
-
-  // 필터링된 기록들
-  const getFilteredRecords = (): Record[] => {
-    let filteredRecords = allRecords;
+  // 참가자별로 그룹화된 기록들
+  const getGroupedRecords = (): { [key: string]: { participant: Participant; records: Record[] } } => {
+    let filteredRecords = [...allRecords];
 
     if (selectedDivisionId && selectedDivisionId !== "all") {
       // 선택된 부문의 참가자들의 기록만 필터링
-      const divisionParticipants = allParticipants.filter((p) => p.divisionId === selectedDivisionId);
-      const participantIds = divisionParticipants.map((p) => p.id);
-      filteredRecords = filteredRecords.filter((record) => participantIds.includes(record.participantId));
+      const participantIds = new Set(
+        allParticipants.filter((p) => p.divisionId === selectedDivisionId).map((p) => p.id)
+      );
+      filteredRecords = filteredRecords.filter((record) => participantIds.has(record.participantId));
     }
 
     if (selectedStatus) {
       filteredRecords = filteredRecords.filter((record) => record.status === selectedStatus);
     }
 
-    return filteredRecords.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    // 참가자별로 기록 그룹화
+    const grouped: { [key: string]: { participant: Participant; records: Record[] } } = {};
+
+    filteredRecords.forEach((record) => {
+      const participant = allParticipants.find((p) => p.id === record.participantId);
+      if (participant) {
+        if (!grouped[record.participantId]) {
+          grouped[record.participantId] = {
+            participant,
+            records: [],
+          };
+        }
+        grouped[record.participantId].records.push(record);
+      }
+    });
+
+    // 각 참가자의 기록을 시간 순으로 정렬 (최신순)
+    Object.values(grouped).forEach((group: { participant: Participant; records: Record[] }) => {
+      group.records.sort((a: Record, b: Record) => b.createdAt.getTime() - a.createdAt.getTime());
+    });
+
+    return grouped;
   };
 
   // 통계 계산
   const getRecordStats = () => {
-    const filteredRecords = getFilteredRecords();
-    const pendingCount = filteredRecords.filter((r) => r.status === "pending").length;
-    const approvedCount = filteredRecords.filter((r) => r.status === "approved").length;
-    const rejectedCount = filteredRecords.filter((r) => r.status === "rejected").length;
+    const groupedRecords = getGroupedRecords();
+    const allFilteredRecords = Object.values(groupedRecords).flatMap(
+      (group: { participant: Participant; records: Record[] }) => group.records
+    );
+    const pendingCount = allFilteredRecords.filter((r) => r.status === "pending").length;
+    const approvedCount = allFilteredRecords.filter((r) => r.status === "approved").length;
+    const rejectedCount = allFilteredRecords.filter((r) => r.status === "rejected").length;
 
-    return { total: filteredRecords.length, pendingCount, approvedCount, rejectedCount };
+    return { total: allFilteredRecords.length, pendingCount, approvedCount, rejectedCount };
   };
 
   // 필터 변경 핸들러들
@@ -178,7 +196,7 @@ export function RecordManagement() {
   };
 
   const stats = getRecordStats();
-  const filteredRecords = getFilteredRecords();
+  const groupedRecords = getGroupedRecords();
 
   return (
     <div>
@@ -199,7 +217,7 @@ export function RecordManagement() {
               <div className="space-y-2">
                 <span className="block text-sm font-medium text-foreground">대회 선택</span>
                 <Select value={selectedCompetitionId} onValueChange={handleCompetitionSelect}>
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="대회를 선택하세요" />
                   </SelectTrigger>
                   <SelectContent>
@@ -227,13 +245,16 @@ export function RecordManagement() {
                   onValueChange={handleDivisionSelect}
                   disabled={!selectedCompetitionId}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder={selectedCompetitionId ? "부문을 선택하세요" : "먼저 대회를 선택하세요"} />
+                  <SelectTrigger className="w-full">
+                    <div className="truncate">
+                      <SelectValue
+                        placeholder={selectedCompetitionId ? "부문을 선택하세요" : "먼저 대회를 선택하세요"}
+                      />
+                    </div>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>부문 목록</SelectLabel>
-                      <SelectItem value="all">전체 부문</SelectItem>
                       {divisions.map((division: Division) => (
                         <SelectItem key={division.id} value={division.id}>
                           {division.name}
@@ -252,7 +273,7 @@ export function RecordManagement() {
               <div className="space-y-2">
                 <span className="block text-sm font-medium text-foreground">상태 필터</span>
                 <Select value={selectedStatus || "all"} onValueChange={handleStatusSelect}>
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="상태를 선택하세요" />
                   </SelectTrigger>
                   <SelectContent>
@@ -315,127 +336,153 @@ export function RecordManagement() {
               <h3 className="text-lg font-medium text-foreground mb-2">대회를 선택해주세요</h3>
               <p className="text-muted-foreground">먼저 대회를 선택한 후 기록을 관리할 수 있습니다.</p>
             </div>
-          ) : filteredRecords.length === 0 ? (
+          ) : Object.keys(groupedRecords).length === 0 ? (
             <div className="text-center py-12">
               <BarChart3 className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
               <h3 className="text-lg font-medium text-foreground mb-2">기록이 없습니다</h3>
               <p className="text-muted-foreground">
-                {selectedDivisionId && selectedStatus
-                  ? `선택된 부문과 상태에 해당하는 기록이 없습니다.`
-                  : selectedDivisionId
-                    ? `선택된 부문에 기록이 없습니다.`
-                    : selectedStatus
-                      ? `선택된 상태에 해당하는 기록이 없습니다.`
-                      : `아직 기록이 없습니다.`}
+                {!selectedDivisionId
+                  ? `부문을 선택해주세요.`
+                  : selectedDivisionId && selectedStatus
+                    ? `선택된 부문과 상태에 해당하는 기록이 없습니다.`
+                    : selectedDivisionId
+                      ? `선택된 부문에 기록이 없습니다.`
+                      : selectedStatus
+                        ? `선택된 상태에 해당하는 기록이 없습니다.`
+                        : `아직 기록이 없습니다.`}
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-foreground">기록 목록 ({filteredRecords.length}개)</h3>
+                <h3 className="text-lg font-semibold text-foreground">
+                  참가자별 기록 ({Object.keys(groupedRecords).length}명, 총 {stats.total}개 기록)
+                </h3>
                 {selectedDivisionId && selectedDivisionId !== "all" && (
                   <Badge variant="secondary">{getDivisionName(selectedDivisionId)}</Badge>
                 )}
               </div>
 
-              <div className="space-y-3">
-                {filteredRecords.map((record) => (
-                  <Card key={record.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="px-6">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <div className="text-xl font-mono font-bold text-foreground">
-                              {formatElapsedMs(record.value).toString()}
-                            </div>
-                            <Badge
-                              variant={
-                                record.status === "approved"
-                                  ? "default"
-                                  : record.status === "rejected"
-                                    ? "destructive"
-                                    : "secondary"
-                              }
-                              className="text-xs"
-                            >
-                              {record.status === "pending"
-                                ? "승인 대기"
-                                : record.status === "approved"
-                                  ? "승인됨"
-                                  : "거부됨"}
-                            </Badge>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
-                            <div>
-                              <span className="font-medium text-foreground">참가자:</span>{" "}
-                              {getParticipantName(record.participantId)}
-                            </div>
-                            <div>
-                              <span className="font-medium text-foreground">출처:</span>{" "}
-                              {record.source === "stopwatch"
-                                ? "계수기"
-                                : record.source === "manual"
-                                  ? "수동 계수"
-                                  : "기타"}
-                            </div>
-                          </div>
-                          {record.note && (
-                            <p className="mt-2 text-sm text-muted-foreground bg-muted p-2 rounded">{record.note}</p>
-                          )}
-                          <p className="mt-1 text-xs text-muted-foreground">기록일: {formatDate(record.createdAt)}</p>
-                        </div>
-                        <div className="flex space-x-2 ml-4">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setEditingNote(editingNote === record.id ? null : record.id);
-                              setEditingStatus(null);
-                            }}
-                            className="h-9 px-3"
-                            title="노트 수정"
-                          >
-                            노트
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setEditingStatus(editingStatus === record.id ? null : record.id);
-                              setEditingNote(null);
-                            }}
-                            className="h-9 px-3"
-                            title="상태 변경"
-                          >
-                            상태
-                          </Button>
-                        </div>
+              <div className="space-y-6">
+                {Object.values(groupedRecords).map((group: { participant: Participant; records: Record[] }) => (
+                  <div key={group.participant.id} className="border rounded-lg p-4 bg-muted/20">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <h4 className="text-lg font-semibold text-foreground">{group.participant.name}</h4>
+                        <Badge variant="outline">
+                          {getDivisionName(group.participant.divisionId)} · {group.records.length}개 기록
+                        </Badge>
                       </div>
-
-                      {/* 인라인 편집 영역 */}
-                      {editingNote === record.id && (
-                        <div className="mt-4 pt-4 border-t">
-                          <RecordNoteEditor
-                            recordId={record.id}
-                            currentNote={record.note || ""}
-                            onNoteChange={(note) => handleNoteUpdate(record.id, note)}
-                            className="w-full"
-                          />
+                      {group.records.length > 0 && (
+                        <div className="text-sm text-muted-foreground">
+                          최고 기록:{" "}
+                          {formatElapsedMs(Math.min(...group.records.map((r: Record) => r.value))).toString()}
                         </div>
                       )}
+                    </div>
 
-                      {editingStatus === record.id && (
-                        <div className="mt-4 pt-4 border-t">
-                          <RecordStatusSelector
-                            recordId={record.id}
-                            currentStatus={record.status}
-                            onStatusChange={(status) => handleStatusUpdate(record.id, status)}
-                            className="w-full"
-                          />
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                    <div className="space-y-3">
+                      {group.records.map((record: Record) => (
+                        <Card key={record.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="px-4 py-3">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-3 mb-2">
+                                  <div className="text-xl font-mono font-bold text-foreground">
+                                    {formatElapsedMs(record.value).toString()}
+                                  </div>
+                                  <Badge
+                                    variant={
+                                      record.status === "approved"
+                                        ? "default"
+                                        : record.status === "rejected"
+                                          ? "destructive"
+                                          : "secondary"
+                                    }
+                                    className="text-xs"
+                                  >
+                                    {record.status === "pending"
+                                      ? "승인 대기"
+                                      : record.status === "approved"
+                                        ? "승인됨"
+                                        : "거부됨"}
+                                  </Badge>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+                                  <div>
+                                    <span className="font-medium text-foreground">출처:</span>{" "}
+                                    {record.source === "stopwatch"
+                                      ? "계수기"
+                                      : record.source === "manual"
+                                        ? "수동 계수"
+                                        : "기타"}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium text-foreground">기록일:</span>{" "}
+                                    {formatDate(record.createdAt)}
+                                  </div>
+                                </div>
+                                {record.note && (
+                                  <p className="mt-2 text-sm text-muted-foreground bg-muted p-2 rounded">
+                                    {record.note}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="flex space-x-2 ml-4">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    setEditingNote(editingNote === record.id ? null : record.id);
+                                    setEditingStatus(null);
+                                  }}
+                                  className="h-9 px-3"
+                                  title="노트 수정"
+                                >
+                                  노트
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    setEditingStatus(editingStatus === record.id ? null : record.id);
+                                    setEditingNote(null);
+                                  }}
+                                  className="h-9 px-3"
+                                  title="상태 변경"
+                                >
+                                  상태
+                                </Button>
+                              </div>
+                            </div>
+
+                            {/* 인라인 편집 영역 */}
+                            {editingNote === record.id && (
+                              <div className="mt-4 pt-4 border-t">
+                                <RecordNoteEditor
+                                  recordId={record.id}
+                                  currentNote={record.note || ""}
+                                  onNoteChange={(note) => handleNoteUpdate(record.id, note)}
+                                  className="w-full"
+                                />
+                              </div>
+                            )}
+
+                            {editingStatus === record.id && (
+                              <div className="mt-4 pt-4 border-t">
+                                <RecordStatusSelector
+                                  recordId={record.id}
+                                  currentStatus={record.status}
+                                  onStatusChange={(status) => handleStatusUpdate(record.id, status)}
+                                  className="w-full"
+                                />
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>

@@ -69,12 +69,10 @@ export function ParticipantManagement() {
 
   // 모든 부문의 참가자들을 한 번에 로드 - divisions가 로드된 후 실행
   useEffect(() => {
-    if (divisions.length > 0) {
-      const divisionIds = divisions.map((division) => division.id);
-      participantService.load.byDivisions(divisionIds).catch((error: unknown) => {
-        errorHandler.handle(error as Error, "참가자 목록 로드 중 오류가 발생했습니다");
-      });
-    }
+    const divisionIds = divisions.map((division) => division.id);
+    participantService.load.byDivisions(divisionIds).catch((error: unknown) => {
+      errorHandler.handle(error as Error, "참가자 목록 로드 중 오류가 발생했습니다");
+    });
   }, [participantService, divisions, errorHandler]);
 
   // 대회 이름 찾기 헬퍼 함수
