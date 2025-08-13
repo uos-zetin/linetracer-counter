@@ -21,7 +21,7 @@ export class UserFetcherRepository implements UserRepository {
   }
 
   async createUser(data: UserRegisterForm): Promise<User> {
-    const response = await this.authFetcher.post<UserDto>("/actors", {
+    const response = await this.authFetcher.post<UserDto>("/actors/register", {
       body: parseUserRegisterForm(data),
     });
     return parseUserDto(response.data);
