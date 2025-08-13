@@ -25,7 +25,7 @@ import {
 } from "@/shared/ui";
 import type { Competition } from "@/entities/competition";
 import type { Division, DivisionForm } from "@/entities/division";
-import { DivisionFormSchema } from "@/entities/division";
+import { DivisionFormSchema, MAX_TIMELIMIT } from "@/entities/division";
 
 interface DivisionEditModalProps {
   isOpen: boolean;
@@ -181,7 +181,7 @@ export function AdminDivisionEditModal({ isOpen, onClose, onSubmit, division, co
                       type="number"
                       placeholder="제한 시간을 초 단위로 입력하세요"
                       min={1}
-                      max={5999}
+                      max={MAX_TIMELIMIT}
                       disabled={form.formState.isSubmitting}
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { DivisionForm } from "./types";
+import { MAX_TIMELIMIT, type DivisionForm } from "./types";
 
 export const DivisionFormSchema = z.object({
   competitionId: z.string().min(1, "대회를 선택해주세요"),
@@ -8,5 +8,5 @@ export const DivisionFormSchema = z.object({
   timeLimit: z
     .number()
     .min(1, "제한 시간은 1초 이상이어야 합니다")
-    .max(5999, "제한 시간은 5999초(99분 59초)를 초과할 수 없습니다"),
+    .max(MAX_TIMELIMIT, `제한 시간은 ${MAX_TIMELIMIT}초(99분 59초)를 초과할 수 없습니다`),
 }) satisfies z.ZodType<DivisionForm>;
