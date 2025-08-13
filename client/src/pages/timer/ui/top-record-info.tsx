@@ -90,6 +90,7 @@ export function TopRecordView() {
               key={rowIdx}
               className={cn(
                 "flex-1 grid font-medium border-t border-border",
+                "min-h-[50px] sm:min-h-[55px] md:min-h-[60px] lg:min-h-[65px] xl:min-h-[70px] 2xl:min-h-[120px]",
                 "grid-cols-[15%_35%_15%_35%] sm:grid-cols-[12%_38%_12%_38%]",
                 "md:grid-cols-[10%_40%_10%_40%] lg:grid-cols-[7.5%_42.5%_7.5%_42.5%]",
                 "text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-3xl"
@@ -97,7 +98,7 @@ export function TopRecordView() {
             >
               <span
                 className={cn(
-                  "flex items-center justify-center py-2 border-r border-border",
+                  "flex items-center justify-center py-1 border-r border-border",
                   rankBg(leftRank) || `${bgLeft} text-foreground`
                 )}
               >
@@ -105,7 +106,7 @@ export function TopRecordView() {
               </span>
               <span
                 className={cn(
-                  "flex items-center justify-center py-2",
+                  "flex items-center justify-center py-1",
                   "px-1 sm:px-2 md:px-3 lg:px-4",
                   rankBg(leftRank) || `${bgLeft} text-foreground`,
                   isLeftTopRank && "font-bold"
@@ -115,23 +116,30 @@ export function TopRecordView() {
                 {left ? (
                   <div className="text-center leading-none">
                     <div
-                      className={`truncate ${isLeftTopRank ? "text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-3xl" : "text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl"}`}
-                    >
-                      {left.participantName}
-                    </div>
-                    <div
-                      className={`${isLeftTopRank ? "text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl" : "text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-xl"} text-muted-foreground`}
+                      className={`${isLeftTopRank ? "text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-3xl" : "text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl"} font-bold`}
                     >
                       {formatElapsedMs(left.timeMs).toString()}s
                     </div>
+                    <div
+                      className={`truncate ${isLeftTopRank ? "text-xs sm:text-xs md:text-xs lg:text-xs xl:text-sm 2xl:text-base" : "text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs 2xl:text-sm"} text-muted-foreground`}
+                    >
+                      {left.participantName}
+                    </div>
                   </div>
                 ) : (
-                  <span className="text-muted-foreground">—</span>
+                  <div className="text-center leading-none">
+                    <div className="text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl text-muted-foreground font-bold">
+                      —
+                    </div>
+                    <div className="text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs 2xl:text-sm text-muted-foreground/60">
+                      —
+                    </div>
+                  </div>
                 )}
               </span>
               <span
                 className={`
-                  flex items-center justify-center py-2 border-x border-border                   ${rankBg(rightRank) || `${bgRight} text-foreground`}
+                  flex items-center justify-center py-1 border-x border-border                   ${rankBg(rightRank) || `${bgRight} text-foreground`}
                   ${isRightTopRank ? "" : ""}
                 `}
               >
@@ -139,7 +147,7 @@ export function TopRecordView() {
               </span>
               <span
                 className={`
-                  flex items-center justify-center py-2 px-1 sm:px-2 md:px-3 lg:px-4                   ${rankBg(rightRank) || `${bgRight} text-foreground`}
+                  flex items-center justify-center py-1 px-1 sm:px-2 md:px-3 lg:px-4                   ${rankBg(rightRank) || `${bgRight} text-foreground`}
                   ${isRightTopRank ? "font-bold" : ""}
                 `}
                 title={right ? `${right.participantName} - ${formatElapsedMs(right.timeMs).toString()}s` : undefined}
@@ -147,18 +155,25 @@ export function TopRecordView() {
                 {right ? (
                   <div className="text-center leading-none">
                     <div
-                      className={`truncate ${isRightTopRank ? "text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-3xl" : "text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl"}`}
-                    >
-                      {right.participantName}
-                    </div>
-                    <div
-                      className={`${isRightTopRank ? "text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl" : "text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-xl"} text-muted-foreground`}
+                      className={`${isRightTopRank ? "text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-3xl" : "text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl"} font-bold`}
                     >
                       {formatElapsedMs(right.timeMs).toString()}s
                     </div>
+                    <div
+                      className={`truncate ${isRightTopRank ? "text-xs sm:text-xs md:text-xs lg:text-xs xl:text-sm 2xl:text-base" : "text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs 2xl:text-sm"} text-muted-foreground`}
+                    >
+                      {right.participantName}
+                    </div>
                   </div>
                 ) : (
-                  <span className="text-muted-foreground">—</span>
+                  <div className="text-center leading-none">
+                    <div className="text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl text-muted-foreground font-bold">
+                      —
+                    </div>
+                    <div className="text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs 2xl:text-sm text-muted-foreground/60">
+                      —
+                    </div>
+                  </div>
                 )}
               </span>
             </li>

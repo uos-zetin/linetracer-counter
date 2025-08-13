@@ -10,7 +10,7 @@ export function TimerPageHeader() {
   return (
     <header
       className="
-        sticky top-0 z-20 w-full
+        sticky top-0 z-20 w-full max-h-[12dvw]
         flex items-center justify-center text-center
         bg-muted
         shadow-lg
@@ -29,25 +29,23 @@ export function TimerPageHeader() {
     >
       {/* 기본 텍스트 또는 이미지 */}
       {image ? (
-        <div className="relative w-full">
+        <div className="relative w-full h-[12dvw]">
           <img
             src={image}
             alt="Competition Header"
             className="
-              w-full h-auto
-              object-contain
-              block
+              w-full h-full
+              object-cover
               "
           />
         </div>
       ) : (
         <h1
           className="
-            w-full
+            w-full h-[12dvw]
             bg-primary text-primary-foreground
-            text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-9xl py-4 sm:py-6 md:py-8 2xl:py-16
-            font-bold text-center tracking-tight
-            aspect-banner flex items-center justify-center
+            text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-9xl py-4 sm:py-6 md:py-8 2xl:py-16
+            font-bold text-center tracking-tight flex items-center justify-center
           "
         >
           {(competition?.name || "No Competition").toUpperCase()}
