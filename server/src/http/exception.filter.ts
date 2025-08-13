@@ -41,10 +41,21 @@ export class CustomExceptionFilter implements ExceptionFilter {
     switch (true) {
       case exception instanceof HttpException:
         // Handle NestJS built-in exceptions
+        let message: string = exception.message;
+        const exceptionResponse = exception.getResponse();
+        if (typeof exceptionResponse === "string") {
+          message = exceptionResponse;
+        } else if ("message" in exceptionResponse) {
+          if (typeof exceptionResponse.message === "string") {
+            message = exceptionResponse.message;
+          } else if (Array.isArray(exceptionResponse.message)) {
+            message = exceptionResponse.message.join(", ");
+          }
+        }
         error = {
           statusCode: exception.getStatus(),
           type: exception.constructor.name,
-          message: exception.message,
+          message,
         };
         break;
       case exception instanceof PersistenceError:
