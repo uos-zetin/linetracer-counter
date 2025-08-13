@@ -173,7 +173,7 @@ void HttpSensorDataSender::send_sensor_data(const std::vector<SensorDataItem>& d
         }
         send_data(device_info_.device_id, data);
     } catch (const SenderException& e) {
-        Logger::error("send_sensor_data: ", e.what());
         have_to_reconnect_ = true;
+        throw;
     }
 }
