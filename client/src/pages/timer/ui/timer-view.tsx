@@ -6,7 +6,7 @@ export function TimerView() {
   const currentDivision = progress.use.division();
   const currentRunner = progress.use.runner();
   const timerLogs = currentRunner?.timerLogs || [];
-  const timerState = integrateLogs(currentDivision?.timeLimit || 0, timerLogs);
+  const timerState = integrateLogs((currentDivision?.timeLimit || 0) * 1000, timerLogs);
 
   const remainingTime = useCountdownTimer(timerState);
   const timeComponents = formatMsToTime(remainingTime);

@@ -98,7 +98,7 @@ describe("DivisionFetcherRepository", () => {
         description: "Second Description",
         createdAt: "2024-01-02T00:00:00.000Z",
         status: "ongoing",
-        timeLimit: 7200,
+        timeLimit: 5400,
       };
       const mockResponse: ApiResponse<DivisionDto[]> = {
         data: [mockDivisionDto, secondDivisionDto],
@@ -121,7 +121,7 @@ describe("DivisionFetcherRepository", () => {
         description: "Second Description",
         createdAt: new Date("2024-01-02T00:00:00.000Z"),
         status: "ongoing",
-        timeLimit: 7200,
+        timeLimit: 5400,
       });
     });
   });
@@ -199,7 +199,7 @@ describe("DivisionFetcherRepository", () => {
         body: {
           name: newDivision.name,
           description: newDivision.description,
-          timeLimit: newDivision.timeLimit * 60 * 1000, // 분을 밀리초로 변환
+          timeLimit: newDivision.timeLimit,
         },
       });
       expect(result).toEqual({
@@ -251,7 +251,7 @@ describe("DivisionFetcherRepository", () => {
         body: {
           name: updatedDivision.name,
           description: updatedDivision.description,
-          timeLimit: updatedDivision.timeLimit * 60 * 1000, // 분을 밀리초로 변환
+          timeLimit: updatedDivision.timeLimit,
         },
       });
       expect(result).toEqual(updatedDivision);
@@ -284,7 +284,7 @@ describe("DivisionFetcherRepository", () => {
         body: {
           name: updatedDivision.name,
           description: updatedDivision.description,
-          timeLimit: updatedDivision.timeLimit * 60 * 1000, // 분을 밀리초로 변환
+          timeLimit: updatedDivision.timeLimit,
         },
       });
       expect(result).toBeNull();

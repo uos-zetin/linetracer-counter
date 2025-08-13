@@ -25,7 +25,7 @@ import {
 } from "@/shared/ui";
 import type { Competition } from "@/entities/competition";
 import type { DivisionForm } from "@/entities/division";
-import { DivisionFormSchema } from "@/entities/division";
+import { DivisionFormSchema, MAX_TIMELIMIT } from "@/entities/division";
 
 interface DivisionCreateModalProps {
   isOpen: boolean;
@@ -175,14 +175,14 @@ export function AdminDivisionCreateModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    제한 시간 (분) <span className="text-red-500">*</span>
+                    제한 시간 (초) <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      placeholder="제한 시간을 분 단위로 입력하세요"
+                      placeholder="제한 시간을 초 단위로 입력하세요"
                       min={1}
-                      max={1440}
+                      max={MAX_TIMELIMIT}
                       disabled={form.formState.isSubmitting}
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}

@@ -217,7 +217,12 @@ export function DivisionManagement() {
                       <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                         <div className="flex items-center">
                           <Clock className="w-4 h-4 mr-1" />
-                          <span>{division.timeLimit}분</span>
+                          <span>
+                            {Math.floor(division.timeLimit / 60)
+                              .toString()
+                              .padStart(2, "0")}
+                            분 {(division.timeLimit % 60).toString().padStart(2, "0")}초
+                          </span>
                         </div>
                         <span>생성일: {formatDate(division.createdAt)}</span>
                       </div>
