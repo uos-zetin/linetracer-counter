@@ -18,6 +18,7 @@ import {
 } from "@/shared/ui";
 import type { User, UserRole } from "@/entities/user";
 import { UserFormSchema } from "@/entities/user";
+import { roleLabels } from "../model/types";
 
 interface UserEditRolesModalProps {
   isOpen: boolean;
@@ -27,11 +28,6 @@ interface UserEditRolesModalProps {
 }
 
 const allRoles: UserRole[] = ["administrator", "manualRecorder", "stopwatchRecorder"];
-const roleLabels: Record<UserRole, string> = {
-  administrator: "관리자",
-  manualRecorder: "수동 계수자",
-  stopwatchRecorder: "계수기",
-};
 
 type RoleFormData = {
   name: string;

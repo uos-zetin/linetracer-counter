@@ -1,6 +1,6 @@
 // Model
 export { createUserService } from "./model/service";
-export type { UserService } from "./model/types";
+export * from "./model/types";
 export { UserContext, useUserService } from "./model/context";
 
 // UI Components
