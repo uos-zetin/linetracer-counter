@@ -29,7 +29,7 @@ export const CurrentParticipantInfo = React.memo(({ runner }: CurrentParticipant
           </div>
           <div className="flex justify-between">
             <span className="text-sm text-muted-foreground">코멘트:</span>
-            <span className="text-sm font-medium text-foreground">{runner.participant.comment}</span>
+            <span className="text-sm font-medium text-foreground">{runner.participant.comment || "없음"}</span>
           </div>
         </div>
       </CardContent>
