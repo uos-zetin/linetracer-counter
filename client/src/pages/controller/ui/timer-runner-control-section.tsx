@@ -294,7 +294,7 @@ export const TimerRunnerControlSection = () => {
                     type="number"
                     value={customTimeAdjustment}
                     onChange={(e) => setCustomTimeAdjustment(e.target.value)}
-                    placeholder="±ms (예: 5000, -3000)"
+                    placeholder="±s (예: 50, -30)"
                     className="flex-1"
                   />
                   <Button
