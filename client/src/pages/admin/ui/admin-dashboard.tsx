@@ -1,6 +1,5 @@
 import { Link } from "react-router";
-import { Trophy, List, Users, BarChart3, UserCog, Info } from "lucide-react";
-import { Card, CardContent, Alert, AlertDescription } from "@/shared/ui";
+import { Card, CardContent, Alert, AlertDescription, Trophy, List, Users, BarChart3, UserCog, Info } from "@/shared/ui";
 
 const adminCards = [
   {

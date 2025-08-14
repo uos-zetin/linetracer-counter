@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { FileText, AlertCircle } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui";
+import { Card, CardContent, CardHeader, CardTitle, FileText, AlertCircle } from "@/shared/ui";
 import type { RecordStatus } from "@/entities/record";
 import { useErrorHandlingService } from "@/features/error-handling";
 import { useProgressService } from "@/features/progress";

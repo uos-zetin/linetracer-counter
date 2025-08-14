@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { Plus, Users, Trash2, Shield } from "lucide-react";
 import { formatDate } from "@/shared/lib";
-import { Button, Card, CardContent, Badge } from "@/shared/ui";
+import { Button, Card, CardContent, Badge, Plus, Users, Trash2, Shield } from "@/shared/ui";
 import type { User, UserRegisterForm } from "@/entities/user";
 import { useErrorHandlingService } from "@/features/error-handling";
 import {

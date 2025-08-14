@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { Plus, Trophy, Edit, Trash2, FileSpreadsheet } from "lucide-react";
 import { formatDate } from "@/shared/lib";
-import { Button, Card, CardContent } from "@/shared/ui";
+import { Button, Card, CardContent, Plus, Trophy, Edit, Trash2, FileSpreadsheet } from "@/shared/ui";
 import type { Competition, CompetitionForm } from "@/entities/competition";
 import {
   useCompetitionService,

@@ -23,7 +23,9 @@ const AuthProviderInner = ({ authService, children }: { authService: AuthService
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // 1. 환경 설정과 fetcher 생성
-  const fetcherBaseUrl = import.meta.env.DEV ? "/api" : import.meta.env.VITE_SERVER_URL + "/api";
+  // localhost 환경에서는 프록시 사용 (dev, preview 모두 포함)
+  const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  const fetcherBaseUrl = import.meta.env.DEV || isLocalhost ? "/api" : import.meta.env.VITE_SERVER_URL + "/api";
 
   const { publicFetcher, authenticatedFetcher, authService } = useMemo(() => {
     const publicFetcher = new FetchApiFetcher(fetcherBaseUrl);

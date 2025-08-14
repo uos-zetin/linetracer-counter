@@ -1,4 +1,4 @@
-import { ImagePlus } from "lucide-react";
+import { ImagePlus } from "@/shared/ui";
 import { useImageSlider } from "../lib/use-image-upload";
 
 const INTERVAL = 8_000;

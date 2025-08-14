@@ -1,6 +1,5 @@
 import React from "react";
-import { Loader2, Calculator } from "lucide-react";
-import { Card, CardContent, Button, Label, Checkbox } from "@/shared/ui";
+import { Card, CardContent, Button, Label, Checkbox, Loader2, Calculator } from "@/shared/ui";
 import { formatElapsedMs } from "@/entities/counter";
 import type { ManualRecord } from "@/entities/manual-record";
 import type { RecordForm } from "@/entities/record";

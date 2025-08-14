@@ -6,7 +6,7 @@ import type { CounterChannel, CounterDto } from "./types";
 type CounterMessageHandler = (state: CounterState) => void;
 
 export class CounterSocketIOChannel implements CounterChannel {
-  private readonly BASE_URL = (import.meta.env.DEV ? "" : import.meta.env.VITE_SERVER_URL) + "/socket/counters";
+  private readonly BASE_URL = (import.meta.env.DEV || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? "" : import.meta.env.VITE_SERVER_URL) + "/socket/counters";
   private socket: Socket | null = null;
   private getSessionKey: () => string | null;
 

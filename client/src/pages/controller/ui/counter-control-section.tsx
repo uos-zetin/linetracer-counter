@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AlertCircle, CheckCircle, XCircle, Settings, Info, Link, Wifi, Play } from "lucide-react";
+import { AlertCircle, CheckCircle, XCircle, Settings, Info, Link, Wifi, Play } from "@/shared/ui";
 import {
   Card,
   CardContent,

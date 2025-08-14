@@ -1,6 +1,5 @@
 import { Link } from "react-router";
-import { Clock, Settings } from "lucide-react";
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui";
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Clock, Settings } from "@/shared/ui";
 import { useAuthService } from "@/features/auth";
 import { AppHeader } from "@/widgets/app-header";
 import { PageContainer } from "@/widgets/page-container";

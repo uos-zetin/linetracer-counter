@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Upload, FileSpreadsheet, CheckCircle, XCircle, Settings } from "lucide-react";
+import { Upload, FileSpreadsheet, CheckCircle, XCircle, Settings } from "@/shared/ui";
 import { toast } from "sonner";
 import { z } from "zod";
 import {

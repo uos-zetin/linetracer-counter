@@ -1,4 +1,4 @@
-import { ImagePlus } from "lucide-react";
+import { ImagePlus } from "@/shared/ui";
 import { useProgressService } from "@/features/progress";
 import { useSingleImageUpload } from "../lib/use-image-upload";
 

@@ -1,6 +1,5 @@
 import React from "react";
-import { User } from "lucide-react";
-import { Card, CardContent, Badge } from "@/shared/ui";
+import { Card, CardContent, Badge, User } from "@/shared/ui";
 import type { Runner } from "@/features/progress";
 
 interface CurrentParticipantInfoProps {

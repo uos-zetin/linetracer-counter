@@ -1,6 +1,5 @@
 import { useParams } from "react-router";
-import { AlertCircle } from "lucide-react";
-import { Card, CardContent } from "@/shared/ui";
+import { Card, CardContent, AlertCircle } from "@/shared/ui";
 import { useAdminAuthorization } from "../lib/use-admin-authorization";
 import { useCounterConnection } from "../lib/use-counter-connection";
 import { ControllerLayout } from "./controller-layout";
