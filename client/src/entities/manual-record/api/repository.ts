@@ -23,4 +23,8 @@ export class ManualRecordFetcherRepository implements ManualRecordRepository {
     });
     return parseManualRecordDto(response.data);
   }
+
+  async deleteManualRecords(participantId: string): Promise<void> {
+    await this.authFetcher.delete(`/participants/${participantId}/manual-records`);
+  }
 }

@@ -16,4 +16,5 @@ export interface ManualRecordCreateDto {
 export interface ManualRecordRepository {
   getAllManualRecords(participantId: string): Promise<ManualRecord[]>;
   createManualRecord(participantId: string, manualRecord: ManualRecordForm): Promise<ManualRecord>;
+  deleteManualRecords(participantId: string): Promise<void>;
 }
