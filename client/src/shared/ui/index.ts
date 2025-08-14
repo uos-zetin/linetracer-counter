@@ -13,3 +13,6 @@ export * from "./sonner";
 export * from "./form";
 export * from "./label";
 export * from "./checkbox";
+
+// 아이콘 집중화
+export * from "./icons";

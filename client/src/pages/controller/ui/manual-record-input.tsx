@@ -1,6 +1,5 @@
 import React from "react";
-import { Plus, Loader2 } from "lucide-react";
-import { Card, CardContent, Button, Input, Label } from "@/shared/ui";
+import { Card, CardContent, Button, Input, Label, Plus, Loader2 } from "@/shared/ui";
 
 interface ManualRecordInputProps {
   value: string;

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { Activity, Users, User, AlertCircle, Loader2, CheckCircle, XCircle, Wifi, Info } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, Button, Badge } from "@/shared/ui";
+import { Card, CardContent, CardHeader, CardTitle, Button, Badge, Activity, Users, User, AlertCircle, Loader2, CheckCircle, XCircle, Wifi, Info } from "@/shared/ui";
 import { useCounterService } from "@/features/counter";
 import { useDivisionService } from "@/features/division";
 import { useErrorHandlingService } from "@/features/error-handling";

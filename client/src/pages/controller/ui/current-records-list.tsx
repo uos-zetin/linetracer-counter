@@ -1,6 +1,5 @@
 import React from "react";
-import { Check, X, List } from "lucide-react";
-import { Card, CardContent, Button, Badge } from "@/shared/ui";
+import { Card, CardContent, Button, Badge, Check, X, List } from "@/shared/ui";
 import { formatElapsedMs } from "@/entities/counter";
 import type { Record, RecordStatus } from "@/entities/record";
 

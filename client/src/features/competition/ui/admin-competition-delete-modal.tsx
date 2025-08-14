@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { AlertTriangle } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button } from "@/shared/ui";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button, AlertTriangle } from "@/shared/ui";
 import type { Competition } from "@/entities/competition";
 
 interface CompetitionDeleteModalProps {

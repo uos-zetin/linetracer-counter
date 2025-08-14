@@ -1,5 +1,4 @@
 import { useState, useCallback, useMemo } from "react";
-import { Timer, User, Clock, Plus, Minus, SkipForward, Play, Pause, AlertCircle, Loader2 } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -18,6 +17,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
+  Timer,
+  User,
+  Clock,
+  Plus,
+  Minus,
+  SkipForward,
+  Play,
+  Pause,
+  AlertCircle,
+  Loader2,
 } from "@/shared/ui";
 import { formatElapsedMs } from "@/entities/counter";
 import { integrateLogs, useCountdownTimer } from "@/entities/timer";

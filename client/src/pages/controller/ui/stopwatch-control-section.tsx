@@ -1,4 +1,3 @@
-import { Clock, Play, Square, RotateCcw, AlertCircle } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -15,6 +14,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
+  Clock,
+  Play,
+  Square,
+  RotateCcw,
+  AlertCircle,
 } from "@/shared/ui";
 import { formatElapsedMs, useStopwatchTimer } from "@/entities/counter";
 import { useCounterService } from "@/features/counter";

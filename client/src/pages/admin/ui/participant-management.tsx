@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
-import { Users, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatDate } from "@/shared/lib";
 import {
   Button,
@@ -14,6 +13,12 @@ import {
   SelectLabel,
   SelectGroup,
   Badge,
+  Users,
+  Edit,
+  Trash2,
+  UserPlus,
+  ChevronLeft,
+  ChevronRight,
 } from "@/shared/ui";
 import type { Competition } from "@/entities/competition";
 import type { Participant, ParticipantForm } from "@/entities/participant";

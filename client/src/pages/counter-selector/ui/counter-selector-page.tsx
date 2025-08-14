@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Settings, Play, Clock, Timer } from "lucide-react";
 import {
   Button,
   Card,
@@ -13,6 +12,10 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
+  Settings,
+  Play,
+  Clock,
+  Timer,
 } from "@/shared/ui";
 import { useAuthService } from "@/features/auth";
 import { useCounterService } from "@/features/counter";

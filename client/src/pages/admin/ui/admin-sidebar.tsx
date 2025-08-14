@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router";
-import { Trophy, List, Users, BarChart3, UserCog, LayoutDashboard } from "lucide-react";
+import { Trophy, List, Users, BarChart3, UserCog, LayoutDashboard } from "@/shared/ui";
 
 const sidebarItems = [
   {

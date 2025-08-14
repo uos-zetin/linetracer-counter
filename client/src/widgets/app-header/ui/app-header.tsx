@@ -1,6 +1,5 @@
 import { Link } from "react-router";
-import { ChevronLeft } from "lucide-react";
-import { Button } from "@/shared/ui/button";
+import { Button, ChevronLeft } from "@/shared/ui";
 import { useAuthService } from "@/features/auth";
 
 interface AppHeaderProps {

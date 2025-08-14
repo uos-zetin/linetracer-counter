@@ -1,6 +1,4 @@
-import { AlertTriangle } from "lucide-react";
-import { Button } from "@/shared/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/ui/dialog";
+import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, AlertTriangle } from "@/shared/ui";
 import type { ErrorHandlingConfig } from "../model/types";
 
 interface ErrorModalProps {

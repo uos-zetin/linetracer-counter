@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
-import { Plus, List, Edit, Trash2, Clock } from "lucide-react";
 import { formatDate } from "@/shared/lib";
 import {
   Button,
@@ -14,6 +13,11 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
+  Plus,
+  List,
+  Edit,
+  Trash2,
+  Clock,
 } from "@/shared/ui";
 import type { Competition } from "@/entities/competition";
 import type { Division, DivisionForm } from "@/entities/division";

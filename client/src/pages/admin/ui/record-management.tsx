@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
-import { BarChart3, Clock, TrendingUp, AlertCircle } from "lucide-react";
 import { formatDate } from "@/shared/lib";
 import {
   Button,
@@ -14,6 +13,10 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
+  BarChart3,
+  Clock,
+  TrendingUp,
+  AlertCircle,
 } from "@/shared/ui";
 import type { Competition } from "@/entities/competition";
 import { formatElapsedMs } from "@/entities/counter";
