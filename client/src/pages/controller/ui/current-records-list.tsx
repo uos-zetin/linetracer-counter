@@ -18,16 +18,18 @@ export const CurrentRecordsList = React.memo(({ records, onUpdateStatus }: Curre
     return null;
   }
 
+  const sortedRecords = [...records].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
   return (
     <Card>
       <CardContent className="px-6">
         <h3 className="text-sm font-medium text-foreground mb-3 flex items-center space-x-2">
           <List className="h-4 w-4" />
           <span>현재 기록</span>
-          <Badge variant="secondary">{records.length}개</Badge>
+          <Badge variant="secondary">{sortedRecords.length}개</Badge>
         </h3>
         <div className="space-y-2 max-h-48 overflow-y-auto">
-          {records.map((record) => (
+          {sortedRecords.map((record) => (
             <Card key={record.id} className="py-4">
               <CardContent className="px-6">
                 <div className="flex items-center justify-between mb-2">
