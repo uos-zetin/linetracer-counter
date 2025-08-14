@@ -7,7 +7,7 @@ type ProgressMessageHandler = (progress: ProgressState) => void;
 
 export class ProgressSocketIOChannel implements ProgressChannel {
   private readonly BASE_URL =
-    (import.meta.env.DEV ? "" : import.meta.env.VITE_SERVER_URL) + "/socket/divisions/progress";
+    (import.meta.env.DEV || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? "" : import.meta.env.VITE_SERVER_URL) + "/socket/divisions/progress";
   private socket: Socket | null = null;
   private getSessionKey: () => string | null;
 
