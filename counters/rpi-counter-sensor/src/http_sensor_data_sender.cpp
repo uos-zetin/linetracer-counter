@@ -12,22 +12,22 @@ using json = nlohmann::json;
 
 std::string HttpSensorDataSender::login(const std::string& username, const std::string& password) {
     try {
-        json request_body = {
+        json body_json = {
             { "username", username },
             { "password", password }
         };
+        std::string body_str = body_json.dump();
 
-        HttpCurlClient client;
-        HttpResponse res = client
-            .set_url(api_base_url_ + "/actors/login")
-            .set_method("POST")
-            .set_headers({
+        HttpResponse res = client_.request(HttpCurlRequest{
+            .url = api_base_url_ + "/actors/login",
+            .method = "POST",
+            .headers = {
                 { "Content-Type", "application/json" }
-            })
-            .set_body(request_body.dump())
-            .set_timeout(2, 2)
-            .execute();
-        
+            },
+            .body = std::vector<uint8_t>(body_str.begin(), body_str.end()),
+            .timeout_seconds = api_http_timeout_,
+        });
+
         if (res.is_ok()) {
             return res.get_text();
         } else {
@@ -40,15 +40,14 @@ std::string HttpSensorDataSender::login(const std::string& username, const std::
 
 void HttpSensorDataSender::logout() {
     try {
-        HttpCurlClient client;
-        HttpResponse res = client
-            .set_url(api_base_url_ + "/actors/logout")
-            .set_method("POST")
-            .set_headers({
+        HttpResponse res = client_.request(HttpCurlRequest{
+            .url = api_base_url_ + "/actors/logout",
+            .method = "POST",
+            .headers = {
                 { "Authorization", "Session " + session_key_ }
-            })
-            .set_timeout(2, 2)
-            .execute();
+            },
+            .timeout_seconds = api_http_timeout_,
+        });
 
         if (!res.is_ok()) {
             throw SenderException("Failed to logout: " + res.get_text());
@@ -60,25 +59,25 @@ void HttpSensorDataSender::logout() {
 
 void HttpSensorDataSender::register_device(const DeviceInfo& device_info) {    
     try {
-        json request_body = {
+        json body_json = {
             { "deviceId", device_info.device_id },
             { "name", device_info.name },
             { "startThreshold", device_info.start_threshold },
             { "endThreshold", device_info.end_threshold },
             { "endDebouncingTime", device_info.end_debouncing_time }
         };
+        std::string body_str = body_json.dump();
 
-        HttpCurlClient client;
-        HttpResponse res = client
-            .set_url(api_base_url_ + "/counters/front-back-ir/register")
-            .set_method("POST")
-            .set_headers({
+        HttpResponse res = client_.request(HttpCurlRequest{
+            .url = api_base_url_ + "/counters/front-back-ir/register",
+            .method = "POST",
+            .headers = {
                 { "Content-Type", "application/json" },
                 { "Authorization", "Session " + session_key_ }
-            })
-            .set_body(request_body.dump())
-            .set_timeout(2, 2)
-            .execute();
+            },
+            .body = std::vector<uint8_t>(body_str.begin(), body_str.end()),
+            .timeout_seconds = api_http_timeout_,
+        });
 
         if (!res.is_ok()) {
             throw SenderException("Failed to register device: " + res.get_text());
@@ -90,15 +89,14 @@ void HttpSensorDataSender::register_device(const DeviceInfo& device_info) {
 
 void HttpSensorDataSender::unregister_device(const std::string& device_id) {
     try {
-        HttpCurlClient client;
-        HttpResponse res = client
-            .set_url(api_base_url_ + "/counters/" + device_id)
-            .set_method("DELETE")
-            .set_headers({
+        HttpResponse res = client_.request(HttpCurlRequest{
+            .url = api_base_url_ + "/counters/" + device_id,
+            .method = "DELETE",
+            .headers = {
                 { "Authorization", "Session " + session_key_ }
-            })
-            .set_timeout(2, 2)
-            .execute();
+            },
+            .timeout_seconds = api_http_timeout_,
+        });
 
         if (!res.is_ok()) {
             throw SenderException("Failed to unregister device: " + res.get_text());
@@ -114,21 +112,21 @@ void HttpSensorDataSender::send_data(const std::string& device_id, const std::ve
         for (const auto &item : data) {
             data_json.push_back({ item.timestamp, item.front_ir, item.back_ir });
         }
-        json request_body = {
+        json body_json = {
             { "data", data_json }
         };
+        std::string body_str = body_json.dump();
 
-        HttpCurlClient client;
-        HttpResponse res = client
-            .set_url(api_base_url_ + "/counters/front-back-ir/" + device_id + "/data")
-            .set_method("PUT")
-            .set_headers({
+        HttpResponse res = client_.request(HttpCurlRequest{
+            .url = api_base_url_ + "/counters/front-back-ir/" + device_id + "/data",
+            .method = "PUT",
+            .headers = {
                 { "Content-Type", "application/json" },
                 { "Authorization", "Session " + session_key_ }
-            })
-            .set_body(request_body.dump())
-            .set_timeout(1, 1)
-            .execute();
+            },
+            .body = std::vector<uint8_t>(body_str.begin(), body_str.end()),
+            .timeout_seconds = api_http_timeout_,
+        });
 
         if (!res.is_ok()) {
             throw SenderException("Failed to send data: " + res.get_text());
@@ -142,8 +140,18 @@ HttpSensorDataSender::HttpSensorDataSender(
     const std::string& api_base_url,
     const std::string& username,
     const std::string& password,
+    const uint32_t api_http_timeout,
     const DeviceInfo& device_info
-) : api_base_url_(api_base_url), username_(username), password_(password), device_info_(device_info) {}
+) : api_base_url_(api_base_url),
+    username_(username),
+    password_(password),
+    api_http_timeout_(api_http_timeout),
+    device_info_(device_info) {
+    client_ = std::move(HttpCurlClient(HttpCurlClientConfig{
+        .ssl_verify = true,
+        .keep_alive = true,
+    }));
+}
 
 HttpSensorDataSender::~HttpSensorDataSender() {
     if (!session_key_.empty()) {

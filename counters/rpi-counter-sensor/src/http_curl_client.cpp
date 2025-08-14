@@ -23,9 +23,9 @@ bool HttpResponse::is_ok() const {
     return status_code_ >= 200 && status_code_ < 300;
 }
 
-// ┌───────────────────┐
-// │ HttpCurlException │
-// └───────────────────┘
+// ┌───────────────┐
+// │ CurlException │
+// └───────────────┘
 
 CurlException::CurlException(const std::string& message, CURLcode curl_code, const std::string& url)
     : std::runtime_error(message), curl_code_(curl_code), url_(url) {}
@@ -45,19 +45,19 @@ const std::string& CurlException::get_url() const {
 bool HttpCurlClient::curl_initialized_ = false;
 
 size_t HttpCurlClient::write_callback(void* buffer, size_t size, size_t nmemb, void* userp) {
-    HttpCurlClient* client = static_cast<HttpCurlClient*>(userp);
-    if (!client) {
+    std::vector<uint8_t>* response_data = static_cast<std::vector<uint8_t>*>(userp);
+    if (!response_data) {
         return 0;
     }
 
     size_t real_size = size * nmemb;
     const uint8_t* data = static_cast<const uint8_t*>(buffer);
-    client->response_data_.insert(client->response_data_.end(), data, data + real_size);
+    response_data->insert(response_data->end(), data, data + real_size);
 
     return real_size;
 }
 
-HttpCurlClient::HttpCurlClient(bool ssl_verify) {
+HttpCurlClient::HttpCurlClient(const HttpCurlClientConfig& config) : config_(config) {
     if (!curl_initialized_) {
         curl_global_init(CURL_GLOBAL_DEFAULT);
         curl_initialized_ = true;
@@ -67,78 +67,91 @@ HttpCurlClient::HttpCurlClient(bool ssl_verify) {
     if (!curl_) {
         throw std::runtime_error("Failed to initialize CURL");
     }
-    header_list_ = nullptr;
-    http_status_code_ = 0;
 
-    curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, ssl_verify ? 1L : 0L);
-    curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYHOST, ssl_verify ? 2L : 0L);
+    // SSL 설정
+    curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, config.ssl_verify ? 1L : 0L);
+    curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYHOST, config.ssl_verify ? 2L : 0L);
+
+    // Keep-Alive 설정
+    if (config.keep_alive) {
+        curl_easy_setopt(curl_, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        curl_easy_setopt(curl_, CURLOPT_TCP_KEEPALIVE, 1L);
+        curl_easy_setopt(curl_, CURLOPT_TCP_KEEPIDLE, 120L);
+        curl_easy_setopt(curl_, CURLOPT_TCP_KEEPINTVL, 60L);
+    }
 }
 
 HttpCurlClient::~HttpCurlClient() {
     if (curl_) {
         curl_easy_cleanup(curl_);
     }
-    if (header_list_) {
-        curl_slist_free_all(header_list_);
+}
+
+HttpCurlClient::HttpCurlClient(HttpCurlClient&& other)
+    : config_(std::move(other.config_)), curl_(other.curl_) {
+    other.curl_ = nullptr;
+}
+
+HttpCurlClient& HttpCurlClient::operator=(HttpCurlClient&& other) {
+    if (this != &other) {
+        if (curl_) {
+            curl_easy_cleanup(curl_); // 기존 curl 핸들 정리
+        }
+        config_ = std::move(other.config_);
+        curl_ = other.curl_;
+        other.curl_ = nullptr;
     }
+    return *this;
 }
 
-HttpCurlClient& HttpCurlClient::reset() {
-    if (curl_) {
-        curl_easy_reset(curl_);
+HttpResponse HttpCurlClient::request(const HttpCurlRequest& request) {
+    // URL 설정
+    curl_easy_setopt(curl_, CURLOPT_URL, request.url.c_str());
+
+    // HTTP 메서드 설정
+    curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, request.method.c_str());
+
+    // 헤더 설정
+    CurlHeaderList headers;
+    for (const auto& [key, value] : request.headers) {
+        headers.append(key + ": " + value);
     }
-    if (header_list_) {
-        curl_slist_free_all(header_list_);
-        header_list_ = nullptr;
+    if (config_.keep_alive) { // keep-alive 헤더 추가
+        headers.append("Connection: keep-alive");
     }
-    response_data_.clear();
-    http_status_code_ = 0;
-    current_url_.clear();
-    return *this;
-}
-
-HttpCurlClient& HttpCurlClient::set_url(const std::string& url) {
-    current_url_ = url;
-    curl_easy_setopt(curl_, CURLOPT_URL, current_url_.c_str());
-    return *this;
-}
-
-HttpCurlClient& HttpCurlClient::set_method(const std::string& method) {
-    curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, method.c_str());
-    return *this;
-}
-
-HttpCurlClient& HttpCurlClient::set_headers(const std::vector<std::pair<std::string, std::string>>& headers) {
-    for (const auto &header : headers) {
-        header_list_ = curl_slist_append(header_list_, (header.first + ": " + header.second).c_str());
+    if (headers.get()) {
+        curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers.get());
     }
-    curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, header_list_);
-    return *this;
-}
 
-HttpCurlClient& HttpCurlClient::set_body(const std::string& body) {
-    curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, body.c_str());
-    return *this;
-}
+    // Body 설정
+    if (!request.body.empty()) {
+        curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, request.body.data());
+        curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, request.body.size());
+    }
 
-HttpCurlClient& HttpCurlClient::set_timeout(int timeout_seconds, int connect_timeout_seconds) {
-    curl_easy_setopt(curl_, CURLOPT_TIMEOUT, timeout_seconds);
-    curl_easy_setopt(curl_, CURLOPT_CONNECTTIMEOUT, connect_timeout_seconds);
-    return *this;
-}
+    // 타임아웃 설정
+    if (request.timeout_seconds > 0) {
+        curl_easy_setopt(curl_, CURLOPT_TIMEOUT, request.timeout_seconds);
+    }
 
-HttpResponse HttpCurlClient::execute() {
-    response_data_.clear();
-    http_status_code_ = 0;
+    // 응답 데이터 저장을 위한 버퍼
+    std::vector<uint8_t> response_data;
 
+    // 콜백 설정
     curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, write_callback);
-    curl_easy_setopt(curl_, CURLOPT_WRITEDATA, this);
+    curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response_data);
 
+    // 요청 실행
     CURLcode result = curl_easy_perform(curl_);
+
+    // 에러 확인
     if (result != CURLE_OK) {
-        throw CurlException(curl_easy_strerror(result), result, current_url_);
+        throw CurlException(curl_easy_strerror(result), result, request.url);
     }
 
-    curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &http_status_code_);
-    return HttpResponse(http_status_code_, response_data_);
+    // HTTP 상태 코드 가져오기
+    long http_status_code = 0;
+    curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &http_status_code);
+
+    return HttpResponse(static_cast<int>(http_status_code), response_data);
 }

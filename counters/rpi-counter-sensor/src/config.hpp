@@ -16,6 +16,7 @@ struct Config {
     std::string api_base_url;
     std::string api_username;
     std::string api_password;
+    uint32_t api_http_timeout; // seconds
     
     static Config load_from_file(const std::string& file_path);
 };

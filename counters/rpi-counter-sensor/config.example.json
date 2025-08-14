@@ -7,5 +7,6 @@
   "spi_device_path": "/dev/spidev0.0",
   "api_base_url": "https://counter.zetin.uos.ac.kr/api",
   "api_username": "gd-hong",
-  "api_password": "super-secret"
+  "api_password": "super-secret",
+  "api_http_timeout": 5
 }

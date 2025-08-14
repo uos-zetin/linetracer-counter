@@ -32,32 +32,61 @@ public:
     const std::string& get_url() const;
 };
 
+struct HttpCurlClientConfig {
+    bool ssl_verify = true;
+    bool keep_alive = false;
+};
+
+struct HttpCurlRequest {
+    std::string url;
+    std::string method;
+    std::vector<std::pair<std::string, std::string>> headers;
+    std::vector<uint8_t> body;
+    uint32_t timeout_seconds = 0;
+};
+
 class HttpCurlClient {
 private:
     static bool curl_initialized_;
     CURL* curl_;
-    struct curl_slist* header_list_;
-    std::vector<uint8_t> response_data_;
-    long http_status_code_;
-    std::string current_url_;
+    HttpCurlClientConfig config_;
 
     static size_t write_callback(void* buffer, size_t size, size_t nmemb, void* userp);
 
+    class CurlHeaderList {
+    private:
+        struct curl_slist* list_;
+        
+    public:
+        CurlHeaderList() : list_(nullptr) {}
+        ~CurlHeaderList() {
+            if (list_) {
+                curl_slist_free_all(list_);
+            }
+        }
+        
+        void append(const std::string& header) {
+            list_ = curl_slist_append(list_, header.c_str());
+        }
+        struct curl_slist* get() const {
+            return list_;
+        }
+        
+        CurlHeaderList(const CurlHeaderList&) = delete;
+        CurlHeaderList& operator=(const CurlHeaderList&) = delete;
+        CurlHeaderList(CurlHeaderList&&) = delete;
+        CurlHeaderList& operator=(CurlHeaderList&&) = delete;
+    };
+
 public:
-    HttpCurlClient(bool ssl_verify = true);
+    HttpCurlClient(const HttpCurlClientConfig& config = HttpCurlClientConfig());
     ~HttpCurlClient();
 
-    HttpCurlClient& reset();
-    HttpCurlClient& set_url(const std::string& url);
-    HttpCurlClient& set_method(const std::string& method);
-    HttpCurlClient& set_headers(const std::vector<std::pair<std::string, std::string>>& headers);
-    HttpCurlClient& set_body(const std::string& body);
-    HttpCurlClient& set_timeout(int timeout_seconds, int connect_timeout_seconds);
-    HttpResponse execute();
+    HttpResponse request(const HttpCurlRequest& request);
 
-    HttpCurlClient(const HttpCurlClient&) noexcept = delete;
-    HttpCurlClient& operator=(const HttpCurlClient&) noexcept = delete;
+    HttpCurlClient(const HttpCurlClient&) = delete;
+    HttpCurlClient& operator=(const HttpCurlClient&) = delete;
 
-    HttpCurlClient(HttpCurlClient&&) noexcept = delete;
-    HttpCurlClient& operator=(HttpCurlClient&&) noexcept = delete;
+    HttpCurlClient(HttpCurlClient&&);
+    HttpCurlClient& operator=(HttpCurlClient&&);
 };
