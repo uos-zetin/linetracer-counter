@@ -79,7 +79,8 @@ void thread_send_sensor_data(ISensorDataSender& sender, ThreadSafeQueue<SensorDa
         const auto log_elapsed_time = std::chrono::steady_clock::now() - last_log_time;
         if (log_elapsed_time >= log_interval) {
             double avg_send_count = (double)log_send_count / std::chrono::duration_cast<std::chrono::seconds>(log_elapsed_time).count();
-            Logger::log("Avg send count: ", avg_send_count, " items/s");
+            Logger::log("Avg send count: ", avg_send_count, " items/s"
+                ", Avg jitter: ", timer.get_average_jitter() / 1000.0, " ms");
             last_log_time = std::chrono::steady_clock::now();
             log_send_count = 0;
         }
