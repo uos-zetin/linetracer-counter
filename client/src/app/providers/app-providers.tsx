@@ -2,6 +2,7 @@ import { AuthProvider } from "./auth-provider";
 import { CompetitionProvider } from "./competition-provider";
 import { composeProviders } from "./compose-providers";
 import { CounterProvider } from "./counter-provider";
+import { CsvProvider } from "./csv-provider";
 import { DivisionProvider } from "./division-provider";
 import { ErrorHandlingProvider } from "./error-handling-provider";
 import { ManualRecordProvider } from "./manual-record-provider";
@@ -19,6 +20,7 @@ const ComposedProviders = composeProviders(
   CompetitionProvider,
   DivisionProvider,
   ParticipantProvider,
+  CsvProvider, // CompetitionProvider, DivisionProvider, ParticipantProvider 이후에 위치
   RecordProvider,
   CounterProvider,
   ProgressProvider,

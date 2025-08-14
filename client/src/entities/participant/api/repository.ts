@@ -17,6 +17,13 @@ export class ParticipantFetcherRepository implements ParticipantRepository {
     return response.data.map((dto) => parseParticipantDto(dto));
   }
 
+  async createParticipants(divisionId: string, participants: ParticipantForm[]): Promise<Participant[]> {
+    const response = await this.authFetcher.post<ParticipantDto[]>(`/divisions/${divisionId}/participants/bulk`, {
+      body: { participants: participants.map(parseParticipantForm) },
+    });
+    return response.data.map(parseParticipantDto);
+  }
+
   async createParticipant(divisionId: string, participant: ParticipantForm): Promise<Participant> {
     const response = await this.authFetcher.post<ParticipantDto>(`/divisions/${divisionId}/participants`, {
       body: parseParticipantForm(participant),

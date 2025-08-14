@@ -106,7 +106,7 @@ describe("UserFetcherRepository", () => {
 
       const result = await userRepository.createUser(dto);
 
-      expect(mockAuthenticatedFetcher.post).toHaveBeenCalledWith("/actors", {
+      expect(mockAuthenticatedFetcher.post).toHaveBeenCalledWith("/actors/register", {
         body: { name: dto.name, username: dto.userName, password: dto.password },
       });
       expect(result).toEqual(mockUser);
