@@ -118,13 +118,14 @@ export const TimerRunnerControlSection = () => {
 
     setIsProcessing(true);
     try {
+      await timerControlService.admin.stop(runner.participant.id);
       await progressService.admin.postponeCurrentRunner(division.id);
     } catch (error) {
       errorHandler.handle(error as Error, "참가자 순서 변경에 실패했습니다");
     } finally {
       setIsProcessing(false);
     }
-  }, [progressService, division?.id, runner?.participant.id, errorHandler]);
+  }, [timerControlService, progressService, division?.id, runner?.participant.id, errorHandler]);
 
   if (!progressService || !divisionService || !timerControlService) {
     return (
