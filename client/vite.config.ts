@@ -42,15 +42,7 @@ export default defineConfig({
             ) {
               return "vendor-misc";
             }
-
-            // React, React-DOM, React-Router, Zustand, Immer 등은 메인에 유지
-            // (상태 관리와 React 생태계는 함께 번들링)
           }
-
-          // 우리 소스코드는 메인 번들에 유지 (React 의존성 문제 방지)
-          // if (id.includes('src/features/csv-to-competition')) {
-          //   return 'csv-feature'; // 큰 파일이므로 별도 청크
-          // }
         },
       },
     },
