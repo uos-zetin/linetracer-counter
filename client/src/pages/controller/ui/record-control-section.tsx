@@ -115,7 +115,7 @@ export const RecordControlSection = () => {
       await recordService.admin.create(runner.participant.id, {
         value,
         source: "other",
-        note: manualRecordNote || "수동 추가된 기록",
+        note: manualRecordNote || "",
       });
 
       // 성공 후 입력 필드 초기화
