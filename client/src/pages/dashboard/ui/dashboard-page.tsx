@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Label } from "@/shared/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
@@ -8,6 +9,7 @@ import { useCompetitionService } from "@/features/competition";
 import { useDivisionService } from "@/features/division";
 import { useParticipantService } from "@/features/participant";
 import { PageContainer } from "@/widgets/page-container";
+import { CompetitionOrderModal } from "./competition-order-modal";
 import { RecordTable } from "./record-table";
 
 export const DashboardPage = () => {
@@ -22,6 +24,7 @@ export const DashboardPage = () => {
   const [selectedCompetitionId, setSelectedCompetitionId] = useState<string>(competitionId || "");
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>(divisionId || "");
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [orderModalOpen, setOrderModalOpen] = useState(false);
 
   const competitions = competitionService.use.competitions();
   const divisions = divisionService.use.divisionsByCompetition(selectedCompetitionId || "");
@@ -128,9 +131,9 @@ export const DashboardPage = () => {
     <div className="min-h-screen bg-background">
       <PageContainer maxWidth="lg" padding="md">
         <div className="my-6">
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2">🏆 경기 결과</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2">📊 Dashboard</h1>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">실시간 순위와 최고 기록을 확인하세요</p>
+            <p className="text-sm text-muted-foreground">실시간 순위, 최고 기록, 경연 순번을 확인하세요</p>
             <p className="text-xs text-muted-foreground">마지막 업데이트: {lastUpdated.toLocaleTimeString()}</p>
           </div>
         </div>
@@ -184,24 +187,31 @@ export const DashboardPage = () => {
             </Card>
 
             {/* 대회 정보 */}
-            <Card className="mb-4">
-              <CardHeader className="pb-3">
+            <Card className="mb-4 gap-1">
+              <CardHeader>
                 <CardTitle className="text-lg font-semibold text-foreground">{selectedCompetition.name}</CardTitle>
               </CardHeader>
               <CardContent className="px-6 py-0">
-                <p className="text-muted-foreground mb-3">{selectedCompetition.description}</p>
-                <p className="text-sm text-muted-foreground">
-                  생성일: {new Date(selectedCompetition.createdAt).toLocaleDateString()}
-                </p>
+                <p className="text-muted-foreground">{selectedCompetition.description}</p>
               </CardContent>
             </Card>
 
             {/* Top Records 표시 영역 */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-semibold text-foreground">
-                  {selectedDivisionId ? "부문별 최고 기록" : "전체 부문 최고 기록"}
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg font-semibold text-foreground">
+                    {selectedDivisionId ? "부문별 최고 기록" : "전체 부문 최고 기록"}
+                  </CardTitle>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setOrderModalOpen(true)}
+                    disabled={!selectedCompetitionId}
+                  >
+                    경연 순서
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="px-6 py-0">
                 {selectedDivisionId ? (
@@ -247,6 +257,15 @@ export const DashboardPage = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* 경연 순서 모달 */}
+        <CompetitionOrderModal
+          open={orderModalOpen}
+          onOpenChange={setOrderModalOpen}
+          divisions={divisions}
+          participants={participants}
+          getParticipantName={getParticipantName}
+        />
       </PageContainer>
     </div>
   );
