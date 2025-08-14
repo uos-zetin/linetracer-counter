@@ -94,6 +94,9 @@ HttpCurlClient::HttpCurlClient(HttpCurlClient&& other)
 
 HttpCurlClient& HttpCurlClient::operator=(HttpCurlClient&& other) {
     if (this != &other) {
+        if (curl_) {
+            curl_easy_cleanup(curl_); // 기존 curl 핸들 정리
+        }
         config_ = std::move(other.config_);
         curl_ = other.curl_;
         other.curl_ = nullptr;
