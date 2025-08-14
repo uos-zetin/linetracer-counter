@@ -42,7 +42,7 @@ void thread_read_sensor_data(ISensorDataReader& reader, ThreadSafeQueue<SensorDa
         if (log_elapsed_time >= log_interval) {
             double avg_read_count = (double)log_read_count / std::chrono::duration_cast<std::chrono::seconds>(log_elapsed_time).count();
             Logger::log(
-                "Avg read count: ", avg_read_count, " items/s",
+                "[RX] Avg read count: ", avg_read_count, " items/s",
                 ", Avg jitter: ", timer.get_average_jitter(), " us");
             last_log_time = std::chrono::steady_clock::now();
             log_read_count = 0;
@@ -56,6 +56,7 @@ void thread_send_sensor_data(ISensorDataSender& sender, ThreadSafeQueue<SensorDa
     auto last_log_time = std::chrono::steady_clock::now();
     const auto log_interval = std::chrono::seconds(2);
     int log_send_count = 0;
+    int log_send_error_count = 0;
 
     while (keep_running) {
         // 데이터 배치 가져오기
@@ -66,9 +67,13 @@ void thread_send_sensor_data(ISensorDataSender& sender, ThreadSafeQueue<SensorDa
             try {
                 sender.send_sensor_data(data_batch);
                 log_send_count += data_batch.size();
+                log_send_error_count = 0;
             } catch (const std::exception& e) {
-                Logger::error("Error sending sensor data: ", e.what());
-                std::this_thread::sleep_for(std::chrono::seconds(1));
+                Logger::error("[TX] Error sending sensor data: ", e.what());
+                log_send_error_count++;
+                int wait_seconds = std::min(log_send_error_count, 5);
+                Logger::error("[TX] Waiting for ", wait_seconds, " seconds before next try...");
+                std::this_thread::sleep_for(std::chrono::seconds(wait_seconds));
             }
         }
 
@@ -79,8 +84,8 @@ void thread_send_sensor_data(ISensorDataSender& sender, ThreadSafeQueue<SensorDa
         const auto log_elapsed_time = std::chrono::steady_clock::now() - last_log_time;
         if (log_elapsed_time >= log_interval) {
             double avg_send_count = (double)log_send_count / std::chrono::duration_cast<std::chrono::seconds>(log_elapsed_time).count();
-            Logger::log("Avg send count: ", avg_send_count, " items/s"
-                ", Avg jitter: ", timer.get_average_jitter() / 1000.0, " ms");
+            Logger::log("[TX] Avg send count: ", avg_send_count, " items/s"
+                ", Avg jitter: ", timer.get_average_jitter(), " us");
             last_log_time = std::chrono::steady_clock::now();
             log_send_count = 0;
         }
