@@ -61,11 +61,11 @@ export function useImageUpload(): ImageUploadHookResult {
       .map((file) => URL.createObjectURL(file));
 
     setImages((prev) => {
-      if (prev.length === 0) {
-        setCurrentIndex(0);
-      }
-      return [...prev, ...urls];
+      prev.forEach((url) => URL.revokeObjectURL(url)); // 이전 이미지 URL 해제
+
+      return urls;
     });
+    setCurrentIndex(0); // 새 이미지가 추가되면 첫 번째 이미지로 초기화
   };
 
   // 메모리 해제
@@ -73,7 +73,7 @@ export function useImageUpload(): ImageUploadHookResult {
     return () => {
       images.forEach((url) => URL.revokeObjectURL(url));
     };
-  }, [images]);
+  }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     images,
@@ -95,19 +95,24 @@ export function useImageSlider(intervalMs: number = 8000, fadeDurationMs: number
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // 이미지 추가 시 인덱스 초기화
+  // ✅ 이미지 배열이 '교체'되면 항상 초기화 (길이가 같아도 동작)
   useEffect(() => {
     if (uploadHook.images.length > 0) {
+      setIsTransitioning(false);
       setCurrentIndex(0);
       setNextIndex(uploadHook.images.length > 1 ? 1 : 0);
+    } else {
+      setIsTransitioning(false);
+      setCurrentIndex(0);
+      setNextIndex(0);
     }
-  }, [uploadHook.images.length]);
+  }, [uploadHook.images]); // ← length가 아니라 배열 자체를 의존성으로
 
-  // 슬라이더 로직
+  // 슬라이더 로직 (2장 이상에서만 동작)
   useEffect(() => {
     if (uploadHook.images.length <= 1) return;
 
-    let timeoutId: ReturnType<typeof setTimeout>;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
     const intervalId = setInterval(() => {
       setIsTransitioning(true);
       timeoutId = setTimeout(() => {

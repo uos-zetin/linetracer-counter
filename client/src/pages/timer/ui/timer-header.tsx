@@ -10,7 +10,7 @@ export function TimerPageHeader() {
   return (
     <header
       className="
-        sticky top-0 z-20 w-full max-h-[12dvw]
+        sticky top-0 z-20 w-full h-[15vh]
         flex items-center justify-center text-center
         bg-muted
         shadow-lg
@@ -29,7 +29,7 @@ export function TimerPageHeader() {
     >
       {/* 기본 텍스트 또는 이미지 */}
       {image ? (
-        <div className="relative w-full h-[12dvw]">
+        <div className="relative w-full h-full">
           <img
             src={image}
             alt="Competition Header"
@@ -42,11 +42,11 @@ export function TimerPageHeader() {
       ) : (
         <h1
           className="
-            w-full h-[12dvw]
+            w-full h-full
             bg-primary text-primary-foreground
-            text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-9xl py-4 sm:py-6 md:py-8 2xl:py-16
             font-bold text-center tracking-tight flex items-center justify-center
           "
+          style={{ fontSize: "6vh" }}
         >
           {(competition?.name || "No Competition").toUpperCase()}
         </h1>
@@ -57,12 +57,12 @@ export function TimerPageHeader() {
         className="
           absolute inset-0 bg-black/40 backdrop-blur-sm
           opacity-0 group-hover:opacity-100 transition-opacity duration-200
-          flex flex-col items-center justify-center gap-2 sm:gap-3 md:gap-4
-          pointer-events-none
+          flex flex-col items-center justify-center pointer-events-none
         "
+        style={{ gap: "1vh" }}
       >
-        <ImagePlus className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 2xl:w-20 2xl:h-20 text-white" />
-        <span className="text-white text-sm sm:text-base md:text-lg lg:text-xl 2xl:text-3xl font-medium">
+        <ImagePlus className="text-white" style={{ width: "3vh", height: "3vh" }} />
+        <span className="text-white font-medium" style={{ fontSize: "2vh" }}>
           {image ? "헤더 이미지 변경" : "헤더 이미지 추가"}
         </span>
       </div>

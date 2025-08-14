@@ -8,19 +8,23 @@ export function RunnerInfo() {
   const runnerTeam = runner?.participant.teamName || "No Team";
   const runnerRobotName = runner?.participant.robotName || "No Robot";
   return (
-    <div className="flex flex-col items-center justify-center w-full">
-      <span
-        className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-7xl font-bold text-foreground overflow-hidden text-ellipsis whitespace-nowrap text-center mb-2 sm:mb-3"
+    <div className="flex flex-col items-center justify-center w-full h-full px-2">
+      <div
+        className="font-bold text-foreground text-center w-full max-w-full"
+        style={{ fontSize: "4.5vh", marginBottom: "1vh" }}
         title="Runner Name"
       >
-        {runnerName} · {runnerRobotName}
-      </span>
-      <span
-        className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-5xl font-semibold text-muted-foreground leading-none text-center"
+        <div className="truncate">
+          {runnerName} · {runnerRobotName}
+        </div>
+      </div>
+      <div
+        className="font-semibold text-muted-foreground leading-none text-center w-full max-w-full"
+        style={{ fontSize: "2.5vh" }}
         title="Runner Team Name"
       >
-        {runnerTeam}
-      </span>
+        <div className="truncate">{runnerTeam}</div>
+      </div>
     </div>
   );
 }

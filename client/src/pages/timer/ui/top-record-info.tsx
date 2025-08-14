@@ -66,8 +66,8 @@ export function TopRecordView() {
 
   return (
     <div className="w-full h-full border border-border rounded-lg overflow-hidden shadow-sm bg-card flex flex-col">
-      <div className="bg-muted py-1 sm:py-1.5 md:py-2">
-        <h2 className="text-center text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-4xl font-semibold text-foreground">
+      <div className="bg-muted" style={{ padding: "0.5vh 0" }}>
+        <h2 className="text-center font-semibold text-foreground" style={{ fontSize: "2.5vh" }}>
           최고 기록
         </h2>
       </div>
@@ -83,95 +83,83 @@ export function TopRecordView() {
           const leftRank = rowIdx + 1;
           const rightRank = rowIdx + RIGHT_COLUMN_START_RANK;
           const isLeftTopRank = leftRank <= 3;
-          const isRightTopRank = rightRank <= 3;
 
           return (
             <li
               key={rowIdx}
-              className={cn(
-                "flex-1 grid font-medium border-t border-border",
-                "min-h-[50px] sm:min-h-[55px] md:min-h-[60px] lg:min-h-[65px] xl:min-h-[70px] 2xl:min-h-[120px]",
-                "grid-cols-[15%_35%_15%_35%] sm:grid-cols-[12%_38%_12%_38%]",
-                "md:grid-cols-[10%_40%_10%_40%] lg:grid-cols-[7.5%_42.5%_7.5%_42.5%]",
-                "text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-3xl"
-              )}
+              className={cn("flex-1 grid font-medium border-t border-border", "grid-cols-[10%_40%_10%_40%]")}
             >
               <span
                 className={cn(
-                  "flex items-center justify-center py-1 border-r border-border",
+                  "flex items-center justify-center border-r border-border",
                   rankBg(leftRank) || `${bgLeft} text-foreground`
                 )}
+                style={{ padding: "1vh", fontSize: "2.0vh" }}
               >
                 {rowIdx + 1}
               </span>
               <span
                 className={cn(
-                  "flex items-center justify-center py-1",
-                  "px-1 sm:px-2 md:px-3 lg:px-4",
+                  "flex items-center justify-center",
                   rankBg(leftRank) || `${bgLeft} text-foreground`,
                   isLeftTopRank && "font-bold"
                 )}
+                style={{ padding: "1vh 1.5vh" }}
                 title={left ? `${left.participantName} - ${formatElapsedMs(left.timeMs).toString()}s` : undefined}
               >
                 {left ? (
                   <div className="text-center leading-none">
-                    <div
-                      className={`${isLeftTopRank ? "text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-3xl" : "text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl"} font-bold`}
-                    >
+                    <div className="font-bold" style={{ fontSize: isLeftTopRank ? "3vh" : "2.5vh" }}>
                       {formatElapsedMs(left.timeMs).toString()}s
                     </div>
                     <div
-                      className={`truncate ${isLeftTopRank ? "text-xs sm:text-xs md:text-xs lg:text-xs xl:text-sm 2xl:text-base" : "text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs 2xl:text-sm"} text-muted-foreground`}
+                      className="truncate text-muted-foreground"
+                      style={{ fontSize: isLeftTopRank ? "2.5vh" : "2.0vh" }}
                     >
                       {left.participantName}
                     </div>
                   </div>
                 ) : (
                   <div className="text-center leading-none">
-                    <div className="text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl text-muted-foreground font-bold">
+                    <div className="text-muted-foreground font-bold" style={{ fontSize: "2.5vh" }}>
                       —
                     </div>
-                    <div className="text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs 2xl:text-sm text-muted-foreground/60">
-                      —
+                    <div className="text-muted-foreground/60" style={{ fontSize: "2.0vh" }}>
+                      -
                     </div>
                   </div>
                 )}
               </span>
               <span
-                className={`
-                  flex items-center justify-center py-1 border-x border-border                   ${rankBg(rightRank) || `${bgRight} text-foreground`}
-                  ${isRightTopRank ? "" : ""}
-                `}
+                className={cn(
+                  "flex items-center justify-center border-x border-border",
+                  rankBg(rightRank) || `${bgRight} text-foreground`
+                )}
+                style={{ padding: "1vh", fontSize: "2.0vh" }}
               >
                 {rowIdx + RIGHT_COLUMN_START_RANK}
               </span>
               <span
-                className={`
-                  flex items-center justify-center py-1 px-1 sm:px-2 md:px-3 lg:px-4                   ${rankBg(rightRank) || `${bgRight} text-foreground`}
-                  ${isRightTopRank ? "font-bold" : ""}
-                `}
+                className={cn("flex items-center justify-center", rankBg(rightRank) || `${bgRight} text-foreground`)}
+                style={{ padding: "1vh 1.5vh" }}
                 title={right ? `${right.participantName} - ${formatElapsedMs(right.timeMs).toString()}s` : undefined}
               >
                 {right ? (
                   <div className="text-center leading-none">
-                    <div
-                      className={`${isRightTopRank ? "text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-3xl" : "text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl"} font-bold`}
-                    >
+                    <div className="font-bold" style={{ fontSize: "2.5vh" }}>
                       {formatElapsedMs(right.timeMs).toString()}s
                     </div>
-                    <div
-                      className={`truncate ${isRightTopRank ? "text-xs sm:text-xs md:text-xs lg:text-xs xl:text-sm 2xl:text-base" : "text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs 2xl:text-sm"} text-muted-foreground`}
-                    >
+                    <div className="truncate text-muted-foreground" style={{ fontSize: "1.5vh" }}>
                       {right.participantName}
                     </div>
                   </div>
                 ) : (
                   <div className="text-center leading-none">
-                    <div className="text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl text-muted-foreground font-bold">
+                    <div className="text-muted-foreground font-bold" style={{ fontSize: "2.5vh" }}>
                       —
                     </div>
-                    <div className="text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs 2xl:text-sm text-muted-foreground/60">
-                      —
+                    <div className="text-muted-foreground/60" style={{ fontSize: "2.0vh" }}>
+                      -
                     </div>
                   </div>
                 )}
