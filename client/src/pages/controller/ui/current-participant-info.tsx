@@ -27,6 +27,10 @@ export const CurrentParticipantInfo = React.memo(({ runner }: CurrentParticipant
             <span className="text-sm text-muted-foreground">기록 수:</span>
             <Badge variant="outline">{runner.records.length}개</Badge>
           </div>
+          <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">코멘트:</span>
+            <span className="text-sm font-medium text-foreground">{runner.participant.comment}</span>
+          </div>
         </div>
       </CardContent>
     </Card>
