@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
+import { useCounterService } from "@/features/counter";
+import { useErrorHandlingService } from "@/features/error-handling";
 import { AppHeader } from "@/widgets/app-header";
 import { PageContainer } from "@/widgets/page-container";
 
@@ -8,9 +10,26 @@ interface ControllerLayoutProps {
 }
 
 export const ControllerLayout = ({ children, counterId }: ControllerLayoutProps) => {
+  const counterService = useCounterService();
+  const errorService = useErrorHandlingService();
+  const counter = counterService.use.counterState(counterId);
+
+  useEffect(() => {
+    if (!counterId) return;
+
+    counterService.load.byId(counterId).catch((error) => {
+      errorService.handle(error, "계수기를 불러오는 중 오류가 발생했습니다.");
+    });
+  }, [counterId, counterService, errorService]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <AppHeader title={`Controller - ${counterId}`} showBackButton={true} backPath={`/counter`} showLogout={true} />
+      <AppHeader
+        title={`Controller - ${counter?.name || ""}`}
+        showBackButton={true}
+        backPath={`/counter`}
+        showLogout={true}
+      />
 
       <main className="py-8 xl:py-12 2xl:py-16">
         <PageContainer maxWidth="full" padding="md">
