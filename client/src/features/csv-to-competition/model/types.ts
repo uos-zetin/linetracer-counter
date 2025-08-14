@@ -16,6 +16,7 @@ export interface CsvParseResult {
   data?: ParsedData[];
   groupedData?: GroupedData[];
   competitionName?: string; // 추출된 대회명
+  divisionNames?: string[]; // 추출된 부문명 목록
   error?: string;
 }
 
@@ -67,11 +68,22 @@ export interface CreatedEntity {
   createdAt: Date;
 }
 
+export interface DivisionSummary {
+  /** 부문 이름 */
+  divisionName: string;
+  /** 첫 번째 참가자 이름 */
+  firstParticipantName: string;
+  /** 총 참가자 수 */
+  totalParticipants: number;
+}
+
 export interface CsvProcessResult {
   /** 처리 성공 여부 */
   success: boolean;
   /** 생성된 엔티티들 */
   createdEntities: CreatedEntity[];
+  /** 부문별 요약 정보 */
+  divisionSummaries?: DivisionSummary[];
   /** 실패한 항목들 */
   failedItems: Array<{
     type: 'competition' | 'division' | 'participant';
@@ -88,13 +100,29 @@ export interface CsvProcessResult {
   };
 }
 
+export interface DivisionSettings {
+  /** 부문 이름 */
+  divisionName: string;
+  /** 부문 설명 */
+  description?: string;
+  /** 제한시간 (초 단위) */
+  timeLimit?: number;
+}
+
+export interface CsvImportOptions {
+  /** 대회 설명 */
+  competitionDescription?: string;
+  /** 부문별 설정 */
+  divisionSettings?: DivisionSettings[];
+}
+
 export interface CsvImportContext {
   /** 현재 처리 상태 */
   state: CsvProcessState;
   /** 처리 결과 */
   result?: CsvProcessResult;
   /** CSV 파일 처리 시작 */
-  startImport: (file: File) => Promise<void>;
+  startImport: (file: File, options?: CsvImportOptions) => Promise<void>;
   /** 처리 중단 */
   cancelImport: () => void;
   /** 상태 초기화 */

@@ -85,7 +85,7 @@ export function CompetitionManagement() {
     try {
       // CSV 임포트 성공 시 대회 목록 다시 로드
       await competitionService.load.all();
-      setIsCsvImportModalOpen(false);
+      // 모달은 사용자가 직접 닫을 수 있도록 자동으로 닫지 않음
     } catch (error) {
       errorHandler.handle(error as Error, "대회 목록을 다시 로드하는 중 오류가 발생했습니다");
     }

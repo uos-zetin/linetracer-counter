@@ -68,6 +68,22 @@ export const extractCompetitionName = (rawData: Record<string, string>[]): strin
   throw new Error('CSV에서 대회명을 찾을 수 없습니다. "대회 이름" 컬럼을 확인해주세요.');
 };
 
+/**
+ * CSV에서 부문명 목록 추출
+ */
+export const extractDivisionNames = (rawData: Record<string, string>[]): string[] => {
+  const divisions = new Set<string>();
+  
+  rawData.forEach((row) => {
+    const division = row["참가 부문"];
+    if (division && division.trim()) {
+      divisions.add(division.trim());
+    }
+  });
+
+  return Array.from(divisions);
+};
+
 export const transformCsvData = (
   rawData: Record<string, string>[]
 ): { participants: ParsedData[]; divisions: string[]; competitionName: string } => {
@@ -157,11 +173,15 @@ export const parseCsvFile = (file: File): Promise<CsvParseResult> => {
           // 그룹화
           const groupedData = groupDataByDivision(rawData);
 
+          // 부문명 목록 추출
+          const divisionNames = extractDivisionNames(rawData);
+
           resolve({
             success: true,
             data: participants,
             groupedData,
             competitionName, // 추출된 대회명 포함
+            divisionNames, // 추출된 부문명 목록 포함
           });
         } catch {
           resolve({
