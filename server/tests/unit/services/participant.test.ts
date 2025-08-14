@@ -397,6 +397,32 @@ describe("ParticipantService 단위 테스트", () => {
         })
       );
     });
+
+    it("특정 참가자의 수동 계수 기록을 모두 삭제할 수 있다.", async () => {
+      // Arrange
+      const participantId = uuidv4();
+      const manualRecords: ManualRecord[] = [];
+      for (let i = 0; i < 5; i++) {
+        manualRecords.push(generateDummyManualRecord(participantId));
+      }
+      mockManualRecordRepo.getByParticipantId.mockResolvedValue(manualRecords);
+      mockManualRecordRepo.delete.mockResolvedValue();
+
+      // Act
+      await service.deleteManualRecords(participantId);
+
+      // Assert
+      const expectedIds = manualRecords.map((manualRecord) => manualRecord.id);
+      expectedIds.forEach((id) => {
+        expect(mockManualRecordRepo.delete).toHaveBeenCalledWith(id);
+      });
+      expect(mockManualRecordRepo.delete).toHaveBeenCalledTimes(
+        expectedIds.length
+      );
+      expect(mockManualRecordRepo.getByParticipantId).toHaveBeenCalledWith(
+        participantId
+      );
+    });
   });
 
   describe("타이머 관리", () => {

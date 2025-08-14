@@ -109,6 +109,14 @@ export class ParticipantActorService {
     return this.service.addManualRecord(participantId, value, recorderName);
   }
 
+  async deleteManualRecords(
+    actor: Actor,
+    participantId: string
+  ): Promise<void> {
+    requireAnyRole(actor, "administrator");
+    return this.service.deleteManualRecords(participantId);
+  }
+
   async startTimer(actor: Actor, participantId: string): Promise<TimerLog> {
     requireAnyRole(actor, "administrator");
     return this.service.startTimer(participantId);
