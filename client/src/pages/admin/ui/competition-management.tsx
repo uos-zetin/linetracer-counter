@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Trophy, Edit, Trash2 } from "lucide-react";
+import { Plus, Trophy, Edit, Trash2, FileSpreadsheet } from "lucide-react";
 import { formatDate } from "@/shared/lib";
 import { Button, Card, CardContent } from "@/shared/ui";
 import type { Competition, CompetitionForm } from "@/entities/competition";
@@ -9,6 +9,7 @@ import {
   AdminCompetitionEditModal,
   AdminCompetitionDeleteModal,
 } from "@/features/competition";
+import { CsvImportModal } from "@/features/csv-to-competition";
 import { useErrorHandlingService } from "@/features/error-handling";
 
 export function CompetitionManagement() {
@@ -19,6 +20,7 @@ export function CompetitionManagement() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isCsvImportModalOpen, setIsCsvImportModalOpen] = useState(false);
   const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
 
   // 초기 데이터 로드
@@ -30,6 +32,10 @@ export function CompetitionManagement() {
 
   const handleCreate = () => {
     setIsCreateModalOpen(true);
+  };
+
+  const handleCsvImport = () => {
+    setIsCsvImportModalOpen(true);
   };
 
   const handleEdit = (competition: Competition) => {
@@ -75,6 +81,16 @@ export function CompetitionManagement() {
     }
   };
 
+  const handleCsvImportSuccess = async () => {
+    try {
+      // CSV 임포트 성공 시 대회 목록 다시 로드
+      await competitionService.load.all();
+      setIsCsvImportModalOpen(false);
+    } catch (error) {
+      errorHandler.handle(error as Error, "대회 목록을 다시 로드하는 중 오류가 발생했습니다");
+    }
+  };
+
   return (
     <div>
       {/* Header */}
@@ -83,10 +99,16 @@ export function CompetitionManagement() {
           <h1 className="text-2xl font-bold text-foreground">대회 관리</h1>
           <p className="mt-2 text-muted-foreground">대회를 생성, 수정, 삭제할 수 있습니다</p>
         </div>
-        <Button onClick={handleCreate} className="self-start sm:self-auto">
-          <Plus className="w-4 h-4" />
-          대회 생성
-        </Button>
+        <div className="flex gap-2 self-start sm:self-auto">
+          <Button variant="outline" onClick={handleCsvImport}>
+            <FileSpreadsheet className="w-4 h-4" />
+            CSV로 등록
+          </Button>
+          <Button onClick={handleCreate}>
+            <Plus className="w-4 h-4" />
+            대회 생성
+          </Button>
+        </div>
       </div>
 
       {/* Competition Cards */}
@@ -137,6 +159,12 @@ export function CompetitionManagement() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateSubmit}
+      />
+
+      <CsvImportModal
+        isOpen={isCsvImportModalOpen}
+        onClose={() => setIsCsvImportModalOpen(false)}
+        onSuccess={handleCsvImportSuccess}
       />
 
       <AdminCompetitionEditModal
