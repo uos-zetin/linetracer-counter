@@ -4,7 +4,13 @@ import { formatDate } from "@/shared/lib";
 import { Button, Card, CardContent, Badge } from "@/shared/ui";
 import type { User, UserRegisterForm } from "@/entities/user";
 import { useErrorHandlingService } from "@/features/error-handling";
-import { useUserService, AdminUserCreateModal, AdminUserEditRolesModal, AdminUserDeleteModal } from "@/features/user";
+import {
+  useUserService,
+  AdminUserCreateModal,
+  AdminUserEditRolesModal,
+  AdminUserDeleteModal,
+  roleLabels,
+} from "@/features/user";
 
 export function UserManagement() {
   const userService = useUserService();
@@ -108,7 +114,7 @@ export function UserManagement() {
                       {user.roles.length > 0 ? (
                         user.roles.map((role) => (
                           <Badge key={role} variant="secondary" className="text-xs">
-                            {role === "administrator" ? "관리자" : role}
+                            {roleLabels[role]}
                           </Badge>
                         ))
                       ) : (

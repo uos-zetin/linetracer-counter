@@ -118,13 +118,14 @@ export const TimerRunnerControlSection = () => {
 
     setIsProcessing(true);
     try {
+      await timerControlService.admin.stop(runner.participant.id);
       await progressService.admin.postponeCurrentRunner(division.id);
     } catch (error) {
       errorHandler.handle(error as Error, "참가자 순서 변경에 실패했습니다");
     } finally {
       setIsProcessing(false);
     }
-  }, [progressService, division?.id, runner?.participant.id, errorHandler]);
+  }, [timerControlService, progressService, division?.id, runner?.participant.id, errorHandler]);
 
   if (!progressService || !divisionService || !timerControlService) {
     return (
@@ -285,7 +286,7 @@ export const TimerRunnerControlSection = () => {
               {/* 커스텀 시간 조정 */}
               <div className="border-t pt-3">
                 <Label htmlFor="custom-time" className="text-xs text-muted-foreground mb-2 block">
-                  직접 입력 (밀리초)
+                  직접 입력 (초)
                 </Label>
                 <div className="flex items-center space-x-2">
                   <Input
@@ -293,7 +294,7 @@ export const TimerRunnerControlSection = () => {
                     type="number"
                     value={customTimeAdjustment}
                     onChange={(e) => setCustomTimeAdjustment(e.target.value)}
-                    placeholder="±ms (예: 5000, -3000)"
+                    placeholder="±s (예: 50, -30)"
                     className="flex-1"
                   />
                   <Button
