@@ -7,10 +7,13 @@ const ROW_COUNT = 5;
 export function CurrentRecordView() {
   const progressService = useProgressService();
   const runner = progressService.use.runner();
-  const filteredRecords = useMemo(
-    () => (runner?.records || []).filter((record) => record.status === "approved"),
-    [runner?.records]
-  );
+  const filteredRecords = useMemo(() => {
+    const records = runner?.records || [];
+    return records
+      .filter((record) => record.status === "approved")
+      .slice()
+      .sort((a, b) => a.value - b.value);
+  }, [runner?.records]);
   const rows = Array.from({ length: ROW_COUNT }, (_, i) => i);
 
   return (
