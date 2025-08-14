@@ -34,10 +34,9 @@ export function CurrentRecordView() {
               className={`
                 flex-1 grid grid-cols-[15%_1fr]
                 border-t border-border 
-                "
-                style={{ fontSize: '2vh' }}
                 ${bg} text-foreground font-medium
-              `}
+                `}
+              style={{ fontSize: "2vh" }}
             >
               <span
                 className="flex items-center justify-center border-r border-border"
