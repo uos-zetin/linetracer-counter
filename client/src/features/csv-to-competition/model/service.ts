@@ -22,12 +22,15 @@ export interface CsvServiceDependencies {
 
 /**
  * CSV 파싱 데이터를 ParticipantForm 형식으로 변환
- * 
+ *
  * 필드 매핑:
  * - ParsedData.team → ParticipantForm.teamName
  * - ParsedData.orderRaw (string) → ParticipantForm.orderRaw (number)
  */
-function transformToParticipantForm(parsedData: ParsedData, divisionId: string): Omit<ParticipantForm, 'divisionId'> & { divisionId: string } {
+function transformToParticipantForm(
+  parsedData: ParsedData,
+  divisionId: string
+): Omit<ParticipantForm, "divisionId"> & { divisionId: string } {
   return {
     divisionId,
     name: parsedData.name,
@@ -117,7 +120,7 @@ export function createCsvService(dependencies: CsvServiceDependencies) {
 
     const competitionData: CompetitionForm = {
       name: competitionName,
-      description: options?.competitionDescription || `CSV로 생성된 대회 - ${new Date().toLocaleDateString()}`,
+      description: options?.competitionDescription || "",
     };
 
     const result = await retryWithBackoff(
@@ -171,7 +174,7 @@ export function createCsvService(dependencies: CsvServiceDependencies) {
         competitionId,
         name: divisionName,
         timeLimit: divisionSetting?.timeLimit || 180, // 기본 3분
-        description: divisionSetting?.description || `CSV로 생성된 부문`,
+        description: divisionSetting?.description || "",
       };
 
       const result = await retryWithBackoff(
@@ -198,7 +201,9 @@ export function createCsvService(dependencies: CsvServiceDependencies) {
       }
 
       if (!result.data?.id) {
-        throw new Error(`부문 "${divisionName}" 생성은 성공했지만 부문 ID를 받지 못했습니다. 서버 응답을 확인해주세요.`);
+        throw new Error(
+          `부문 "${divisionName}" 생성은 성공했지만 부문 ID를 받지 못했습니다. 서버 응답을 확인해주세요.`
+        );
       }
 
       divisionIdMap[divisionName] = result.data.id;
@@ -240,7 +245,7 @@ export function createCsvService(dependencies: CsvServiceDependencies) {
       );
 
       // 참가자 데이터를 ParticipantForm 형식에 맞게 변환
-      const participantData = group.participants.map((participant) => 
+      const participantData = group.participants.map((participant) =>
         transformToParticipantForm(participant, divisionId)
       );
 
