@@ -23,7 +23,6 @@ interface CompetitionOrderModalProps {
   onOpenChange: (open: boolean) => void;
   divisions: Division[];
   participants: Participant[];
-  getParticipantName: (participantId: string) => string;
 }
 
 export const CompetitionOrderModal = ({ open, onOpenChange, divisions, participants }: CompetitionOrderModalProps) => {
@@ -32,7 +31,7 @@ export const CompetitionOrderModal = ({ open, onOpenChange, divisions, participa
   const [currentRunnerId, setCurrentRunnerId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const progressSerive = useProgressService();
+  const progressService = useProgressService();
 
   // 부문 선택 시 경연 순서 조회
   useEffect(() => {
@@ -41,11 +40,11 @@ export const CompetitionOrderModal = ({ open, onOpenChange, divisions, participa
       setLoading(true);
       try {
         // 경연 순서 조회
-        const order = await progressSerive.load.order(divisionId);
+        const order = await progressService.load.order(divisionId);
         setParticipantOrder(order);
 
         // 현재 경연자 정보 조회
-        const progressData = await progressSerive.load.byDivision(divisionId);
+        const progressData = await progressService.load.byDivision(divisionId);
         setCurrentRunnerId(progressData?.runner?.participant?.id || null);
       } catch (error) {
         console.error("Failed to fetch participant order:", error);
@@ -57,7 +56,7 @@ export const CompetitionOrderModal = ({ open, onOpenChange, divisions, participa
     if (selectedDivisionId) {
       fetchParticipantOrder(selectedDivisionId);
     }
-  }, [selectedDivisionId, progressSerive]);
+  }, [selectedDivisionId, progressService]);
 
   // 모달이 열릴 때 첫 번째 부문 자동 선택
   useEffect(() => {

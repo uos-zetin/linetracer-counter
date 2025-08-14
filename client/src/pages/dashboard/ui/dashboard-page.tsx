@@ -264,7 +264,6 @@ export const DashboardPage = () => {
           onOpenChange={setOrderModalOpen}
           divisions={divisions}
           participants={participants}
-          getParticipantName={getParticipantName}
         />
       </PageContainer>
     </div>
