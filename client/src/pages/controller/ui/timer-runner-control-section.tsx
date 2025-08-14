@@ -285,7 +285,7 @@ export const TimerRunnerControlSection = () => {
               {/* 커스텀 시간 조정 */}
               <div className="border-t pt-3">
                 <Label htmlFor="custom-time" className="text-xs text-muted-foreground mb-2 block">
-                  직접 입력 (밀리초)
+                  직접 입력 (초)
                 </Label>
                 <div className="flex items-center space-x-2">
                   <Input
