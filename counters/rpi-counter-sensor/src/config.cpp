@@ -26,6 +26,7 @@ Config Config::load_from_file(const std::string& file_path) {
     config.api_base_url = j["api_base_url"];
     config.api_username = j["api_username"];
     config.api_password = j["api_password"];
+    config.api_http_timeout = j["api_http_timeout"];
     
     return config;
 }

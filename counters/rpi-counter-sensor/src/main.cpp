@@ -128,6 +128,7 @@ int main(int argc, char* argv[]) {
         config.api_base_url,
         config.api_username,
         config.api_password,
+        config.api_http_timeout,
         device_info
     );
 

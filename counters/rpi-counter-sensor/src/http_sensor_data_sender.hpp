@@ -15,6 +15,7 @@ private:
     std::string username_;
     std::string password_;
     std::string api_base_url_;
+    uint32_t api_http_timeout_; // seconds
 
     DeviceInfo device_info_;
     std::string session_key_;
@@ -33,6 +34,7 @@ public:
         const std::string& api_base_url,
         const std::string& username,
         const std::string& password,
+        const uint32_t api_http_timeout,
         const DeviceInfo& device_info
     );
 

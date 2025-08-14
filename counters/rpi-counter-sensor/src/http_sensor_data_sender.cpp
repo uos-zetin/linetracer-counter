@@ -25,7 +25,7 @@ std::string HttpSensorDataSender::login(const std::string& username, const std::
                 { "Content-Type", "application/json" }
             })
             .set_body(request_body.dump())
-            .set_timeout(2, 2)
+            .set_timeout(api_http_timeout_, api_http_timeout_)
             .execute();
         
         if (res.is_ok()) {
@@ -47,7 +47,7 @@ void HttpSensorDataSender::logout() {
             .set_headers({
                 { "Authorization", "Session " + session_key_ }
             })
-            .set_timeout(2, 2)
+            .set_timeout(api_http_timeout_, api_http_timeout_)
             .execute();
 
         if (!res.is_ok()) {
@@ -77,7 +77,7 @@ void HttpSensorDataSender::register_device(const DeviceInfo& device_info) {
                 { "Authorization", "Session " + session_key_ }
             })
             .set_body(request_body.dump())
-            .set_timeout(2, 2)
+            .set_timeout(api_http_timeout_, api_http_timeout_)
             .execute();
 
         if (!res.is_ok()) {
@@ -97,7 +97,7 @@ void HttpSensorDataSender::unregister_device(const std::string& device_id) {
             .set_headers({
                 { "Authorization", "Session " + session_key_ }
             })
-            .set_timeout(2, 2)
+            .set_timeout(api_http_timeout_, api_http_timeout_)
             .execute();
 
         if (!res.is_ok()) {
@@ -127,7 +127,7 @@ void HttpSensorDataSender::send_data(const std::string& device_id, const std::ve
                 { "Authorization", "Session " + session_key_ }
             })
             .set_body(request_body.dump())
-            .set_timeout(1, 1)
+            .set_timeout(api_http_timeout_, api_http_timeout_)
             .execute();
 
         if (!res.is_ok()) {
@@ -142,8 +142,13 @@ HttpSensorDataSender::HttpSensorDataSender(
     const std::string& api_base_url,
     const std::string& username,
     const std::string& password,
+    const uint32_t api_http_timeout,
     const DeviceInfo& device_info
-) : api_base_url_(api_base_url), username_(username), password_(password), device_info_(device_info) {}
+): api_base_url_(api_base_url)
+    , username_(username)
+    , password_(password)
+    , api_http_timeout_(api_http_timeout)
+    , device_info_(device_info) {}
 
 HttpSensorDataSender::~HttpSensorDataSender() {
     if (!session_key_.empty()) {
