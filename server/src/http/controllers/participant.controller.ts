@@ -142,6 +142,20 @@ export class ParticipantController {
     );
   }
 
+  @Delete("/:participantId/manual-records")
+  @HttpCode(204)
+  @ApiActorSecurity()
+  @ApiResponse({
+    status: 204,
+    description: "수동 계수 기록 삭제 성공",
+  })
+  async deleteManualRecords(
+    @CurrentActor() actor: Actor,
+    @Param("participantId") participantId: string
+  ): Promise<void> {
+    await this.participantService.deleteManualRecords(actor, participantId);
+  }
+
   @Post("/:participantId/timer/start")
   @HttpCode(201)
   @ApiActorSecurity()
