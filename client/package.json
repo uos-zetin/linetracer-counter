@@ -9,7 +9,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "format": "prettier --write .",
-    "preview": "vite preview",
+    "preview": "vite preview --host",
     "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:watch": "vitest"
