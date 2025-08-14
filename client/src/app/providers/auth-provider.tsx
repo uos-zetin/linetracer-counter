@@ -29,14 +29,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     ? "/api" 
     : import.meta.env.VITE_SERVER_URL + "/api";
   
-  // 디버깅용 - 실제 요청 URL 확인
-  console.log("Environment:", {
-    DEV: import.meta.env.DEV,
-    MODE: import.meta.env.MODE,
-    hostname: window.location.hostname,
-    isLocalhost,
-    fetcherBaseUrl
-  });
+  // 디버깅용 로그 제거됨
 
   const { publicFetcher, authenticatedFetcher, authService } = useMemo(() => {
     const publicFetcher = new FetchApiFetcher(fetcherBaseUrl);
