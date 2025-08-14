@@ -1,6 +1,6 @@
 import type { CompetitionRepository, CompetitionForm } from "@/entities/competition";
 import type { DivisionRepository, DivisionForm } from "@/entities/division";
-import type { ParticipantRepository } from "@/entities/participant";
+import type { ParticipantRepository, ParticipantForm } from "@/entities/participant";
 import { parseCsvFile } from "../lib/parse-csv";
 import { retryWithBackoff } from "../lib/retry-utils";
 import type {
@@ -11,12 +11,31 @@ import type {
   GroupedData,
   DivisionSummary,
   CsvImportOptions,
+  ParsedData,
 } from "./types";
 
 export interface CsvServiceDependencies {
   competitionRepository: CompetitionRepository;
   divisionRepository: DivisionRepository;
   participantRepository: ParticipantRepository;
+}
+
+/**
+ * CSV 파싱 데이터를 ParticipantForm 형식으로 변환
+ * 
+ * 필드 매핑:
+ * - ParsedData.team → ParticipantForm.teamName
+ * - ParsedData.orderRaw (string) → ParticipantForm.orderRaw (number)
+ */
+function transformToParticipantForm(parsedData: ParsedData, divisionId: string): Omit<ParticipantForm, 'divisionId'> & { divisionId: string } {
+  return {
+    divisionId,
+    name: parsedData.name,
+    teamName: parsedData.team,
+    robotName: parsedData.robotName,
+    comment: parsedData.comment,
+    orderRaw: parseInt(parsedData.orderRaw, 10) || 0,
+  };
 }
 
 /**
@@ -121,8 +140,12 @@ export function createCsvService(dependencies: CsvServiceDependencies) {
       throw new Error(`대회 생성 실패: ${result.error}`);
     }
 
+    if (!result.data?.id) {
+      throw new Error(`대회 생성은 성공했지만 대회 ID를 받지 못했습니다. 서버 응답을 확인해주세요.`);
+    }
+
     updateProgress(100, `대회 "${competitionName}" 생성 완료`);
-    return result.data?.id || `competition-${competitionName}-${Date.now()}`;
+    return result.data.id;
   };
 
   /**
@@ -170,17 +193,21 @@ export function createCsvService(dependencies: CsvServiceDependencies) {
         }
       );
 
-      if (result.success && result.data) {
-        divisionIdMap[divisionName] = result.data.id;
-        completedDivisions++;
-        updateProgress(
-          (completedDivisions / totalDivisions) * 100,
-          `부문 "${divisionName}" 생성 완료 (${completedDivisions}/${totalDivisions})`
-        );
-        return { name: divisionName, id: result.data.id };
-      } else {
+      if (!result.success) {
         throw new Error(`부문 "${divisionName}" 생성 실패: ${result.error}`);
       }
+
+      if (!result.data?.id) {
+        throw new Error(`부문 "${divisionName}" 생성은 성공했지만 부문 ID를 받지 못했습니다. 서버 응답을 확인해주세요.`);
+      }
+
+      divisionIdMap[divisionName] = result.data.id;
+      completedDivisions++;
+      updateProgress(
+        (completedDivisions / totalDivisions) * 100,
+        `부문 "${divisionName}" 생성 완료 (${completedDivisions}/${totalDivisions})`
+      );
+      return { name: divisionName, id: result.data.id };
     });
 
     await Promise.all(divisionTasks);
@@ -213,14 +240,9 @@ export function createCsvService(dependencies: CsvServiceDependencies) {
       );
 
       // 참가자 데이터를 ParticipantForm 형식에 맞게 변환
-      const participantData = group.participants.map((participant) => ({
-        divisionId, // 이미 위에서 정의됨
-        name: participant.name,
-        teamName: participant.team, // team → teamName
-        robotName: participant.robotName,
-        comment: participant.comment,
-        orderRaw: parseInt(participant.orderRaw, 10) || 0, // orderRaw는 number 타입
-      }));
+      const participantData = group.participants.map((participant) => 
+        transformToParticipantForm(participant, divisionId)
+      );
 
       const result = await retryWithBackoff(
         async () => {

@@ -49,23 +49,41 @@ export const validateCsvData = (data: Record<string, string>[]): CsvValidationRe
 };
 
 /**
+ * 대회명 추출 결과 타입
+ */
+interface CompetitionNameResult {
+  success: boolean;
+  data?: string;
+  error?: string;
+}
+
+/**
  * CSV에서 대회명 추출
  * "대회 이름" 컬럼의 첫 번째 유효한 값 사용
  */
-export const extractCompetitionName = (rawData: Record<string, string>[]): string => {
+export const extractCompetitionName = (rawData: Record<string, string>[]): CompetitionNameResult => {
   if (rawData.length === 0) {
-    throw new Error('CSV 데이터가 비어있습니다');
+    return {
+      success: false,
+      error: 'CSV 데이터가 비어있습니다',
+    };
   }
 
   // "대회 이름" 필드에서 첫 번째 비어있지 않은 값 찾기
   for (const row of rawData) {
     const competitionName = row["대회 이름"];
     if (competitionName && competitionName.trim()) {
-      return competitionName.trim();
+      return {
+        success: true,
+        data: competitionName.trim(),
+      };
     }
   }
 
-  throw new Error('CSV에서 대회명을 찾을 수 없습니다. "대회 이름" 컬럼을 확인해주세요.');
+  return {
+    success: false,
+    error: 'CSV에서 대회명을 찾을 수 없습니다. "대회 이름" 컬럼을 확인해주세요.',
+  };
 };
 
 /**
@@ -86,10 +104,18 @@ export const extractDivisionNames = (rawData: Record<string, string>[]): string[
 
 export const transformCsvData = (
   rawData: Record<string, string>[]
-): { participants: ParsedData[]; divisions: string[]; competitionName: string } => {
+): { success: boolean; participants?: ParsedData[]; divisions?: string[]; competitionName?: string; error?: string } => {
   const participants: ParsedData[] = [];
   const divisions: string[] = [];
-  const competitionName = extractCompetitionName(rawData);
+  
+  // 대회명 추출 (Result 타입 사용)
+  const competitionNameResult = extractCompetitionName(rawData);
+  if (!competitionNameResult.success) {
+    return {
+      success: false,
+      error: competitionNameResult.error,
+    };
+  }
 
   rawData.forEach((row) => {
     const participant: ParsedData = {
@@ -108,7 +134,12 @@ export const transformCsvData = (
     }
   });
 
-  return { participants, divisions, competitionName };
+  return { 
+    success: true,
+    participants, 
+    divisions, 
+    competitionName: competitionNameResult.data 
+  };
 };
 
 export const groupDataByDivision = (rawData: Record<string, string>[]): GroupedData[] => {
@@ -169,7 +200,14 @@ export const parseCsvFile = (file: File): Promise<CsvParseResult> => {
           }
 
           // 데이터 변환 (대회명도 함께 추출)
-          const { participants, competitionName } = transformCsvData(rawData);
+          const transformResult = transformCsvData(rawData);
+          if (!transformResult.success) {
+            resolve({
+              success: false,
+              error: transformResult.error || "데이터 변환 중 오류가 발생했습니다.",
+            });
+            return;
+          }
 
           // 그룹화
           const groupedData = groupDataByDivision(rawData);
@@ -179,9 +217,9 @@ export const parseCsvFile = (file: File): Promise<CsvParseResult> => {
 
           resolve({
             success: true,
-            data: participants,
+            data: transformResult.participants!,
             groupedData,
-            competitionName, // 추출된 대회명 포함
+            competitionName: transformResult.competitionName!, // 추출된 대회명 포함
             divisionNames, // 추출된 부문명 목록 포함
           });
         } catch {
