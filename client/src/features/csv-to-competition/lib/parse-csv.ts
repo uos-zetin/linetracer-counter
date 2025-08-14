@@ -147,8 +147,9 @@ export const parseCsvFile = (file: File): Promise<CsvParseResult> => {
         try {
           const rawData = results.data as Record<string, string>[];
 
-          // 헤더 검증
-          const headerValidation = validateCsvHeaders(csvHeader);
+          // 헤더 검증 - 실제 CSV 파일의 헤더 검증
+          const actualHeaders = results.meta?.fields || [];
+          const headerValidation = validateCsvHeaders(actualHeaders);
           if (!headerValidation.isValid) {
             resolve({
               success: false,
