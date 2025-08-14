@@ -1,6 +1,7 @@
 #pragma once
 
 #include "interfaces.hpp"
+#include "http_curl_client.hpp"
 #include <string>
 #include <vector>
 
@@ -19,8 +20,9 @@ private:
 
     DeviceInfo device_info_;
     std::string session_key_;
-    bool registered_device_ = false;
+    HttpCurlClient client_;
 
+    bool registered_device_ = false;
     bool have_to_reconnect_ = false;
 
     std::string login(const std::string& username, const std::string& password);
