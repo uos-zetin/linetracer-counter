@@ -26,6 +26,9 @@ export type ParticipantEvent =
       manualRecord: ManualRecord;
     }
   | {
+      type: "manual-record-cleared";
+    }
+  | {
       type: "timer-log-added";
       timerLog: TimerLog;
     }
@@ -249,6 +252,24 @@ export class ParticipantService {
       manualRecord: result,
     });
     return result;
+  }
+
+  /**
+   * 특정 참가자의 수동 계수 기록을 모두 삭제할 수 있다.
+   */
+  async deleteManualRecords(participantId: string): Promise<void> {
+    const manualRecords = await this.manualRecordRepo.getByParticipantId(
+      participantId
+    );
+    await Promise.all(
+      manualRecords.map((manualRecord) =>
+        this.manualRecordRepo.delete(manualRecord.id)
+      )
+    );
+
+    this.emitParticipantEvent(participantId, {
+      type: "manual-record-cleared",
+    });
   }
 
   private async checkTimerIsRunning(participantId: string): Promise<boolean> {
