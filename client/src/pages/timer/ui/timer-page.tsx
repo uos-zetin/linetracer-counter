@@ -86,9 +86,9 @@ export function TimerPage() {
       <TimerPageHeader />
       <section id="timer-content" className="flex-1 min-h-0 overflow-hidden p-8">
         <div className="grid grid-rows-[auto_1fr] min-h-0 h-full gap-8">
-          <div className="shrink-0 grid grid-cols-2 gap-6">
+          <div className="shrink-0 grid grid-cols-2">
             <div>
-              <DivisionInfo counterId={counterId} />
+              <DivisionInfo />
             </div>
             <div>
               <RunnerInfo />
