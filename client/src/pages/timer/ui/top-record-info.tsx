@@ -90,7 +90,6 @@ export function TopRecordView() {
               key={rowIdx}
               className={cn(
                 "flex-1 grid font-medium border-t border-border",
-                "min-h-[50px] sm:min-h-[55px] md:min-h-[60px] lg:min-h-[65px] xl:min-h-[70px] 2xl:min-h-[120px]",
                 "grid-cols-[15%_35%_15%_35%] sm:grid-cols-[12%_38%_12%_38%]",
                 "md:grid-cols-[10%_40%_10%_40%] lg:grid-cols-[7.5%_42.5%_7.5%_42.5%]",
                 "text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-3xl"
@@ -106,8 +105,7 @@ export function TopRecordView() {
               </span>
               <span
                 className={cn(
-                  "flex items-center justify-center py-1",
-                  "px-1 sm:px-2 md:px-3 lg:px-4",
+                  "flex items-center justify-center",
                   rankBg(leftRank) || `${bgLeft} text-foreground`,
                   isLeftTopRank && "font-bold"
                 )}
@@ -115,23 +113,19 @@ export function TopRecordView() {
               >
                 {left ? (
                   <div className="text-center leading-none">
-                    <div
-                      className={`${isLeftTopRank ? "text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-3xl" : "text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl"} font-bold`}
-                    >
+                    <div className="text-md sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold">
                       {formatElapsedMs(left.timeMs).toString()}s
                     </div>
-                    <div
-                      className={`truncate ${isLeftTopRank ? "text-xs sm:text-xs md:text-xs lg:text-xs xl:text-sm 2xl:text-base" : "text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs 2xl:text-sm"} text-muted-foreground`}
-                    >
+                    <div className="text-sm sm:text-md md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-muted-foreground truncate">
                       {left.participantName}
                     </div>
                   </div>
                 ) : (
                   <div className="text-center leading-none">
-                    <div className="text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl text-muted-foreground font-bold">
+                    <div className="text-md sm:text-lg md:text-xl lg:text-2xl xl:text3lg 2xl:text-4xl text-muted-foreground font-bold">
                       —
                     </div>
-                    <div className="text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs 2xl:text-sm text-muted-foreground/60">
+                    <div className="text-sm sm:text-md md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-muted-foreground/60">
                       —
                     </div>
                   </div>
@@ -147,30 +141,27 @@ export function TopRecordView() {
               </span>
               <span
                 className={`
-                  flex items-center justify-center py-1 px-1 sm:px-2 md:px-3 lg:px-4                   ${rankBg(rightRank) || `${bgRight} text-foreground`}
+                  flex items-center justify-center
+                  ${rankBg(rightRank) || `${bgRight} text-foreground`}
                   ${isRightTopRank ? "font-bold" : ""}
                 `}
                 title={right ? `${right.participantName} - ${formatElapsedMs(right.timeMs).toString()}s` : undefined}
               >
                 {right ? (
                   <div className="text-center leading-none">
-                    <div
-                      className={`${isRightTopRank ? "text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-3xl" : "text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl"} font-bold`}
-                    >
+                    <div className="text-md sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold">
                       {formatElapsedMs(right.timeMs).toString()}s
                     </div>
-                    <div
-                      className={`truncate ${isRightTopRank ? "text-xs sm:text-xs md:text-xs lg:text-xs xl:text-sm 2xl:text-base" : "text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs 2xl:text-sm"} text-muted-foreground`}
-                    >
+                    <div className="text-sm sm:text-md md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-muted-foreground truncate">
                       {right.participantName}
                     </div>
                   </div>
                 ) : (
                   <div className="text-center leading-none">
-                    <div className="text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-2xl text-muted-foreground font-bold">
+                    <div className="text-md sm:text-lg md:text-xl lg:text-2xl xl:text3lg 2xl:text-4xl text-muted-foreground font-bold">
                       —
                     </div>
-                    <div className="text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs 2xl:text-sm text-muted-foreground/60">
+                    <div className="text-sm sm:text-md md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-muted-foreground/60">
                       —
                     </div>
                   </div>

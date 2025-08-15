@@ -10,7 +10,7 @@ export function TimerPageHeader() {
   return (
     <header
       className="
-        sticky top-0 z-20 w-full max-h-[12dvw]
+        w-full max-h-[12dvw]
         flex items-center justify-center text-center
         bg-muted
         shadow-lg
@@ -44,7 +44,7 @@ export function TimerPageHeader() {
           className="
             w-full h-[12dvw]
             bg-primary text-primary-foreground
-            text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-9xl py-4 sm:py-6 md:py-8 2xl:py-16
+            text-xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-8xl py-4 sm:py-6 md:py-8 2xl:py-16
             font-bold text-center tracking-tight flex items-center justify-center
           "
         >

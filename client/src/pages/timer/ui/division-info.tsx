@@ -15,10 +15,10 @@ export function DivisionInfo({ counterId }: DivisionInfoProps) {
   const stopwatchName = counter?.name || "No Stopwatch";
 
   return (
-    <div className="flex flex-col items-center justify-center w-full">
+    <div className="flex flex-col items-center justify-between w-full">
       <span
         className="
-          text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-8xl
+          text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-8xl
           font-bold tracking-tight text-center text-foreground
           mb-2 sm:mb-3 break-keep
         "

@@ -26,7 +26,7 @@ export function NextRunnerInfo() {
               className={`
                 flex-1 grid grid-cols-[15%_1fr]
                 border-t border-border 
-                text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-3xl
+                text-s sm:text-s md:text-m lg:text-lg xl:text-xl 2xl:text-4xl
                 ${
                   highlight
                     ? "bg-yellow-100 text-yellow-800 font-bold"
@@ -34,8 +34,8 @@ export function NextRunnerInfo() {
                 }
               `}
             >
-              <span className="flex items-center justify-center py-2 border-r border-border ">{idx + 1}</span>
-              <span className="flex items-center justify-center truncate py-2 px-2 sm:px-3 md:px-4 ">
+              <span className="flex items-center justify-center border-r border-border ">{idx + 1}</span>
+              <span className="flex items-center justify-center truncate ">
                 {runner ? runner.name : <span className="text-muted-foreground">—</span>}
               </span>
             </li>
