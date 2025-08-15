@@ -51,8 +51,10 @@ export const CurrentRecordsList = React.memo(({ records, onUpdateStatus }: Curre
                     </Badge>
                   </div>
                 </div>
-
-                {record.note && <p className="text-xs text-muted-foreground mb-2">{record.note}</p>}
+                <div className="text-xs text-muted-foreground mb-2">
+                  {record.createdAt.toLocaleString()}
+                  {record.note && <span> · {record.note}</span>}
+                </div>
 
                 {record.status === "pending" && (
                   <div className="flex space-x-2">

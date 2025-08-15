@@ -7,6 +7,7 @@ import { useProgressService } from "@/features/progress";
 export interface TopRecord {
   id: string;
   participantName: string;
+  participantTeamName: string;
   timeMs: number;
 }
 
@@ -55,10 +56,12 @@ export function TopRecordView() {
     // Division의 participant 목록에서 해당 participantId 찾기
     const participant = participants.find((p) => p.id === record.participantId);
     const participantName = participant?.name || `Participant ${record.participantId.slice(0, 8)}`;
+    const participantTeamName = participant?.teamName || "";
 
     return {
       id: record.id,
       participantName,
+      participantTeamName,
       timeMs: record.value,
     };
   });
@@ -114,10 +117,12 @@ export function TopRecordView() {
                 {left ? (
                   <div className="text-center leading-none">
                     <div className="text-md sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold">
+                      {left.participantName}
+                      <span className="mx-0.5">·</span>
                       {formatElapsedMs(left.timeMs).toString()}s
                     </div>
-                    <div className="text-sm sm:text-md md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-muted-foreground truncate">
-                      {left.participantName}
+                    <div className="text-sm sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl text-muted-foreground truncate">
+                      {left.participantTeamName}
                     </div>
                   </div>
                 ) : (
