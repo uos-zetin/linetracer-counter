@@ -113,10 +113,13 @@ export const TimerRunnerControlSection = () => {
       return;
     }
 
+    // 초 단위 입력을 ms 단위로 변환
+    const adjustmentMs = Math.abs(adjustment) * 1000;
+
     if (adjustment > 0) {
-      handleAddTime(Math.abs(adjustment));
+      handleAddTime(adjustmentMs);
     } else {
-      handleSubtractTime(Math.abs(adjustment));
+      handleSubtractTime(adjustmentMs);
     }
 
     setCustomTimeAdjustment("");
