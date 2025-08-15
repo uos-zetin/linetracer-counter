@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router";
 import { useAdminAuthorization } from "@/features/auth";
 import { useCounterService } from "@/features/counter";
 import { useProgressService } from "@/features/progress";
-import { PageContainer } from "@/widgets/page-container";
 import { CurrentRecordView } from "./current-record-view";
 import { DivisionInfo } from "./division-info";
 import { NextRunnerInfo } from "./next-runner-info";
@@ -83,57 +82,50 @@ export function TimerPage() {
   }
 
   return (
-    <main className="flex flex-col h-screen w-full bg-background">
+    <main className="grid grid-rows-[auto_1fr] h-dvh w-full bg-background">
       <TimerPageHeader />
-      <section
-        id="timer-content"
-        className="flex-1 flex flex-col h-full py-4 sm:py-6 md:py-8 xl:py-10 2xl:py-12 gap-2 sm:gap-4 md:gap-6"
-      >
-        <PageContainer maxWidth="full" padding="md" className="h-full">
-          <div className="min-h-0 h-full flex flex-col gap-4 sm:gap-6 md:gap-8">
-            {/* 상단 4개 컴포넌트를 하나의 Card로 감싸기 */}
-            <div className="grid gap-x-4 gap-y-3 sm:gap-x-6 sm:gap-y-4 md:gap-x-8 md:gap-y-6 grid-cols-1 md:grid-cols-2">
-              <div className="order-1 md:row-start-1 md:col-start-1">
-                <DivisionInfo counterId={counterId} />
-              </div>
-              <div className="order-2 md:row-start-1 md:col-start-2">
-                <RunnerInfo />
-              </div>
-              <div className="order-3 md:row-start-2 md:col-start-1">
-                <TimerView />
-              </div>
-              <div className="order-4 md:row-start-2 md:col-start-2">
-                <StopwatchView />
-              </div>
+      <section id="timer-content" className="flex-1 min-h-0 overflow-hidden p-8">
+        <div className="grid grid-rows-[auto_1fr] min-h-0 h-full gap-8">
+          <div className="shrink-0 grid grid-cols-2 gap-6">
+            <div>
+              <DivisionInfo counterId={counterId} />
             </div>
-            {/* 하단 데이터 섹션 */}
-            <div className="flex-1 flex flex-col min-h-0">
-              <div
-                className="flex-1 grid grid-cols-2 gap-3 sm:gap-4 md:gap-6
-            md:grid-cols-[1fr_2fr_1fr_10vw] md:grid-rows-1
-            "
-              >
-                <div className="order-2 md:order-1 h-full">
-                  <NextRunnerInfo />
+            <div>
+              <RunnerInfo />
+            </div>
+            <div>
+              <TimerView />
+            </div>
+            <div>
+              <StopwatchView />
+            </div>
+          </div>
+
+          <div className="min-h-0 h-full overflow-hidden">
+            <div className="grid min-h-0 h-full grid-cols-[1fr_2fr_1fr_20dvh] grid-rows-1 gap-6">
+              <div className="min-h-0 overflow-auto">
+                <NextRunnerInfo />
+              </div>
+
+              <div className="min-h-0 overflow-auto">
+                <TopRecordView />
+              </div>
+
+              <div className="min-h-0 overflow-auto">
+                <CurrentRecordView />
+              </div>
+
+              <div className="flex flex-col gap-6 min-h-0">
+                <div className="flex-1 min-h-0 overflow-auto">
+                  <SponsorView />
                 </div>
-                <div className="order-1 col-span-2 md:order-2 md:col-span-1 h-full">
-                  <TopRecordView />
-                </div>
-                <div className="order-3 md:order-3 h-full">
-                  <CurrentRecordView />
-                </div>
-                <div className="order-4 md:order-4 col-span-2 md:col-span-1 flex flex-row md:flex-col items-stretch gap-3 sm:gap-4 md:gap-6 h-full w-full">
-                  <div className="flex-1 w-full md:flex-1">
-                    <SponsorView />
-                  </div>
-                  <div className="flex-1 w-full aspect-square md:flex-none md:w-full md:aspect-square">
-                    <QRViewer url={dashboardUrl} title="대회 대시보드" />
-                  </div>
+                <div className="shrink-0">
+                  <QRViewer url={dashboardUrl} title="대회 대시보드" />
                 </div>
               </div>
             </div>
           </div>
-        </PageContainer>
+        </div>
       </section>
     </main>
   );
