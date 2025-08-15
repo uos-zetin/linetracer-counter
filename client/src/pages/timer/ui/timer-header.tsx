@@ -10,6 +10,7 @@ export function TimerPageHeader() {
   return (
     <header
       className="
+        relative
         w-full max-h-[12dvw]
         flex items-center justify-center text-center
         bg-muted

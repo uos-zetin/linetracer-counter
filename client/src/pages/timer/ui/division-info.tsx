@@ -16,22 +16,22 @@ export function DivisionInfo({ counterId }: DivisionInfoProps) {
 
   return (
     <div className="flex flex-col items-center justify-between w-full">
-      <span
+      <div
         className="
           text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-8xl
           font-bold tracking-tight text-center text-foreground
-          mb-2 sm:mb-3 break-keep
+          mb-6 break-keep
         "
         title="Division Name"
       >
         {divisionName}
-      </span>
-      <span
+      </div>
+      <div
         className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-3xl font-medium text-muted-foreground"
         title="Stopwatch Name"
       >
         계수기: {stopwatchName}
-      </span>
+      </div>
     </div>
   );
 }
