@@ -26,6 +26,15 @@ export const createManualRecordService = ({
     }
   };
 
+  const clearManualRecords = async (participantId: string): Promise<void> => {
+    try {
+      await manualRecordRepository.deleteManualRecords(participantId);
+    } catch (error) {
+      console.error("Failed to clear manual records:", error);
+      throw error;
+    }
+  };
+
   return {
     // Load functions (데이터 조회)
     load: {
@@ -35,6 +44,7 @@ export const createManualRecordService = ({
     // Admin functions (수동 기록 관리)
     admin: {
       create: createManualRecord,
+      clear: clearManualRecords,
     },
   };
 };

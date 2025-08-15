@@ -12,6 +12,7 @@ interface ManualRecordsAggregationProps {
   onToggleRecord: (recordId: string) => void;
   onToggleAll: () => void;
   onCreate: () => void;
+  onClear: () => void;
 }
 
 export const ManualRecordsAggregation = React.memo(
@@ -23,6 +24,7 @@ export const ManualRecordsAggregation = React.memo(
     onToggleRecord,
     onToggleAll,
     onCreate,
+    onClear,
   }: ManualRecordsAggregationProps) => {
     // 시간 포맷팅 함수
     const formatValue = (value: number) => {
@@ -43,9 +45,14 @@ export const ManualRecordsAggregation = React.memo(
               <Calculator className="h-4 w-4" />
               <span>수동 계수 기록 취합</span>
             </h3>
-            <Button variant="ghost" size="sm" onClick={onToggleAll} className="text-xs h-auto p-1">
-              {selectedManualRecords.length === manualRecords.length ? "모두 해제" : "모두 선택"}
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="destructive" size="sm" onClick={() => onClear()} className="text-xs h-auto p-1">
+                <span>기록 삭제</span>
+              </Button>
+              <Button variant="ghost" size="sm" onClick={onToggleAll} className="text-xs h-auto p-1">
+                {selectedManualRecords.length === manualRecords.length ? "모두 해제" : "모두 선택"}
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-2 mb-4 max-h-32 overflow-y-auto">

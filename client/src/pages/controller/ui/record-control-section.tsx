@@ -1,7 +1,23 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, FileText, AlertCircle } from "@/shared/ui";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  FileText,
+  AlertCircle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/ui";
 import type { RecordStatus } from "@/entities/record";
 import { useErrorHandlingService } from "@/features/error-handling";
+import { useManualRecordService } from "@/features/manual-record";
 import { useProgressService } from "@/features/progress";
 import { useRecordService } from "@/features/record";
 import { aggregateManualRecords } from "../lib/record-aggregation";
@@ -13,12 +29,14 @@ import { ManualRecordsAggregation } from "./manual-records-aggregation";
 export const RecordControlSection = () => {
   const progressService = useProgressService();
   const recordService = useRecordService();
+  const manualRecordService = useManualRecordService();
   const errorHandler = useErrorHandlingService();
 
   const [selectedManualRecords, setSelectedManualRecords] = useState<string[]>([]);
   const [manualRecordValue, setManualRecordValue] = useState("");
   const [manualRecordNote, setManualRecordNote] = useState("");
   const [isCreatingRecord, setIsCreatingRecord] = useState(false);
+  const [showClearDialog, setShowClearDialog] = useState(false);
 
   const progress = progressService?.use.progress() || null;
   const runner = progress?.runner;
@@ -60,6 +78,28 @@ export const RecordControlSection = () => {
     }
   };
 
+  // Manual records 초기화 (AlertDialog 열기)
+  const handleShowClearDialog = () => {
+    setShowClearDialog(true);
+  };
+
+  // Manual records 초기화 (실제 초기화 수행)
+  const handleConfirmClearManualRecords = async () => {
+    if (!runner || !manualRecordService) return;
+
+    setIsCreatingRecord(true);
+    setShowClearDialog(false);
+    try {
+      await manualRecordService.admin.clear(runner.participant.id);
+      // 성공 후 선택 초기화
+      setSelectedManualRecords([]);
+    } catch (error) {
+      errorHandler.handle(error as Error, "수동 계수 기록 초기화에 실패했습니다");
+    } finally {
+      setIsCreatingRecord(false);
+    }
+  };
+
   // 임의 Record 생성
   const handleCreateManualRecord = async () => {
     if (!runner || !recordService || !manualRecordValue.trim()) return;
@@ -75,7 +115,7 @@ export const RecordControlSection = () => {
       await recordService.admin.create(runner.participant.id, {
         value,
         source: "other",
-        note: manualRecordNote || "수동 추가된 기록",
+        note: manualRecordNote || "",
       });
 
       // 성공 후 입력 필드 초기화
@@ -155,6 +195,7 @@ export const RecordControlSection = () => {
           onToggleRecord={toggleManualRecord}
           onToggleAll={toggleAllManualRecords}
           onCreate={handleCreateFromManualRecords}
+          onClear={handleShowClearDialog}
         />
 
         {/* 기록 수동 추가 */}
@@ -169,6 +210,28 @@ export const RecordControlSection = () => {
 
         {/* 현재 참가자 Records */}
         <CurrentRecordsList records={runner.records} onUpdateStatus={handleUpdateRecordStatus} />
+
+        {/* Manual Records 초기화 확인 Dialog */}
+        <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>수동 계수 기록 초기화</AlertDialogTitle>
+              <AlertDialogDescription>
+                정말로 모든 수동 계수 기록을 초기화하시겠습니까?
+                <br />이 작업은 되돌릴 수 없습니다.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>취소</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleConfirmClearManualRecords}
+                className="bg-destructive hover:bg-destructive/90"
+              >
+                초기화
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
     </Card>
   );

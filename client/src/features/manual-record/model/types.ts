@@ -9,5 +9,6 @@ export interface ManualRecordService {
   // Admin functions (수동 기록 관리)
   admin: {
     create: (participantId: string, form: ManualRecordForm) => Promise<ManualRecord>;
+    clear: (participantId: string) => Promise<void>;
   };
 }
