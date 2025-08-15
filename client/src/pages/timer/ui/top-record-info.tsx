@@ -107,21 +107,17 @@ export function TopRecordView() {
                 {rowIdx + 1}
               </span>
               <span
-                className={cn(
-                  "flex items-center justify-center",
-                  rankBg(leftRank) || `${bgLeft} text-foreground`,
-                  isLeftTopRank && "font-bold"
-                )}
+                className={cn(rankBg(leftRank) || `${bgLeft} text-foreground`, isLeftTopRank && "font-bold")}
                 title={left ? `${left.participantName} - ${formatElapsedMs(left.timeMs).toString()}s` : undefined}
               >
                 {left ? (
-                  <div className="text-center leading-none">
-                    <div className="text-md sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold">
+                  <div className="w-full h-full flex flex-col items-center justify-center leading-none text-center text-sm sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-4xl">
+                    <div className="font-bold">
                       {left.participantName}
                       <span className="mx-0.5">·</span>
                       {formatElapsedMs(left.timeMs).toString()}s
                     </div>
-                    <div className="text-sm sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl text-muted-foreground truncate">
+                    <div className="mt-1 text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap max-w-full">
                       {left.participantTeamName}
                     </div>
                   </div>
