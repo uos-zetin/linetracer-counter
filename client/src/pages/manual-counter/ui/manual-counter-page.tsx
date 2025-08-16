@@ -149,12 +149,12 @@ export function ManualCounter() {
             </div>
 
             {/* Control Buttons */}
-            <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 md:gap-6 mb-6 sm:mb-8 md:mb-10">
+            <div className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-6 mb-6 sm:mb-8 md:mb-10">
               <Button
                 onClick={handleStart}
                 disabled={isRunning}
                 size="lg"
-                className="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 bg-green-500 text-white font-bold text-base sm:text-lg md:text-lg lg:text-lg hover:bg-green-600"
+                className="h-32 text-center bg-green-500 text-white font-bold text-base sm:text-lg md:text-lg lg:text-lg hover:bg-green-600"
               >
                 시작
               </Button>
@@ -162,10 +162,12 @@ export function ManualCounter() {
                 onClick={handleStop}
                 disabled={!isRunning}
                 size="lg"
-                className="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 bg-red-500 text-white font-bold text-base sm:text-lg md:text-lg lg:text-lg hover:bg-red-600"
+                className="h-32 text-center bg-red-500 text-white font-bold text-base sm:text-lg md:text-lg lg:text-lg hover:bg-red-600"
               >
                 정지
               </Button>
+            </div>
+            <div>
               <Button
                 onClick={handleReset}
                 disabled={isRunning}
