@@ -40,8 +40,8 @@ export function RunnerInfo() {
   }, [displayText, displayTextClassName]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full">
-      <div ref={containerRef} className="w-full mb-1 overflow-hidden whitespace-nowrap">
+    <div className="w-full h-full flex flex-col items-center justify-center">
+      <div ref={containerRef} className="w-full overflow-hidden whitespace-nowrap">
         {shouldAnimate ? (
           <Marquee
             speed={128}
