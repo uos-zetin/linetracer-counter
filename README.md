@@ -2,6 +2,16 @@
 
 본 레포지토리는 서울시립대학교 중앙동아리 [ZETIN](https://zetin.uos.ac.kr)에서 개최하는 전국 라인트레이서 경연대회를 위한 기록 계수 시스템입니다.
 
+- [Usecases](./docs/use-cases.md)
+- [Domain models](./docs/domain-models.md)
+
+## Goals
+
+- ZETIN 전국 라인트레이서 경연 대회의 기록을 계수하는 시스템
+- 계수기 H/W와 연동하여 경연 기록 측정 및 현황을 보여주는 뷰 제공
+- 참가자 현황, 경연 순서, 경연 기록 등을 한눈에 보여주는 뷰(대시보드) 제공
+- 대회 신청 페이지와 연동하여 대회 참가자 목록을 불러올 수 있는 기능 제공
+
 ## Architecture
 
 계수기 시스템은 크게 3개의 구성요소로 나뉩니다.
@@ -13,31 +23,34 @@
 
 2. [Frontend](./client/)
 
-   - 대회, 부문, 참가자 생성/수정/삭제 페이지
-   - 대회 상태 조작(참가자 선택, 타이머/스톱워치 시작/종료, 기록 인정/관리) 페이지
-   - 대회 현황판(부문 정보, 리더보드, 다음 참가자 정보, 후원 등) 페이지
-   - 수동 계수 페이지
+   - 대회, 부문, 참가자 생성/수정/삭제 UI
+   - 대회 상태 조작(참가자 선택, 타이머/스톱워치 시작/종료, 기록 인정/관리) UI
+   - 대회 현황판(부문 정보, 리더보드, 다음 참가자 정보, 후원 등) UI
+   - 수동 계수 UI
 
 3. [H/W Client](./counters/)
 
-   - 로봇의 출발/도착을 1ms 정밀도로 관측할 수 있는 H/W에 탑재된 소프트웨어
+   - 로봇의 출발/도착을 1ms 정밀도로 관측할 수 있는 H/W에 탑재된 S/W
    - 센서 데이터를 Batch로 Backend에 HTTP로 전송
      - H/W Client에서 로봇의 출발/도착 이벤트를 Backend에 발생시켜도 되지만, 코어 비즈니스 로직은 모두 Backend에서 관리하고자 하는 목적
      - 물론 Backend에서의 H/W Client 계층은 추상화되어 있기 때문에 출발/도착 이벤트를 발생시키는 경우 또한 통합 가능함
 
 ## Guides
 
-- 관리자 ID/PW를 까먹었어요
-- 대회 생성 및 부문/참가자 일괄 등록하기
-- 계수기 H/W 셋업하기
-- 대회 진행/관리 훑어보기
-- 수동 계수 환경 설정하기
+- [관리자 ID/PW를 까먹었어요](./docs/forgot-admin-credentials.md)
+- [대회 생성 및 부문/참가자 일괄 등록하기](./docs/competition-bulk-upload.md)
+- [계수기 H/W 셋업하기](./docs/setup-counter-hw.md)
+- [대회 진행/관리 훑어보기](./docs/counter-web-overview.md)
+- [수동 계수 환경 설정하기](./docs/manual-record-setup.md)
+- 교내 Member@UOS 와이파이를 사용하고 싶어요(WIP)
 
 ## How to deploy
 
 기본적으로 교내 네트워크에 위치한 동아리 서버에 배포를 하며, 동아리 서버의 인프라 호환성을 위해 docker-compose로 배포되어 있습니다. 자세한 내용은 [deloyments](./deployments/) 디렉터리를 참고 바랍니다.
 
 ## How to contribute
+
+### Branch strategy
 
 - GitHub Issues 등록 후 발급되는 번호로 `issue/{번호}` 브랜치 생성 후 작업
 - 개발 완료된 브랜치는 최신의 `dev` 브랜치로 rebase 후 `dev` 브랜치로 PR 작성
