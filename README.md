@@ -42,7 +42,7 @@
 - [계수기 H/W 셋업하기](./docs/setup-counter-hw.md)
 - [대회 진행/관리 훑어보기](./docs/counter-web-overview.md)
 - [수동 계수 환경 설정하기](./docs/manual-record-setup.md)
-- 교내 Member@UOS 와이파이를 사용하고 싶어요(WIP)
+- [교내 Member@UOS 와이파이를 사용하고 싶어요](./docs/using-member-uos-wifi.md)
 
 ## How to deploy
 
