@@ -1,10 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useAdminAuthorization } from "@/features/auth";
 import { useCounterService } from "@/features/counter";
 import { useProgressService } from "@/features/progress";
 import { CurrentRecordView } from "./current-record-view";
 import { DivisionInfo } from "./division-info";
+import { FallingLeaves } from "./falling-leaves";
+import { LeavesSettingsPanel, type LeavesSettings } from "./leaves-settings-panel";
 import { NextRunnerInfo } from "./next-runner-info";
 import { QRViewer } from "./qr-viewer";
 import { RunnerInfo } from "./runner-info";
@@ -21,6 +23,13 @@ export function TimerPage() {
   const { isAuthorized } = useAdminAuthorization();
   const progressService = useProgressService();
   const counterService = useCounterService();
+  const [leavesSettings, setLeavesSettings] = useState<LeavesSettings>({
+    enabled: true,
+    size: 1,
+    speed: 5,
+    count: 20,
+    clearInterval: 60,
+  });
 
   // Counter 서비스 연결
   useEffect(() => {
@@ -83,6 +92,18 @@ export function TimerPage() {
 
   return (
     <main className="grid grid-rows-[auto_1fr] h-dvh w-full bg-background">
+      {/* 낙엽 애니메이션 */}
+      <FallingLeaves
+        enabled={leavesSettings.enabled}
+        speed={leavesSettings.speed}
+        count={leavesSettings.count}
+        size={leavesSettings.size}
+        clearIntervalSeconds={leavesSettings.clearInterval}
+      />
+
+      {/* 낙엽 설정 패널 (우측 하단) */}
+      <LeavesSettingsPanel settings={leavesSettings} onSettingsChange={setLeavesSettings} />
+
       <TimerPageHeader />
       <section id="timer-content" className="flex-1 min-h-0 overflow-hidden p-8">
         <div className="grid grid-rows-[auto_1fr] min-h-0 h-full gap-8">
