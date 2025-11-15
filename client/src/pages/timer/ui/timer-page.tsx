@@ -24,9 +24,9 @@ export function TimerPage() {
   const progressService = useProgressService();
   const counterService = useCounterService();
   const [leavesSettings, setLeavesSettings] = useState<LeavesSettings>({
-    enabled: true,
-    size: 1,
-    speed: 5,
+    enabled: false,
+    size: 2,
+    speed: 2,
     count: 20,
     clearInterval: 60,
   });

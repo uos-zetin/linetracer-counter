@@ -21,7 +21,7 @@ export const LeavesSettingsPanel = ({ settings, onSettingsChange }: LeavesSettin
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-0 right-0 z-50">
       {isExpanded ? (
         // 확장된 설정 패널
         <div className="bg-background/95 backdrop-blur-sm rounded-lg shadow-lg border border-border p-4 w-72">
@@ -56,7 +56,7 @@ export const LeavesSettingsPanel = ({ settings, onSettingsChange }: LeavesSettin
               <input
                 type="range"
                 min="0.5"
-                max="2"
+                max="4"
                 step="0.1"
                 value={settings.size}
                 onChange={(e) => handleChange("size", parseFloat(e.target.value))}
