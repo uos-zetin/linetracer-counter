@@ -1,5 +1,5 @@
 # Server build stage
-FROM node:22-alpine AS server-builder
+FROM node:22.23.4-alpine AS server-builder
 WORKDIR /workspace
 COPY server/package*.json ./
 RUN npm ci
@@ -7,7 +7,7 @@ COPY server/ ./
 RUN npm run build
 
 # Client build stage
-FROM node:22-alpine AS client-builder
+FROM node:22.23.4-alpine AS client-builder
 WORKDIR /workspace
 COPY client/package*.json ./
 RUN npm ci
@@ -16,7 +16,7 @@ ENV VITE_SERVER_URL=https://counter.zetin.uos.ac.kr
 RUN npm run build
 
 # Production stage
-FROM node:22-alpine
+FROM node:22.23.4-alpine
 WORKDIR /app
 COPY server/package*.json ./
 RUN npm ci --only=production
